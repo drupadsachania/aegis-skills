@@ -1,0 +1,142 @@
+# MITRE ATT&CK Skill
+
+## Purpose
+
+Map adversary behaviour to ATT&CK techniques. Use this skill to build structured threat models,
+identify detection gaps, and feed technique selections into deception engineering or security
+control design.
+
+## Phase Map
+
+```
+Phase 0 → Identify adversary archetype and scope (Enterprise / ICS / Mobile)
+Phase 1 → Enterprise matrix orientation    [read: references/enterprise-matrix-overview.md]
+Phase 2 → ICS matrix orientation (OT only) [read: references/ics-matrix-overview.md]
+Phase 3 → TTP profiling                    [read: references/ttp-profiling-guide.md]
+Phase 4 → Output: threat model with top 7 technique IDs + kill chain positions
+```
+
+## Phase 0 — Scope and Adversary Archetype
+
+Before loading any matrix reference, establish:
+
+1. **Environment type**: Enterprise (IT), ICS/OT, Cloud, Mobile, or hybrid
+2. **Adversary archetype**: Nation-state APT / Cybercriminal / Insider / Hacktivist
+3. **Industry vertical**: Determines which threat actor groups are most relevant
+4. **Goal of the exercise**: Detection gap analysis / deception placement / control design / incident response
+
+Map the archetype to likely technique clusters. Proceed to Phase 1 (Enterprise) or Phase 2 (ICS) as appropriate.
+
+## Output Format
+
+Every ATT&CK session produces a threat model table:
+
+| Technique ID | Name | Tactic | Kill Chain Position | Priority |
+|---|---|---|---|---|
+| T1078 | Valid Accounts | Persistence, Privilege Escalation | Mid-stage | High |
+
+Feed this table directly into `mitre-engage` or `deception-engineering` for deception placement.
+
+
+## enterprise-matrix-overview
+
+# MITRE ATT&CK Enterprise Matrix — Reference
+
+Use during Phase 1 to map adversary TTPs to the Enterprise matrix.
+
+## 14 Tactics (in kill-chain order)
+
+| ID | Tactic | What the adversary is trying to do |
+|----|--------|-------------------------------------|
+| TA0043 | Reconnaissance | Gather info to plan operations |
+| TA0042 | Resource Development | Establish infrastructure |
+| TA0001 | Initial Access | Get into the network |
+| TA0002 | Execution | Run malicious code |
+| TA0003 | Persistence | Maintain foothold |
+| TA0004 | Privilege Escalation | Gain higher-level permissions |
+| TA0005 | Defense Evasion | Avoid detection |
+| TA0006 | Credential Access | Steal credentials |
+| TA0007 | Discovery | Figure out the environment |
+| TA0008 | Lateral Movement | Move through the environment |
+| TA0009 | Collection | Gather data of interest |
+| TA0011 | Command & Control | Communicate with compromised systems |
+| TA0010 | Exfiltration | Steal data |
+| TA0040 | Impact | Manipulate, interrupt, or destroy |
+
+## Top Techniques by Adversary Type
+
+**Nation-state / APT:**
+T1566 Phishing, T1078 Valid Accounts, T1021 Remote Services,
+T1055 Process Injection, T1003 OS Credential Dumping, T1567 Exfiltration Over Web Service
+
+**Cybercriminal / Ransomware:**
+T1190 Exploit Public-Facing App, T1486 Data Encrypted for Impact,
+T1490 Inhibit System Recovery, T1562 Impair Defenses
+
+**Insider threat:**
+T1052 Exfiltration Over Physical Medium, T1078 Valid Accounts,
+T1213 Data from Information Repositories
+
+## Querying the Live Matrix
+ATT&CK STIX data: https://github.com/mitre/cti
+ATT&CK Navigator: https://mitre-attack.github.io/attack-navigator/
+
+
+
+## ics-matrix-overview
+
+# MITRE ATT&CK ICS Matrix — Reference
+
+Use for OT/ICS environments. Different from Enterprise — focus on process disruption, not data theft.
+
+## ICS-Specific Tactics
+
+| ID | Tactic | OT Context |
+|----|--------|-----------|
+| TA0108 | Initial Access | Entry via IT/OT boundary, vendor VPN, USB |
+| TA0104 | Execution | PLC programming, HMI manipulation |
+| TA0110 | Persistence | Rogue firmware, ladder logic modification |
+| TA0111 | Privilege Escalation | Engineering workstation access |
+| TA0103 | Evasion | Rootkits on historians, log manipulation |
+| TA0102 | Discovery | Protocol scanning (Modbus, DNP3, OPC) |
+| TA0109 | Lateral Movement | Jump host pivot, historian → PLC |
+| TA0100 | Collection | Process data capture, sensor reading |
+| TA0101 | Command & Control | Out-of-band comms over OT protocols |
+| TA0105 | Inhibit Response | Safety system bypass, alarm suppression |
+| TA0106 | Impair Process Control | Setpoint manipulation |
+| TA0107 | Impact | Physical damage, process disruption |
+
+## Key ICS Techniques
+T0866 Exploitation of Remote Services, T0843 Program Download,
+T0836 Modify Parameter, T0855 Unauthorized Command Message,
+T0816 Device Restart/Shutdown
+
+
+
+## ttp-profiling-guide
+
+# TTP Profiling Guide
+
+Use during Phase 0 to build an adversary profile from ATT&CK techniques.
+
+## Step 1 — Identify adversary archetype
+- Nation-state APT → focus on persistence, credential access, exfiltration
+- Cybercriminal → focus on initial access, ransomware impact chain
+- Insider → focus on collection and exfiltration, minimal discovery
+- Hacktivist → focus on impact and public-facing exploitation
+
+## Step 2 — Select top 7 techniques
+From the relevant matrix, select the 7 techniques most likely given:
+- Industry vertical
+- Known threat actor groups targeting this sector
+- Previously observed TTPs in incident reports
+
+## Step 3 — Map to kill chain position
+For each technique note: early-stage (TA0043–TA0002), mid-stage (TA0003–TA0008), late-stage (TA0009–TA0040).
+This tells you WHERE deception assets should sit on the kill chain.
+
+## Step 4 — Output format
+Produce a threat model summary:
+| Technique ID | Name | Tactic | Kill Chain Position | Deception Relevance |
+|---|---|---|---|---|
+| T1078 | Valid Accounts | Persistence | Mid | High — honeytoken accounts |

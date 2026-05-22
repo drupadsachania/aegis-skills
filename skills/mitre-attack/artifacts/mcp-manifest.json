@@ -1,0 +1,49 @@
+{
+  "schema": "mcp/1.0",
+  "name": "mitre-attack",
+  "version": "1.0.0",
+  "description": "MITRE ATT&CK threat modelling workflow. Triggers for: adversary TTP mapping, threat actor profiling, kill chain analysis, technique selection for security controls, ATT&CK Navigator usage, ICS/OT threat modelling, ATT&CK-based detection gap analysis, or any exercise requiring adversary behaviour mapping.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the mitre-attack skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "enterprise-matrix-overview",
+              "ics-matrix-overview",
+              "ttp-profiling-guide"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://skills.openskill.ai/mitre-attack/phase/enterprise-matrix-overview",
+      "name": "enterprise-matrix-overview",
+      "description": "Reference content for mitre-attack — enterprise-matrix-overview",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/mitre-attack/phase/ics-matrix-overview",
+      "name": "ics-matrix-overview",
+      "description": "Reference content for mitre-attack — ics-matrix-overview",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/mitre-attack/phase/ttp-profiling-guide",
+      "name": "ttp-profiling-guide",
+      "description": "Reference content for mitre-attack — ttp-profiling-guide",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

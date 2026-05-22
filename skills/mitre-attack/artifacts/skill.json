@@ -1,0 +1,44 @@
+{
+  "osk": "1.0",
+  "name": "mitre-attack",
+  "version": "1.0.0",
+  "description": "MITRE ATT&CK threat modelling workflow. Triggers for: adversary TTP mapping, threat actor profiling, kill chain analysis, technique selection for security controls, ATT&CK Navigator usage, ICS/OT threat modelling, ATT&CK-based detection gap analysis, or any exercise requiring adversary behaviour mapping.\n",
+  "frameworks": [
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "threat-intelligence",
+    "ttp",
+    "mitre",
+    "attack-framework"
+  ],
+  "phases": [
+    {
+      "id": "enterprise-matrix-overview",
+      "lazy": true,
+      "tokens": 412
+    },
+    {
+      "id": "ics-matrix-overview",
+      "lazy": true,
+      "tokens": 296
+    },
+    {
+      "id": "ttp-profiling-guide",
+      "lazy": true,
+      "tokens": 271
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://skills.openskill.ai/mitre-attack",
+    "action": "https://skills.openskill.ai/mitre-attack/invoke",
+    "artifacts": "https://skills.openskill.ai/mitre-attack/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack"
+    ],
+    "red-team": false
+  }
+}
