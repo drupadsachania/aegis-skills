@@ -11,6 +11,7 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
+  "author": "Drupad Sachania",
   "keywords": ["skills", "ai", "mcp", "openskill", "compiler"],
   "license": "MIT",
   "dependencies": {
