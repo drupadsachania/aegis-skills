@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openskill.ai/schema/skill/1.0",
+  "title": "OpenSkill Manifest",
+  "type": "object",
+  "required": ["osk", "name", "version", "description", "phases", "endpoints"],
+  "properties": {
+    "osk":         { "type": "string", "const": "1.0" },
+    "name":        { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "version":     { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string", "minLength": 10 },
+    "frameworks":  { "type": "array", "items": { "type": "string" } },
+    "tags":        { "type": "array", "items": { "type": "string" } },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "lazy", "tokens"],
+        "properties": {
+          "id":     { "type": "string" },
+          "lazy":   { "type": "boolean" },
+          "tokens": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "required": ["mcp", "action", "artifacts"],
+      "properties": {
+        "mcp":       { "type": "string" },
+        "action":    { "type": "string" },
+        "artifacts": { "type": "string" }
+      }
+    },
+    "research": {
+      "type": "object",
+      "properties": {
+        "feeds":    { "type": "array", "items": { "type": "string" } },
+        "red-team": { "type": "boolean" }
+      }
+    }
+  }
+}
