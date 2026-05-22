@@ -1,0 +1,25 @@
+{
+  "name": "@openskill/compiler",
+  "version": "0.1.0",
+  "description": "Platform-agnostic AI skill compiler — converts SKILL.md bundles to multi-platform artifacts",
+  "type": "commonjs",
+  "main": "src/compiler.js",
+  "bin": {
+    "openskill": "./bin/openskill.js"
+  },
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch"
+  },
+  "keywords": ["skills", "ai", "mcp", "openskill", "compiler"],
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "commander": "^12.1.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
