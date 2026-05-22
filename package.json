@@ -12,6 +12,10 @@
     "test:watch": "jest --watch"
   },
   "author": "Drupad Sachania",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drupadsachania/deception-skills.git"
+  },
   "keywords": ["skills", "ai", "mcp", "openskill", "compiler"],
   "license": "MIT",
   "dependencies": {
