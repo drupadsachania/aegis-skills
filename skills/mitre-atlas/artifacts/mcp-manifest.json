@@ -1,0 +1,42 @@
+{
+  "schema": "mcp/1.0",
+  "name": "mitre-atlas",
+  "version": "1.0.0",
+  "description": "MITRE ATLAS adversarial ML/AI attack surface assessment and countermeasure planning workflow. Triggers for: AI system threat modelling, adversarial ML attack analysis, training data poisoning defence, model inversion detection, ML credential protection, AI supply chain security, designing deception for ML pipelines, or any exercise involving security of AI/ML systems.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the mitre-atlas skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "atlas-tactics-overview",
+              "ml-attack-surface-guide"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://skills.openskill.ai/mitre-atlas/phase/atlas-tactics-overview",
+      "name": "atlas-tactics-overview",
+      "description": "Reference content for mitre-atlas — atlas-tactics-overview",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/mitre-atlas/phase/ml-attack-surface-guide",
+      "name": "ml-attack-surface-guide",
+      "description": "Reference content for mitre-atlas — ml-attack-surface-guide",
+      "mimeType": "text/markdown"
+    }
+  ]
+}
