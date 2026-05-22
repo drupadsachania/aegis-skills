@@ -1,0 +1,57 @@
+{
+  "osk": "1.0",
+  "name": "deception-engineering",
+  "version": "2.0.0",
+  "description": "End-to-end deception engineering workflow for defensive security programs. Triggers for: honeypot design, honeytoken placement, attack surface modelling for deception, signal source validation, deception grid proposals, OT/IT deception design, SIEM/XDR integration of deception signals, deception program documentation, or any proactive threat detection exercise.\n",
+  "frameworks": [
+    "mitre-engage",
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "deception",
+    "honeypot",
+    "honeytoken",
+    "defensive",
+    "ot-security"
+  ],
+  "phases": [
+    {
+      "id": "attack-surface-taxonomy",
+      "lazy": true,
+      "tokens": 1966
+    },
+    {
+      "id": "signal-source-validity",
+      "lazy": true,
+      "tokens": 2088
+    },
+    {
+      "id": "deception-placement-matrix",
+      "lazy": true,
+      "tokens": 2508
+    },
+    {
+      "id": "signal-writing-guide",
+      "lazy": true,
+      "tokens": 2244
+    },
+    {
+      "id": "documentation-templates",
+      "lazy": true,
+      "tokens": 3020
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://skills.openskill.ai/deception-engineering",
+    "action": "https://skills.openskill.ai/deception-engineering/invoke",
+    "artifacts": "https://skills.openskill.ai/deception-engineering/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "mitre-engage"
+    ],
+    "red-team": true
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "deception-engineering",
+  "version": "2.0.0",
+  "description": "End-to-end deception engineering workflow for defensive security programs. Triggers for: honeypot design, honeytoken placement, attack surface modelling for deception, signal source validation, deception grid proposals, OT/IT deception design, SIEM/XDR integration of deception signals, deception program documentation, or any proactive threat detection exercise.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the deception-engineering skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "attack-surface-taxonomy",
+              "signal-source-validity",
+              "deception-placement-matrix",
+              "signal-writing-guide",
+              "documentation-templates"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://skills.openskill.ai/deception-engineering/phase/attack-surface-taxonomy",
+      "name": "attack-surface-taxonomy",
+      "description": "Reference content for deception-engineering — attack-surface-taxonomy",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/deception-engineering/phase/signal-source-validity",
+      "name": "signal-source-validity",
+      "description": "Reference content for deception-engineering — signal-source-validity",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/deception-engineering/phase/deception-placement-matrix",
+      "name": "deception-placement-matrix",
+      "description": "Reference content for deception-engineering — deception-placement-matrix",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/deception-engineering/phase/signal-writing-guide",
+      "name": "signal-writing-guide",
+      "description": "Reference content for deception-engineering — signal-writing-guide",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/deception-engineering/phase/documentation-templates",
+      "name": "documentation-templates",
+      "description": "Reference content for deception-engineering — documentation-templates",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

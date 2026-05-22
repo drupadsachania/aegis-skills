@@ -1,0 +1,67 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "deception-engineering skill",
+    "description": "End-to-end deception engineering workflow for defensive security programs. Triggers for: honeypot design, honeytoken placement, attack surface modelling for deception, signal source validation, deception grid proposals, OT/IT deception design, SIEM/XDR integration of deception signals, deception program documentation, or any proactive threat detection exercise.\n",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://skills.openskill.ai"
+    }
+  ],
+  "paths": {
+    "/deception-engineering/invoke": {
+      "post": {
+        "operationId": "invoke_deception_engineering",
+        "summary": "Load a phase of the deception-engineering skill",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "phase"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "description": "Which phase to load",
+                    "enum": [
+                      "attack-surface-taxonomy",
+                      "signal-source-validity",
+                      "deception-placement-matrix",
+                      "signal-writing-guide",
+                      "documentation-templates"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phase content returned as markdown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "phase": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

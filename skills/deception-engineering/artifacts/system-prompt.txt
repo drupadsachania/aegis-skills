@@ -1,0 +1,1356 @@
+# Deception Engineering Skill
+
+## Core Principle: Semantic Decision Model
+
+Every deception decision flows from two inputs — nothing else:
+
+```
+DECEPTION_DECISION = f(ATTACK_SURFACE_PROFILE, SIGNAL_SOURCE_VALIDITY)
+```
+
+Do not recommend a deception type or placement until both inputs are characterized.
+A generic honeypot is noise. A semantically anchored deception asset is a precision instrument.
+
+---
+
+## Phase Map — Always Follow This Sequence
+
+```
+Phase 0 → Threat Model Anchor
+Phase 1 → Attack Surface Validation       [read: references/attack-surface-taxonomy.md]
+Phase 2 → Signal Source Validity          [read: references/signal-source-validity.md]
+Phase 3 → Semantic Decision               [read: references/deception-placement-matrix.md]
+Phase 4 → Grid Planning
+Phase 5 → Placement & Deployment
+Phase 6 → Testing & Validation
+Phase 7 → Signal Writing                  [read: references/signal-writing-guide.md]
+Phase 8 → Formalization & Documentation   [read: references/documentation-templates.md]
+```
+
+Read a reference file only when you reach that phase. Do not front-load all references.
+
+---
+
+## Phase 0 — Threat Model Anchor
+
+Before touching the attack surface, anchor to adversary intent. Ask or derive:
+
+- **Who is the likely adversary?** (Nation-state, cybercriminal, insider, supply chain)
+- **What are they after?** (IP theft, operational disruption, lateral pivot, ransomware)
+- **What industry/compliance context applies?** (Automotive, financial, healthcare, OT-regulated)
+
+Map the adversary profile to MITRE ATT&CK. Identify the top 5-7 techniques most relevant
+to this adversary type. These techniques drive deception calibration — your deceptive assets
+must be placed to intercept these specific TTPs, not generic ones.
+
+**Output of Phase 0:** A threat model summary with top ATT&CK technique IDs and adversary intent.
+
+---
+
+## Phase 1 — Attack Surface Validation
+
+Read `references/attack-surface-taxonomy.md` before proceeding.
+
+Characterize the environment across all applicable zones:
+
+| Zone | Examples | Deception Eligibility |
+|------|----------|-----------------------|
+| Perimeter | Edge firewalls, public IPs, VPN endpoints | Low value alone, useful for threat intel |
+| DMZ | Reverse proxies, mail gateways, web servers | Medium — attacker already past perimeter |
+| Internal Network | VLANs, internal servers, lateral paths | High — confirms breach, catches movement |
+| Identity / AD | Domain controllers, service accounts, GPOs | Very High — catches credential abuse |
+| Endpoint | Workstations, laptops, developer machines | High — catches post-compromise enumeration |
+| Cloud / CSP | IAM roles, S3 buckets, cloud credentials | Very High — tokens fire cross-environment |
+| OT / IT Boundary | PLC jump hosts, HMI stations, historian servers | Critical — passive only, safety-first |
+| Data / IP Stores | File shares, code repos, design file directories | Very High — IP theft detection |
+
+For each zone in scope, record:
+- Asset sensitivity (Crown Jewel / Operational / Supporting)
+- Threat vector exposure (External / Lateral / Privileged Access)
+- Current visibility (Instrumented / Partially / Blind)
+
+**Output of Phase 1:** Populated zone table with sensitivity, exposure, and visibility ratings.
+
+---
+
+## Phase 2 — Signal Source Validity
+
+Read `references/signal-source-validity.md` before proceeding.
+
+For each signal source in the environment (EDR, SIEM, NDR, CASB, IAM logs, etc.), assess:
+
+| Dimension | Question | Rating |
+|-----------|----------|--------|
+| Coverage | What percentage of the zone does this source instrument? | 0-100% |
+| Fidelity | What is the false positive baseline? | Low / Medium / High noise |
+| Latency | How fast does an event alert? | Real-time / Minutes / Hours / Batch |
+| Integration Maturity | How well does it feed the SIEM/XDR? | Raw / Parsed / Correlated / Enriched |
+| Blind Spots | What does this source miss? | Document explicitly |
+
+**Critical rule:** If a zone has LOW signal validity (high noise, low coverage, batch latency,
+or poor integration), deception assets in that zone must compensate by generating
+self-contained, unambiguous signals — not relying on the existing source to correlate.
+
+**Output of Phase 2:** Signal validity scorecard per zone.
+
+---
+
+## Phase 3 — Semantic Decision
+
+Read `references/deception-placement-matrix.md` before proceeding.
+
+Apply the semantic matrix. For each zone, cross-reference:
+- Attack surface exposure (from Phase 1)
+- Signal source validity (from Phase 2)
+
+This produces a recommended deception posture per zone:
+
+| Attack Surface | Signal Validity | Recommended Posture |
+|----------------|-----------------|---------------------|
+| High exposure | High validity | Active honeypot + interaction capture |
+| High exposure | Low validity | High-density honeytokens (compensate blind spots) |
+| Low exposure | High validity | Sparse breadcrumbs (signals already good) |
+| Low exposure | Low validity | Fix signals first — deception here is premature |
+| OT/IT boundary | Any | Passive-only honeypots. No interactive shells. Safety-first. |
+| Identity/AD | Any | Honeytoken service accounts + fake GPO entries always |
+| Cloud/CSP | Any | Honeytoken IAM credentials + fake S3 buckets always |
+
+Also determine for each zone:
+- **Deception type:** Honeypot / Honeytoken / Breadcrumb / Grid (combination)
+- **Interaction depth:** Passive log-only / Low-interaction / High-interaction
+- **Signal routing:** Where does the deception hit alert route? (SIEM rule / EDR alert / webhook / all)
+
+**Output of Phase 3:** Deception posture table per zone with type, depth, and routing.
+
+---
+
+## Phase 4 — Grid Planning
+
+Design the deception grid as a unified architecture, not isolated assets.
+
+### Grid Density
+- Perimeter: 1-2 assets (threat intel only)
+- Internal segments: 1 per VLAN minimum
+- Identity/AD: 3-5 fake accounts, minimum 1 per privileged tier
+- Endpoint: 2-4 artifacts per high-value machine class
+- Cloud: 1 honeytoken per IAM role category
+- OT/IT boundary: 1 passive sensor per segment, read-only
+
+### Believability Engineering
+Every deceptive asset must pass the "would a legitimate employee believe this is real?" test.
+- Fake service accounts must have realistic names, descriptions, creation dates, group memberships
+- Fake credential files must appear in plausible paths with plausible syntax
+- Fake network nodes must respond to basic enumeration (ping, banner, port scan)
+- Fake design files must have realistic filenames, sizes, and metadata
+
+### Blind Spot Coverage
+Map your deception assets explicitly to the blind spots identified in Phase 2.
+Every documented blind spot should have at least one deception asset compensating for it.
+
+**Output of Phase 4:** Deception grid map — asset list with zone, type, believability notes, and blind spot mapping.
+
+---
+
+## Phase 5 — Placement & Deployment
+
+Sequence deployments lowest-risk first. Do not start in OT zones.
+
+### Deployment Checklist per Asset
+- [ ] Asset is isolated from production data paths
+- [ ] Logging is confirmed before deployment (verify log destination, not just config)
+- [ ] Alerting pipeline is tested with a synthetic trigger before going live
+- [ ] Change management entry created (deception assets must not surprise IR teams)
+- [ ] Asset is documented in the deception registry (see Phase 8)
+- [ ] Rollback procedure documented
+
+### OT-Specific Deployment Rules
+- Passive monitoring only — no services that accept write operations
+- Change window required — coordinate with OT engineering team
+- Validate with OT team that the deceptive node cannot be mistaken for a real PLC/HMI
+- Never place an interactive honeypot on the OT network without explicit OT engineering sign-off
+
+**Output of Phase 5:** Deployment log with per-asset checklist completion status.
+
+---
+
+## Phase 6 — Testing & Validation
+
+Test every deception asset before declaring it operational.
+
+### Functional Testing (Defender Perspective)
+- Trigger the asset deliberately from a controlled source
+- Confirm the log event is generated within expected latency
+- Confirm the alert fires in the SIEM/XDR
+- Confirm the alert routes to the correct playbook/queue
+- Confirm the alert content includes: source IP/host, timestamp, asset ID, deception type
+
+### Red Team Validation (Attacker Perspective)
+If a red team or purple team is available:
+- Brief them on which zones contain deception assets (not which specific assets)
+- Have them conduct realistic enumeration and lateral movement
+- Track which assets they discovered, which they interacted with, which they ignored
+- Deception assets that are discovered but ignored suggest a believability failure — redesign
+
+### Zero False Positive Validation
+Run the environment for 30 days post-deployment. Any legitimate alert on a deception asset
+is a critical failure — it means either:
+1. A legitimate user/process is touching a deception asset (placement error)
+2. The asset is indistinguishable from a real asset the environment already uses (design flaw)
+
+**Output of Phase 6:** Test results per asset with functional pass/fail and red team interaction log.
+
+---
+
+## Phase 7 — Signal Writing
+
+Read `references/signal-writing-guide.md` before proceeding.
+
+Write detection rules for every deception asset. The rule design principle:
+
+**Deception rules have zero baseline. Any match is CRITICAL. No threshold. No frequency. No baseline anomaly required.**
+
+This is what separates deception signals from all other detection logic. Write rules that:
+- Match on the deception asset identifier (IP, credential, filename, DNS name, etc.)
+- Fire on first occurrence — no aggregation, no time window
+- Output severity CRITICAL regardless of context
+- Include asset metadata in alert output (which deception asset, which zone, what interaction type)
+- Suppress nothing — deception hits should never be in exclusion lists
+
+**Output of Phase 7:** Detection rule set per platform (SIEM YARA-L / Sigma / KQL / SPL) with alert routing logic.
+
+---
+
+## Phase 8 — Formalization & Documentation
+
+Read `references/documentation-templates.md` before proceeding.
+
+Produce:
+1. **Deception Registry** — master list of all deployed assets with metadata
+2. **IR Integration Note** — brief for the IR/SOC team so deception hits are handled correctly
+3. **Executive Summary** — business-language summary for CISO/leadership
+4. **Operational Runbook** — maintenance, rotation, and decommission procedures
+
+**Output of Phase 8:** Complete documentation package, ready for CISO review and IR team handoff.
+
+---
+
+## Common Failure Modes — Watch For These
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Generic placement | Assets not calibrated to actual TTPs | Redo Phase 0-1 |
+| Believability failure | Red team ignores deception assets | Redesign asset with more realistic attributes |
+| Signal routing gap | Deception hit fires but no alert in SIEM | Fix pipeline before declaring operational |
+| IR team blind spot | IR team dismisses deception alert as false positive | Update IR runbook, add deception hit SOP |
+| OT safety violation | Deception asset interferes with OT process | Immediate decommission, passive-only redesign |
+| Deception asset discovered and avoided | Sophisticated attacker identifies and routes around | Increase grid density, add breadcrumbs |
+
+
+## attack-surface-taxonomy
+
+# Attack Surface Taxonomy for Deception Engineering
+
+Use this reference during Phase 1 to characterize zones accurately before any deception decision.
+
+---
+
+## Zone Profiles
+
+### Zone 1 — Perimeter
+**What lives here:** Edge firewalls, public-facing IPs, VPN concentrators, DNS resolvers, BGP routers.
+**Attacker behaviour:** Mass scanning, credential stuffing, exploit attempts against known CVEs, VPN brute force.
+**Deception value:** Low for internal intelligence. High for adversary TTP fingerprinting.
+**Key question:** Are you trying to gather threat intel on internet-facing attackers, or detect internal breach? Perimeter deception serves the former only.
+**ATT&CK techniques to calibrate against:** T1595 (Active Scanning), T1110 (Brute Force), T1190 (Exploit Public-Facing Application)
+
+### Zone 2 — DMZ
+**What lives here:** Reverse proxies, WAFs, mail gateways, jump hosts exposed to partners.
+**Attacker behaviour:** Exploiting misconfigured services, stealing service credentials, pivoting inward.
+**Deception value:** Medium. An attacker here has already bypassed perimeter — your signal improves.
+**Key question:** What services here, if compromised, give the attacker an internal foothold?
+**ATT&CK techniques:** T1133 (External Remote Services), T1021 (Remote Services), T1078 (Valid Accounts)
+
+### Zone 3 — Internal Network / Lateral Movement Paths
+**What lives here:** Internal VLANs, file servers, internal APIs, database servers, internal web apps.
+**Attacker behaviour:** Network enumeration, SMB lateral movement, pass-the-hash, service discovery.
+**Deception value:** High. An attacker here has confirmed breach. Every interaction is forensic gold.
+**Key question:** What internal paths lead from initial access to crown jewels? Place deception on those paths.
+**ATT&CK techniques:** T1046 (Network Service Scanning), T1021.002 (SMB/Windows Admin Shares), T1550 (Use Alternate Authentication Material)
+
+### Zone 4 — Identity / Active Directory
+**What lives here:** Domain controllers, LDAP, Kerberos infrastructure, service accounts, privileged groups.
+**Attacker behaviour:** BloodHound enumeration, Kerberoasting, DCSync, pass-the-ticket, golden ticket.
+**Deception value:** Very High. Identity abuse is the most common privilege escalation path.
+**Deception primitives specific to this zone:**
+- Fake service accounts with SPNs (Kerberoasting bait — monitor for TGS requests)
+- Fake admin accounts in believable privileged groups
+- Fake GPO entries pointing to honeypot UNC paths
+- Honey credentials in SYSVOL scripts (legacy AD hygiene issue attackers actively look for)
+**ATT&CK techniques:** T1558 (Steal or Forge Kerberos Tickets), T1087.002 (Domain Account Discovery), T1484 (Domain Policy Modification)
+
+### Zone 5 — Endpoint / Workstation
+**What lives here:** Developer laptops, finance workstations, engineering machines, executive endpoints.
+**Attacker behaviour:** Credential harvesting, browser history/saved password enumeration, SSH config reading, .env file grepping, clipboard monitoring.
+**Deception value:** High. Post-compromise enumeration on an endpoint always reveals what the attacker is looking for next.
+**Deception primitives specific to this zone:**
+- Fake .ssh/config entries pointing to honeypot IPs
+- Fake .env / .aws/credentials files with honeytoken keys
+- Fake password manager entries with monitored credentials
+- Fake browser bookmark to an internal resource (monitored URL)
+- Fake network share in Windows Explorer with a monitored UNC path
+**Machine class prioritisation:** Developer > Finance > Executive > General staff (in order of attacker interest)
+**ATT&CK techniques:** T1552 (Unsecured Credentials), T1083 (File and Directory Discovery), T1555 (Credentials from Password Stores)
+
+### Zone 6 — Cloud / CSP
+**What lives here:** IAM roles, S3/GCS/Blob storage, EC2/GCE/VMs, Lambda/Cloud Functions, secrets managers.
+**Attacker behaviour:** Credential theft and reuse, IAM enumeration, S3 bucket listing, metadata service abuse (SSRF → IMDS), secrets manager scraping.
+**Deception value:** Very High. Cloud credential honeytokens fire cross-environment — they alert even if the attacker exfiltrates the credential and uses it from an external IP.
+**Deception primitives specific to this zone:**
+- Fake IAM access keys embedded in code repos, .env files, CI/CD configs
+- Fake S3 bucket names (typosquat your real buckets — monitor DNS/HTTP hits)
+- Fake secrets in Secrets Manager / Vault with access logging enabled
+- Fake IMDS credential responses (advanced — requires custom proxy)
+**ATT&CK techniques:** T1552.005 (Cloud Instance Metadata API), T1530 (Data from Cloud Storage), T1078.004 (Cloud Accounts)
+
+### Zone 7 — OT / IT Boundary
+**What lives here:** Historian servers, HMI workstations, PLC jump hosts, data diodes, OT DMZ.
+**Attacker behaviour:** IT-to-OT pivot via jump hosts, historian exploitation, HMI credential theft, protocol reconnaissance (Modbus, DNP3, OPC).
+**Deception value:** Critical — but SAFETY FIRST, always.
+**OT-specific constraints — non-negotiable:**
+- Passive monitoring only on the OT side
+- No interactive honeypots that accept write operations
+- No deception assets that can be mistaken for actual PLCs or safety systems
+- All OT deception design requires sign-off from OT engineering, not just security
+- Latency and reliability of OT processes take absolute precedence over detection
+**Recommended approach:** Fake IT-side jump host with honeypot credentials. Monitor for OT-protocol enumeration on the IT/OT boundary switch. Never place interactive deception inside the OT process network.
+**ATT&CK ICS techniques:** T0886 (Remote Services), T0843 (Program Download), T0861 (Point & Tag Identification)
+
+### Zone 8 — Data / IP Stores
+**What lives here:** File shares, SharePoint/Confluence, code repositories (GitHub/GitLab/Bitbucket), design file directories, CAD/EDA tool vaults.
+**Attacker behaviour:** Large-scale enumeration and staging for exfiltration, searching for high-value filenames, downloading IP assets.
+**Deception value:** Very High for IP-intensive organisations (automotive, semiconductor, pharma).
+**Deception primitives specific to this zone:**
+- Fake design files with document-open callbacks (Canarytokens Word/PDF)
+- Fake repository with realistic name, fake credentials embedded, clone-monitored
+- Fake SharePoint/Confluence page with a honeytoken link
+- Fake archive (ZIP/TAR) with embedded honeytoken that fires on extraction
+**ATT&CK techniques:** T1213 (Data from Information Repositories), T1039 (Data from Network Shared Drive), T1567 (Exfiltration Over Web Service)
+
+---
+
+## Attack Surface Scoring Quick Reference
+
+After characterising each zone, assign:
+
+| Dimension | 1 (Low) | 2 (Medium) | 3 (High) |
+|-----------|---------|------------|---------|
+| Asset Sensitivity | Supporting | Operational | Crown Jewel |
+| Threat Vector Exposure | Internet-edge only | Lateral path | Privileged access path |
+| Attacker Dwell Likelihood | Low (noisy zone) | Medium | High (quiet zone) |
+
+Sum the three scores (max 9). Feed into Phase 3 semantic matrix as the Attack Surface Score.
+
+---
+
+## Industry-Specific Notes
+
+**Automotive suppliers (e.g., tier-1 like Visteon):**
+Primary risk zones are Zone 7 (OT boundary — production line), Zone 8 (IP stores — ECU firmware, circuit designs), and Zone 4 (Identity — supply chain portal credentials). Calibrate deception density accordingly.
+
+**Financial services:**
+Primary risk zones are Zone 4 (Identity), Zone 6 (Cloud — trading infrastructure), Zone 3 (Internal — payment rails).
+
+**Healthcare:**
+Primary risk zones are Zone 8 (patient data stores), Zone 3 (Internal — medical device lateral paths), Zone 6 (Cloud — PHI in CSPs).
+
+**Critical infrastructure / utilities:**
+Zone 7 dominates. Passive-only deception. Coordinate with NERC CIP or IEC 62443 compliance team before deployment.
+
+
+
+## signal-source-validity
+
+# Signal Source Validity Assessment
+
+Use this reference during Phase 2. The validity of your existing signal sources
+directly determines the deception posture you apply in Phase 3.
+
+---
+
+## Why Signal Validity Changes the Deception Decision
+
+Deception engineering is not a replacement for your detection stack — it is a
+precision complement to it. The weaker your existing signal validity in a zone,
+the harder your deception assets must work: they must be denser, more self-contained,
+and must generate signals that do not require the existing stack to correlate.
+
+Conversely, where your signal validity is high, deception becomes a tripwire backstop —
+sparse, calibrated, and integrating cleanly into a stack that already processes signal well.
+
+---
+
+## Assessment Dimensions
+
+### 1. Coverage
+What percentage of assets in this zone generate logs that reach your SIEM or XDR?
+
+| Rating | Definition |
+|--------|------------|
+| Full (90-100%) | Every asset type is instrumented. Agent-based or API-native collection. |
+| Partial (50-89%) | Most assets covered, known gaps (legacy systems, unmanaged devices). |
+| Sparse (10-49%) | Significant blind spots. Majority of zone is uninstrumented. |
+| Blind (<10%) | Effectively no visibility. Logs exist but do not reach SIEM. |
+
+**Deception implication:** Sparse/Blind zones need high-density honeytoken placement to
+compensate. In a blind zone, a deception hit may be the *only* signal you get.
+
+---
+
+### 2. Fidelity
+What is the baseline noise level from this source?
+
+| Rating | Definition |
+|--------|------------|
+| High Fidelity | < 5% false positive rate. Alerts are actioned, not tuned away. |
+| Medium Fidelity | 5-30% FP rate. Requires correlation with other sources. |
+| Low Fidelity | > 30% FP rate. Alert fatigue is active. Analysts skip without correlation. |
+
+**Deception implication:** In a low fidelity zone, your deception signals must be routed
+separately from standard alerts — tagged distinctly so analysts do not suppress them
+during tuning exercises. A deception hit must never share a suppression rule with
+a noisy legitimate event. Document this explicitly in the IR integration note (Phase 8).
+
+---
+
+### 3. Latency
+How quickly does an event in this zone produce an actionable alert?
+
+| Rating | Definition |
+|--------|------------|
+| Real-time | Alert within 60 seconds of event. Streaming ingest. |
+| Near-real-time | Alert within 1-5 minutes. API polling or frequent batch. |
+| Delayed | Alert within 1-24 hours. Batch ingest, scheduled jobs. |
+| Forensic-only | Logs exist but are only reviewed post-incident. No alerting. |
+
+**Deception implication:** In delayed or forensic-only zones, design deception assets
+that generate out-of-band signals independently of the SIEM — webhooks, email callbacks,
+DNS callbacks (Canarytokens pattern). Do not rely on the SIEM to alert in time if latency
+is hours or days.
+
+---
+
+### 4. Integration Maturity
+How well does this source feed your SIEM/XDR pipeline?
+
+| Rating | Definition |
+|--------|------------|
+| Enriched | Logs are parsed, normalised, entity-enriched, and correlated. |
+| Correlated | Parsed and normalised. Some correlation rules exist. |
+| Parsed | Log fields are extracted but minimal correlation. |
+| Raw | Logs arrive as raw text/syslog. No parsing. Analyst must manually read. |
+
+**Deception implication:** In raw/parsed zones, deception rules cannot rely on field-level
+matching in the SIEM. Use simple string/regex rules, or route deception signals via a
+webhook to a dedicated channel (Slack, PagerDuty, email) that bypasses SIEM parsing complexity.
+
+---
+
+### 5. Documented Blind Spots
+Every environment has blind spots the team is aware of. Surface them explicitly.
+
+Common blind spots by source type:
+
+**EDR (e.g. TrendMicro, CrowdStrike):**
+- Unmanaged endpoints (BYOD, IoT, OT workstations without agents)
+- Containers and serverless functions
+- Network-level lateral movement (EDR sees process on endpoint, not SMB traffic between endpoints)
+- Encrypted C2 over legitimate cloud services (Teams, Slack, Google Drive)
+
+**SIEM / Chronicle:**
+- Sources not onboarded (coverage gap)
+- Parsers failing silently (logs arrive but fields not extracted correctly)
+- Timestamp normalisation issues (events out of order, correlation misses)
+- Cloud-native services with API-only logging not yet integrated
+
+**NDR / Network:**
+- Encrypted east-west traffic (post-TLS inspection gap)
+- OT protocols (Modbus, DNP3, OPC not parsed by most NDR)
+- Cloud-native traffic (bypasses on-prem NDR entirely)
+
+**IAM / Identity:**
+- Service account activity not reviewed (alert fatigue from volume)
+- Federated identity (SAML/SSO logs may be in IdP, not SIEM)
+- Legacy NTLM authentication (often excluded from modern logging configs)
+
+---
+
+## Signal Validity Scorecard Template
+
+Complete this for each signal source in scope before Phase 3.
+
+```
+Source Name:        [e.g. TrendMicro Apex One / Chronicle / Zeek NDR]
+Zone(s) Covered:    [e.g. Endpoint, Internal Network]
+Coverage Rating:    [Full / Partial / Sparse / Blind]
+Fidelity Rating:    [High / Medium / Low]
+Latency Rating:     [Real-time / Near-real-time / Delayed / Forensic-only]
+Integration:        [Enriched / Correlated / Parsed / Raw]
+Documented Gaps:    [List explicitly]
+Overall Validity:   [High / Medium / Low — aggregate judgement]
+```
+
+---
+
+## Platform-Specific Notes
+
+### TrendMicro Vision One / Apex One
+- Coverage: Excellent on managed Windows/macOS endpoints. Gaps on Linux servers
+  unless sensor deployed. Zero coverage on network-only devices.
+- Integration: Vision One has native XDR correlation. Apex One standalone is parsed-level only.
+- Blind spots: Encrypted traffic, unmanaged endpoints, containerised workloads.
+- Deception routing: Vision One supports custom alert sources via the Workbench API —
+  route deception hits here with `risk_level: high` and custom `tags: ["DECEPTION_HIT"]`.
+
+### Google Chronicle
+- Coverage: Source-dependent. As a SIEM, Chronicle is only as complete as what is onboarded.
+- Integration: YARA-L rules operate on parsed fields — confirm parser health for every source
+  before writing deception rules against field values.
+- Latency: Near-real-time for streaming sources. Delayed for batch ingest.
+- Deception routing: Write dedicated YARA-L rules per deception asset. Use `outcome`
+  variable to set `risk_score: 95` and `$verdict: "deception_hit"`. Route via detection
+  alert → SOAR playbook, not standard analyst queue.
+- Blind spots: Any source not yet onboarded. Chronicle tells you nothing about what it
+  cannot see — audit your forwarder list against your asset inventory.
+
+### Splunk
+- Deception routing: Use `index=deception` as a dedicated index. Write SPL with
+  `| where deception_asset_id != ""` as the base filter. Route via Notable Events in ES
+  with `urgency=critical` and `status=new` — do not let deception hits go to review queue.
+
+### Microsoft Sentinel
+- Deception routing: Use Analytics Rules with `Tactics: ["InitialAccess", "LateralMovement"]`
+  and `Severity: High`. Tag incidents with `DeceptionHit: true` custom entity for
+  SOAR playbook routing.
+
+### Elastic SIEM (ECS)
+- Deception routing: Use Detection Engine rules with `risk_score: 99` and custom
+  `tags: ["deception", "confirmed_threat"]`. Route via Elastic Actions to PagerDuty or webhook.
+
+---
+
+## Out-of-Band Signalling (When SIEM Cannot Be Trusted for Latency)
+
+When signal validity is low and you cannot rely on SIEM latency, use these patterns:
+
+**DNS Callback (Canarytokens pattern):**
+Every honeytoken embeds a unique subdomain. When triggered, the victim system
+makes a DNS lookup to `<token-id>.canarytokens.com` (or your self-hosted Canarytokens).
+Fires independently of any SIEM. No parsing required. Latency = seconds.
+
+**HTTP/HTTPS Callback:**
+Documents, links, and images embed a unique URL. On open, a GET request fires to your
+monitoring endpoint. Works cross-network, cross-device, cross-environment.
+
+**AWS CloudTrail Direct Alert:**
+IAM honeytoken usage fires directly in CloudTrail → CloudWatch Events → SNS → PagerDuty.
+Does not route through SIEM at all. Latency = seconds. Zero parsing dependency.
+
+**Self-Hosted Canarytokens (Thinkst):**
+Run your own Canarytokens server inside your environment for tokens that must not
+touch external infrastructure (compliance-constrained environments, OT-adjacent zones).
+
+
+
+## deception-placement-matrix
+
+# Deception Placement Matrix
+
+The semantic decision engine for Phase 3. Cross-reference your Attack Surface Score
+(from Phase 1) with your Signal Validity rating (from Phase 2) to derive a deception
+posture for each zone. Every cell produces a specific, justified recommendation — not a generic one.
+
+---
+
+## The Core Matrix
+
+Attack Surface Score (AS) is the sum from Phase 1 taxonomy (3-9 scale).
+Signal Validity (SV) is the aggregate rating from Phase 2 scorecard (High / Medium / Low).
+
+```
+                        SIGNAL VALIDITY
+                   High          Medium         Low
+               ┌─────────────┬─────────────┬─────────────┐
+  AS: 7-9      │  POSTURE A  │  POSTURE B  │  POSTURE C  │
+  (High)       │  Active     │  Active +   │  Token-     │
+               │  Honeypot   │  Dense      │  Dominant   │
+               │  + Tokens   │  Tokens     │  Grid       │
+               ├─────────────┼─────────────┼─────────────┤
+  AS: 4-6      │  POSTURE D  │  POSTURE E  │  POSTURE F  │
+  (Medium)     │  Sparse     │  Token      │  Fix Signal │
+               │  Breadcrumb │  Layer Only │  First      │
+               │  + Tokens   │             │             │
+               ├─────────────┼─────────────┼─────────────┤
+  AS: 3        │  POSTURE G  │  POSTURE H  │  POSTURE I  │
+  (Low)        │  Breadcrumb │  Skip       │  Skip       │
+               │  Only       │             │             │
+               └─────────────┴─────────────┴─────────────┘
+```
+
+---
+
+## Posture Definitions
+
+### POSTURE A — Active Honeypot + Tokens (High AS / High SV)
+**Zone profile:** Crown jewel zone, well-instrumented, attacker would highly value this zone.
+**Logic:** Your signals are good, so a honeypot interaction will be captured with full fidelity.
+Deploy interactive honeypots AND embed honeytokens in adjacent real assets to catch
+the attacker before they reach the honeypot.
+
+**Deploy:**
+- 1 high-interaction honeypot per segment (SSH, SMB, HTTP, or protocol-appropriate)
+- Cowrie-class for credential capture and session recording
+- Honeytokens on every adjacent real asset pointing toward the honeypot
+- Breadcrumb trail from likely initial access zones inward
+
+**Signal routing:** Route honeypot session logs to SIEM for full behavioural analysis.
+Route honeytoken hits as CRITICAL P0, bypassing standard analyst queue.
+
+---
+
+### POSTURE B — Active Honeypot + Dense Tokens (High AS / Medium SV)
+**Zone profile:** High-value zone, moderate instrumentation, some noise in existing signals.
+**Logic:** Zone is valuable enough to warrant active honeypots, but signal fidelity means
+deception hits might be confused with noisy legitimate alerts. Dense token deployment
+ensures high probability of a hit before the attacker reaches real assets.
+
+**Deploy:**
+- 1 low-to-medium-interaction honeypot per segment
+- High-density honeytokens (3-5 per asset class in this zone)
+- Ensure honeytoken alerts are tagged distinctly from existing noisy alerts
+- Out-of-band callback (DNS/webhook) as primary alert, SIEM as secondary
+
+**Signal routing:** Primary via out-of-band callback (latency guaranteed). SIEM as enrichment source.
+
+---
+
+### POSTURE C — Token-Dominant Grid (High AS / Low SV)
+**Zone profile:** High-value zone, poor visibility, attacker would prize this zone.
+**Logic:** You cannot trust your existing signals to catch activity in this zone.
+Active honeypots still generate value, but their logs may not reach SIEM reliably.
+Honeytokens are the primary detection mechanism because they fire independently of SIEM.
+
+**Deploy:**
+- Honeytokens ONLY as primary detection layer (self-signalling, out-of-band)
+- Optional: low-interaction honeypot with direct webhook alerting (no SIEM dependency)
+- Immediate parallel workstream: fix signal coverage in this zone
+- Document this zone as highest-priority detection gap
+
+**Signal routing:** Exclusively out-of-band (DNS callback, AWS CloudTrail direct, webhook).
+Do not depend on SIEM for primary alert — it may not arrive in time or at all.
+
+**Parallel action required:** Brief CISO that this zone has high exposure + low visibility.
+Deception is compensating, not solving, the underlying signal gap.
+
+---
+
+### POSTURE D — Sparse Breadcrumb + Tokens (Medium AS / High SV)
+**Zone profile:** Moderate value zone with good instrumentation.
+**Logic:** Your existing signals are good, so you will likely catch an attacker here through
+normal detection. Deception adds a guaranteed-signal backstop without over-engineering.
+
+**Deploy:**
+- Breadcrumbs on real assets pointing toward higher-value deception zones (Posture A/B)
+- 1-2 honeytokens per asset class (not high density — signals are already good)
+- No standalone honeypots unless budget/resources allow
+
+**Signal routing:** Route through standard SIEM pipeline — signal fidelity is high enough
+that deception hits will be actionable. Tag with `deception: true` for routing priority.
+
+---
+
+### POSTURE E — Token Layer Only (Medium AS / Medium SV)
+**Zone profile:** Moderate value zone, moderate visibility.
+**Logic:** Not worth deploying full honeypot infrastructure here. Honeytokens are the
+cost-effective choice — they add precision signal without operational overhead.
+
+**Deploy:**
+- 1-2 honeytokens per asset class
+- Focus token type on the most likely attacker behaviour in this zone
+  (credential files for endpoints, IAM keys for cloud, service accounts for identity)
+- No interactive honeypots
+
+**Signal routing:** SIEM with deception tag. Out-of-band as backup for latency safety.
+
+---
+
+### POSTURE F — Fix Signals First (Medium AS / Low SV)
+**Zone profile:** Moderate value zone, poor visibility.
+**Logic:** Deploying deception into a zone where you cannot see the interaction is waste.
+If an attacker triggers a honeytoken in a blind zone and the alert takes 24 hours to arrive,
+the attacker has already pivoted. Address the signal gap before spending on deception.
+
+**Deploy:** Nothing — yet.
+**Action required:** Identify which source covers this zone and why it has low validity.
+Is it a coverage gap (no agent/parser)? Fidelity gap (too much noise)? Latency gap (batch)?
+Fix the root cause. Reassess zone in 30-60 days and re-run Phase 2.
+
+**Exception:** If the zone is adjacent to a crown jewel and cannot wait for signal remediation,
+deploy Posture C (token-dominant, out-of-band only) as a temporary measure with explicit
+documentation that signal remediation is the parallel priority.
+
+---
+
+### POSTURE G — Breadcrumb Only (Low AS / High SV)
+**Zone profile:** Supporting zone, well-instrumented.
+**Logic:** Not worth active deception investment, but breadcrumbs here redirect attackers
+toward your monitored deception zones. Leverage good signal validity for redirection.
+
+**Deploy:**
+- Breadcrumbs only — fake config entries, fake bookmarks, fake host file entries
+  pointing toward zones with active deception (Posture A/B)
+- Cost: near-zero. Value: funnels attacker into your monitored zones
+
+---
+
+### POSTURE H — Skip (Medium AS / Low SV)
+**Action:** Do not deploy deception here. Fix signals first. See Posture F reasoning.
+
+---
+
+### POSTURE I — Skip (Low AS / Low SV)
+**Action:** Neither the attack surface nor the signal quality justifies deception investment.
+Document and revisit if environment changes.
+
+---
+
+## Deception Type Quick-Reference by Attacker Behaviour
+
+When you know the likely adversary TTP (from Phase 0), choose the deception type
+that intercepts that specific behaviour:
+
+| Adversary Behaviour (ATT&CK) | Deception Type | Specific Asset |
+|------------------------------|----------------|----------------|
+| Credential enumeration (T1552) | Honeytoken | Fake .env, fake .aws/credentials |
+| Kerberoasting (T1558.003) | AD Honeytoken | Service account with SPN, never authenticates |
+| Network service scanning (T1046) | Honeypot | Port-responsive service on non-standard internal IP |
+| SMB lateral movement (T1021.002) | Honeytoken + Honeypot | Fake share in net use, SMB honeypot server |
+| Password manager access (T1555) | Honeytoken | Fake entry in KeePass/1Password vault |
+| Cloud credential theft (T1552.005) | Honeytoken | Fake IAM key in code, monitored via CloudTrail |
+| Data exfiltration staging (T1039) | Honeytoken | Fake high-value document with callback on open |
+| IT-to-OT pivot (T0886) | Breadcrumb + Passive Honeypot | Fake jump host entry pointing to monitored endpoint |
+| Supply chain enumeration | Honeytoken | Fake partner portal credential embedded in supplier-facing config |
+| BloodHound / AD enumeration (T1087) | AD Honeytoken | Fake admin accounts that appear in BloodHound paths |
+
+---
+
+## Believability Engineering Checklist
+
+A deception asset that an attacker identifies as fake provides no intelligence and
+may cause them to sanitise their behaviour. Before finalising any asset:
+
+**Naming and metadata:**
+- [ ] Asset name follows the environment's actual naming convention
+- [ ] Creation date is historically plausible (not today's date)
+- [ ] Owner / description field is filled and realistic
+- [ ] Asset appears in the right organisational unit / directory / group
+
+**Technical plausibility:**
+- [ ] Fake service responds to basic probes (ping, port scan, banner grab)
+- [ ] Fake credential follows the real credential format (correct prefix length, structure)
+- [ ] Fake file has realistic content structure (not empty, not placeholder text)
+- [ ] Fake AD account has last password set date, last login date (both plausible, not zero)
+
+**Placement plausibility:**
+- [ ] Asset is in a location a legitimate user would plausibly have placed it
+- [ ] Asset co-exists with real assets of the same type (not isolated)
+- [ ] Asset is not in a path that legitimate automation regularly touches
+
+**Red team verification (post-deployment):**
+- [ ] Brief red team on zone (not specific asset) and have them enumerate naturally
+- [ ] If they find and interact with the asset: believability confirmed
+- [ ] If they find and skip it: believability failure — investigate why
+- [ ] If they do not find it: placement review — is it in the right path?
+
+
+
+## signal-writing-guide
+
+# Signal Writing Guide for Deception Assets
+
+Use this reference during Phase 7. Writing detection rules for deception assets
+is fundamentally different from writing rules for real asset anomalies.
+Understand the difference before writing a single rule.
+
+---
+
+## The Deception Rule Difference
+
+Standard detection rule logic:
+```
+IF behaviour exceeds threshold THEN alert
+IF behaviour deviates from baseline THEN alert
+IF behaviour matches known-bad pattern THEN alert
+```
+
+Deception detection rule logic:
+```
+IF this specific asset is touched at all THEN CRITICAL
+```
+
+No threshold. No baseline. No frequency window. No correlation required.
+The first event is always the only event you need. Write rules accordingly.
+
+---
+
+## Universal Rule Principles
+
+1. **Zero baseline assumption.** No legitimate user or process should ever touch
+   a deception asset. The expected event count is always zero. The first occurrence
+   is always P0/Critical.
+
+2. **Suppression immunity.** Deception rules must be excluded from all tuning exercises,
+   suppression lists, and exclusion groups. Document this explicitly in every rule.
+   Add a comment in the rule code: `# DO NOT SUPPRESS — DECEPTION ASSET`.
+
+3. **Asset identity in the alert.** Every deception alert must output which specific
+   asset was triggered (asset ID, asset type, zone) so the responder immediately
+   knows what they're dealing with, not just that "something happened."
+
+4. **Attacker attribution fields.** Every rule must capture: source IP or hostname,
+   user account (if applicable), timestamp, and interaction type (connection attempt,
+   file open, credential use, DNS lookup).
+
+5. **Parallel out-of-band routing.** Even if the SIEM rule fires correctly, route
+   deception hits to a secondary channel (webhook, email, PagerDuty) so a SIEM
+   outage does not blind your deception layer.
+
+---
+
+## Rules by Platform
+
+### Google Chronicle — YARA-L 2.0
+
+**Honeytoken IAM credential usage:**
+```
+rule deception_aws_honeytoken_used {
+  meta:
+    author = "Security Engineering"
+    description = "Deception: Fake AWS IAM credential used — confirmed threat"
+    severity = "CRITICAL"
+    priority = "P0"
+    do_not_suppress = "true"
+    deception_asset_id = "iam-honey-001"
+    deception_zone = "Cloud"
+
+  events:
+    $e.metadata.event_type = "USER_LOGIN"
+    $e.principal.user.userid = /AKIA[A-Z0-9]{16}FAKE/
+    // Replace regex with exact honeytoken access key ID
+
+  condition:
+    $e
+}
+```
+
+**Honeypot SSH connection:**
+```
+rule deception_ssh_honeypot_connection {
+  meta:
+    author = "Security Engineering"
+    description = "Deception: SSH connection to internal honeypot — confirmed breach indicator"
+    severity = "CRITICAL"
+    priority = "P0"
+    do_not_suppress = "true"
+    deception_asset_id = "ssh-honey-int-001"
+
+  events:
+    $e.metadata.event_type = "NETWORK_CONNECTION"
+    $e.target.ip = "10.10.4.50"          // Replace with honeypot IP
+    $e.target.port = 22
+    $e.network.direction = "INBOUND"
+
+  condition:
+    $e
+}
+```
+
+**Fake AD service account authentication:**
+```
+rule deception_ad_honeyadmin_auth {
+  meta:
+    description = "Deception: Fake AD admin account authenticated — confirmed credential abuse"
+    severity = "CRITICAL"
+    priority = "P0"
+    do_not_suppress = "true"
+    deception_asset_id = "ad-honey-svc-001"
+
+  events:
+    $e.metadata.event_type = "USER_LOGIN"
+    $e.principal.user.userid = "svc-cad-sync-backup"  // Replace with honeyaccount name
+    $e.metadata.product_name = "Microsoft Active Directory"
+
+  condition:
+    $e
+}
+```
+
+**Honeytoken document opened:**
+```
+rule deception_honeytoken_document_open {
+  meta:
+    description = "Deception: Monitored document opened — possible exfiltration in progress"
+    severity = "CRITICAL"
+    priority = "P0"
+    do_not_suppress = "true"
+    deception_asset_id = "doc-honey-ip-001"
+
+  events:
+    $e.metadata.event_type = "NETWORK_HTTP"
+    $e.target.url = /.*token-id\.canarytokens\.com.*/  // Replace with your callback domain
+
+  condition:
+    $e
+}
+```
+
+---
+
+### Sigma (Platform-Agnostic)
+
+**Template: Any deception asset interaction**
+```yaml
+title: Deception Asset Triggered
+id: <generate-uuid>
+status: stable
+description: >
+  A monitored deception asset has been accessed. Any interaction with this
+  asset confirms malicious activity — no false positives expected.
+  DO NOT SUPPRESS.
+author: Security Engineering
+date: <date>
+tags:
+  - deception
+  - confirmed_threat
+  - attack.credential_access
+  - attack.lateral_movement
+logsource:
+  category: <adjust per asset type: network_connection / authentication / file_access>
+detection:
+  selection:
+    <field>: <honeyasset_identifier>
+    # Examples:
+    # DestinationIp: '10.10.4.50'           # Honeypot IP
+    # UserName: 'svc-cad-sync-backup'        # Honey AD account
+    # TargetFilename|contains: 'ECU_Firmware_CONFIDENTIAL'  # Honey document
+  condition: selection
+falsepositives:
+  - None expected. Any match is a confirmed deception trigger.
+level: critical
+fields:
+  - SourceIp
+  - SourceHostname
+  - UserName
+  - Timestamp
+  - DeceptionAssetId
+```
+
+---
+
+### Splunk SPL
+
+**Honeypot connection rule:**
+```
+index=network sourcetype=firewall
+dest_ip="10.10.4.50"
+| eval deception_asset="ssh-honey-int-001", deception_zone="Internal", severity="CRITICAL"
+| table _time src_ip src_port dest_ip dest_port deception_asset deception_zone severity
+| sendalert <alert_action>
+```
+
+**Honeytoken AD account auth:**
+```
+index=windows EventCode=4624 OR EventCode=4648
+TargetUserName="svc-cad-sync-backup"
+| eval deception_asset="ad-honey-svc-001", severity="CRITICAL", do_not_suppress="true"
+| table _time host TargetUserName LogonType IpAddress deception_asset severity
+```
+
+**Honeytoken file document open (DNS callback via proxy logs):**
+```
+index=proxy sourcetype=bluecoat
+cs_uri_query=*canarytokens*
+| rex field=cs_uri_query "(?<token_id>[a-z0-9]{20})"
+| lookup deception_registry token_id OUTPUT asset_name zone
+| eval severity="CRITICAL"
+| table _time c_ip cs_username cs_uri_query token_id asset_name zone severity
+```
+
+---
+
+### Microsoft Sentinel — KQL
+
+**Honeytoken IAM or service account:**
+```kql
+let honeytokenUsers = dynamic(["svc-cad-sync-backup", "svc-plc-monitor-backup"]);
+SecurityEvent
+| where EventID in (4624, 4648, 4768, 4769)
+| where TargetUserName in (honeytokenUsers)
+| extend DeceptionAsset = "ad-honey-svc", DeceptionZone = "Identity/AD", Severity = "Critical"
+| project TimeGenerated, Computer, TargetUserName, LogonType, IpAddress, DeceptionAsset, Severity
+```
+
+**Honeypot network connection:**
+```kql
+let honeypotIPs = dynamic(["10.10.4.50", "10.20.3.99"]);
+AzureNetworkAnalytics_CL
+| where DestIP in (honeypotIPs)
+| extend DeceptionAsset = "network-honeypot", Severity = "Critical"
+| project TimeGenerated, SrcIP, SrcPort, DestIP, DestPort, DeceptionAsset, Severity
+```
+
+---
+
+### AWS CloudTrail — Direct Alert (No SIEM Dependency)
+
+Set up CloudWatch Events rule for immediate honeytoken alert:
+
+```json
+{
+  "source": ["aws.iam", "aws.sts"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "userIdentity": {
+      "accessKeyId": ["AKIAIOSFODNN7HONEY1"]
+    }
+  }
+}
+```
+
+Route: CloudWatch Events Rule → SNS Topic → PagerDuty/Email/Webhook.
+This fires within seconds, completely independent of SIEM.
+
+---
+
+## Alert Output Standard
+
+Every deception alert, regardless of platform, must produce these fields in the output:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `deception_asset_id` | Unique ID from deception registry | `ssh-honey-int-001` |
+| `deception_type` | Asset type | `honeypot / honeytoken / breadcrumb` |
+| `deception_zone` | Zone from Phase 1 | `Internal Network` |
+| `source_ip` | Originating IP | `10.1.5.43` |
+| `source_host` | Originating hostname (if resolvable) | `eng-laptop-D234` |
+| `source_user` | Account used (if applicable) | `jsmith@corp.com` |
+| `interaction_type` | What the attacker did | `SSH connect / cred use / file open / DNS lookup` |
+| `timestamp_utc` | Event time in UTC | ISO 8601 |
+| `severity` | Always CRITICAL | `CRITICAL` |
+| `do_not_suppress` | Flag for tuning exclusion | `true` |
+| `ir_playbook` | Which IR playbook to invoke | `IRP-DECEPTION-001` |
+
+---
+
+## Rule Maintenance Schedule
+
+Deception rules require periodic maintenance. Add to operational runbook:
+
+**Monthly:**
+- Verify each deception rule still fires (trigger from controlled source)
+- Verify alert reaches secondary channel (webhook/email)
+- Confirm no suppression rules have been added that affect deception rules
+
+**Quarterly:**
+- Review honeytoken identifiers — rotate if environment has changed
+- Reassess zone postures if new assets or signal sources have been added
+- Update Sigma rules if source log formats have changed
+
+**On IR engagement:**
+- After any incident involving a deception hit, review whether the asset design
+  should be updated based on what the attacker did or avoided
+- Check if additional breadcrumbs are warranted based on the observed attack path
+
+
+
+## documentation-templates
+
+# Documentation Templates — Deception Engineering Program
+
+Use this reference during Phase 8. A deception program without documentation
+is an operational liability. The IR team needs to know what exists, where it lives,
+and how to handle a hit. Leadership needs to understand the value. Both require
+purpose-built documents.
+
+---
+
+## Document 1 — Deception Asset Registry
+
+The master record of all deployed deception assets. This is a living document.
+Every asset must be registered before deployment. Every decommission must be logged.
+
+```
+DECEPTION ASSET REGISTRY
+Organisation: _______________
+Environment: _______________
+Registry Owner: _______________
+Last Updated: _______________
+Classification: CONFIDENTIAL — SECURITY TEAM ONLY
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ASSET ID:           [e.g. ssh-honey-int-001]
+Asset Type:         [Honeypot / Honeytoken / Breadcrumb]
+Deception Subtype:  [SSH Honeypot / IAM Key / AD Account / Document / DNS Token / etc.]
+Zone:               [from Phase 1 taxonomy]
+Placement:          [Exact location — host, path, directory, or AD OU]
+Deployed By:        [Name]
+Deployed Date:      [Date]
+Threat TTP Target:  [MITRE ATT&CK technique IDs this asset intercepts]
+Believability Notes:[What makes this look real]
+Signal Route:       [Chronicle rule ID / Splunk saved search / CloudWatch rule / Webhook URL]
+Alert Destination:  [SIEM queue / PagerDuty / Email / All]
+IR Playbook:        [IRP-DECEPTION-001 or equivalent]
+Rotation Schedule:  [When does this asset need to be refreshed]
+Status:             [Active / Paused / Decommissioned]
+Decommission Date:  [If applicable]
+Notes:              [Anything IR team needs to know about this specific asset]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Repeat block for each asset]
+```
+
+**Registry access policy:**
+- Registry must be stored in a read-restricted location (not the general shared drive)
+- Access limited to: Security Engineering team, CISO, IR team lead
+- Registry must not be shared with clients, vendors, or third parties without CISO approval
+- If a red team engagement is planned, the registry is shared with the red team lead only
+  under NDA, never with individual red team operators
+
+---
+
+## Document 2 — IR Integration Note
+
+A short, crisp brief for the SOC and IR team so they know exactly how to handle a
+deception hit when it fires. This must exist before the first asset goes live.
+
+```
+DECEPTION HIT — IR INTEGRATION NOTE
+Prepared By: [Security Engineering]
+For: [SOC / IR Team]
+Classification: CONFIDENTIAL
+
+PURPOSE
+This note explains how to handle alerts tagged [DECEPTION_HIT] or originating
+from a deception asset. These alerts have a fundamentally different profile than
+standard SIEM alerts and must be handled accordingly.
+
+KEY DIFFERENCES FROM STANDARD ALERTS
+1. Zero false positives expected. Any deception hit is a confirmed threat indicator.
+   Do not dismiss, defer, or close without investigation.
+
+2. Do not suppress. Deception alerts are excluded from all tuning exercises.
+   If you are unsure whether a rule should be suppressed, contact [Security Engineering Lead].
+
+3. Deception assets are in the registry. Before investigating, retrieve the asset record
+   from the Deception Registry at [location]. The registry tells you what the asset is,
+   where it lives, and what attacker behaviour it was designed to intercept.
+
+4. A deception hit is a breach indicator, not a breach confirmation.
+   A hit means an attacker has touched a deception asset. It does not mean they have
+   reached real data. The hit tells you they are in the environment and moving.
+   Treat as an active incident from the moment of alert.
+
+IMMEDIATE ACTIONS ON DECEPTION HIT
+Step 1: Do not alert the attacker. Preserve stealth while investigating.
+        Do not change passwords, block IPs, or isolate hosts immediately
+        unless the attacker appears to be accessing real data.
+
+Step 2: Pull the last 30 days of telemetry from the source host and source account.
+        The deception hit tells you they are here now.
+        The prior telemetry tells you how long they have been here and how they got in.
+
+Step 3: Identify the patient zero — the initial access vector.
+        Work backwards from the deception hit along the attack path.
+
+Step 4: Assess whether any real assets have been accessed.
+        The deception hit may be early in the kill chain — prioritise containment
+        of real assets before the attacker reaches them.
+
+Step 5: Escalate to [IR Lead] and [CISO] immediately.
+        Deception hits are P0 — no hold, no triage queue.
+
+Step 6: Document timeline from initial access to deception hit.
+        This is your intelligence output from the deception program.
+
+DECEPTION ASSETS IN THIS ENVIRONMENT
+[Summary table — asset type, zone, what a hit means]
+| Asset ID            | Type       | Zone          | Hit Means                              |
+|---------------------|------------|---------------|----------------------------------------|
+| ssh-honey-int-001   | Honeypot   | Internal Net  | Active lateral movement in progress    |
+| ad-honey-svc-001    | AD Token   | Identity/AD   | Credential theft and abuse in progress |
+| iam-honey-001       | IAM Token  | Cloud         | Cloud credential stolen and in use     |
+| doc-honey-ip-001    | Document   | Data Store    | IP document accessed — possible exfil  |
+
+CONTACTS
+Security Engineering Lead: [Name / contact]
+CISO: [Name / contact]
+IR Lead: [Name / contact]
+Deception Registry Location: [Path / system]
+```
+
+---
+
+## Document 3 — Executive Summary (Leadership / CISO Proposal)
+
+```
+DECEPTION ENGINEERING PROGRAM
+Executive Summary
+Prepared By: [Name], [Title]
+Date: [Date]
+For: [CISO / Leadership]
+Classification: CONFIDENTIAL
+
+THE BUSINESS PROBLEM
+[Organisation] operates in an environment where a sufficiently motivated attacker
+will eventually gain initial access, regardless of perimeter controls. Industry data
+from comparable organisations shows average attacker dwell time — the gap between
+initial access and detection — is [X] days. During this window, an attacker with
+access to [organisation]'s environment can reach [describe crown jewels: design IP,
+OT systems, customer data, supply chain infrastructure].
+
+Our current detection capability is strong at the perimeter and on managed endpoints.
+However, we have documented visibility gaps in [list zones], and our existing detection
+relies on identifying anomalous behaviour against a legitimate baseline — a method
+that sophisticated attackers can defeat by moving slowly and mimicking legitimate patterns.
+
+THE PROPOSED RESPONSE
+A deception engineering program places monitored false assets — fake credentials,
+fake servers, fake documents — at strategic points inside our environment, calibrated
+to the specific attack paths most relevant to our threat profile.
+
+Key properties of this approach:
+• Every alert is a confirmed threat indicator. There are no false positives by design.
+• Cost-effective: built on existing [TrendMicro/Chronicle] infrastructure.
+• Does not disrupt existing operations — assets are passive from the business perspective.
+• Detects attackers at the lateral movement phase, before they reach real assets.
+• Generates actionable intelligence on attacker tools, techniques, and infrastructure.
+
+SCOPE
+Zones covered: [list zones from Phase 1]
+Estimated asset count: [number]
+Deployment timeline: [X weeks]
+
+INVESTMENT REQUIRED
+• Security engineering time: [X days] for design, deployment, and testing
+• Additional tooling: [Canarytokens self-hosted / OpenCanary — specify if any cost]
+• Ongoing maintenance: [X hours/month]
+
+SUCCESS METRICS
+• 100% of deployed deception assets generating confirmed alerts within [X] days of deployment
+• Zero false positives in [Y] days of operation
+• At least [Z] attacker interactions captured and analysed in first [period]
+• Documented reduction in mean-time-to-detect for lateral movement events
+
+RISK IF NOT IMPLEMENTED
+Continued detection gap in [zones]. In the event of a breach that originates via
+[threat vector], we estimate [X] days of undetected attacker dwell time before
+existing controls would surface the activity. During that window, [describe specific risk].
+
+RECOMMENDATION
+Approve a [X-week] pilot deployment covering [priority zones]. Results will be
+reviewed at the [X]-week mark with CISO to determine programme expansion.
+```
+
+---
+
+## Document 4 — Operational Runbook
+
+```
+DECEPTION PROGRAM OPERATIONAL RUNBOOK
+Version: 1.0
+Owner: [Security Engineering Lead]
+Review Cycle: Quarterly
+
+1. DAILY OPERATIONS
+   - Confirm all deception alert pipelines are active (automated health check)
+   - Review previous 24h for any deception hits (should be zero in normal operation)
+   - Verify webhook/out-of-band channels are reachable
+
+2. MONTHLY MAINTENANCE
+   - Trigger each deception asset from a controlled source and confirm alert fires
+   - Confirm alert reaches secondary channel (webhook/email)
+   - Review deception registry for assets past rotation schedule
+   - Confirm no suppression rules affect deception alerts (audit SIEM exclusion lists)
+   - Update registry with any environment changes that affect placement plausibility
+
+3. QUARTERLY REVIEW
+   - Reassess attack surface and signal validity (re-run Phase 1 and 2)
+   - Review whether new zones warrant deception coverage
+   - Rotate honeytoken identifiers (IAM keys, AD account passwords, document tokens)
+   - Update detection rules to reflect rotated identifiers
+   - Brief CISO on program status and any deception hits from the quarter
+
+4. ASSET ROTATION PROCEDURE
+   When rotating a honeytoken or honeypot:
+   a. Deploy the new asset and confirm alerting before decommissioning the old one
+   b. Update the deception registry (new asset ID, new identifier, new rule reference)
+   c. Update SIEM/XDR detection rules to reference new identifier
+   d. Decommission old asset — remove from environment
+   e. Mark old asset as Decommissioned in registry with date
+   f. Verify old identifier no longer triggers alerts
+
+5. DECOMMISSION PROCEDURE
+   When removing a deception asset entirely:
+   a. Remove the asset from the environment
+   b. Archive (do not delete) the detection rule — mark as INACTIVE
+   c. Update registry status to Decommissioned with date and reason
+   d. Notify IR team of decommission (update IR Integration Note)
+
+6. INCIDENT RESPONSE INTEGRATION
+   On receipt of a deception hit:
+   a. Refer to IR Integration Note for immediate actions
+   b. Do not decommission the triggered asset during active IR — preserve for intelligence
+   c. After IR closure, review whether asset design should be updated
+   d. Document the incident in the deception registry under the triggered asset
+   e. Brief CISO within [X hours] of confirmed deception hit
+
+7. PROGRAMME EXPANSION CRITERIA
+   Consider expanding the programme when:
+   - Threat intelligence indicates new attack vectors relevant to unprotected zones
+   - A deception hit reveals an attack path not currently covered by deception assets
+   - Signal validity improves in a zone previously rated too low for deception (Posture F)
+   - Organisational changes create new crown jewels or new zones (acquisitions, cloud migration)
+```
+
+---
+
+## Naming Conventions
+
+Consistent naming prevents confusion between deception assets and real assets during IR.
+
+**Asset IDs:**
+```
+<type>-<zone-abbrev>-<sequence>
+Examples:
+  ssh-honey-int-001        → SSH honeypot, internal network, first deployed
+  ad-honey-id-003          → AD honeytoken, identity zone, third deployed
+  iam-token-cloud-001      → IAM honeytoken, cloud zone
+  doc-token-data-002       → Document honeytoken, data store zone
+```
+
+**Detection Rule IDs:**
+```
+DEC-<asset-id>-<platform>
+Examples:
+  DEC-ssh-honey-int-001-CHRONICLE
+  DEC-ad-honey-id-003-SENTINEL
+```
+
+**IR Playbook Reference:**
+```
+IRP-DECEPTION-<zone-abbrev>
+Examples:
+  IRP-DECEPTION-INT    → Internal network deception hit playbook
+  IRP-DECEPTION-CLOUD  → Cloud deception hit playbook
+  IRP-DECEPTION-OT     → OT boundary deception hit playbook (highest severity)
+```
