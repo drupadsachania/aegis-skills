@@ -1,0 +1,42 @@
+{
+  "schema": "mcp/1.0",
+  "name": "mitre-engage",
+  "version": "1.0.0",
+  "description": "MITRE Engage adversary engagement and deception planning workflow. Triggers for: deception activity selection, adversary engagement planning, deny/disrupt/degrade/deceive/expose strategy, mapping ATT&CK techniques to deception countermeasures, honeypot type selection, or any exercise requiring formal mapping of defensive deception activities to adversary TTPs.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the mitre-engage skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "engage-matrix-overview",
+              "activity-planning-guide"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://skills.openskill.ai/mitre-engage/phase/engage-matrix-overview",
+      "name": "engage-matrix-overview",
+      "description": "Reference content for mitre-engage — engage-matrix-overview",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://skills.openskill.ai/mitre-engage/phase/activity-planning-guide",
+      "name": "activity-planning-guide",
+      "description": "Reference content for mitre-engage — activity-planning-guide",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

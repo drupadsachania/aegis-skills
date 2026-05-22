@@ -1,0 +1,114 @@
+# MITRE Engage Skill
+
+## Purpose
+
+Translate an ATT&CK threat model into a formal adversary engagement plan using the
+MITRE Engage framework. Engage maps every ATT&CK technique to specific defensive
+activities — this skill walks through that mapping systematically.
+
+## Relationship to Other Skills
+
+```
+mitre-attack → produces threat model (top 7 technique IDs)
+     ↓
+mitre-engage → maps techniques to Engage activities → produces activity plan
+     ↓
+deception-engineering → deploys assets from activity plan
+```
+
+## Phase Map
+
+```
+Phase 0 → Input: receive ATT&CK threat model (technique IDs + adversary archetype)
+Phase 1 → Engage matrix orientation   [read: references/engage-matrix-overview.md]
+Phase 2 → Activity planning           [read: references/activity-planning-guide.md]
+Phase 3 → Output: activity plan table (technique → Engage activity → asset type)
+```
+
+## Phase 0 — Input
+
+Receive the ATT&CK threat model from the previous skill session or user input:
+- List of top technique IDs (e.g. T1078, T1558, T1213)
+- Adversary archetype (nation-state / cybercriminal / insider)
+- Environment zones in scope (from attack surface assessment)
+- Engagement goal: detect / elicit / deny / affect / expose
+
+Once inputs are clear, proceed to Phase 1.
+
+
+## engage-matrix-overview
+
+# MITRE Engage Matrix — Reference
+
+MITRE Engage is the adversary engagement framework. It maps defensive activities
+directly to ATT&CK techniques — for every ATT&CK technique, Engage specifies
+which engagement activities can detect, deny, or study the adversary using it.
+
+## Five Goal Categories
+
+| Goal | Definition | Example Activities |
+|------|------------|-------------------|
+| Expose | Reveal adversary presence and TTPs | Lures, honeypots that log interaction |
+| Affect | Degrade adversary capability or confidence | Introduce noise, false data, decoys |
+| Elicit | Gather intelligence on adversary behaviour | High-interaction honeypots, canary credentials |
+| Deny | Prevent adversary from achieving objective | Block access, hide real assets |
+| Detect | Identify adversary activity | Honeytokens, tripwires, breadcrumbs |
+
+## Core Activities (mapped to ATT&CK)
+
+| Activity ID | Activity | Maps to ATT&CK Tactic |
+|-------------|----------|-----------------------|
+| EAC0002 | Persona Creation | Initial Access, Social Engineering |
+| EAC0003 | Honey Credentials | Credential Access (T1078, T1552, T1558) |
+| EAC0004 | Decoy Content | Collection (T1213, T1039) |
+| EAC0005 | Decoy Network | Discovery, Lateral Movement |
+| EAC0006 | Decoy System | Lateral Movement, Execution |
+| EAC0007 | Lure | Initial Access, Phishing |
+| EAC0010 | Introduced Vulnerabilities | Exploitation |
+| EAC0013 | Network Diversity | Reconnaissance, Discovery |
+| EAC0014 | Pocket Litter | Collection, Credential Access |
+| EAC0017 | Software Manipulation | Execution, Persistence |
+| EAC0019 | Isolated Environment | Any — controlled containment |
+| EAC0020 | Backup and Recovery | Impact resilience |
+| EAC0022 | Attack Vector Migration | Defense Evasion |
+
+## Engage ↔ ATT&CK Mapping Principle
+For each ATT&CK technique in your threat model, look up which Engage activities
+intercept it. This is how you derive which deception assets to deploy.
+Full mapping: https://engage.mitre.org/matrix/
+
+
+
+## activity-planning-guide
+
+# Activity Planning Guide — MITRE Engage
+
+Use this guide to select and sequence Engage activities from an ATT&CK threat model.
+
+## Planning Sequence
+
+1. Take the threat model output from `mitre-attack` (top 7 technique IDs)
+2. For each technique, look up the Engage activity mapping
+3. Select activities by goal priority:
+   - If goal is DETECT early: prioritise Honey Credentials (EAC0003), Decoy Content (EAC0004)
+   - If goal is ELICIT intelligence: prioritise Decoy System (EAC0006), Isolated Environment (EAC0019)
+   - If goal is DENY capability: prioritise Network Diversity (EAC0013), Attack Vector Migration (EAC0022)
+
+## Activity Selection Criteria
+
+For each candidate activity, assess:
+- **Feasibility**: Can you deploy and maintain this asset given your environment?
+- **Believability**: Will a sophisticated adversary interact with it?
+- **Signal clarity**: Does interaction produce an unambiguous detection signal?
+- **Safety**: Can deployment cause harm (especially in OT environments)?
+
+## Output Format
+
+Produce an activity plan table:
+
+| ATT&CK Technique | Engage Activity | Goal | Asset Type | Priority |
+|---|---|---|---|---|
+| T1078 Valid Accounts | EAC0003 Honey Credentials | Detect | Honeytoken service accounts | High |
+| T1213 Data from Repos | EAC0004 Decoy Content | Detect + Elicit | Fake repo with canary credentials | High |
+
+Hand this table to `deception-engineering` for detailed placement and deployment.
