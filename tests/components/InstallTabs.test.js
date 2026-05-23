@@ -36,7 +36,8 @@ describe('InstallTabs', () => {
     render(React.createElement(InstallTabs, PROPS))
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /^mcp$/i }))
-    expect(screen.getByText(/project-iud7o\.vercel\.app/)).toBeInTheDocument()
+    const urlElements = screen.getAllByText(/project-iud7o\.vercel\.app/)
+    expect(urlElements.length).toBeGreaterThan(0)
   })
 
   test('toggles between table and list view', async () => {

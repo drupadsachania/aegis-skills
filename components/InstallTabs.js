@@ -67,15 +67,16 @@ function McpPanel({ mcpUrl, mcpConfig }) {
     React.createElement(
       'div',
       { className: 'space-y-2' },
-      React.createElement('p', { className: 'text-zinc-400 text-sm' }, 'claude_desktop_config.json snippet (includes endpoint URL):'),
-      React.createElement(CodeBlock, null, mcpConfig),
-      React.createElement(CopyButton, { text: mcpConfig, label: 'Copy config snippet' })
+      React.createElement('p', { className: 'text-zinc-400 text-sm' }, 'Endpoint URL:'),
+      React.createElement(CodeBlock, null, mcpUrl),
+      React.createElement(CopyButton, { text: mcpUrl, label: 'Copy URL' })
     ),
     React.createElement(
       'div',
       { className: 'space-y-2' },
-      React.createElement('p', { className: 'text-zinc-400 text-sm' }, 'Or use the endpoint URL directly:'),
-      React.createElement(CopyButton, { text: mcpUrl, label: 'Copy URL' })
+      React.createElement('p', { className: 'text-zinc-400 text-sm' }, 'claude_desktop_config.json snippet:'),
+      React.createElement(CodeBlock, null, mcpConfig),
+      React.createElement(CopyButton, { text: mcpConfig, label: 'Copy config snippet' })
     )
   )
 }
@@ -207,8 +208,8 @@ function InstallTabs({ name, systemPrompt, openaiAction, mcpUrl, mcpConfig }) {
     ),
     // Per-tab content
     React.createElement('div', null, tabContent[activeTab]),
-    // All-platforms view (only shown on System Prompt and ChatGPT Action tabs)
-    activeTab !== 'MCP' && React.createElement(
+    // All-platforms view (always visible)
+    React.createElement(
       'div',
       { className: 'mt-6' },
       React.createElement(
