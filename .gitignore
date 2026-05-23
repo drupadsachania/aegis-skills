@@ -4,3 +4,5 @@ node_modules/
 coverage/
 .vscode/
 .idea/
+.env.local
+.next/
