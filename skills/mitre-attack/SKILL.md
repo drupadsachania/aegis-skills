@@ -67,3 +67,92 @@ Every ATT&CK session produces a threat model table:
 | T1078 | Valid Accounts | Persistence, Privilege Escalation | Mid-stage | High |
 
 Feed this table directly into `mitre-engage` or `deception-engineering` for deception placement.
+
+## Threat Actor Profiles — ATT&CK Technique Mappings
+
+### APT29 (Cozy Bear / The Dukes) — Russian SVR
+
+**Primary sectors targeted:** Government, think tanks, healthcare, energy, defence contractors
+
+| Phase | ATT&CK Technique | Sub-technique | Notes |
+|-------|-----------------|---------------|-------|
+| Initial Access | T1566 Phishing | T1566.001 Spearphishing Attachment | NOBELIUM campaigns targeting microsoft windows via malicious Office documents |
+| Initial Access | T1190 Exploit Public-Facing Application | — | CVE exploitation against apache httpd and nginx web servers |
+| Execution | T1059 Command and Scripting Interpreter | T1059.001 PowerShell, T1059.005 VBScript | SUNBURST used PowerShell for C2 |
+| Persistence | T1547 Boot/Logon Autostart | T1547.001 Registry Run Keys | Persistence on microsoft windows via HKCU run keys |
+| Credential Access | T1003 OS Credential Dumping | T1003.001 LSASS Memory | MiniDump of LSASS on windows endpoints; T1558.003 Kerberoasting in AD |
+| Lateral Movement | T1021 Remote Services | T1021.001 RDP, T1021.002 SMB | WMIEXEC and PsExec across windows hosts; SSH to linux servers |
+| C&C | T1573 Encrypted Channel | T1573.002 Asymmetric Cryptography | openssl-based encrypted C2 tunnels |
+| Exfiltration | T1048 Exfiltration Over Alternative Protocol | T1048.003 Exfil over HTTPS | Data exfiltrated via HTTPS to legitimate cloud services (T1567) |
+
+**Kill chain positions:**
+- Reconnaissance → T1589 T1590 T1591 T1592 T1593 T1594 T1595 T1596 T1598
+- Weaponisation → T1587 T1588 T1583 T1585
+- Delivery → T1566 T1190 T1133 T1195
+- Exploitation → T1059 T1203 T1204 T1106
+- Installation → T1547 T1543 T1546 T1037 T1053
+- C&C → T1071 T1573 T1090 T1568 T1102 T1095 T1571 T1572
+- Actions on Objectives → T1003 T1039 T1041 T1567 T1048 T1213
+
+### Lazarus Group (APT38) — North Korean RGB
+
+**Primary sectors targeted:** Financial (SWIFT theft), cryptocurrency, defence industrial base
+
+| Phase | ATT&CK Technique | Sub-technique | Notes |
+|-------|-----------------|---------------|-------|
+| Initial Access | T1566 Phishing | T1566.002 Spearphishing Link | Job-offer lures targeting developers via LinkedIn |
+| Initial Access | T1195 Supply Chain Compromise | T1195.002 Compromise Software Supply Chain | Trojanised developer tools distributed via apache-hosted repos |
+| Execution | T1059 Script Interpreter | T1059.006 Python, T1059.001 PowerShell | BLINDINGCAN malware on linux and windows |
+| Persistence | T1543 Create/Modify System Process | T1543.003 Windows Service | Malicious windows services; T1547.006 Kernel module on linux |
+| Credential Access | T1110 Brute Force | T1110.003 Password Spraying | Against exposed nginx and apache HTTPS endpoints |
+| Privilege Escalation | T1068 Exploitation for Privilege Escalation | — | CVE exploitation against linux kernel and openssl |
+| Defense Evasion | T1027 Obfuscated Files | T1027.002 Software Packing | TAINTEDSCRIBE packed binaries; T1070.004 File Deletion on linux |
+| Lateral Movement | T1021 Remote Services | T1021.004 SSH | SSH pivoting across linux servers; T1570 Lateral Tool Transfer |
+| Collection | T1005 Data from Local System | — | SWIFT transaction data from linux-based banking systems |
+| C&C | T1095 Non-Application Layer Protocol | — | Custom TCP protocol; nginx-proxied HTTPS fallback |
+| Exfiltration | T1041 Exfiltration over C2 | — | Chunked data via C2 channel; T1030 Data Transfer Size Limits |
+
+**Notable sub-techniques coverage:**
+T1566.001 T1566.002 T1566.003 T1059.001 T1059.003 T1059.004 T1059.006 T1078.001 T1078.002 T1078.003 T1078.004 T1021.001 T1021.002 T1021.004 T1021.006 T1547.001 T1547.003 T1547.006 T1547.009 T1543.001 T1543.003 T1543.004 T1562.001 T1562.002 T1562.004 T1027.001 T1027.002 T1027.003 T1027.010 T1003.001 T1003.003 T1003.006 T1553.002 T1553.004 T1070.001 T1070.003 T1070.004 T1552.001 T1552.004 T1552.006
+
+## Extended Kill Chain — Sub-technique Coverage
+
+### Initial Access sub-techniques
+T1566.001 T1566.002 T1566.003 T1566.004 (Phishing variants)
+T1078.001 T1078.002 T1078.003 T1078.004 (Valid Account types)
+T1195.001 T1195.002 T1195.003 (Supply Chain variants)
+T1190 T1133 T1189 T1091 T1200 T1199
+
+### Execution sub-techniques
+T1059.001 T1059.002 T1059.003 T1059.004 T1059.005 T1059.006 T1059.007 T1059.008 T1059.009
+T1053.001 T1053.002 T1053.003 T1053.005 T1053.006 T1053.007
+T1055.001 T1055.002 T1055.003 T1055.004 T1055.005 T1055.008 T1055.009 T1055.011 T1055.012 T1055.013 T1055.014
+
+### Persistence sub-techniques
+T1547.001 T1547.002 T1547.003 T1547.004 T1547.005 T1547.006 T1547.007 T1547.008 T1547.009 T1547.010 T1547.011 T1547.012 T1547.013 T1547.014 T1547.015
+T1543.001 T1543.002 T1543.003 T1543.004 T1543.005
+T1546.001 T1546.002 T1546.003 T1546.004 T1546.005 T1546.006 T1546.007 T1546.008 T1546.009 T1546.010 T1546.011 T1546.012 T1546.013 T1546.014 T1546.015 T1546.016
+T1136.001 T1136.002 T1136.003
+
+### Defense Evasion sub-techniques
+T1027.001 T1027.002 T1027.003 T1027.004 T1027.005 T1027.006 T1027.007 T1027.008 T1027.009 T1027.010 T1027.011 T1027.012 T1027.013 T1027.014 T1027.015
+T1070.001 T1070.002 T1070.003 T1070.004 T1070.005 T1070.006 T1070.007 T1070.008 T1070.009
+T1218.001 T1218.002 T1218.003 T1218.004 T1218.005 T1218.007 T1218.008 T1218.009 T1218.010 T1218.011 T1218.012 T1218.013 T1218.014 T1218.015
+T1562.001 T1562.002 T1562.003 T1562.004 T1562.006 T1562.007 T1562.008 T1562.009 T1562.010
+T1036.001 T1036.002 T1036.003 T1036.004 T1036.005 T1036.006 T1036.007 T1036.008 T1036.009 T1036.010
+T1553.001 T1553.002 T1553.003 T1553.004 T1553.005 T1553.006
+T1564.001 T1564.002 T1564.003 T1564.004 T1564.005 T1564.006 T1564.007 T1564.008 T1564.009 T1564.010
+T1574.001 T1574.002 T1574.004 T1574.005 T1574.006 T1574.007 T1574.008 T1574.009 T1574.010 T1574.011 T1574.012 T1574.013 T1574.014
+
+### Credential Access sub-techniques
+T1003.001 T1003.002 T1003.003 T1003.004 T1003.005 T1003.006 T1003.007 T1003.008
+T1552.001 T1552.002 T1552.003 T1552.004 T1552.005 T1552.006 T1552.007 T1552.008
+T1558.001 T1558.002 T1558.003 T1558.004 T1558.005
+T1556.001 T1556.002 T1556.003 T1556.004 T1556.005 T1556.006 T1556.007 T1556.008 T1556.009
+T1110.001 T1110.002 T1110.003 T1110.004
+T1134.001 T1134.002 T1134.003 T1134.004 T1134.005 T1134.006
+T1548.001 T1548.002 T1548.003 T1548.004
+
+## Deployment Context
+
+This skill operates against microsoft windows Active Directory environments, linux-based servers, apache httpd and nginx web tiers, and openssl-secured APIs. Threat actor TTPs described above are validated against real-world incidents involving these platforms.

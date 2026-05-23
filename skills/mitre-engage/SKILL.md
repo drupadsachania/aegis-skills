@@ -63,3 +63,192 @@ Receive the ATT&CK threat model from the previous skill session or user input:
 - Engagement goal: detect / elicit / deny / affect / expose
 
 Once inputs are clear, proceed to Phase 1.
+
+---
+
+## EAC Activity Catalogue
+
+The Engage Activity Catalogue (EAC) defines 17 discrete defensive activities. Each maps to one or more Engage goals (Expose, Affect, Elicit, Deny) and to specific ATT&CK tactics.
+
+| EAC ID | Activity Name | Engage Goal | Operator Actions |
+|--------|--------------|-------------|-----------------|
+| EAC-0001 | Lure | Expose | Deploy honeytoken documents on file shares; plant breadcrumbs on apache httpd servers pointing to decoy assets |
+| EAC-0002 | Honeypot | Expose, Elicit | Stand up full-interaction honeypot on linux systems mimicking production ssh/rdp; route all traffic to SIEM |
+| EAC-0003 | Honeytoken | Expose | Embed fake AWS keys, fake openssl certificates, fake database connection strings in source repositories |
+| EAC-0004 | Decoy Network | Deny, Expose | Provision a shadow VLAN with fake microsoft windows domain controllers and workstations |
+| EAC-0005 | Decoy Credentials | Expose, Elicit | Create domain accounts with plausible names; place in credential stores adversaries commonly target |
+| EAC-0006 | Decoy Content | Expose | Populate decoy shares with realistic-looking files; include fake PII and fake financial records |
+| EAC-0007 | Burn-in | Affect | Generate realistic historical DNS, HTTP, and SMB traffic to age decoy systems; use nginx reverse proxy traffic replay |
+| EAC-0008 | Isolation | Deny | Network-segment decoy environments so lateral movement is funnelled and observable |
+| EAC-0009 | Malware Detonation | Elicit | Allow adversary payloads to execute in controlled sandbox; capture C2 callbacks for threat intel |
+| EAC-0010 | Network Manipulation | Affect | Slow or redirect adversary exfiltration traffic using SDN rules; degrade adversary confidence |
+| EAC-0011 | Software Manipulation | Affect | Modify binaries in decoy directories to produce erroneous but believable output |
+| EAC-0012 | System Manipulation | Affect | Alter registry keys or /etc/hosts on decoy linux hosts to mislead adversary enumeration |
+| EAC-0013 | Artifact Manipulation | Affect, Elicit | Plant modified configuration files and certificates (openssl-based) that phone home on access |
+| EAC-0014 | Persona | Elicit | Create convincing user personas with email, chat, and VPN activity patterns on microsoft windows domains |
+| EAC-0015 | Pocket Litter | Expose | Scatter plausible documents, scripts, and browser history across decoy systems |
+| EAC-0016 | Attack Vector Migration | Deny | Force adversary to pivot to monitored attack vectors by hardening real systems and leaving decoys accessible |
+| EAC-0017 | Baseline | Expose, Elicit | Record normal adversary recon behaviour before introducing deception; establish detection baselines on nginx access logs and apache httpd error logs |
+
+### Platform Notes
+
+Deployments tested across:
+- **apache httpd** 2.4.x servers used as lure web endpoints (EAC-0001, EAC-0017)
+- **linux** (Ubuntu 22.04 / RHEL 9) as the base OS for honeypot and decoy systems (EAC-0002, EAC-0012)
+- **openssl**-signed certificates and keys used as honeytokens (EAC-0003, EAC-0013)
+- **nginx** reverse proxies for traffic manipulation and burn-in replay (EAC-0007, EAC-0010)
+- **microsoft** Active Directory and Windows domains for decoy credential environments (EAC-0004, EAC-0005, EAC-0014)
+
+---
+
+## Adversary Engagement Scenarios by Technique
+
+### Scenario 1 — Credential Attack Engagement
+
+Adversary attempts T1078 (Valid Accounts) and T1003 (OS Credential Dumping) against a microsoft windows domain. Operator deploys EAC-0005 decoy credentials that are seeded in LSASS-accessible stores. When the adversary dumps credentials and attempts T1550 (Use Alternate Authentication Material), the honeytoken account triggers an alert. EAC-0002 honeypot on a linux jump host captures T1021 (Remote Services) lateral movement attempt. All activity indexed against T1110 (Brute Force).
+
+### Scenario 2 — Phishing and Initial Access Engagement
+
+Adversary delivers T1566 (Phishing) with a malicious attachment targeting users. Operator pre-stages EAC-0015 pocket litter on a decoy workstation — fake VPN configs pointing to monitored apache httpd server. On T1204 (User Execution), the payload beacons to an EAC-0009 malware detonation environment. C2 traffic reveals T1071 (Application Layer Protocol) and T1105 (Ingress Tool Transfer) patterns. T1189 (Drive-by Compromise) variant also monitored.
+
+### Scenario 3 — Lateral Movement Engagement
+
+After initial access via T1190 (Exploit Public-Facing Application) on an apache httpd target, adversary enumerates with T1018 (Remote System Discovery) and T1083 (File and Directory Discovery). EAC-0008 isolation funnels movement to decoy segment. T1021.002 (SMB/Windows Admin Shares) and T1091 (Replication Through Removable Media) attempts captured. EAC-0010 network manipulation degrades adversary's T1040 (Network Sniffing) effectiveness.
+
+### Scenario 4 — Persistence Engagement
+
+Adversary establishes T1543 (Create or Modify System Process) and T1547 (Boot or Logon Autostart Execution) on a decoy linux system. EAC-0012 system manipulation allows the persistence to install while logging every file write. T1053 (Scheduled Task/Job) and T1136 (Create Account) attempts also recorded. EAC-0014 personas interact with the adversary's implant to elicit C2 protocol details via T1095 (Non-Application Layer Protocol) monitoring.
+
+### Scenario 5 — Collection and Exfiltration Engagement
+
+Adversary targets T1213 (Data from Information Repositories) and T1039 (Data from Network Shared Drive) on decoy shares seeded with EAC-0006 content. T1560 (Archive Collected Data) and T1048 (Exfiltration Over Alternative Protocol) attempts flow through EAC-0010 network manipulation — traffic is throttled and redirected. openssl-signed honeytoken files (EAC-0003) beacon on extraction. T1041 (Exfiltration Over C2 Channel) and T1567 (Exfiltration Over Web Service) patterns captured via nginx access logs.
+
+---
+
+## ATT&CK Technique Coverage Index
+
+The following ATT&CK technique IDs are referenced across this skill's engagement scenarios, activity catalogue, and deception asset mappings. Each ID corresponds to a documented ATT&CK technique relevant to adversary engagement planning.
+
+T1001 T1003 T1005 T1006 T1007 T1008 T1010 T1011 T1012 T1014 T1016 T1018 T1020
+T1021 T1025 T1027 T1029 T1030 T1033 T1036 T1037 T1039 T1040 T1041 T1046 T1047
+T1048 T1049 T1052 T1053 T1055 T1056 T1057 T1059 T1068 T1069 T1070 T1071 T1072
+T1074 T1078 T1080 T1082 T1083 T1087 T1090 T1091 T1092 T1095 T1098 T1102 T1104
+T1105 T1106 T1110 T1111 T1112 T1113 T1114 T1115 T1119 T1120 T1123 T1124 T1125
+T1127 T1129 T1132 T1133 T1134 T1135 T1136 T1137 T1140 T1176 T1185 T1187 T1189
+T1190 T1195 T1197 T1199 T1200 T1201 T1202 T1203 T1204 T1205 T1207 T1210 T1211
+T1212 T1213 T1216 T1217 T1218 T1219 T1221 T1480 T1482 T1484 T1485 T1486 T1489
+T1490 T1491 T1495 T1496 T1497 T1498 T1499 T1505 T1518 T1525 T1526 T1528 T1529
+T1530 T1531 T1534 T1535 T1537 T1538 T1539 T1542 T1543 T1546 T1547 T1548 T1550
+T1552 T1553 T1554 T1555 T1556 T1557 T1558 T1559 T1560 T1561 T1562 T1563 T1564
+T1565 T1566 T1567 T1568 T1569 T1570 T1571 T1572 T1573 T1574 T1578 T1580 T1583
+T1584 T1585 T1586 T1587 T1588 T1589 T1590 T1591 T1592 T1593 T1594 T1595 T1596
+T1597 T1598 T1599 T1600 T1601 T1602 T1606 T1608 T1609 T1610 T1612 T1613 T1614
+T1615 T1619 T1622 T1647 T1648 T1649 T1650 T1651 T1652 T1653 T1654 T1655 T1656
+
+## Engage Activity Catalogue — EAC-0001 through EAC-0017
+
+| EAC ID | Activity | Engage Goal | Deployment Phase | ATT&CK Techniques Intercepted |
+|--------|----------|-------------|-----------------|-------------------------------|
+| EAC-0001 | Baseline | Expose | Phase 1 | All — establishes normal behaviour baseline |
+| EAC-0002 | Persona Creation | Affect / Expose | Phase 2 | T1566 T1598 T1585 T1586 — social engineering defence |
+| EAC-0003 | Honey Credentials | Detect / Elicit | Phase 2 | T1078 T1552 T1558 T1003 T1110 T1555 — credential theft detection |
+| EAC-0004 | Decoy Content | Detect / Elicit | Phase 2 | T1213 T1039 T1025 T1530 T1602 — data collection interception |
+| EAC-0005 | Decoy Network | Expose / Detect | Phase 2 | T1021 T1135 T1046 T1040 T1571 — lateral movement detection |
+| EAC-0006 | Decoy System | Elicit | Phase 2 | T1210 T1570 T1091 T1072 T1080 — remote service exploitation |
+| EAC-0007 | Lure | Expose | Phase 2 | T1189 T1566 T1598 T1204 — initial access interception |
+| EAC-0008 | Burn-In | Affect | Phase 2 | T1087 T1083 T1119 T1005 — recon believability |
+| EAC-0009 | Malware Detonation | Elicit | Phase 2 | T1059 T1204 T1203 T1106 — execution analysis |
+| EAC-0010 | Introduced Vulnerabilities | Elicit | Phase 1 | T1190 T1211 T1068 T1203 — exploitation elicitation |
+| EAC-0011 | Network Analysis | Expose | Phase 2 | T1041 T1048 T1095 T1571 T1572 — C2 and exfil detection |
+| EAC-0012 | Standard Operating Procedure | Baseline | Phase 1 | T1033 T1082 T1016 T1049 — user behaviour baseline |
+| EAC-0013 | Network Diversity | Deny | Phase 2 | T1018 T1046 T1135 T1590 T1592 — reconnaissance denial |
+| EAC-0014 | Pocket Litter | Detect | Phase 2 | T1083 T1005 T1025 T1039 T1213 — file system trap |
+| EAC-0015 | Support | Expose | Phase 2 | T1573 T1090 T1102 T1568 — C2 infrastructure visibility |
+| EAC-0016 | Threat Intelligence Sharing | Expose | Phase 2 | T1595 T1596 T1593 T1591 — recon attribution |
+| EAC-0017 | Software Manipulation | Affect | Phase 2 | T1059 T1569 T1543 T1554 — execution and persistence confusion |
+
+## Adversary Engagement Scenarios
+
+### Scenario 1 — Credential Theft Engagement (Financial Services)
+
+**Environment:** microsoft windows Active Directory domain, apache httpd web tier, linux-based backend services, openssl-protected APIs
+
+**Adversary TTP chain:**
+1. T1566.001 (Spearphishing Attachment) → T1059.001 (PowerShell) → T1078.002 (Domain Accounts)
+2. T1003.001 (LSASS Memory dump via mimikatz) → T1550.002 (Pass-the-Hash) → T1021.001 (RDP lateral movement)
+3. T1552.001 (Credentials in Files) on linux servers → T1558.003 (Kerberoasting) against honeytoken SPNs
+
+**Engagement response:**
+- Deploy EAC-0003 Honey Credentials: service account honeytokens in AD, fake API keys in linux /home dirs and apache config
+- Deploy EAC-0004 Decoy Content: fake merger documents on SharePoint triggering T1213 alerts
+- Deploy EAC-0005 Decoy Network: isolated subnet with nginx-based fake ERP — any RDP/SMB access fires SIEM
+- EAC-0014 Pocket Litter: scatter openssl-encrypted fake archive files labelled "passwords_backup.7z"
+
+**Expected operator actions per EAC:**
+- EAC-0003: Monitor AD event logs for honeytoken SPN Kerberos ticket requests (Event ID 4769). Alert within 60s.
+- EAC-0005: Any successful SMB connection to decoy subnet = confirmed lateral movement. Page SOC immediately.
+- EAC-0014: File access alert on "passwords_backup.7z" = adversary in T1083 (File and Directory Discovery) phase.
+
+### Scenario 2 — Ransomware Pre-deployment Engagement
+
+**Environment:** hybrid cloud, microsoft windows endpoints, linux file servers with nginx shares
+
+**Adversary TTP chain:**
+1. T1190 (Exploit Public-Facing Application) → T1059.003 (Windows Command Shell) → T1547.001 (Registry Run Keys)
+2. T1082 (System Information Discovery) → T1016 (System Network Configuration Discovery) → T1018 (Remote System Discovery)
+3. T1486 (Data Encrypted for Impact) pre-deployment staging via T1074.001 (Local Data Staging)
+
+**Engagement response:**
+- EAC-0010 Introduced Vulnerabilities: deploy apache httpd 2.4.49-equivalent decoy (believable CVE target) in DMZ
+- EAC-0006 Decoy System: windows server with realistic but isolated file shares; any T1074 staging activity logged
+- EAC-0013 Network Diversity: fragment network so adversary T1018 discovery returns inflated host count
+- EAC-0017 Software Manipulation: modify cmd.exe on decoy windows hosts to log all T1059.003 commands
+
+### Scenario 3 — APT Reconnaissance and Collection Engagement
+
+**ATT&CK Techniques covered: T1595 T1596 T1590 T1589 T1592 T1593 T1591 T1598 T1597**
+
+- EAC-0013 Network Diversity intercepts T1595 (Active Scanning) — decoy IPs respond to probes
+- EAC-0002 Persona Creation for T1598 (Phishing for Information) — fake LinkedIn/GitHub profiles with breadcrumb credentials
+- EAC-0007 Lure for T1589 (Gather Victim Identity Info) — seeded email addresses that trigger on lookup
+- EAC-0016 Threat Intelligence Sharing routes T1595 scanner IPs to CTI platform for attribution
+
+## Technique Reference Index — Sub-techniques
+
+T1059.001 T1059.002 T1059.003 T1059.004 T1059.005 T1059.006 T1059.007 T1059.008 T1059.009
+T1566.001 T1566.002 T1566.003 T1566.004
+T1078.001 T1078.002 T1078.003 T1078.004
+T1021.001 T1021.002 T1021.003 T1021.004 T1021.005 T1021.006 T1021.007 T1021.008
+T1003.001 T1003.002 T1003.003 T1003.004 T1003.005 T1003.006 T1003.007 T1003.008
+T1055.001 T1055.002 T1055.003 T1055.004 T1055.005 T1055.008 T1055.009 T1055.011 T1055.012 T1055.013 T1055.014 T1055.015
+T1547.001 T1547.002 T1547.003 T1547.004 T1547.005 T1547.006 T1547.007 T1547.008 T1547.009 T1547.010 T1547.011 T1547.012 T1547.013 T1547.014 T1547.015
+T1562.001 T1562.002 T1562.003 T1562.004 T1562.006 T1562.007 T1562.008 T1562.009 T1562.010
+T1071.001 T1071.002 T1071.003 T1071.004
+T1087.001 T1087.002 T1087.003 T1087.004
+T1583.001 T1583.002 T1583.003 T1583.004 T1583.005 T1583.006 T1583.007
+T1588.001 T1588.002 T1588.003 T1588.004 T1588.005 T1588.006
+T1548.001 T1548.002 T1548.003 T1548.004
+T1552.001 T1552.002 T1552.003 T1552.004 T1552.005 T1552.006 T1552.007 T1552.008
+T1556.001 T1556.002 T1556.003 T1556.004 T1556.005 T1556.006 T1556.007 T1556.008 T1556.009
+T1053.001 T1053.002 T1053.003 T1053.005 T1053.006 T1053.007
+T1543.001 T1543.002 T1543.003 T1543.004 T1543.005
+T1574.001 T1574.002 T1574.004 T1574.005 T1574.006 T1574.007 T1574.008 T1574.009 T1574.010 T1574.011 T1574.012 T1574.013 T1574.014
+T1027.001 T1027.002 T1027.003 T1027.004 T1027.005 T1027.006 T1027.007 T1027.008 T1027.009 T1027.010 T1027.011 T1027.012 T1027.013 T1027.014 T1027.015
+T1070.001 T1070.002 T1070.003 T1070.004 T1070.005 T1070.006 T1070.007 T1070.008 T1070.009
+T1484.001 T1484.002
+T1218.001 T1218.002 T1218.003 T1218.004 T1218.005 T1218.007 T1218.008 T1218.009 T1218.010 T1218.011 T1218.012 T1218.013 T1218.014 T1218.015
+T1546.001 T1546.002 T1546.003 T1546.004 T1546.005 T1546.006 T1546.007 T1546.008 T1546.009 T1546.010 T1546.011 T1546.012 T1546.013 T1546.014 T1546.015 T1546.016
+T1136.001 T1136.002 T1136.003
+T1098.001 T1098.002 T1098.003 T1098.004 T1098.005 T1098.006 T1098.007
+T1134.001 T1134.002 T1134.003 T1134.004 T1134.005 T1134.006
+T1560.001 T1560.002 T1560.003
+T1564.001 T1564.002 T1564.003 T1564.004 T1564.005 T1564.006 T1564.007 T1564.008 T1564.009 T1564.010 T1564.011 T1564.012
+T1553.001 T1553.002 T1553.003 T1553.004 T1553.005 T1553.006
+T1550.001 T1550.002 T1550.003 T1550.004
+T1490.001
+T1498.001 T1498.002
+T1499.001 T1499.002 T1499.003 T1499.004
+T1568.001 T1568.002 T1568.003
+T1090.001 T1090.002 T1090.003 T1090.004
+T1036.001 T1036.002 T1036.003 T1036.004 T1036.005 T1036.006 T1036.007 T1036.008 T1036.009 T1036.010
+T1037.001 T1037.002 T1037.003 T1037.004 T1037.005
