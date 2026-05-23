@@ -3,7 +3,8 @@
 jest.mock('fs', () => ({
   promises: {
     readdir: jest.fn(),
-    readFile: jest.fn()
+    readFile: jest.fn(),
+    realpath: jest.fn()
   }
 }))
 
@@ -93,6 +94,8 @@ describe('getPhaseContent', () => {
     fs.readFile
       .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST))
       .mockResolvedValueOnce('# Phase One\n\nContent here.')
+    // realpath resolves to the same path (no symlinks)
+    fs.realpath.mockImplementation(p => Promise.resolve(p))
 
     const content = await getPhaseContent('test-skill', 'phase-one')
     expect(content).toBe('# Phase One\n\nContent here.')
@@ -114,7 +117,40 @@ describe('getPhaseContent', () => {
     fs.readFile
       .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST))
       .mockRejectedValueOnce(new Error('ENOENT'))
+    // realpath resolves to same path so we reach readFile
+    fs.realpath.mockImplementation(p => Promise.resolve(p))
     const content = await getPhaseContent('test-skill', 'phase-one')
     expect(content).toBeNull()
+  })
+})
+
+describe('getSkillManifest - path traversal prevention', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  test('returns null for path traversal in skillName', async () => {
+    expect(await getSkillManifest('../../etc/passwd')).toBeNull()
+  })
+  test('returns null for skillName with slash', async () => {
+    expect(await getSkillManifest('foo/bar')).toBeNull()
+  })
+  test('returns null for skillName with null byte', async () => {
+    expect(await getSkillManifest('foo\x00bar')).toBeNull()
+  })
+  test('returns null for empty skillName', async () => {
+    expect(await getSkillManifest('')).toBeNull()
+  })
+  test('returns null for non-string skillName', async () => {
+    expect(await getSkillManifest(['../../etc'])).toBeNull()
+  })
+})
+
+describe('getPhaseContent - path traversal prevention', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  test('returns null for non-string phaseId', async () => {
+    // getSkillManifest mock returns null for invalid skillName,
+    // so just verify non-string phaseId is handled
+    const result = await getPhaseContent('deception-engineering', null)
+    expect(result).toBeNull()
   })
 })
