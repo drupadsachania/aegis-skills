@@ -53,13 +53,13 @@ describe('generateManifest', () => {
     expect(Object.prototype.hasOwnProperty.call(manifest.phases[0], 'ref')).toBe(false)
   })
 
-  test('includes ref path in each phase', () => {
+  test('strips ref path from manifest output for security', () => {
     const skillWithRef = {
       ...mockSkill,
       phases: [{ id: 'phase-zero', lazy: true, tokens: 80, ref: 'references/phase-zero.md' }]
     }
     const manifest = generateManifest(skillWithRef, BASE_URL)
-    expect(manifest.phases[0].ref).toBe('references/phase-zero.md')
+    expect(Object.prototype.hasOwnProperty.call(manifest.phases[0], 'ref')).toBe(false)
   })
 })
 
