@@ -47,6 +47,12 @@ describe('generateManifest', () => {
     expect(JSON.stringify(manifest)).not.toContain('reference content')
   })
 
+  test('does not include ref key when phase has no ref', () => {
+    // mockSkill.phases[0] has no ref field
+    const manifest = generateManifest(mockSkill, BASE_URL)
+    expect(Object.prototype.hasOwnProperty.call(manifest.phases[0], 'ref')).toBe(false)
+  })
+
   test('includes ref path in each phase', () => {
     const skillWithRef = {
       ...mockSkill,

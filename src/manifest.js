@@ -17,7 +17,7 @@ function generateManifest(skill, baseUrl = 'https://skills.openskill.ai') {
     description: skill.description,
     frameworks: skill.frameworks || [],
     tags: skill.tags || [],
-    phases: (skill.phases || []).map(({ id, lazy, tokens, ref }) => ({ id, lazy, tokens, ref })),
+    phases: (skill.phases || []).map(({ id, lazy, tokens, ref }) => ({ id, lazy, tokens, ...(ref !== undefined && { ref }) })),
     endpoints: {
       mcp:       `mcp://${mcpHost}/${skill.name}`,
       action:    `${host}/${skill.name}/invoke`,
