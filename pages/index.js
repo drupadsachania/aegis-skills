@@ -85,6 +85,6 @@ async function getStaticProps() {
   return { props: { skills } }
 }
 
-module.exports = HomePage
+const pageExports = { default: HomePage, getStaticProps }
+module.exports = pageExports
 module.exports.default = HomePage
-module.exports.getStaticProps = getStaticProps

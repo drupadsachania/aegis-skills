@@ -151,7 +151,6 @@ async function getStaticProps({ params }) {
   }
 }
 
-module.exports = SkillDetailPage
+const pageExports = { default: SkillDetailPage, getStaticPaths, getStaticProps }
+module.exports = pageExports
 module.exports.default = SkillDetailPage
-module.exports.getStaticPaths = getStaticPaths
-module.exports.getStaticProps = getStaticProps
