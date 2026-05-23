@@ -1,6 +1,6 @@
-# OpenSkill
+# Aegis
 
-**Platform-agnostic AI skill compiler.** Write once in `SKILL.md`, deploy to ChatGPT, Gemini, Claude, Mistral, and any MCP-compatible dev tool.
+**Platform-agnostic AI skill compiler for defensive security.** Write once in `SKILL.md`, deploy to ChatGPT, Gemini, Claude, Mistral, and any MCP-compatible dev tool.
 
 ## MITRE Suite
 
@@ -16,54 +16,28 @@ Four flagship skills for defensive security:
 ## Quick Start
 
 ```bash
-npm install -g @openskill/compiler
-
-# Validate a skill
-openskill validate ./skills/deception-engineering
-
-# Compile to all platform artifacts
-openskill compile ./skills/deception-engineering
-
-# Output:
-#   artifacts/system-prompt.txt     ← paste into ChatGPT / Gemini / Claude
-#   artifacts/mcp-manifest.json     ← connect Claude Desktop / Cursor / VS Code
-#   artifacts/openai-action.json    ← configure as a GPT Action
-#   artifacts/skill.json            ← machine manifest
+npm install -g @aegis/compiler
+aegis compile skills/my-skill --base-url https://your-deployment.vercel.app
 ```
 
-## Skill Format
+## Marketplace
 
-Skills are `SKILL.md` files with extended YAML frontmatter:
+Live at: `https://project-iud7o.vercel.app`
 
-```yaml
----
-name: my-skill
-version: 1.0.0
-description: What this skill does and when to use it.
-frameworks: [mitre-attack]
-tags: [security]
-phases:
-  - id: phase-one
-    ref: references/phase-one.md
-    lazy: true
-tools: [read, search]
-platforms:
-  openai: { model: gpt-4o }
-  anthropic: { model: claude-sonnet-4-6 }
----
-```
+## API
 
-## Artifacts
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/skills` | GET | List all skills |
+| `/api/:skill/manifest` | GET | Skill manifest JSON |
+| `/api/:skill/invoke` | POST | Invoke a phase |
+| `/api/:skill/phase/:id` | GET | Phase content |
+| `/api/recommend` | POST | Recommend skills by context |
 
-The compiler emits four artifacts per skill:
+## Security
 
-| Artifact | Use |
-|---|---|
-| `system-prompt.txt` | Paste into any chat UI (ChatGPT, Gemini, Claude Projects, Mistral) |
-| `mcp-manifest.json` | Connect Claude Desktop, Cursor, VS Code, or any MCP client |
-| `openai-action.json` | Configure as a Custom GPT Action for lazy phase loading |
-| `skill.json` | Machine manifest — registry metadata, endpoints, token counts |
+See `docs/superpowers/specs/` for security audit findings and mitigations.
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT © Drupad Sachania

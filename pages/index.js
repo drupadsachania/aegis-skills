@@ -10,7 +10,7 @@ const PLATFORMS = ['chatgpt', 'claude', 'cursor', 'gemini']
 
 const STEPS = [
   { n: '01', label: 'Write SKILL.md', desc: 'Author your skill in a single markdown bundle with phases and metadata.' },
-  { n: '02', label: 'Compile artifacts', desc: 'Run openskill compile — generates system prompt, OpenAI action, and MCP manifest.' },
+  { n: '02', label: 'Compile artifacts', desc: 'Run aegis compile — generates system prompt, OpenAI action, and MCP manifest.' },
   { n: '03', label: 'Deploy anywhere', desc: 'Push to Vercel. Paste the system prompt or wire the MCP endpoint — done.' }
 ]
 
@@ -25,7 +25,7 @@ function HomePage({ skills }) {
       React.createElement(
         'h1',
         { className: 'text-4xl font-bold text-zinc-100 mb-4 tracking-tight' },
-        'Platform-agnostic AI skills.',
+        'Platform-agnostic AI skills, built for defenders.',
         React.createElement('br'),
         React.createElement('span', { className: 'text-indigo-400' }, 'Write once, deploy anywhere.')
       ),

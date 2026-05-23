@@ -1,11 +1,11 @@
 {
-  "name": "@openskill/compiler",
+  "name": "@aegis/compiler",
   "version": "0.1.0",
-  "description": "Platform-agnostic AI skill compiler — converts SKILL.md bundles to multi-platform artifacts",
+  "description": "Aegis — platform-agnostic AI skill compiler. Converts SKILL.md bundles to multi-platform artifacts.",
   "type": "commonjs",
   "main": "src/compiler.js",
   "bin": {
-    "openskill": "./bin/openskill.js"
+    "aegis": "./bin/aegis.js"
   },
   "scripts": {
     "test": "jest --runInBand",

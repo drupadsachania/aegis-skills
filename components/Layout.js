@@ -15,7 +15,7 @@ function Layout({ children }) {
         React.createElement(
           'a',
           { href: '/', className: 'text-zinc-100 font-semibold text-lg tracking-tight hover:text-indigo-400 transition-colors' },
-          'OpenSkill'
+          'Aegis'
         ),
         React.createElement(
           'a',
@@ -46,7 +46,7 @@ function Layout({ children }) {
           },
           'GitHub'
         ),
-        React.createElement('span', null, 'OpenSkill v0.1.0 · MIT License')
+        React.createElement('span', null, 'Aegis v0.1.0 · MIT License')
       )
     )
   )
