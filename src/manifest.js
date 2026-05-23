@@ -6,11 +6,11 @@ const schema = require('./schema/skill.schema.json')
 const ajv = new Ajv()
 const validate = ajv.compile(schema)
 
-function generateManifest(skill, baseUrl = 'https://skills.openskill.ai') {
+function generateManifest(skill, baseUrl = 'https://project-iud7o.vercel.app') {
   const host = baseUrl.replace(/\/$/, '')
   const mcpHost = host.replace(/^https?:\/\//, '')
 
-  return {
+  const manifest = {
     osk: '1.0',
     name: skill.name,
     version: skill.version,
@@ -25,6 +25,16 @@ function generateManifest(skill, baseUrl = 'https://skills.openskill.ai') {
     },
     research: skill['research-agent'] || skill.research || {}
   }
+
+  if (skill['self-learning']) {
+    manifest['self-learning'] = skill['self-learning']
+  }
+
+  if (skill.context) {
+    manifest.context = skill.context
+  }
+
+  return manifest
 }
 
 function validateManifest(manifest) {

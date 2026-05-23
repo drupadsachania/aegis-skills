@@ -18,14 +18,12 @@
     {
       "id": "engage-matrix-overview",
       "lazy": true,
-      "tokens": 497,
-      "ref": "references/engage-matrix-overview.md"
+      "tokens": 497
     },
     {
       "id": "activity-planning-guide",
       "lazy": true,
-      "tokens": 360,
-      "ref": "references/activity-planning-guide.md"
+      "tokens": 360
     }
   ],
   "endpoints": {

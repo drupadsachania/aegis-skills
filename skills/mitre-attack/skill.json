@@ -17,20 +17,17 @@
     {
       "id": "enterprise-matrix-overview",
       "lazy": true,
-      "tokens": 412,
-      "ref": "references/enterprise-matrix-overview.md"
+      "tokens": 412
     },
     {
       "id": "ics-matrix-overview",
       "lazy": true,
-      "tokens": 296,
-      "ref": "references/ics-matrix-overview.md"
+      "tokens": 296
     },
     {
       "id": "ttp-profiling-guide",
       "lazy": true,
-      "tokens": 271,
-      "ref": "references/ttp-profiling-guide.md"
+      "tokens": 271
     }
   ],
   "endpoints": {

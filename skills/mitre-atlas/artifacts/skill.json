@@ -19,14 +19,12 @@
     {
       "id": "atlas-tactics-overview",
       "lazy": true,
-      "tokens": 468,
-      "ref": "references/atlas-tactics-overview.md"
+      "tokens": 468
     },
     {
       "id": "ml-attack-surface-guide",
       "lazy": true,
-      "tokens": 543,
-      "ref": "references/ml-attack-surface-guide.md"
+      "tokens": 543
     }
   ],
   "endpoints": {

@@ -73,3 +73,99 @@ describe('validateManifest', () => {
     expect(() => validateManifest({ osk: '1.0', name: 'x' })).toThrow('Invalid skill.json')
   })
 })
+
+describe('generateManifest — optional metadata blocks', () => {
+  test('passes self-learning block through when present', () => {
+    const skill = {
+      name: 'test-skill',
+      version: '1.0.0',
+      description: 'A minimal test skill for compiler validation.',
+      frameworks: [],
+      tags: [],
+      phases: [{ id: 'p1', lazy: false, tokens: 10 }],
+      'self-learning': {
+        'update-frequency': 'weekly',
+        sources: ['mitre-attack-stix', 'nvd-cve-feed'],
+        'health-score': 1.0,
+        'stale-threshold-days': 90,
+        'coverage-gaps': []
+      }
+    }
+    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    expect(manifest['self-learning']).toBeDefined()
+    expect(manifest['self-learning']['update-frequency']).toBe('weekly')
+    expect(manifest['self-learning']['health-score']).toBe(1.0)
+    expect(manifest['self-learning'].sources).toContain('mitre-attack-stix')
+  })
+
+  test('passes context block through when present', () => {
+    const skill = {
+      name: 'test-skill',
+      version: '1.0.0',
+      description: 'A minimal test skill for compiler validation.',
+      frameworks: [],
+      tags: [],
+      phases: [{ id: 'p1', lazy: false, tokens: 10 }],
+      context: {
+        environments: ['enterprise', 'cloud'],
+        'industry-verticals': ['financial-services'],
+        'attack-surface-tags': ['network', 'endpoint']
+      }
+    }
+    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    expect(manifest.context).toBeDefined()
+    expect(manifest.context.environments).toContain('enterprise')
+    expect(manifest.context['attack-surface-tags']).toContain('network')
+  })
+
+  test('omits self-learning when absent from skill', () => {
+    const skill = {
+      name: 'test-skill',
+      version: '1.0.0',
+      description: 'A minimal test skill for compiler validation.',
+      frameworks: [],
+      tags: [],
+      phases: [{ id: 'p1', lazy: false, tokens: 10 }]
+    }
+    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    expect(manifest['self-learning']).toBeUndefined()
+  })
+
+  test('omits context when absent from skill', () => {
+    const skill = {
+      name: 'test-skill',
+      version: '1.0.0',
+      description: 'A minimal test skill for compiler validation.',
+      frameworks: [],
+      tags: [],
+      phases: [{ id: 'p1', lazy: false, tokens: 10 }]
+    }
+    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    expect(manifest.context).toBeUndefined()
+  })
+
+  test('validates manifest with self-learning and context', () => {
+    const skill = {
+      name: 'test-skill',
+      version: '1.0.0',
+      description: 'A minimal test skill for compiler validation.',
+      frameworks: [],
+      tags: [],
+      phases: [{ id: 'p1', lazy: false, tokens: 10 }],
+      'self-learning': {
+        'update-frequency': 'weekly',
+        sources: ['mitre-attack-stix'],
+        'health-score': 0.95,
+        'stale-threshold-days': 90,
+        'coverage-gaps': []
+      },
+      context: {
+        environments: ['enterprise'],
+        'industry-verticals': ['financial-services'],
+        'attack-surface-tags': ['network']
+      }
+    }
+    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    expect(() => validateManifest(manifest)).not.toThrow()
+  })
+})

@@ -40,6 +40,24 @@
         "feeds":    { "type": "array", "items": { "type": "string" } },
         "red-team": { "type": "boolean" }
       }
+    },
+    "self-learning": {
+      "type": "object",
+      "properties": {
+        "update-frequency":     { "type": "string", "enum": ["daily", "weekly", "monthly"] },
+        "sources":              { "type": "array", "items": { "type": "string" } },
+        "health-score":         { "type": "number", "minimum": 0, "maximum": 1 },
+        "stale-threshold-days": { "type": "integer", "minimum": 1 },
+        "coverage-gaps":        { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "environments":        { "type": "array", "items": { "type": "string" } },
+        "industry-verticals":  { "type": "array", "items": { "type": "string" } },
+        "attack-surface-tags": { "type": "array", "items": { "type": "string" } }
+      }
     }
   }
 }

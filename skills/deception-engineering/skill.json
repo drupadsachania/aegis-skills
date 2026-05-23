@@ -19,32 +19,27 @@
     {
       "id": "attack-surface-taxonomy",
       "lazy": true,
-      "tokens": 1966,
-      "ref": "references/attack-surface-taxonomy.md"
+      "tokens": 1966
     },
     {
       "id": "signal-source-validity",
       "lazy": true,
-      "tokens": 2088,
-      "ref": "references/signal-source-validity.md"
+      "tokens": 2088
     },
     {
       "id": "deception-placement-matrix",
       "lazy": true,
-      "tokens": 2508,
-      "ref": "references/deception-placement-matrix.md"
+      "tokens": 2508
     },
     {
       "id": "signal-writing-guide",
       "lazy": true,
-      "tokens": 2244,
-      "ref": "references/signal-writing-guide.md"
+      "tokens": 2244
     },
     {
       "id": "documentation-templates",
       "lazy": true,
-      "tokens": 3020,
-      "ref": "references/documentation-templates.md"
+      "tokens": 3020
     }
   ],
   "endpoints": {
