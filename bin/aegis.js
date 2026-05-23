@@ -24,7 +24,7 @@ program
         baseUrl: opts.baseUrl,
         outDir: opts.outDir ? path.resolve(opts.outDir) : null
       })
-      console.log(`✓ ${result.name} v${result.version} compiled (${result.phases.length} phases)`)
+      console.log(`✓ ${result.skill.name} v${result.skill.version} compiled (${result.skill.phases.length} phases)`)
     } catch (err) {
       console.error(`✗ Compile failed: ${err.message}`)
       process.exit(1)
