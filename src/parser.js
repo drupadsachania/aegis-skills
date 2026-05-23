@@ -18,7 +18,12 @@ async function parseSkill(skillDir) {
     throw new Error(`SKILL.md not found at ${skillPath}`)
   }
 
-  const { data: frontmatter, content: body } = matter(raw)
+  const { data: frontmatter, content: body } = matter(raw, {
+    engines: {
+      // Explicitly lock to js-yaml; disables the eval-based javascript engine
+      javascript: () => { throw new Error('javascript front-matter engine is disabled') }
+    }
+  })
 
   const required = ['name', 'version', 'description', 'phases']
   for (const field of required) {
