@@ -1,0 +1,83 @@
+{
+  "osk": "1.0",
+  "name": "endpoint-security",
+  "version": "1.0.0",
+  "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.\n",
+  "frameworks": [
+    "mitre-attack",
+    "cis-benchmarks"
+  ],
+  "tags": [
+    "security",
+    "endpoint",
+    "edr",
+    "hardening",
+    "malware",
+    "incident-response"
+  ],
+  "phases": [
+    {
+      "id": "edr-deployment",
+      "lazy": true,
+      "tokens": 668
+    },
+    {
+      "id": "baseline-hardening",
+      "lazy": false,
+      "tokens": 739
+    },
+    {
+      "id": "malware-analysis",
+      "lazy": true,
+      "tokens": 692
+    },
+    {
+      "id": "incident-response",
+      "lazy": true,
+      "tokens": 697
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/endpoint-security",
+    "action": "https://project-iud7o.vercel.app/endpoint-security/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/endpoint-security/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-kev"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "remote-workforce",
+      "cloud-workstations"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "professional-services"
+    ],
+    "attack-surface-tags": [
+      "endpoint",
+      "workstation",
+      "malware",
+      "credential-theft",
+      "execution"
+    ]
+  }
+}

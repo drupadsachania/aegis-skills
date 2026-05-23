@@ -1,0 +1,242 @@
+# Attack Surface Mapping Skill
+
+Enumerate and prioritise an organisation's exploitable attack surface.
+
+## Phase Map
+
+```
+Phase 1 → External Discovery        [read: references/external-discovery.md]
+Phase 2 → Internal Enumeration      [read: references/internal-enumeration.md]
+Phase 3 → Cloud Exposure            [read: references/cloud-exposure.md]
+Phase 4 → Risk Prioritization       [read: references/risk-prioritization.md]
+```
+
+## Output Format
+
+Produce an attack surface register (asset, exposure type, risk score, ATT&CK technique, remediation priority, SLA).
+
+
+## external-discovery
+
+# External Discovery — Reference
+
+Use during Phase 1 to enumerate the organisation's internet-facing attack surface using OSINT and active reconnaissance.
+
+## OSINT Sources Table
+
+| Source | What It Finds | URL / Command |
+|--------|--------------|--------------|
+| Shodan | Internet-facing services, banners, CVEs | `https://shodan.io/search?query=org:"Company Name"` |
+| Censys | TLS certificates, open ports, cloud assets | `https://search.censys.io/` |
+| crt.sh | SSL/TLS certificate transparency logs → subdomains | `https://crt.sh/?q=%.example.com` |
+| SecurityTrails | DNS history, subdomains | `https://securitytrails.com/` |
+| WHOIS / RDAP | IP range ownership, ASN | `whois example.com` |
+| GitHub / GitLab | Exposed credentials, internal hostnames in code | `site:github.com "example.com" password` |
+| Google Dork | Indexed sensitive files, login pages | `site:example.com filetype:pdf "confidential"` |
+| LinkedIn | Employee names, technologies used | Enumerate for social engineering risk |
+
+## Active Discovery Commands
+
+```bash
+# Subdomain enumeration
+subfinder -d example.com -o subdomains.txt
+amass enum -passive -d example.com -o amass-out.txt
+
+# DNS resolution of discovered subdomains
+cat subdomains.txt | dnsx -a -resp -o dns-resolved.txt
+
+# HTTP/S service discovery
+cat dns-resolved.txt | httpx -status-code -title -tech-detect -o http-services.txt
+
+# Port scan on discovered IPs
+nmap -sV -p 80,443,8080,8443,22,21,3389,3306,5432 -iL ip-list.txt -oX portscan.xml
+
+# Grab TLS certificate details
+echo | openssl s_client -connect target.example.com:443 2>/dev/null | openssl x509 -noout -text
+```
+
+## Asset Inventory Output Table
+
+| Asset | IP Address | ASN | Open Ports | Technology | Risk Level | Notes |
+|-------|-----------|-----|------------|-----------|-----------|-------|
+| vpn.example.com | 203.0.113.10 | AS12345 | 443, 4443 | Palo Alto GlobalProtect | High | Check for known CVEs |
+| legacy-app.example.com | 203.0.113.15 | AS12345 | 80, 8080 | Apache 2.2 | Critical | EOL software |
+| mail.example.com | 203.0.113.20 | AS12345 | 25, 587, 993 | Exchange 2019 | Medium | Confirm patched |
+
+## Reconnaissance ATT&CK Mapping
+
+| ATT&CK Technique | What Is Being Replicated | Priority Finding |
+|-----------------|------------------------|-----------------|
+| T1596.005 — Scan Databases | Shodan / Censys enumeration of org IPs | Open management ports (22/RDP) |
+| T1596.001 — DNS / Passive DNS | crt.sh subdomain enumeration | Wildcard certs, forgotten subdomains |
+| T1594 — Search Victim Websites | Google dorking, LinkedIn | Exposed sensitive files, technology stack |
+| T1590 — Gather Victim Network Info | WHOIS, ASN lookup, BGP data | IP ranges, cloud providers used |
+
+
+
+## internal-enumeration
+
+# Internal Enumeration — Reference
+
+Use during Phase 2 to map the internal network attack surface, identifying services, credentials, and misconfigurations accessible to an attacker who has gained initial access.
+
+## Network Service Enumeration
+
+```bash
+# Internal subnet sweep — identify live hosts
+nmap -sn 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 -oG live-hosts.gnmap
+
+# Top 1000 ports on discovered hosts
+nmap -sV -sC --top-ports 1000 -iL live-hosts.txt -oX internal-scan.xml
+
+# SMB enumeration — shares, users, OS
+crackmapexec smb 10.0.0.0/24 --shares --users --pass-pol
+
+# LDAP — domain enumeration (read-only, no credentials)
+ldapsearch -x -H ldap://10.0.0.10 -b "DC=corp,DC=example,DC=com" "(objectClass=computer)"
+```
+
+## Credential Exposure Checks Table
+
+| Attack Vector | ATT&CK ID | Detection Method | Risk |
+|--------------|-----------|-----------------|------|
+| Kerberoastable accounts (SPNs) | T1558.003 | `GetUserSPNs.py corp.example.com/user -request` | High — offline crack |
+| AS-REP Roasting (no pre-auth) | T1558.004 | `GetNPUsers.py corp.example.com/ -usersfile users.txt` | High |
+| LLMNR / NBT-NS poisoning | T1557.001 | Responder passive capture on network segment | High |
+| Default credentials on devices | T1078.001 | Check network devices, printers, IoT for default passwords | Medium |
+| Kerberos delegation (unconstrained) | T1558 | `Get-DomainComputer -Unconstrained` (PowerView) | Critical |
+| Password spray via SMB | T1110.003 | `crackmapexec smb 10.0.0.0/24 -u users.txt -p 'Password1!'` | High |
+| Plaintext credentials in shares | T1552.001 | Spider shares for config files, scripts with credentials | Critical |
+
+## Internal Risk Register
+
+| Finding | Asset | ATT&CK ID | Exploit Path | Remediation |
+|---------|-------|-----------|-------------|-------------|
+| Service account with SPN and weak password | svc-backup | T1558.003 | Kerberoast → crack → lateral movement | Rotate to long random password or use gMSA |
+| LLMNR enabled on user VLAN | All workstations | T1557.001 | Responder → capture NTLMv2 hash → relay | Disable via GPO |
+| Unconstrained delegation on APP-SERVER01 | APP-SERVER01 | T1558 | Coerce DC authentication → TGT capture | Move to constrained/resource-based delegation |
+| Default credentials on HP printer | Printer-02 | T1078.001 | Web admin interface access | Change default credentials; network isolate |
+
+
+
+## cloud-exposure
+
+# Cloud Exposure — Reference
+
+Use during Phase 3 to identify cloud misconfigurations and publicly accessible cloud resources.
+
+## AWS Exposure Checks
+
+```bash
+# List all public S3 buckets
+aws s3api list-buckets --query "Buckets[*].Name" --output text | \
+  xargs -I {} aws s3api get-bucket-acl --bucket {} 2>/dev/null
+
+# Find EC2 instances with public IPs
+aws ec2 describe-instances \
+  --query "Reservations[*].Instances[?PublicIpAddress!=null].{Name:Tags[?Key=='Name']|[0].Value,IP:PublicIpAddress,SG:SecurityGroups}" \
+  --output table
+
+# Find security groups with 0.0.0.0/0 inbound
+aws ec2 describe-security-groups \
+  --query "SecurityGroups[?IpPermissions[?IpRanges[?CidrIp=='0.0.0.0/0']]].{ID:GroupId,Name:GroupName}" \
+  --output table
+
+# Check for public RDS instances
+aws rds describe-db-instances \
+  --query "DBInstances[?PubliclyAccessible==\`true\`].{ID:DBInstanceIdentifier,Engine:Engine}" \
+  --output table
+```
+
+## Azure Exposure Checks
+
+```bash
+# List NSGs with any-source inbound rules
+az network nsg list --query "[*].{Name:name,RG:resourceGroup}" -o table
+
+# Find VMs with public IPs
+az vm list-ip-addresses --query "[*].{VM:virtualMachine.name,PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress}" -o table
+
+# Check storage accounts with public access
+az storage account list --query "[?allowBlobPublicAccess!=false].{Name:name,RG:resourceGroup}" -o table
+```
+
+## CSPM Tool Table
+
+| Tool | Cloud Support | Key Capabilities | Cost |
+|------|-------------|-----------------|------|
+| Prowler | AWS, Azure, GCP | CIS Benchmark, GDPR, PCI DSS checks | Open source |
+| ScoutSuite | AWS, Azure, GCP, OCI | Multi-cloud posture review | Open source |
+| Checkov | Terraform, CloudFormation, K8s | IaC misconfiguration scanning | Open source |
+| AWS SecurityHub | AWS | Aggregated findings from GuardDuty, Inspector, Config | AWS native |
+| Microsoft Defender for Cloud | Azure, multi-cloud | Secure Score, recommendations | Azure native |
+| Wiz | AWS, Azure, GCP, OCI | Attack path analysis, CSPM, CWPP | Commercial |
+
+## Critical Misconfiguration Patterns Table
+
+| Misconfiguration | ATT&CK Technique | Risk | Detection Check |
+|-----------------|-----------------|------|----------------|
+| Public S3 bucket with sensitive data | T1530 Data from Cloud Storage | Critical | `aws s3api get-bucket-policy-status --bucket <name>` |
+| IMDSv1 enabled (no token required) | T1552.005 Cloud Instance Metadata | High | `aws ec2 describe-instances` check `HttpTokens` |
+| IAM role with `*:*` permissions | T1078.004 Cloud Accounts | Critical | IAM Access Analyzer, Prowler check IAM.1 |
+| Exposed database port (3306/5432) | T1190 Exploit Public-Facing App | Critical | Security group review |
+| CloudTrail logging disabled | T1562.008 Disable Cloud Logs | High | `aws cloudtrail describe-trails` |
+| MFA not enforced for IAM users | T1078 Valid Accounts | High | `aws iam get-account-summary` MFADevicesInUse |
+| Default VPC in use | Lateral movement risk | Medium | `aws ec2 describe-vpcs --filter Name=isDefault,Values=true` |
+
+
+
+## risk-prioritization
+
+# Risk Prioritisation — Reference
+
+Use during Phase 4 to score, rank, and produce a remediation roadmap for all identified attack surface findings.
+
+## Scoring Framework
+
+Score each finding across four dimensions (1–3 each), then multiply exploitability × exposure and add criticality + data sensitivity.
+
+**Formula:** `Risk Score = (Exploitability × Exposure) + Criticality + Data Sensitivity`
+
+| Dimension | Score 1 | Score 2 | Score 3 |
+|-----------|---------|---------|---------|
+| Exploitability | Complex exploit; requires authentication | Moderate; public PoC exists | Trivial; automated exploit available |
+| Exposure | Internal only; requires network access | Semi-public; requires VPN/auth | Fully public internet-facing |
+| Criticality | Non-critical asset | Business-critical | Crown jewel / regulatory scope |
+| Data Sensitivity | Public data | Internal data | PII / PAN / credentials / secrets |
+
+**Max score: 15. Risk tiers:**
+- **Critical (12–15):** Immediate action, 24-hour SLA
+- **High (9–11):** 72-hour SLA
+- **Medium (6–8):** 14-day SLA
+- **Low (2–5):** 30-day SLA
+
+## Priority Tiers with SLAs
+
+| Tier | Score | SLA | Example | Owner |
+|------|-------|-----|---------|-------|
+| Critical | 12–15 | 24 hours | Public S3 bucket with PAN data | CISO + Cloud Team |
+| High | 9–11 | 72 hours | RDP exposed to internet with weak password | IT Ops |
+| Medium | 6–8 | 14 days | Subdomain pointing to decommissioned service | App Team |
+| Low | 2–5 | 30 days | SSL certificate with weak cipher on internal tool | Platform |
+
+## Remediation Roadmap Template
+
+| # | Finding | Score | Tier | Remediation Action | Owner | Due Date | Status |
+|---|---------|-------|------|-------------------|-------|----------|--------|
+| 1 | S3 bucket `backups-prod` publicly accessible | 14 | Critical | Apply Block Public Access policy; audit bucket policy | Cloud Team | 2025-06-25 | Open |
+| 2 | RDP exposed on vpn-gw01 (203.0.113.10:3389) | 11 | High | Restrict SGP rule to corporate IP range only | IT Ops | 2025-06-27 | Open |
+| 3 | Subdomain `old-portal.example.com` → dangling DNS | 7 | Medium | Remove DNS record; claim subdomain if subdomain takeover risk | Web Team | 2025-07-08 | Open |
+
+## Continuous Monitoring Requirements
+
+After initial remediation, establish ongoing exposure monitoring:
+
+| Control | Tooling | Frequency |
+|---------|---------|-----------|
+| Internet port scan of all known IPs | Shodan Monitor or custom nmap cron | Weekly |
+| New subdomain discovery | subfinder + monitoring | Daily |
+| Cloud misconfiguration | Prowler / AWS SecurityHub | Daily |
+| New CVE matching exposed software versions | Tenable / Qualys + CISA KEV | Daily |
+| Certificate expiry monitoring | cert-manager / monitoring platform | Weekly |
+| Dark web / credential exposure | HaveIBeenPwned API, threat intel | Weekly |

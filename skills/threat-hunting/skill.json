@@ -1,0 +1,89 @@
+{
+  "osk": "1.0",
+  "name": "threat-hunting",
+  "version": "1.0.0",
+  "description": "Proactive threat hunting workflow. Triggers for: structured hunt campaigns, TTP-based hypothesis generation, SIEM query development, anomaly investigation, or any exercise requiring proactive adversary search in telemetry rather than reactive alert response.\n",
+  "frameworks": [
+    "mitre-attack",
+    "sqrll-hunting-maturity"
+  ],
+  "tags": [
+    "security",
+    "threat-hunting",
+    "detection",
+    "siem",
+    "hypothesis",
+    "telemetry"
+  ],
+  "phases": [
+    {
+      "id": "hypothesis-generation",
+      "lazy": false,
+      "tokens": 647
+    },
+    {
+      "id": "data-collection",
+      "lazy": true,
+      "tokens": 630
+    },
+    {
+      "id": "detection-logic",
+      "lazy": true,
+      "tokens": 634
+    },
+    {
+      "id": "investigation",
+      "lazy": true,
+      "tokens": 671
+    },
+    {
+      "id": "reporting",
+      "lazy": true,
+      "tokens": 761
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/threat-hunting",
+    "action": "https://project-iud7o.vercel.app/threat-hunting/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/threat-hunting/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "threat-intel-feeds"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "cisa-advisories",
+      "isac-feeds"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "ot"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "critical-infrastructure"
+    ],
+    "attack-surface-tags": [
+      "detection",
+      "lateral-movement",
+      "persistence",
+      "exfiltration",
+      "command-and-control"
+    ]
+  }
+}

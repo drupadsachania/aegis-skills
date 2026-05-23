@@ -1,0 +1,257 @@
+# Infrastructure Security Skill
+
+Systematically assess and harden infrastructure — servers, cloud workloads, containers,
+and network devices — against known vulnerabilities and configuration weaknesses.
+
+## Phase Map
+
+```
+Phase 1 → Asset Discovery           [read: references/asset-discovery.md]
+Phase 2 → Configuration Baseline    [read: references/configuration-baseline.md]
+Phase 3 → Patch Management          [read: references/patch-management.md]
+Phase 4 → Hardening Controls        [read: references/hardening-controls.md]
+Phase 5 → Compliance Validation     [read: references/compliance-validation.md]
+```
+
+## Output Format
+
+Produce a gap analysis table with control status (Pass/Fail/Partial), CIS Benchmark reference, and remediation priority.
+
+
+## asset-discovery
+
+# Asset Discovery — Reference
+
+Use during Phase 1 to build a comprehensive, tiered asset inventory as the foundation for all subsequent infrastructure security work.
+
+## Asset Tier Classification
+
+| Tier | Description | Examples | Patch SLA |
+|------|-------------|---------|-----------|
+| Tier 1 — Crown Jewel | Compromise leads to full domain or data breach | Domain Controllers, PAM servers, HSMs, Backup infrastructure | 24 hours (critical CVEs) |
+| Tier 2 — Business Critical | Direct revenue or compliance impact | Production databases, payment systems, HR platforms | 72 hours |
+| Tier 3 — Standard | Normal business operations | Application servers, internal tools, mid-tier services | 14 days |
+| Tier 4 — Non-critical | Limited business impact | Dev/test environments, spare capacity | 30 days |
+
+## Discovery Methods
+
+| Method | Command / Tool | Scope |
+|--------|---------------|-------|
+| Active Directory | `Get-ADComputer -Filter * -Properties *` | Windows domain-joined assets |
+| Cloud CLI (AWS) | `aws ec2 describe-instances --output table` | AWS EC2 workloads |
+| Cloud CLI (Azure) | `az resource list --output table` | All Azure resources |
+| Cloud CLI (GCP) | `gcloud compute instances list` | GCP compute |
+| Network scan | `nmap -sV -p 22,80,443,3389,445 10.0.0.0/8` | Active network hosts |
+| Container registry | `kubectl get pods --all-namespaces` | Kubernetes workloads |
+| CMDB pull | ServiceNow / Lansweeper REST API | Authoritative asset list |
+
+## Asset Inventory Output Format
+
+```
+| Asset ID | Hostname | IP | OS | Tier | Owner | Cloud Provider | Region | Last Seen |
+```
+
+## Discovery Validation
+
+After initial discovery, validate completeness by:
+1. Cross-referencing AD computer objects against network scan results
+2. Comparing CMDB records with cloud provider inventory
+3. Checking for orphaned cloud resources (no owner tag, no recent activity)
+4. Identifying rogue/shadow IT assets not in CMDB
+
+## Coverage Gaps to Investigate
+
+- Assets with no OS details (potentially unmanaged devices)
+- IP addresses with no hostname resolution (potential shadow IT)
+- Cloud resources with missing mandatory tags (`Owner`, `Environment`, `CostCentre`)
+- Containers without image provenance or SBOM
+
+
+
+## configuration-baseline
+
+# Configuration Baseline — Reference
+
+Use during Phase 2 to assess infrastructure configuration against CIS Benchmarks and organisational hardening standards.
+
+## CIS Benchmark Coverage by Platform
+
+| Platform | CIS Benchmark | Key Assessment Areas | Assessment Tool |
+|----------|--------------|---------------------|-----------------|
+| Windows Server 2022 | CIS v3.0 | Account policies, audit policy, Windows Defender, firewall, services | CIS-CAT Pro, LGPO |
+| Ubuntu 22.04 LTS | CIS v1.0 | SSH config, PAM, filesystem mounts, sysctl, cron, logging | Lynis, InSpec |
+| RHEL / CentOS 9 | CIS v1.0 | SELinux, auditd, SSH, firewalld, package management | OpenSCAP, InSpec |
+| macOS Ventura | CIS v2.1 | FileVault, Gatekeeper, SIP, firewall, screen lock | Jamf compliance, mSCP |
+| Kubernetes 1.29 | CIS v1.8 | API server flags, etcd, kubelet, RBAC, network policies | kube-bench |
+| AWS Foundations | CIS v2.0 | IAM policies, CloudTrail, S3, SecurityHub, GuardDuty | Prowler, ScoutSuite |
+| Azure Foundations | CIS v2.1 | Defender for Cloud, logging, NSGs, IAM, Key Vault | Prowler, Azure Policy |
+
+## Assessment Approach
+
+1. **Automated scan** — run CIS-CAT Pro or equivalent to generate pass/fail report
+2. **Manual verification** — spot-check Tier 1 assets manually (CIS-CAT may miss runtime config)
+3. **Deviation register** — document all failed checks with risk justification or remediation plan
+4. **Baseline lock** — approved baseline stored as golden AMI / DSC config / Ansible playbook
+
+## High-Priority CIS Checks
+
+| Check | Applies To | Why Critical |
+|-------|-----------|--------------|
+| Disable Guest account | Windows | Credential access (T1078) |
+| SSH root login disabled | Linux | Privilege escalation via brute force |
+| Password minimum length ≥ 14 | All | Credential brute force resistance |
+| Audit logon events (Success+Failure) | Windows | Detection of T1078, T1110 |
+| Firewall enabled + inbound blocked | All | Reduce exposure to T1046 |
+| Auto-update enabled | All | Patch management coverage |
+
+## Baseline Deviation Register Template
+
+| Asset | CIS Check | Status | Risk | Justification | Remediation Owner | Due Date |
+|-------|-----------|--------|------|---------------|------------------|----------|
+| dc01 | 2.3.7.4 — Deny logon locally | Fail | High | No business exception | IT Ops | 2025-07-01 |
+
+
+
+## patch-management
+
+# Patch Management — Reference
+
+Use during Phase 3 to prioritise and track vulnerability remediation across the infrastructure.
+
+## Patch Priority Framework
+
+Combine CVSS score with CISA KEV (Known Exploited Vulnerabilities) status and asset tier to determine SLA.
+
+| Priority | Criteria | SLA | Example |
+|----------|----------|-----|---------|
+| P0 — Emergency | CISA KEV + Tier 1 asset | 24 hours | CVE on KEV list affecting a DC or PAM server |
+| P1 — Critical | CVSS ≥ 9.0 OR CISA KEV + Tier 2 | 72 hours | RCE CVE on production database |
+| P2 — High | CVSS 7.0–8.9, exploitable remotely | 14 days | Authentication bypass on application server |
+| P3 — Medium | CVSS 4.0–6.9, local or complex exploit | 30 days | Privilege escalation requiring local access |
+| P4 — Low | CVSS < 4.0 | 90 days | Information disclosure, minimal impact |
+
+## Tooling by Platform
+
+| Platform | Scanning Tool | Deployment Tool | Notes |
+|----------|-------------|----------------|-------|
+| Windows Server/Workstation | Tenable / Qualys | WSUS + SCCM / Intune | Enable Windows Update for Business for cloud workstations |
+| Linux (Debian/Ubuntu) | Tenable / Trivy | Ansible `apt` module | Unattended-upgrades for security patches |
+| Linux (RHEL/CentOS) | Tenable / OpenSCAP | Ansible `yum` module, Satellite | Subscribe to RHEL errata |
+| Containers | Trivy, Snyk Container | CI/CD pipeline gate | Scan images at build; re-scan in registry weekly |
+| Cloud (AWS) | AWS Inspector v2 | SSM Patch Manager | Use patch baselines per OS |
+| Network devices | Tenable.io | Vendor CLI / Ansible | Schedule maintenance windows |
+
+## Vulnerability Workflow
+
+```
+Scan → Triage (CVSS + KEV + Asset Tier) → Assign (P0–P4) → Patch → Verify → Close
+```
+
+## Monthly Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| P0/P1 patch compliance | 100% within SLA | Vuln scanner + CMDB cross-reference |
+| P2 patch compliance | ≥ 95% within 14 days | Vuln scanner report |
+| Mean Time to Patch (MTTP) — Critical | < 72 hours | Ticket open → close timestamp |
+| Patch coverage (agents installed) | ≥ 98% of in-scope assets | Scanner vs CMDB |
+
+## CISA KEV Integration
+
+```bash
+# Download latest KEV catalogue
+curl -s https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json \
+  | jq '.vulnerabilities[] | select(.dueDate != null) | {cveID, vendorProject, product, dueDate}'
+```
+
+Cross-reference KEV CVEs against your vulnerability scanner output daily. P0 override any existing priority rating.
+
+
+
+## hardening-controls
+
+# Hardening Controls — Reference
+
+Use during Phase 4 to implement OS and platform hardening controls aligned to CIS Benchmarks and NIST guidance.
+
+## Windows Server Hardening Controls
+
+| Control | Implementation | ATT&CK Technique Mitigated |
+|---------|---------------|---------------------------|
+| Credential Guard | Enable via Group Policy: Device Guard | T1003 OS Credential Dumping |
+| Windows Defender Credential Guard | `lsaiso.exe` process isolation | T1003.001 LSASS Memory |
+| Disable NTLM (where possible) | GPO: Network Security — Restrict NTLM | T1557 Adversary-in-the-Middle |
+| AppLocker / WDAC | Whitelist approved executables, scripts, DLLs | T1204, T1059 |
+| Audit policy (advanced) | Logon, Account Management, Object Access, Process Creation | T1078, T1059 detection |
+| Local admin password (LAPS) | Microsoft LAPS deployed to all workstations/servers | T1021.002 (pass-the-hash) |
+| PowerShell Constrained Language Mode | Registry: `__PSLockdownPolicy = 4` | T1059.001 |
+| Protected Users group | Add privileged accounts to Protected Users | T1558 Kerberoasting |
+
+## Linux Server Hardening Controls
+
+| Control | Implementation | ATT&CK Technique Mitigated |
+|---------|---------------|---------------------------|
+| SSH hardening | Disable root login, password auth; use ed25519 keys; `AllowUsers` | T1021.004 |
+| sudo restrictions | Limit `sudo` to specific commands; avoid `NOPASSWD` | T1548 Abuse Elevation |
+| auditd rules | Monitor `/etc/passwd`, `/etc/shadow`, `/bin`, SUID file exec | T1003.008, T1059 |
+| sysctl hardening | `net.ipv4.ip_forward=0`, `kernel.randomize_va_space=2` | Multiple |
+| SELinux / AppArmor | Enforcing mode with application-specific profiles | T1068 Exploit for Privilege Escalation |
+| File integrity monitoring | AIDE or Tripwire on critical system files | T1565 Data Manipulation |
+
+## Cloud Infrastructure Hardening Controls
+
+| Control | Implementation | ATT&CK Technique Mitigated |
+|---------|---------------|---------------------------|
+| IMDSv2 (AWS) | Require IMDSv2: `--metadata-options HttpTokens=required` | T1552.005 Cloud Instance Metadata |
+| IAM least privilege | Enforce permission boundaries; no wildcard `*` actions | T1078.004 Cloud Accounts |
+| S3 Block Public Access | Account-level block public access policy | T1530 Data from Cloud Storage |
+| Secrets Manager (no hardcoded creds) | Scan code for secrets: `trufflehog`, `git-secrets` | T1552.001 |
+| GuardDuty / Defender for Cloud | Enable with threat intel feed integration | Detection coverage |
+| MFA on all privileged accounts | Enforce via SCP/Azure Policy | T1078 |
+
+
+
+## compliance-validation
+
+# Compliance Validation — Reference
+
+Use during Phase 5 to map infrastructure hardening outputs to compliance framework requirements and produce audit-ready evidence.
+
+## Framework Mapping Table
+
+| CIS Benchmark Control | ISO 27001:2022 | SOC 2 CC | PCI DSS v4.0 | NIST CSF |
+|-----------------------|---------------|----------|--------------|----------|
+| Account policies (lockout, complexity) | A.8.5 Identity Management | CC6.1 | Req 8 | PR.AC |
+| Audit logging enabled | A.8.15 Logging | CC7.2 | Req 10 | DE.CM |
+| Patch management | A.8.8 Vulnerability Management | CC7.1 | Req 6 | ID.RA, RS.MI |
+| Firewall / host-based firewall | A.8.20 Network Security | CC6.6 | Req 1 | PR.AC |
+| Encryption at rest | A.8.24 Use of Cryptography | CC6.7 | Req 3 | PR.DS |
+| MFA for privileged access | A.8.5 | CC6.1 | Req 8.4 | PR.AC |
+| Vulnerability scanning | A.8.8 | CC7.1 | Req 11 | ID.RA |
+| Incident response plan | A.5.26 | CC7.4 | Req 12.10 | RS.RP |
+
+## Evidence Collection Checklist
+
+| Evidence Item | Format | Collection Method | Retention |
+|---------------|--------|-------------------|-----------|
+| CIS-CAT scan results | HTML/XML report | CIS-CAT Pro automated scan | 12 months |
+| Patch compliance report | CSV/dashboard export | Vuln scanner or SCCM | 12 months |
+| Firewall rule baseline | Exported rule set | Firewall management console | 24 months |
+| User access review | CSV of accounts + permissions | AD/IAM export | 12 months |
+| MFA enablement report | CSV | IdP admin console export | 12 months |
+| Encryption-at-rest proof | Screenshot / API response | Cloud console / BitLocker status | 12 months |
+
+## Compliance Gap Register Template
+
+| Framework | Control Ref | Control Description | Status | Gap Detail | Remediation Owner | Due Date |
+|-----------|-------------|--------------------|---------|-----------|--------------------|----------|
+| ISO 27001 | A.8.8 | Vulnerability Management | Partial | No formal SLAs for P3/P4 vulns | CISO | 2025-09-30 |
+| PCI DSS | Req 8.4 | MFA on all console access | Fail | 3 admin accounts without MFA | IAM Team | 2025-07-15 |
+
+## Continuous Compliance Approach
+
+Automate evidence collection using:
+- **AWS Config Rules** / **Azure Policy** for cloud compliance drift detection
+- **InSpec / Chef Compliance** for OS-level continuous assessment
+- **OpenSCAP** for scheduled RHEL/CentOS assessments
+- **Prowler** for cloud security posture management (daily scan, email digest)

@@ -1,0 +1,66 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "endpoint-security skill",
+    "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://project-iud7o.vercel.app"
+    }
+  ],
+  "paths": {
+    "/endpoint-security/invoke": {
+      "post": {
+        "operationId": "invoke_endpoint_security",
+        "summary": "Load a phase of the endpoint-security skill",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "phase"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "description": "Which phase to load",
+                    "enum": [
+                      "edr-deployment",
+                      "baseline-hardening",
+                      "malware-analysis",
+                      "incident-response"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phase content returned as markdown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "phase": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

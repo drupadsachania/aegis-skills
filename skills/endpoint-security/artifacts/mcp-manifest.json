@@ -1,0 +1,56 @@
+{
+  "schema": "mcp/1.0",
+  "name": "endpoint-security",
+  "version": "1.0.0",
+  "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the endpoint-security skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "edr-deployment",
+              "baseline-hardening",
+              "malware-analysis",
+              "incident-response"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/edr-deployment",
+      "name": "edr-deployment",
+      "description": "Reference content for endpoint-security — edr-deployment",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/baseline-hardening",
+      "name": "baseline-hardening",
+      "description": "Reference content for endpoint-security — baseline-hardening",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/malware-analysis",
+      "name": "malware-analysis",
+      "description": "Reference content for endpoint-security — malware-analysis",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/incident-response",
+      "name": "incident-response",
+      "description": "Reference content for endpoint-security — incident-response",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

@@ -1,0 +1,456 @@
+# Security Operations Skill
+
+Guide a complete SOC operating cycle from daily alert triage to compliance reporting.
+Each phase includes entry criteria, required inputs, and measurable outputs.
+
+## Phase Map
+
+```
+Phase 1 → Alert Triage              [read: references/alert-triage.md]
+Phase 2 → Threat Intelligence       [read: references/threat-intelligence.md]
+Phase 3 → Vulnerability Management  [read: references/vulnerability-management.md]
+Phase 4 → Incident Detection        [read: references/incident-detection.md]
+Phase 5 → Incident Response         [read: references/incident-response.md]
+Phase 6 → Post-Incident Review      [read: references/post-incident-review.md]
+Phase 7 → Security Metrics          [read: references/security-metrics.md]
+Phase 8 → Compliance Reporting      [read: references/compliance-reporting.md]
+```
+
+## Output Format
+
+Each phase produces structured outputs: alert disposition (Phase 1), intelligence report (Phase 2), patching plan (Phase 3), incident declaration (Phase 4), IR timeline (Phase 5), PIR action items (Phase 6), metrics dashboard (Phase 7), compliance evidence package (Phase 8).
+
+
+## alert-triage
+
+# Alert Triage — Reference
+
+**Entry Criteria:** SIEM alert generated with severity Medium or above; or analyst-escalated ticket from Tier 1 queue.
+
+**Required Inputs:** Alert details (source, rule, timestamp), asset inventory (CMDB), threat intel platform access.
+
+## Enrichment Sources Table
+
+| Enrichment Type | Source | Purpose |
+|----------------|--------|---------|
+| Asset context | CMDB / ServiceNow | Owner, tier, business function |
+| Threat intel | VirusTotal, MISP, ThreatConnect | IOC reputation, known campaign |
+| User context | Active Directory / IdP | Account type, recent activity, department |
+| Vulnerability context | Tenable / Qualys | Is affected asset unpatched? |
+| Previous incidents | SIEM / ticketing | Has this asset or user appeared in prior incidents? |
+| Geo / IP reputation | MaxMind, AbuseIPDB | Is source IP from unexpected country or known malicious range? |
+
+## Triage SLAs Table
+
+| Priority | Trigger | Acknowledge | Initial Assessment | Escalation |
+|----------|---------|-------------|-------------------|-----------|
+| P1 — Critical | Active breach, ransomware, C2 comms | 5 minutes | 15 minutes | Immediate to IC + CISO |
+| P2 — High | Confirmed compromise indicator on Tier 1/2 asset | 15 minutes | 30 minutes | Within 30 min to Security Manager |
+| P3 — Medium | Suspicious activity requiring investigation | 30 minutes | 2 hours | Escalate if investigation confirms compromise |
+| P4 — Low | Policy violation, informational | 4 hours | 8 hours | Self-service; no escalation unless scope expands |
+
+## Triage Decision Tree
+
+```
+Alert received
+    │
+    ├─► Is this a known false-positive rule? (check exclusion list)
+    │       YES → Close as FP; log suppression candidate
+    │       NO  ↓
+    │
+    ├─► Enrich: asset tier + IOC reputation + user context
+    │       ↓
+    ├─► Is the asset a Tier 1/2 crown jewel?
+    │       YES → Immediate P1/P2 declaration; notify IC
+    │       NO  ↓
+    │
+    ├─► Does threat intel confirm malicious IOC?
+    │       YES → Escalate to incident; create INC ticket
+    │       NO  ↓
+    │
+    └─► Analyst judgment — investigate further or close with documentation
+```
+
+**Outputs:** Incident ticket (if escalated); FP report (if false positive); closed alert with justification (if benign).
+
+
+
+## threat-intelligence
+
+# Threat Intelligence — Reference
+
+**Entry Criteria:** Daily intelligence cycle; new threat actor campaign reported; pre-hunt hypothesis generation; post-incident enrichment.
+
+**Required Inputs:** Threat intel platform (MISP, ThreatConnect, or equivalent), ISAC membership, open-source feeds.
+
+## Intelligence Cycle
+
+```
+1. Direction    — What questions does the SOC need answered?
+2. Collection   — Gather raw data from all sources
+3. Processing   — Normalise into structured format (STIX 2.1)
+4. Analysis     — Assess relevance, confidence, and applicability
+5. Dissemination — Share finished intel to consumers (SOC, IR, risk)
+6. Feedback     — Consumers confirm usefulness; adjust direction
+```
+
+## Collection Sources Table
+
+| Source | Type | Reliability Rating | Format |
+|--------|------|--------------------|--------|
+| FS-ISAC / H-ISAC (sector ISAC) | Sector-specific | High (vetted peers) | STIX, PDF, email |
+| CISA Advisories | Government | High | PDF, STIX, YARA |
+| MITRE ATT&CK STIX feed | Framework | High | STIX 2.1 |
+| VirusTotal Intelligence | Commercial | Medium-High | JSON API |
+| AlienVault OTX | Open source | Medium | STIX, CSV |
+| Twitter / X threat intel community | Social | Low-Medium (verify before use) | Unstructured |
+| Vendor threat intel reports (CrowdStrike, Mandiant) | Commercial | High | PDF, structured |
+| Dark web monitoring service | Commercial | Medium | Alerts |
+
+## IOC Confidence Scoring
+
+| Confidence Level | Criteria | Action |
+|-----------------|----------|--------|
+| High (3) | Confirmed by ≥ 2 independent sources; directly observed in attack against org or close peer | Block immediately; alert on all activity |
+| Medium (2) | Single trusted source; corroborated by behavioural indicators | Alert on activity; investigate within 24h |
+| Low (1) | Single unverified source; no direct relevance | Watch list; do not block; review weekly |
+
+## Intelligence Outputs
+
+- **Threat intelligence bulletin** — weekly summary for security leadership
+- **IOC blocklist** — IP/domain/hash feeds pushed to SIEM and EDR
+- **ATT&CK technique coverage update** — new techniques observed → detection gap review
+- **Hunt hypothesis** — new actor/campaign triggers proactive hunt (feed to threat-hunting skill)
+- **Vulnerability prioritisation input** — CVEs being actively exploited by tracked actors → escalate priority
+
+
+
+## vulnerability-management
+
+# Vulnerability Management — Reference
+
+**Entry Criteria:** Scheduled scan cycle; new CVE published with CVSS ≥ 7.0; CISA KEV update; post-change scan.
+
+**Required Inputs:** Vulnerability scanner (Tenable/Qualys), asset inventory (CMDB), CISA KEV catalogue, patch management tooling.
+
+## SSVC-Aligned Priority Table
+
+Stakeholder-Specific Vulnerability Categorisation (SSVC) augments CVSS with exploitation evidence and mission impact.
+
+| Priority | SSVC Decision | CVSS Range | CISA KEV | Action | SLA |
+|----------|--------------|-----------|---------|--------|-----|
+| Immediate | Act Now | Any | Yes | Emergency patch; out-of-band maintenance window | 24 hours |
+| Out-of-Cycle | High urgency | ≥ 9.0 | No | Patch in next available window; do not wait for monthly cycle | 72 hours |
+| Scheduled | Standard | 7.0–8.9 | No | Include in next monthly patch cycle | 14 days |
+| Defer | Low urgency | < 7.0 | No | Accept risk until next quarterly cycle; document justification | 90 days |
+
+## Vulnerability Workflow Decision Tree
+
+```
+Scan complete → CVE found
+    │
+    ├─► In CISA KEV?
+    │       YES → Priority: Immediate → 24-hour SLA
+    │       NO  ↓
+    │
+    ├─► CVSS ≥ 9.0 AND remotely exploitable?
+    │       YES → Priority: Out-of-Cycle → 72-hour SLA
+    │       NO  ↓
+    │
+    ├─► Asset is Tier 1/2 AND CVSS ≥ 7.0?
+    │       YES → Priority: Scheduled accelerated → 7 days
+    │       NO  ↓
+    │
+    └─► Standard scheduled patching → 14–90 days by severity
+```
+
+## Monthly Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Immediate priority patch rate | 100% within 24h | Scan vs patch timestamp |
+| Out-of-cycle patch rate | 100% within 72h | Scan vs patch timestamp |
+| Scheduled patch compliance | ≥ 95% within 14 days | Vuln scanner report |
+| Mean Time to Patch (Critical) | < 72 hours | Ticket lifecycle |
+| Scanner coverage | ≥ 98% of in-scope assets | Scanner vs CMDB |
+| CISA KEV open items | 0 beyond SLA | KEV cross-reference |
+
+**Outputs:** Patch compliance dashboard; exception register; CISA KEV tracking; board-level metrics (open Critical/High count trend).
+
+
+
+## incident-detection
+
+# Incident Detection — Reference
+
+**Entry Criteria:** SIEM alert escalated from triage as potential incident; analyst judgment during threat hunt; external notification (partner, vendor, regulator, law enforcement).
+
+**Required Inputs:** Alert details, enrichment data, asset inventory, ATT&CK reference.
+
+## Scope Questions Tree
+
+When a potential incident is identified, answer these questions in order:
+
+```
+1. What systems are affected?
+   → List hostnames/IPs; assign asset tiers
+   
+2. What is the attacker's current position?
+   → Initial access only? Lateral movement detected? Persistence established?
+   
+3. What data may be at risk?
+   → Map affected systems to data classifications (PII, PAN, trade secrets)
+   
+4. How long has the attacker been present?
+   → MTTD: earliest indicator timestamp vs detection time
+   
+5. Is the attack ongoing or complete?
+   → Active C2 comms? Ongoing encryption? Or historical artefacts only?
+```
+
+## ATT&CK Tactic Detection Table
+
+| ATT&CK Tactic | What to Look for in Logs |
+|--------------|--------------------------|
+| Initial Access (TA0001) | Email gateway: phishing links/attachments opened; WAF: exploit payloads against public apps; VPN: unusual source IPs or off-hours logins |
+| Execution (TA0002) | Sysmon EID 1: cmd.exe / PowerShell spawned by Office process; script engine invocations; encoded commands |
+| Persistence (TA0003) | Security EID 4698: scheduled task created; EID 4697: service installed; registry run key modifications |
+| Privilege Escalation (TA0004) | EID 4672: special privileges assigned; LSASS access (Sysmon EID 10); token manipulation |
+| Defence Evasion (TA0005) | Security tool process terminated; event log cleared (EID 1102); LOLBin execution (certutil, mshta, regsvr32) |
+| Credential Access (TA0006) | Sysmon EID 10 targeting lsass.exe; large volumes of Kerberos TGS requests (Kerberoasting); NTLM relay attempts |
+| Discovery (TA0007) | EID 4661: AD object enumeration; nmap/ping sweep in NetFlow; net commands (net user, net group) |
+| Lateral Movement (TA0008) | SMB connection to admin shares (EID 5140); WMI/PSExec execution; RDP logon from unusual source |
+| Command and Control (TA0011) | Regular-interval outbound connections; DNS to DGA domains; HTTPS to newly registered/low-reputation domains |
+| Exfiltration (TA0010) | Large outbound data volume spikes; archive file creation before exfil; cloud sync tool invocation |
+
+## Severity Declaration Criteria
+
+| Severity | Conditions | Declare Within |
+|----------|-----------|---------------|
+| P1 | Active data exfiltration; ransomware encryption; Tier 1 asset fully compromised | 15 minutes |
+| P2 | Confirmed adversary in network; Tier 2 asset compromised; lateral movement detected | 30 minutes |
+| P3 | Suspicious activity on single endpoint; unconfirmed compromise indicator | 2 hours |
+| P4 | Policy violation; no confirmed compromise | 4 hours |
+
+**Outputs:** Incident declaration (if criteria met); severity assignment; initial scope assessment; notification to Incident Commander.
+
+
+
+## incident-response
+
+# Incident Response — Reference
+
+**Entry Criteria:** Incident declared at P1/P2/P3; Incident Commander assigned; initial scope completed.
+
+**Required Inputs:** Incident ticket, scope assessment, EDR console access, network isolation capability, forensic tooling.
+
+## PICERL Framework
+
+### Preparation
+Ongoing activities before any incident:
+- IR plan documented, approved, and tested via tabletop exercise annually
+- Incident Commander (IC) and backup IC identified and trained
+- Contact list current: Legal, HR, DPO, PR, executive team, law enforcement liaison
+- Out-of-band communications channel established (separate from potentially compromised email)
+- EDR isolation capability tested; break-glass credentials in PAM vault
+- Forensic collection kit pre-staged: KAPE, Velociraptor agent, FTK Imager
+
+### Identification
+- Confirm incident type (malware, insider, DDoS, data breach, ransomware)
+- Assign severity (P1–P4) based on scope
+- Activate appropriate IR playbook
+- Open incident ticket; assign IC
+
+### Containment
+
+**Immediate containment (P1: within 1 hour; P2: within 4 hours):**
+
+```
+1. Network isolate compromised hosts via EDR console
+2. If EDR unavailable: disable network port at switch level
+3. Revoke active sessions for compromised accounts (force re-auth)
+4. Block IOCs at perimeter (IP/domain/hash) in firewall and proxy
+5. Preserve memory before isolation if forensically required
+6. Do NOT reimage before evidence collection is complete
+```
+
+**Short-term containment:**
+- Reset credentials for all accounts that authenticated on compromised hosts
+- Disable affected service accounts
+- Rotate secrets/API keys that may have been exposed
+
+### Eradication
+- Remove all attacker artefacts: malware files, persistence mechanisms, rogue accounts
+- Patch exploited vulnerability or disable exploited feature
+- Confirm no backdoors remain (golden ticket/skeleton key check for AD incidents)
+
+### Recovery
+- Reimage or restore from last-known-good snapshot
+- Re-enrol in EDR with fresh policy
+- Monitor for re-compromise for 72 hours post-recovery
+- Restore service with enhanced monitoring in place
+
+### Lessons Learned (See post-incident-review phase)
+
+## Immediate Containment Steps by Incident Type
+
+| Incident Type | Priority 1 Action | Priority 2 Action |
+|--------------|------------------|------------------|
+| Ransomware | Network isolate ALL infected hosts; disable admin shares | Contact cyber insurance; preserve encrypted files for recovery |
+| Data exfiltration | Block exfil destination IPs/domains; quarantine source host | Determine scope of data accessed; prepare regulatory notification |
+| Account compromise | Force password reset + revoke all sessions + disable account | Review all activity since compromise date |
+| Insider threat | Preserve HR/legal privilege; do not alert user; collect evidence | Involve Legal/HR immediately |
+| DDoS | Enable scrubbing service; activate CDN; notify ISP | Monitor for follow-on intrusion attempt during DDoS distraction |
+
+
+
+## post-incident-review
+
+# Post-Incident Review — Reference
+
+**Entry Criteria:** Incident closed (all P1/P2 incidents); recommended for P3; optional for P4. Conduct PIR within 5 business days of incident closure.
+
+**Required Inputs:** Incident ticket, timeline, metrics (MTTD/MTTC/MTTR), attending stakeholders.
+
+## PIR Agenda
+
+| Agenda Item | Duration | Purpose |
+|-------------|----------|---------|
+| Timeline review | 15 min | Walk through key events chronologically; confirm facts |
+| Detection assessment | 10 min | When was the incident first detectable? When was it actually detected? |
+| Response assessment | 10 min | Were containment, eradication, and recovery timely and effective? |
+| Root cause analysis | 20 min | 5 Whys methodology (see below) |
+| Action items | 15 min | Assign owners and due dates for improvements |
+| Lessons learned summary | 10 min | What should we start, stop, and continue? |
+
+**Ground rules:** Blameless culture. Focus on processes and systems, not individuals. PIR findings are used for improvement, not discipline (unless gross negligence is involved — handle separately via HR).
+
+## 5 Whys Root Cause Example
+
+**Incident:** Ransomware encrypted 40 servers before detection.
+
+| Why # | Question | Answer |
+|-------|----------|--------|
+| Why 1 | Why were 40 servers encrypted? | Ransomware spread via SMB before containment |
+| Why 2 | Why did it spread so quickly via SMB? | No internal segmentation between server VLAN and backup network |
+| Why 3 | Why was there no segmentation? | Segmentation project deprioritised in last budget cycle |
+| Why 4 | Why was it deprioritised? | No risk register entry quantifying the risk |
+| Why 5 | Why was there no risk register entry? | No formal threat modelling process for infrastructure |
+
+**Root Cause:** Absence of a threat modelling process led to an unquantified segmentation risk being deprioritised.
+
+## Action Item Template
+
+| ID | Finding | Action Required | Owner | Due Date | Priority | Status |
+|----|---------|----------------|-------|----------|---------|--------|
+| PIR-001 | No SMB segmentation between server and backup VLANs | Implement firewall rule blocking SMB between VLANs | Network Team | 2025-07-15 | P1 | Open |
+| PIR-002 | Detection delayed by 6 hours due to SIEM rule gap | Create detection rule for lateral SMB movement | SOC | 2025-07-08 | P1 | Open |
+
+## Metrics to Capture
+
+| Metric | Definition | This Incident | Target |
+|--------|-----------|--------------|--------|
+| MTTD — Mean Time to Detect | Time from first evidence of attack to detection | [X hours] | < 1 hour for P1 |
+| MTTC — Mean Time to Contain | Time from detection to containment | [X hours] | < 4 hours for P1 |
+| MTTR — Mean Time to Recover | Time from containment to full service recovery | [X hours] | < 24 hours for P1 |
+| Alert-to-Incident conversion rate | % of triaged alerts escalated to incidents | [X%] | Baseline and trend |
+| Runbook adherence | Were all steps in the IR runbook followed? | Yes/No/Partial | 100% |
+
+
+
+## security-metrics
+
+# Security Metrics — Reference
+
+**Entry Criteria:** Monthly/quarterly reporting cycle; board presentation preparation; programme health review; budget justification.
+
+**Required Inputs:** SIEM data, ticketing system (MTTD/MTTC/MTTR), vulnerability scanner reports, EDR telemetry, patch management data.
+
+## Tier 1 — Operational Metrics (SOC daily/weekly)
+
+| Metric | Definition | Measurement Source | Target |
+|--------|-----------|-------------------|--------|
+| Mean Time to Detect (MTTD) | Average time from first malicious event to alert | SIEM: earliest event timestamp vs alert creation time | Trending down; < 1 hour for P1 |
+| Mean Time to Contain (MTTC) | Average time from alert to containment action | Incident ticket: created vs contained timestamp | < 4 hours P1; < 24 hours P2 |
+| Mean Time to Recover (MTTR) | Average time from containment to full service restoration | Incident ticket: contained vs resolved timestamp | < 24 hours P1 |
+| Alert-to-Incident Ratio | % of SIEM alerts that become confirmed incidents | Tickets created vs alerts generated | Baseline; use to detect alert fatigue |
+| False Positive Rate | % of alerts closed as false positive | FP tickets / total alerts | < 20% (high FP rate = rule quality issue) |
+| Alert Volume per Analyst per Day | Total alerts / analyst headcount / working days | SIEM + headcount | Sustainable: < 30 quality alerts/day |
+
+## Tier 2 — Programme Metrics (Monthly/Quarterly for management)
+
+| Metric | Definition | Target |
+|--------|-----------|--------|
+| Critical/High Vulnerabilities Open | Count of unpatched Critical/High CVEs beyond SLA | Zero Critical beyond SLA |
+| Patch Compliance Rate | % of in-scope assets patched within SLA | ≥ 95% |
+| EDR Coverage | % of in-scope endpoints with active EDR | ≥ 98% |
+| Security Awareness Training Completion | % of staff completing mandatory training | ≥ 95% |
+| Phishing Simulation Click Rate | % of simulated phishing emails clicked | < 5% (trending down) |
+| Incidents by Category | Count of incidents per type (malware/insider/DDoS etc.) | Baseline and trend |
+| Mean Cost per Incident | Total IR cost / number of incidents | Baseline; demonstrate ROI of investments |
+
+## RAG Status Explanation
+
+Use RAG (Red/Amber/Green) status on all metric dashboards:
+
+| Status | Colour | Meaning | Action |
+|--------|--------|---------|--------|
+| Green | Within target or better | No action required; continue monitoring | — |
+| Amber | Within 20% of target threshold | Monitor closely; identify root cause; remediation plan within 2 weeks | Owner to present plan at next review |
+| Red | Beyond target threshold; significant concern | Immediate escalation; executive awareness; remediation plan within 72 hours | CISO briefing; board notification if material |
+
+## Executive Dashboard Template
+
+Present four key metrics to board/exec monthly:
+1. **Incident count and severity trend** — are incidents increasing or decreasing?
+2. **MTTD/MTTR trend** — is the team detecting and responding faster?
+3. **Critical vulnerability exposure** — how many critical CVEs are open beyond SLA?
+4. **Programme maturity score** — overall security posture (CMMI/NIST CSF tier)
+
+
+
+## compliance-reporting
+
+# Compliance Reporting — Reference
+
+**Entry Criteria:** Scheduled audit preparation; external audit notification received; certification renewal; regulatory inquiry; post-incident regulatory obligation.
+
+**Required Inputs:** Evidence collection outputs, security metrics, incident log, policy register, vulnerability management data.
+
+## Framework-Specific Evidence Table
+
+| Control Domain | ISO 27001:2022 | SOC 2 Type II | PCI DSS v4.0 | Evidence to Collect |
+|---------------|---------------|--------------|--------------|---------------------|
+| Access control | A.8.5 Identity Management | CC6.1 | Req 7, 8 | IAM export, access review records, MFA logs |
+| Vulnerability management | A.8.8 | CC7.1 | Req 6, 11 | Scanner reports, patch compliance data, exception register |
+| Logging and monitoring | A.8.15 | CC7.2 | Req 10 | SIEM config, log retention policy, alert rules |
+| Incident management | A.5.26 | CC7.4 | Req 12.10 | Incident register, PIR outputs, IR test records |
+| Change management | A.8.32 | CC8.1 | Req 6.3 | Change tickets, approvals, CAB minutes |
+| Encryption | A.8.24 | CC6.7 | Req 3, 4 | Encryption-at-rest proof, TLS scan results |
+| Physical security | A.7.2 | CC6.4 | Req 9 | Visitor logs, CCTV policy, data centre access records |
+| Business continuity | A.5.29 | A1.2 | Req 12.3 | BCP/DR plan, test results, RTO/RPO documentation |
+| Third-party risk | A.5.19 | CC9.2 | Req 12.8 | Vendor assessment records, contracts, review schedule |
+| Security awareness | A.6.3 | CC2.2 | Req 12.6 | Training completion records, phishing simulation results |
+
+## Regulatory Notification Deadlines Table
+
+| Regulation | Jurisdiction | Initial Notification Window | Notify Who | Trigger |
+|------------|-------------|----------------------------|-----------|---------|
+| GDPR Article 33 | EU / EEA | 72 hours from becoming aware | National supervisory authority (e.g., ICO) | Personal data breach with risk to individuals |
+| GDPR Article 34 | EU / EEA | Without undue delay | Affected individuals | High risk to rights and freedoms |
+| HIPAA Breach Notification | USA | 60 days from discovery | HHS OCR + affected individuals (media if >500 in state) | Breach of unsecured PHI |
+| NIS2 Article 23 | EU | 24 hours (early warning); 72 hours (notification); 1 month (final) | National CSIRT / competent authority | Significant incident on essential/important entity |
+| PCI DSS | Global | Immediately (24 hours) | Acquiring bank + card brands | Suspected or confirmed account data compromise |
+| SEC Rule 13a-15 / 15d-15 | USA (public companies) | 4 business days (8-K) | SEC public filing | Material cybersecurity incident |
+| FCA SYSC 8.1 | UK (financial services) | As soon as reasonably practicable | FCA (and PRA if dual-regulated) | Significant operational incident |
+
+## Evidence Collection Workflow
+
+1. Map audit scope to framework controls (use table above)
+2. Identify evidence owner per control domain
+3. Collect evidence with timestamps and digital signatures where possible
+4. Review for gaps — generate remediation actions for any missing evidence
+5. Package evidence with control cross-reference index for auditor
+6. Retain all audit evidence for minimum 3 years (or regulatory minimum if longer)
+
+**Outputs:** Evidence package per framework; control test results; exception register with risk acceptance; compliance dashboard (RAG status per domain).

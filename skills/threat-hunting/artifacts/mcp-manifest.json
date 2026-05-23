@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "threat-hunting",
+  "version": "1.0.0",
+  "description": "Proactive threat hunting workflow. Triggers for: structured hunt campaigns, TTP-based hypothesis generation, SIEM query development, anomaly investigation, or any exercise requiring proactive adversary search in telemetry rather than reactive alert response.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the threat-hunting skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "hypothesis-generation",
+              "data-collection",
+              "detection-logic",
+              "investigation",
+              "reporting"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/hypothesis-generation",
+      "name": "hypothesis-generation",
+      "description": "Reference content for threat-hunting — hypothesis-generation",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/data-collection",
+      "name": "data-collection",
+      "description": "Reference content for threat-hunting — data-collection",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/detection-logic",
+      "name": "detection-logic",
+      "description": "Reference content for threat-hunting — detection-logic",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/investigation",
+      "name": "investigation",
+      "description": "Reference content for threat-hunting — investigation",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/reporting",
+      "name": "reporting",
+      "description": "Reference content for threat-hunting — reporting",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

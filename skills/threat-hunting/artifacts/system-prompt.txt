@@ -1,0 +1,322 @@
+# Threat Hunting Skill
+
+Proactively search for adversary activity that evades automated detection.
+
+## Phase Map
+
+```
+Phase 1 → Hypothesis Generation     [read: references/hypothesis-generation.md]
+Phase 2 → Data Collection           [read: references/data-collection.md]
+Phase 3 → Detection Logic           [read: references/detection-logic.md]
+Phase 4 → Investigation             [read: references/investigation.md]
+Phase 5 → Reporting                 [read: references/reporting.md]
+```
+
+## Output Format
+
+Produce a hunt report with: hypothesis, telemetry sources queried, queries used, findings (benign/true-positive), and detection engineering recommendations.
+
+
+## hypothesis-generation
+
+# Hypothesis Generation — Reference
+
+Use during Phase 1 to formulate structured hunting hypotheses before querying telemetry.
+
+## Hypothesis Structure
+
+A valid hunt hypothesis follows this format:
+
+> **"[Adversary actor or technique] is [performing behaviour] using [mechanism], which would be visible in [telemetry source]."**
+
+Example:
+> "A threat actor is achieving persistence via a scheduled task using PowerShell encoded commands, which would be visible in Windows Security Event Log (4698) and Sysmon Event ID 1."
+
+## Example Hypothesis Table
+
+| Hypothesis ID | Actor / Technique | Behaviour | ATT&CK ID | Detection Gap | Telemetry Source | Priority |
+|--------------|-------------------|-----------|-----------|--------------|-----------------|---------|
+| H-001 | Ransomware precursor | Lateral movement via SMB admin shares | T1021.002 | SIEM rule missing for internal SMB to C$ | Windows Security Event 5140 + NetFlow | High |
+| H-002 | APT — persistence | Scheduled task creation by non-standard process | T1053.005 | No alert on tasks created outside business hours | Sysmon EID 11, Event 4698 | High |
+| H-003 | Living-off-the-land | PowerShell downloading payload from internet | T1059.001, T1105 | PowerShell logging not fully deployed | Sysmon EID 1 (cmd line), Event 4104 (script block) | High |
+| H-004 | Credential theft | LSASS memory access by non-system process | T1003.001 | Alert suppressed for antivirus processes | Sysmon EID 10 (process access) | Critical |
+| H-005 | C2 beaconing | Regular-interval DNS queries to newly registered domain | T1071.004 | No DGA detection in DNS pipeline | DNS query logs + domain age lookup | Medium |
+
+## Prioritisation Scoring
+
+Score each hypothesis to determine hunt order:
+
+| Factor | Score 1 (Low) | Score 2 (Medium) | Score 3 (High) |
+|--------|--------------|-----------------|---------------|
+| Threat intel relevance | Generic technique | Seen in sector | Active campaign targeting org |
+| Detection gap | Partial coverage | Large gap | No coverage |
+| Asset exposure | Commodity assets | Business-critical | Crown jewel |
+| Adversary capability required | High (zero-day) | Medium | Low (known exploit) |
+
+**Total score ≥ 10** = start this week. **7–9** = next sprint. **< 7** = backlog.
+
+## Input Sources for Hypothesis Generation
+
+- MITRE ATT&CK Navigator — identify uncovered techniques
+- Threat intelligence reports (sector-specific ISACs)
+- Previous incident findings (recurring adversary TTPs)
+- Red team/purple team outputs — techniques tested but no detection
+- CISA advisories — actively exploited techniques
+
+
+
+## data-collection
+
+# Data Collection — Reference
+
+Use during Phase 2 to validate that required telemetry is available and of sufficient quality for the hunt.
+
+## Telemetry Requirements by Hunt Target
+
+| Hunt Target | Required Log Source | Minimum Retention | Quality Check |
+|-------------|--------------------|--------------------|---------------|
+| Lateral movement (SMB) | Windows Security Event 4624/4625/5140/5145, NetFlow | 90 days | Confirm Tier 1/2 servers logging to SIEM |
+| Persistence (scheduled tasks) | Windows Security 4698/4699, Sysmon EID 11/12/13 | 90 days | Confirm Sysmon deployed to all endpoints |
+| Credential access (LSASS) | Sysmon EID 10, Windows Security 4656 | 30 days | Confirm kernel-level telemetry active |
+| C2 beaconing (DNS) | DNS query logs (all recursive resolvers) | 180 days | Confirm all DNS traffic routes via monitored resolver |
+| Execution (PowerShell) | PowerShell Script Block (Event 4104), Sysmon EID 1 | 90 days | Confirm PS ScriptBlock logging GPO deployed |
+| Cloud lateral movement | CloudTrail (AWS), Unified Audit Log (M365), Azure Activity Log | 365 days | Confirm all regions/services enabled |
+
+## Telemetry Quality Checklist
+
+- [ ] Log source covers ≥ 95% of in-scope assets (check SIEM source inventory)
+- [ ] Time skew < 5 seconds (NTP enforced; verify with SIEM ingest timestamp vs log timestamp)
+- [ ] No data gaps in the hunt window (check index continuity in SIEM)
+- [ ] Command-line arguments included in process creation events (not just executable name)
+- [ ] Parent-child process relationships available (Sysmon EID 1 ParentProcessId)
+- [ ] User context included (not just SYSTEM; individual user account visible)
+
+## SIEM Query Examples
+
+### Splunk (SPL)
+```spl
+# Scheduled task creation outside business hours
+index=wineventlog EventCode=4698 earliest=-7d
+| eval hour=strftime(_time, "%H")
+| where hour < 8 OR hour > 18
+| stats count by TaskName, SubjectUserName, ComputerName
+```
+
+### Elastic (EQL)
+```eql
+# LSASS memory access by non-whitelisted process
+process where event.action == "ProcessAccess"
+  and process.pe.original_file_name != "svchost.exe"
+  and target.process.name == "lsass.exe"
+  and not process.name in ("MsMpEng.exe", "csrss.exe")
+```
+
+### Microsoft Sentinel (KQL)
+```kql
+// PowerShell encoded command execution
+SecurityEvent
+| where TimeGenerated > ago(7d)
+| where EventID == 4104
+| where ScriptBlockText has_any ("encodedcommand", "-enc ", "FromBase64String")
+| summarize count() by Account, Computer, ScriptBlockText
+| order by count_ desc
+```
+
+
+
+## detection-logic
+
+# Detection Logic — Reference
+
+Use during Phase 3 to build and validate detection rules from hunt findings.
+
+## Sigma Rule Example
+
+```yaml
+# Sigma rule — Scheduled task creation by suspicious process
+title: Suspicious Scheduled Task Creation
+id: 7d4a2f3b-1234-4abc-8def-abcdef123456
+status: experimental
+description: Detects scheduled task creation by processes that don't normally create tasks
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4698
+  filter_legitimate:
+    SubjectUserName|endswith: '$'  # Machine accounts
+  filter_tools:
+    TaskName|contains:
+      - 'Microsoft'
+      - 'Windows'
+  condition: selection and not (filter_legitimate or filter_tools)
+falsepositives:
+  - Legitimate software installation
+  - Admin task scheduling
+level: medium
+```
+
+## Query Translation Table
+
+| Technique | Detection Logic | SPL | EQL | KQL |
+|-----------|----------------|-----|-----|-----|
+| T1053.005 — Sched Task | New task outside business hours | `EventCode=4698 \| eval h=strftime(_time,"%H") \| where h<8 OR h>18` | `process where EventID==4698 and hour_of_day < 8` | `SecurityEvent \| where EventID==4698 \| where hourofday(TimeGenerated)<8` |
+| T1021.002 — SMB Admin Shares | Access to C$ or ADMIN$ from workstations | `EventCode=5140 ObjectName="*\\C$" src_category=workstation` | `network where event.action=="share-access" and file.path has "C$"` | `SecurityEvent \| where EventID==5140 and ObjectName has "C$"` |
+| T1059.001 — PowerShell | Encoded command execution | `EventCode=4104 Message="*encodedcommand*"` | `process where process.name=="powershell.exe" and process.args has "-enc"` | `SecurityEvent \| where EventID==4104 and CommandLine has "-enc"` |
+
+## Anomaly Detection Baseline Approach
+
+For techniques without clear signatures, use statistical baselining:
+
+1. **Define the metric** — e.g., number of unique destination IPs per host per hour
+2. **Collect baseline** — 14–30 days of normal operation
+3. **Compute threshold** — mean + (2 × standard deviation) = upper alert threshold
+4. **Alert on deviation** — flag hosts exceeding threshold for analyst review
+5. **Tune weekly** — adjust threshold as baseline shifts (legitimate changes)
+
+Baseline metrics to track:
+- DNS query rate per host
+- Outbound connections to new/unseen IPs
+- Process creation rate per user
+- Failed authentication rate per source IP
+- Volume of data copied to USB/removable media
+
+
+
+## investigation
+
+# Investigation — Reference
+
+Use during Phase 4 to triage hunt findings and investigate anomalies through to a definitive verdict.
+
+## Triage Workflow Tree
+
+```
+Anomaly / Hunt Finding
+        │
+        ├─► Is this a known-good pattern? (check baseline / whitelist)
+        │       YES → Mark benign; update whitelist
+        │       NO  ↓
+        │
+        ├─► Is there a matching threat intel indicator? (IOC, TTP)
+        │       YES → Escalate to true-positive; trigger IR
+        │       MAYBE ↓
+        │
+        ├─► Pivot investigation — gather additional context
+        │       - Timeline of events on affected host
+        │       - Process lineage (parent → child → grandchild)
+        │       - Network connections from/to affected host
+        │       - User account activity
+        │       VERDICT ↓
+        │
+        ├─► Insufficient evidence → True-Positive Unconfirmed
+        │       Document and monitor for 48 hours; set watch alert
+        │
+        └─► Sufficient evidence → True-Positive Confirmed
+                Trigger IR playbook; create incident ticket
+```
+
+## Pivot Techniques Table
+
+| Starting Point | Pivot To | Tool / Query | Purpose |
+|---------------|----------|-------------|--------|
+| Suspicious process | Parent process | Sysmon EID 1 `ParentProcessId` | Identify how process was spawned |
+| Process | Network connections | Sysmon EID 3 `ProcessId` | Find C2 or lateral movement |
+| IP address | All hosts connecting to it | NetFlow / firewall logs | Determine scope of compromise |
+| User account | All logon events | Security Event 4624 `TargetUserName` | Identify compromised account spread |
+| File hash | EDR platform | Search all endpoints for hash | Determine campaign scope |
+| Domain name | Passive DNS history | VirusTotal / DNSDB | Understand C2 infrastructure |
+
+## Evidence Collection Steps
+
+When a true-positive is suspected, collect and preserve:
+
+1. **Timeline** — first and last observed event timestamps
+2. **Process tree** — full parent-child chain from initial execution
+3. **Network artefacts** — C2 IPs, domains, user-agents
+4. **Persistence mechanisms** — registry keys, scheduled tasks, services, startup items
+5. **Credentials touched** — accounts with logon events on affected host
+6. **Lateral movement** — destination hosts accessed from initial compromise
+
+## Verdict Documentation Template
+
+```
+Hunt ID: H-001
+Hypothesis: [original hypothesis]
+Verdict: True-Positive / False-Positive / Benign
+ATT&CK Techniques Confirmed: T1021.002, T1053.005
+Affected Assets: dc01.corp, ws045.corp
+Attacker Actions: [summary]
+IOCs: [list]
+IR Ticket: INC-2025-0042
+Detection Rule Created: Yes — sigma/scheduled-task-lateral.yml
+```
+
+
+
+## reporting
+
+# Hunt Reporting Reference
+
+Use during Phase 5 to produce a structured hunt output and feed findings into the detection engineering pipeline.
+
+## Hunt Output Template
+
+The following markdown structure should be used for all completed hunt campaigns:
+
+**Section 1 — Header:** Hunt ID, title, period, lead analyst, hypothesis, ATT&CK techniques investigated, status.
+
+**Section 2 — Executive Summary:** Two to three sentences covering what was hunted, what was found, and key actions taken.
+
+**Section 3 — Telemetry Reviewed:** Table of log sources, time period, and approximate event volume.
+
+**Section 4 — Methodology:** Description of queries, tools, and analysis approach used.
+
+**Section 5 — Findings Table:**
+
+| Finding ID | Description | Verdict | ATT&CK ID | Asset | Action |
+|------------|-------------|---------|-----------|-------|--------|
+| F-001 | Scheduled task created at 02:00 by PowerShell | True-Positive | T1053.005 | ws045 | IR raised |
+| F-002 | DNS query to high-entropy domain | False-Positive | T1071.004 | ws012 | CDN confirmed |
+
+**Section 6 — Detection Engineering Output:** List of Sigma rules, SIEM alerts, IOC blocklist updates, and watchlist entries generated from the hunt.
+
+**Section 7 — Recommendations:** Gaps identified in telemetry coverage, detection capability, or process.
+
+**Section 8 — Metrics:** Hunt duration, events analysed, true-positives, false-positives, detection rules created.
+
+## Detection Engineering Output Types
+
+| Output Type | Description | Destination |
+|-------------|-------------|------------|
+| Sigma rule | Platform-agnostic detection rule | Detection-as-code repo |
+| SIEM alert | Deployed rule in production SIEM | SIEM platform |
+| IOC blocklist | C2 IPs, domains, hashes to block | Threat intel platform |
+| Watchlist entry | Suspicious but unconfirmed indicators | SIEM watchlist |
+| Playbook update | New IR steps for confirmed technique | IR runbook |
+
+## Hunt Programme Metrics Table
+
+| Metric | Definition | Target | Cadence |
+|--------|-----------|--------|---------|
+| Hunts per quarter | Number of completed hunt campaigns | At least 4 | Quarterly |
+| True-positive rate | Percentage of hunts with at least one confirmed finding | At least 30% | Per hunt |
+| Detections created | New SIEM rules generated from hunt findings | At least 1 per hunt | Per hunt |
+| MTTD improvement | Reduction in mean time to detect after new rules deployed | Measure quarterly | Quarterly |
+| Telemetry coverage | Percentage of ATT&CK techniques with at least one detection | Target 70% or higher | Quarterly |
+
+## Sqrll Hunting Maturity Model Reference
+
+| Level | Name | Description |
+|-------|------|-------------|
+| 0 | Initial | Relies entirely on automated alerts; no proactive hunting |
+| 1 | Minimal | Hunt using threat intel IOCs only |
+| 2 | Procedural | Follows documented hunt procedures using data analysis |
+| 3 | Innovative | Creates new hunt procedures; uncovers novel attacker techniques |
+| 4 | Leading | Automates hunt procedures; integrates with detection pipeline |

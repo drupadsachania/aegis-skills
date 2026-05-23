@@ -1,0 +1,83 @@
+{
+  "osk": "1.0",
+  "name": "threat-modeling",
+  "version": "1.0.0",
+  "description": "Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers for: new system design review, pre-release threat model, architectural security review, or any exercise requiring a systematic attacker-perspective analysis of a system's design.\n",
+  "frameworks": [
+    "stride",
+    "pasta",
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "threat-modeling",
+    "architecture",
+    "stride",
+    "risk"
+  ],
+  "phases": [
+    {
+      "id": "scope-definition",
+      "lazy": false,
+      "tokens": 733
+    },
+    {
+      "id": "data-flow-diagramming",
+      "lazy": true,
+      "tokens": 675
+    },
+    {
+      "id": "threat-enumeration",
+      "lazy": true,
+      "tokens": 749
+    },
+    {
+      "id": "mitigation-mapping",
+      "lazy": true,
+      "tokens": 671
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/threat-modeling",
+    "action": "https://project-iud7o.vercel.app/threat-modeling/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/threat-modeling/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "monthly",
+    "sources": [
+      "mitre-attack-stix",
+      "owasp-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 120,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "embedded",
+      "iot"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "manufacturing",
+      "saas-providers"
+    ],
+    "attack-surface-tags": [
+      "architecture",
+      "design",
+      "data-flows",
+      "trust-boundaries",
+      "authentication"
+    ]
+  }
+}

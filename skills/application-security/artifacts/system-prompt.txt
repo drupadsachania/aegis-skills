@@ -1,0 +1,318 @@
+# Application Security Skill
+
+Systematically assess web applications and APIs for security weaknesses across the full SDLC.
+
+## Phase Map
+
+```
+Phase 1 → Threat Modelling (AppSec)  [read: references/threat-modeling-appsec.md]
+Phase 2 → SAST Review                [read: references/sast-review.md]
+Phase 3 → Dependency Audit           [read: references/dependency-audit.md]
+Phase 4 → API Security               [read: references/api-security.md]
+Phase 5 → Security Testing           [read: references/security-testing.md]
+```
+
+## Output Format
+
+Produce a findings table (OWASP category, severity, CVSS score, remediation effort) and a security testing coverage matrix.
+
+
+## threat-modeling-appsec
+
+# AppSec Threat Modelling — Reference
+
+Use during Phase 1 to enumerate threats against the application using STRIDE applied to the data flow diagram.
+
+## STRIDE per Component Table
+
+| STRIDE Category | Threat Example | OWASP Category | ATT&CK Reference |
+|-----------------|---------------|----------------|-----------------|
+| **S**poofing | Attacker impersonates legitimate user | A07:2021 Identification & Authentication Failures | T1078 Valid Accounts |
+| **T**ampering | Attacker modifies request parameters in transit | A03:2021 Injection | T1565 Data Manipulation |
+| **R**epudiation | User denies performing a transaction; no audit log | A09:2021 Logging & Monitoring Failures | T1562 Impair Defenses |
+| **I**nformation Disclosure | SQL error reveals database schema | A01:2021 Broken Access Control | T1213 Data from Info Repositories |
+| **D**enial of Service | Unauthenticated endpoint hit with high rate | — | T1498 Network DoS |
+| **E**levation of Privilege | IDOR allows access to other user's records | A01:2021 Broken Access Control | T1548 Abuse Elevation |
+
+## STRIDE Application by DFD Element
+
+| DFD Element | Most Relevant STRIDE Threats |
+|-------------|------------------------------|
+| External User / Actor | Spoofing, Repudiation |
+| Process (application logic) | Tampering, Denial of Service, Elevation of Privilege |
+| Data Store (DB, cache, file system) | Tampering, Information Disclosure |
+| Data Flow (API calls, internal service comms) | Tampering, Information Disclosure, Denial of Service |
+| Trust Boundary crossing | Spoofing, Tampering, Elevation of Privilege |
+
+## DREAD Scoring
+
+Score each identified threat 1–3 per dimension; total ÷ 5 = risk score.
+
+| Dimension | 1 (Low) | 2 (Medium) | 3 (High) |
+|-----------|---------|-----------|---------|
+| **D**amage | Minimal data exposure | PII of single user | Full database or admin takeover |
+| **R**eproducibility | Requires rare conditions | Reliable with effort | Trivially reproducible |
+| **E**xploitability | Advanced skill needed | Moderate skill | Script kiddie / automated |
+| **A**ffected users | 1 user | Group of users | All users |
+| **D**iscoverability | Internal only | Requires access | Publicly visible |
+
+## Threat Register Template
+
+| ID | Component | STRIDE Category | Threat Statement | DREAD Score | Mitigation | Status |
+|----|-----------|----------------|-----------------|-------------|-----------|--------|
+| T-001 | Login API | Spoofing | Attacker brute-forces credentials via /auth/login | 2.4 | Rate limiting + MFA | Open |
+| T-002 | User DB | Information Disclosure | SQL injection via search parameter reveals all records | 3.0 | Parameterised queries | Open |
+
+
+
+## sast-review
+
+# SAST Review — Reference
+
+Use during Phase 2 to run and triage static analysis findings against the application codebase.
+
+## SAST Tool Selection by Language
+
+| Language/Platform | Primary Tool | Secondary Tool | Notes |
+|-------------------|-------------|---------------|-------|
+| Python | Bandit | Semgrep | Bandit for quick scan; Semgrep for custom rules |
+| JavaScript / TypeScript | Semgrep | ESLint security plugin | Add `eslint-plugin-security` |
+| Java | SpotBugs + Find Security Bugs | CodeQL | Find Security Bugs plugin adds security rules |
+| Go | Gosec | Semgrep | `gosec ./...` |
+| C# / .NET | Roslyn Security Guard | CodeQL | Integrate into MSBuild pipeline |
+| Ruby | Brakeman | Semgrep | Brakeman is Rails-specific |
+| PHP | PHPCS Security Audit | Semgrep | `phpcs --standard=Security` |
+| Infrastructure as Code | Checkov, tfsec | KICS | Scan Terraform, CloudFormation, Kubernetes manifests |
+| Any language | CodeQL (GitHub) | Semgrep OSS | Run in CI/CD via GitHub Actions |
+
+## Integration into CI/CD Pipeline
+
+```yaml
+# GitHub Actions — Semgrep SAST
+- name: Semgrep SAST
+  uses: returntocorp/semgrep-action@v1
+  with:
+    config: >-
+      p/owasp-top-ten
+      p/secrets
+      p/command-injection
+  env:
+    SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+```
+
+## High-Priority Finding Categories
+
+| Category | OWASP Reference | Example CWE | Priority |
+|----------|----------------|-------------|---------|
+| SQL Injection | A03:2021 Injection | CWE-89 | P1 — Fix before merge |
+| Command Injection | A03:2021 | CWE-78 | P1 |
+| Hardcoded credentials / secrets | A02:2021 Cryptographic Failures | CWE-798 | P1 |
+| Path traversal | A01:2021 Broken Access Control | CWE-22 | P1 |
+| Insecure deserialization | A08:2021 | CWE-502 | P1 |
+| Cross-site scripting (XSS) | A03:2021 | CWE-79 | P2 |
+| Weak cryptography | A02:2021 | CWE-327 | P2 |
+| SSRF | A10:2021 | CWE-918 | P2 |
+| Missing input validation | A03:2021 | CWE-20 | P2 |
+| Insecure direct object reference | A01:2021 | CWE-639 | P2 |
+
+## Triage Process
+
+1. **Export findings** to CSV with severity, rule, file, line
+2. **Deduplicate** — suppress known false positives with `nosec` / `semgrep ignore`
+3. **Triage P1** — validate each Critical/High finding manually
+4. **Create tickets** — one ticket per unique finding type per component
+5. **Track metrics** — new findings per sprint, mean time to remediate by severity
+
+
+
+## dependency-audit
+
+# Dependency Audit — Reference
+
+Use during Phase 3 to identify vulnerable and malicious third-party dependencies across the application supply chain.
+
+## Tooling by Ecosystem
+
+| Ecosystem | SCA Tool | Command | Advisory Database |
+|-----------|---------|---------|------------------|
+| npm / Node.js | `npm audit` / Snyk | `npm audit --audit-level=high` | NPM Advisory, GitHub Advisories |
+| Python / pip | Safety / pip-audit | `pip-audit --requirement requirements.txt` | PyPA Advisory, OSV |
+| Java / Maven | OWASP Dependency-Check | `mvn dependency-check:check` | NVD, GitHub Advisories |
+| Java / Gradle | Snyk | `snyk test --all-sub-projects` | Snyk DB |
+| Go | govulncheck | `govulncheck ./...` | Go Vulnerability DB |
+| Ruby / Bundler | bundler-audit | `bundle audit check --update` | Ruby Advisory DB |
+| .NET / NuGet | `dotnet list package --vulnerable` | Built-in to .NET 6+ | NuGet advisories |
+| Docker / containers | Trivy | `trivy image myapp:latest` | Trivy advisory DB (NVD + OS advisories) |
+| Kubernetes manifests | Trivy | `trivy config k8s/` | Trivy misconfig DB |
+
+## Supply Chain Attack Indicators
+
+| Indicator | Description | Mitigation |
+|-----------|-------------|-----------|
+| Typosquatting | Package name resembles popular package | Verify exact package name; check download count |
+| Dependency confusion | Internal package name served from public registry | Private registry scope enforcement; `@scope/` prefix |
+| Malicious maintainer takeover | Legitimate package hijacked post-publish | Pin exact versions; monitor for unexpected updates |
+| Build script injection | `postinstall` scripts executing suspicious code | Review package.json scripts; use `--ignore-scripts` |
+| Protestware | Package intentionally sabotaged by author | Dependency pinning + integrity hashes |
+
+## Lockfile Policy
+
+All projects must maintain lockfiles and commit them to version control:
+
+| Ecosystem | Lockfile | Policy |
+|-----------|---------|--------|
+| npm | `package-lock.json` or `yarn.lock` | Committed; `npm ci` in CI (not `npm install`) |
+| Python | `requirements.txt` with pinned versions | Or `poetry.lock` / `Pipfile.lock` |
+| Go | `go.sum` | Committed; verified with `go mod verify` |
+| Java | Dependency versions locked in `pom.xml` / `build.gradle` | Use BOM for transitive pinning |
+
+## SBOM Generation
+
+Generate a Software Bill of Materials for each release:
+```bash
+# Using Syft
+syft packages myapp:latest -o cyclonedx-json > sbom.json
+
+# Using npm
+npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json
+```
+
+Submit SBOM to vulnerability databases for continuous monitoring.
+
+
+
+## api-security
+
+# API Security — Reference
+
+Use during Phase 4 to assess and harden API security posture. Covers OWASP API Security Top 10 (2023), authentication hardening, and CORS configuration.
+
+## OWASP API Security Top 10 (2023)
+
+| # | Risk | Description | Key Test | Mitigation |
+|---|------|-------------|---------|-----------|
+| API1 | Broken Object Level Authorisation (BOLA) | Attacker accesses another user's resources by changing IDs | Change resource ID in request | Validate ownership server-side on every request |
+| API2 | Broken Authentication | Weak auth mechanisms allow account takeover | Brute force, credential stuffing test | MFA, rate limiting, strong token expiry |
+| API3 | Broken Object Property Level Authorisation | Mass assignment exposes internal fields | Send extra properties in POST body | Allowlist input fields; never bind all request fields |
+| API4 | Unrestricted Resource Consumption | No rate limits allow DoS or high costs | High-volume requests | Rate limiting per user/IP; request size limits |
+| API5 | Broken Function Level Authorisation | Users can call admin functions | Access admin endpoints as regular user | Explicit authorisation check on every endpoint |
+| API6 | Unrestricted Access to Sensitive Business Flows | Automating business flows for abuse | Automate checkout, password reset | CAPTCHA, business logic rate limits |
+| API7 | Server Side Request Forgery (SSRF) | API fetches user-supplied URLs | Supply internal IP/cloud metadata URL | Allowlist outbound destinations; block RFC1918 |
+| API8 | Security Misconfiguration | Verbose errors, open CORS, debug endpoints | OPTIONS/HEAD requests, error enumeration | Harden headers, remove debug endpoints |
+| API9 | Improper Inventory Management | Shadow/deprecated API versions exposed | Enumerate versioned paths (`/v1/`, `/v2/`) | API gateway with version management; deprecate old versions |
+| API10 | Unsafe Consumption of APIs | Trusting third-party API responses without validation | Inject malicious data via third-party API | Validate and sanitise all third-party API responses |
+
+## Authentication Hardening Checklist
+
+```
+[ ] JWT: verify signature algorithm (reject 'none'), short expiry (≤15 min access token)
+[ ] OAuth 2.0: PKCE for public clients, validate state parameter, restrict redirect URIs
+[ ] API keys: rotate every 90 days; never log in plaintext; use secrets manager
+[ ] mTLS for service-to-service APIs in sensitive environments
+[ ] Rate limit authentication endpoints: 5 attempts per minute per IP
+[ ] Account lockout after 10 failed attempts (with exponential backoff)
+```
+
+## CORS Configuration Rules
+
+```javascript
+// Secure CORS — explicit origin allowlist only
+app.use(cors({
+  origin: ['https://app.example.com', 'https://admin.example.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  maxAge: 3600
+}));
+
+// NEVER use: origin: '*' with credentials: true
+// NEVER use: origin: '*' for authenticated APIs
+```
+
+## Security Headers for APIs
+
+| Header | Value | Purpose |
+|--------|-------|---------|
+| `Content-Security-Policy` | `default-src 'none'` | Prevent XSS |
+| `X-Content-Type-Options` | `nosniff` | Prevent MIME sniffing |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Force HTTPS |
+| `X-Frame-Options` | `DENY` | Prevent clickjacking |
+| `Cache-Control` | `no-store` | Prevent caching of sensitive responses |
+
+
+
+## security-testing
+
+# Security Testing — Reference
+
+Use during Phase 5 to design and execute a security testing strategy across the SDLC.
+
+## Security Testing Pyramid
+
+```
+                    ┌──────────┐
+                    │  Pentest  │  ← Slowest, most realistic, annual
+                   ┌────────────┐
+                   │    DAST    │  ← Per release, automated + manual
+                  ┌──────────────┐
+                  │     SAST     │  ← Every commit / PR
+                 ┌────────────────┐
+                 │  Dependency SCA│  ← Every commit / PR
+                ┌──────────────────┐
+                │  Unit / Security │  ← Every commit
+                │   Integration    │
+                └──────────────────┘
+```
+
+## DAST Tools Table
+
+| Tool | Type | Best For | Integration |
+|------|------|----------|------------|
+| OWASP ZAP | Open source | Web apps, authenticated scans | CI/CD via `zap-cli` or GitHub Action |
+| Burp Suite Pro | Commercial | Manual + automated pentest | Manual; Burp Enterprise for CI |
+| Nuclei | Open source | Template-based scanning (CVEs, misconfigs) | `nuclei -u https://app.example.com -t cves/` |
+| Nikto | Open source | Web server misconfiguration | Quick recon scan |
+| SQLMap | Open source | SQL injection testing | `sqlmap -u "https://app.example.com/search?q=test"` |
+| ffuf | Open source | API endpoint fuzzing | `ffuf -u https://api.example.com/FUZZ -w wordlist.txt` |
+
+## Sample Jest Security Test Snippets
+
+```javascript
+// Test: SQL injection prevention
+describe('Search API security', () => {
+  test('rejects SQL injection in query parameter', async () => {
+    const maliciousInput = "' OR '1'='1";
+    const res = await request(app)
+      .get(`/api/search?q=${encodeURIComponent(maliciousInput)}`);
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeDefined();
+  });
+
+  test('enforces rate limit on login endpoint', async () => {
+    for (let i = 0; i < 10; i++) {
+      await request(app).post('/auth/login')
+        .send({ username: 'test', password: 'wrong' });
+    }
+    const res = await request(app).post('/auth/login')
+      .send({ username: 'test', password: 'wrong' });
+    expect(res.status).toBe(429);
+  });
+
+  test('rejects IDOR - accessing another user resource', async () => {
+    const userAToken = await loginAs('userA');
+    const res = await request(app)
+      .get('/api/users/userB/profile')
+      .set('Authorization', `Bearer ${userAToken}`);
+    expect(res.status).toBe(403);
+  });
+});
+```
+
+## Testing Coverage Matrix
+
+| Test Type | OWASP A01 | OWASP A02 | OWASP A03 | OWASP A04 | OWASP A07 |
+|-----------|-----------|-----------|-----------|-----------|-----------|
+| Unit / security tests | Partial | Partial | Full | Partial | — |
+| SAST | Partial | Partial | Full | — | — |
+| DAST | Full | Full | Full | Full | Full |
+| Pentest | Full | Full | Full | Full | Full |

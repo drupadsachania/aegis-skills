@@ -1,0 +1,92 @@
+{
+  "osk": "1.0",
+  "name": "application-security",
+  "version": "1.0.0",
+  "description": "Application security assessment workflow covering threat modelling, static analysis, dependency auditing, API security, and security testing. Triggers for: pre-release security review, SAST/DAST gap analysis, API security hardening, or OWASP Top 10 remediation planning.\n",
+  "frameworks": [
+    "owasp-top10",
+    "mitre-attack",
+    "nist-ssdf"
+  ],
+  "tags": [
+    "security",
+    "appsec",
+    "sast",
+    "api",
+    "owasp",
+    "supply-chain",
+    "testing"
+  ],
+  "phases": [
+    {
+      "id": "threat-modeling-appsec",
+      "lazy": true,
+      "tokens": 670
+    },
+    {
+      "id": "sast-review",
+      "lazy": true,
+      "tokens": 601
+    },
+    {
+      "id": "dependency-audit",
+      "lazy": true,
+      "tokens": 656
+    },
+    {
+      "id": "api-security",
+      "lazy": false,
+      "tokens": 861
+    },
+    {
+      "id": "security-testing",
+      "lazy": true,
+      "tokens": 712
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/application-security",
+    "action": "https://project-iud7o.vercel.app/application-security/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/application-security/download"
+  },
+  "research": {
+    "feeds": [
+      "nvd-cve-feed",
+      "osv-database",
+      "owasp-advisories"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nvd-cve-feed",
+      "osv-database",
+      "github-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "mobile"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "e-commerce",
+      "saas-providers"
+    ],
+    "attack-surface-tags": [
+      "web-application",
+      "api",
+      "supply-chain",
+      "authentication",
+      "injection"
+    ]
+  }
+}

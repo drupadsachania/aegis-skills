@@ -1,0 +1,86 @@
+{
+  "osk": "1.0",
+  "name": "attack-surface-mapping",
+  "version": "1.0.0",
+  "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.\n",
+  "frameworks": [
+    "mitre-attack",
+    "owasp-asvs"
+  ],
+  "tags": [
+    "security",
+    "attack-surface",
+    "reconnaissance",
+    "exposure",
+    "cloud-security",
+    "external-assets"
+  ],
+  "phases": [
+    {
+      "id": "external-discovery",
+      "lazy": false,
+      "tokens": 676
+    },
+    {
+      "id": "internal-enumeration",
+      "lazy": true,
+      "tokens": 594
+    },
+    {
+      "id": "cloud-exposure",
+      "lazy": true,
+      "tokens": 762
+    },
+    {
+      "id": "risk-prioritization",
+      "lazy": true,
+      "tokens": 706
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/attack-surface-mapping",
+    "action": "https://project-iud7o.vercel.app/attack-surface-mapping/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/attack-surface-mapping/download"
+  },
+  "research": {
+    "feeds": [
+      "shodan-feed",
+      "censys-feed",
+      "cisa-advisories"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nvd-cve-feed",
+      "shodan-monitored",
+      "cisa-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 30,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "saas"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "retail",
+      "technology"
+    ],
+    "attack-surface-tags": [
+      "external-exposure",
+      "reconnaissance",
+      "cloud-misconfiguration",
+      "internet-facing",
+      "shadow-it"
+    ]
+  }
+}

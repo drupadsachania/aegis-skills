@@ -1,0 +1,66 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "attack-surface-mapping skill",
+    "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://project-iud7o.vercel.app"
+    }
+  ],
+  "paths": {
+    "/attack-surface-mapping/invoke": {
+      "post": {
+        "operationId": "invoke_attack_surface_mapping",
+        "summary": "Load a phase of the attack-surface-mapping skill",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "phase"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "description": "Which phase to load",
+                    "enum": [
+                      "external-discovery",
+                      "internal-enumeration",
+                      "cloud-exposure",
+                      "risk-prioritization"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phase content returned as markdown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "phase": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,233 @@
+# Network Security Skill
+
+Assess and harden the network attack surface. Use this skill to enumerate network assets,
+review segmentation controls, analyse traffic patterns for anomalies, and produce a
+prioritised hardening checklist anchored to ATT&CK lateral movement and discovery techniques.
+
+## Phase Map
+
+```
+Phase 1 → Network Inventory        [read: references/network-inventory.md]
+Phase 2 → Segmentation Review      [read: references/segmentation-review.md]
+Phase 3 → Traffic Analysis         [read: references/traffic-analysis.md]
+Phase 4 → Hardening Checklist      [read: references/hardening-checklist.md]
+```
+
+## Output Format
+
+Produce a prioritised hardening checklist table with ATT&CK technique mitigated, implementation complexity, and owner.
+
+
+## network-inventory
+
+# Network Inventory — Reference
+
+Use during Phase 1 to enumerate all network assets before segmentation review or hardening work.
+
+## Discovery Methods
+
+| Method | Tool | Use Case | ATT&CK Relevance |
+|--------|------|----------|------------------|
+| Active scan | nmap `-sn -PE` | Ping sweep for live hosts | T1046 Network Service Discovery |
+| Port scan | nmap `-sV -sC -p-` | Service/version enumeration | T1046 |
+| Passive ARP | arp-scan, Wireshark | Layer-2 host discovery without noise | T1040 Network Sniffing |
+| Cloud inventory | AWS CLI `ec2 describe-instances`, Azure `az vm list` | Cloud asset enumeration | T1580 Cloud Infrastructure Discovery |
+| AD query | `Get-ADComputer -Filter *` | Active Directory computer objects | T1018 Remote System Discovery |
+| DNS zone transfer | `dig axfr @nameserver domain` | Enumerate DNS records | T1590 Gather Victim Network Info |
+| CMDB export | ServiceNow / Lansweeper API | Authoritative asset list baseline | — |
+
+## Active Discovery — Nmap Commands
+
+```bash
+# Ping sweep — discover live hosts
+nmap -sn 10.0.0.0/8 -oG live-hosts.gnmap
+
+# Service and version scan on discovered hosts
+nmap -sV -sC -O -T4 -iL live-hosts.txt -oX services.xml
+
+# UDP top ports (slow — restrict to critical subnets)
+nmap -sU --top-ports 20 10.0.1.0/24
+```
+
+## Cloud Asset Discovery
+
+```bash
+# AWS — list EC2 instances with tags
+aws ec2 describe-instances --query \
+  "Reservations[*].Instances[*].{IP:PrivateIpAddress,Name:Tags[?Key=='Name']|[0].Value,State:State.Name}"
+
+# Azure — list all VMs
+az vm list --show-details --query "[*].{Name:name,IP:privateIps,State:powerState}"
+```
+
+## Asset Inventory Output Table
+
+| IP Address | Hostname | OS | Open Ports | Role | Business Owner | Criticality |
+|------------|----------|----|------------|------|----------------|-------------|
+| 10.0.1.10 | dc01.corp | Windows Server 2022 | 53,88,389,445 | Domain Controller | IT Ops | Critical |
+| 10.0.2.50 | web-prod-01 | Ubuntu 22.04 | 80,443 | Web Server | App Team | High |
+
+## IP Range Classification
+
+Segment all discovered ranges into:
+1. **Crown jewel subnets** — contain Tier 1 assets (DCs, PAM, HSMs)
+2. **Production subnets** — servers, databases
+3. **User subnets** — workstations, BYOD
+4. **DMZ/perimeter** — internet-facing services
+5. **OT/ICS subnets** — operational technology (if applicable)
+6. **Cloud VPCs** — per environment (prod/dev/staging)
+
+
+
+## segmentation-review
+
+# Segmentation Review — Reference
+
+Use during Phase 2 to assess whether network segments correctly enforce least-privilege access between zones.
+
+## Segmentation Principles
+
+Effective segmentation limits lateral movement (T1021) and discovery (T1046, T1018) by requiring explicit trust between zones. Every segment crossing should be policy-controlled and logged.
+
+## VLAN and Zone Review Checklist
+
+| Control | Expected State | Assessment Method | ATT&CK Technique Mitigated |
+|---------|---------------|-------------------|---------------------------|
+| Inter-VLAN routing restricted | Only required ports between VLANs | Firewall rule review + test traffic | T1021 Remote Services |
+| IT/OT boundary firewall | Unidirectional or tightly filtered | Firewall rule export review | T1021, T1566 |
+| DMZ → Internal blocked | DMZ cannot initiate sessions to internal | ACL review, penetration test | T1190, T1133 |
+| User subnet → Server subnet | Only approved application ports | Policy review + flow data | T1021.002 SMB, T1021.006 WinRM |
+| Jump host / PAM enforced | All admin access routes via privileged access workstation | Firewall log review | T1078 Valid Accounts |
+| Crown jewel isolation | Domain controllers, HSMs, backup servers in dedicated segment | Network diagram validation | T1003, T1490 |
+
+## Cloud VPC Segmentation Review
+
+```
+AWS checklist:
+[ ] Security groups — no 0.0.0.0/0 inbound on SSH/RDP
+[ ] NACLs applied at subnet level for defence-in-depth
+[ ] VPC Flow Logs enabled in all VPCs
+[ ] Transit Gateway attachments reviewed — no unexpected cross-account routes
+[ ] PrivateLink used for AWS service access (no public endpoints)
+
+Azure checklist:
+[ ] NSG rules reviewed — deny-all default applied
+[ ] Azure Firewall or NVA on hub-spoke boundary
+[ ] No peering to untrusted subscriptions
+[ ] Private Endpoints configured for PaaS services
+```
+
+## IT/OT Boundary Controls
+
+For environments with operational technology:
+
+| Boundary | Required Control | Acceptable Exception |
+|----------|-----------------|----------------------|
+| IT → OT | Industrial DMZ (IDMZ) with one-way data diode or firewall | Approved historian replication only |
+| OT → Internet | Blocked at perimeter | Vendor remote access via jump host with MFA |
+| Engineering workstations | Isolated VLAN, no internet | Software update via approved proxy |
+| SCADA/HMI | Air-gapped or strict whitelist | — |
+
+## Segmentation Gap Register Template
+
+| Finding | Source Zone | Destination Zone | Port/Protocol | Risk | Recommended Action |
+|---------|-------------|-----------------|---------------|------|--------------------|
+| User VLAN can reach DC on all ports | Users (10.1.0.0/24) | DC (10.0.0.10) | All | High | Restrict to 88,389,445,3268 only |
+
+
+
+## traffic-analysis
+
+# Traffic Analysis — Reference
+
+Use during Phase 3 to identify anomalous traffic patterns indicative of adversary activity.
+
+## Telemetry Sources
+
+| Source | What It Provides | Collection Method |
+|--------|-----------------|-------------------|
+| NetFlow / IPFIX | Volume, direction, port, duration metadata | Flow exporter on routers/switches |
+| DNS logs | Domain resolution history | Recursive resolver query logging |
+| Proxy logs | HTTP/S URL, user-agent, response codes | Squid / Zscaler / Bluecoat |
+| Firewall logs | Allow/deny decisions, NAT translations | Syslog / SIEM ingestion |
+| PCAP | Full packet capture for deep inspection | Tap / SPAN port, Zeek/Suricata |
+| VPC Flow Logs | Cloud east-west and north-south flows | AWS VPC Flow Logs / Azure NSG Flow |
+
+## Beaconing and C2 Pattern Detection
+
+| Pattern | Description | ATT&CK ID | Detection Query (SPL) |
+|---------|-------------|-----------|----------------------|
+| Regular interval DNS | Same domain queried every N seconds | T1071.004 | `index=dns \| bucket span=1m _time \| stats count by src_ip,query \| where count > 50` |
+| Long-duration connections | Persistent TCP connection to unusual dest | T1071.001 | `index=netflow duration > 3600 dest_port IN (80,443,8080)` |
+| Low-and-slow exfiltration | Small consistent outbound data volumes | T1030 | `index=netflow \| stats sum(bytes_out) by dest_ip \| where sum > 1000000` |
+| DGA domains | High-entropy domain names with short TTL | T1568.002 | Entropy scoring on DNS query field |
+| ICMP tunnelling | Unusually large ICMP payloads | T1095 | `index=netflow proto=1 bytes > 100` |
+| SMB lateral movement | Internal SMB spikes between workstations | T1021.002 | `index=netflow dest_port=445 src_zone=users dest_zone=users` |
+| DNS over HTTPS (DoH) | Bypasses DNS inspection | T1071.004 | Block non-authorised DoH resolvers (1.1.1.1:443 / 8.8.8.8:443) |
+
+## Baseline Anomaly Approach
+
+1. **Establish baseline** — collect 14 days of flow data during normal operations
+2. **Profile per-host behaviour** — typical dest IPs, ports, data volumes, connection duration
+3. **Alert on deviation** — flag hosts exceeding 3 standard deviations from baseline
+4. **Prioritise by asset tier** — anomalies from Tier 1 assets (DCs, PAM) escalate immediately
+
+## DNS Analysis Commands
+
+```bash
+# Extract top queried external domains from DNS logs
+zeek-cut query < dns.log | sort | uniq -c | sort -rn | head 50
+
+# Find high-entropy domain names (potential DGA)
+python3 dga_entropy.py --threshold 3.5 --input dns.log
+```
+
+
+
+## hardening-checklist
+
+# Network Hardening Checklist — Reference
+
+Use during Phase 4 to prioritise and implement network hardening controls. Tier 1 controls are mandatory; Tier 2 and Tier 3 are risk-based.
+
+## Tier 1 — Critical Controls (Implement Immediately)
+
+| Control | Implementation Notes | ATT&CK Technique Mitigated | Complexity |
+|---------|---------------------|---------------------------|-----------|
+| Disable SMBv1 | Group Policy: `Set-SmbServerConfiguration -EnableSMB1Protocol $false` | T1021.002 | Low |
+| Block LLMNR/mDNS | GPO: Computer Config → Admin Templates → DNS Client → Turn off multicast name resolution | T1557.001 LLMNR Poisoning | Low |
+| Enforce NTLMv2 minimum | GPO: Security Options → LAN Manager authentication level → NTLMv2 only | T1557 | Low |
+| Firewall default-deny | All network firewalls set to implicit deny-all; only approved rules permitted | T1021, T1046 | Medium |
+| Disable Telnet/FTP | Remove from all network devices; replace with SSH/SFTP | T1021.004 | Low |
+| Enable VPC Flow Logs | All cloud VPCs; retain 90+ days in SIEM | T1040 | Low |
+| Patch network devices | Monthly patch cycle for routers, switches, firewalls; out-of-band management | T1190 | Medium |
+
+## Tier 2 — High-Value Controls (Implement Within 30 Days)
+
+| Control | Implementation Notes | ATT&CK Technique Mitigated | Complexity |
+|---------|---------------------|---------------------------|-----------|
+| Network Access Control (NAC) | 802.1X port authentication; quarantine VLAN for non-compliant devices | T1200 Hardware Additions | High |
+| DNS RPZ (Response Policy Zones) | Block known-malicious domains at resolver; subscribe to threat intel feed | T1071.004 | Medium |
+| East-west micro-segmentation | Zero-trust microsegmentation for crown jewel subnets (VMware NSX or equivalent) | T1021 | High |
+| NetFlow export to SIEM | All perimeter and core switches/routers export flow data; baseline 14 days | T1040 | Medium |
+| BGP route filtering | Implement prefix-list and AS-path filters on all BGP peers | T1599 Network Boundary Bridging | Medium |
+| Disable unused switch ports | Access ports not in use set to unused VLAN and shutdown | T1200 | Low |
+
+## Tier 3 — Defence-in-Depth Controls (Implement Within 90 Days)
+
+| Control | Implementation Notes | ATT&CK Technique Mitigated | Complexity |
+|---------|---------------------|---------------------------|-----------|
+| Deception honeypots | Deploy network honeypots in user and server VLANs (e.g., Canarytokens, Thinkst Canary) | T1046, T1021 | Medium |
+| Network DLP | Inspect and block sensitive data exfiltration over HTTP/S and DNS | T1048 Exfiltration | High |
+| IPv6 security controls | Disable IPv6 where unused; filter RA messages; deploy IPv6 FW rules | T1049 | Medium |
+| Out-of-band management network | Separate management VLAN/network for all infrastructure devices; no user access | T1557 | High |
+| TLS inspection | Decrypt and inspect outbound TLS for malware/C2 detection | T1071.001 | High |
+| DNSSEC validation | Enable DNSSEC validation on recursive resolvers | T1557.002 ARP Cache Poisoning | Medium |
+
+## Compliance Mapping
+
+| Control Tier | NIST CSF Function | CIS Control | PCI DSS Requirement |
+|-------------|-------------------|-------------|---------------------|
+| Tier 1 | Protect (PR.AC) | CIS 12, 13 | Req 1, 2 |
+| Tier 2 | Protect + Detect (DE.CM) | CIS 12, 13, 14 | Req 1, 10 |
+| Tier 3 | Detect + Respond (RS.AN) | CIS 14, 16 | Req 10, 11 |

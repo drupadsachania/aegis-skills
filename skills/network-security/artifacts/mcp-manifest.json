@@ -1,0 +1,56 @@
+{
+  "schema": "mcp/1.0",
+  "name": "network-security",
+  "version": "1.0.0",
+  "description": "Network security assessment and hardening workflow. Triggers for: network segmentation review, traffic analysis, firewall rule audits, network inventory, perimeter hardening, lateral movement prevention, or any exercise requiring network threat surface reduction.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the network-security skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "network-inventory",
+              "segmentation-review",
+              "traffic-analysis",
+              "hardening-checklist"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/network-security/phase/network-inventory",
+      "name": "network-inventory",
+      "description": "Reference content for network-security — network-inventory",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/network-security/phase/segmentation-review",
+      "name": "segmentation-review",
+      "description": "Reference content for network-security — segmentation-review",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/network-security/phase/traffic-analysis",
+      "name": "traffic-analysis",
+      "description": "Reference content for network-security — traffic-analysis",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/network-security/phase/hardening-checklist",
+      "name": "hardening-checklist",
+      "description": "Reference content for network-security — hardening-checklist",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

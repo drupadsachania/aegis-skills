@@ -1,0 +1,49 @@
+{
+  "schema": "mcp/1.0",
+  "name": "security-documentation",
+  "version": "1.0.0",
+  "description": "Security documentation authoring workflow for policies, runbooks, and incident response templates. Triggers for: new security policy creation, IR runbook authoring, compliance documentation, or any exercise requiring structured security writing that meets audit and operational standards.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the security-documentation skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "policy-writing",
+              "runbook-authoring",
+              "incident-templates"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/policy-writing",
+      "name": "policy-writing",
+      "description": "Reference content for security-documentation — policy-writing",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/runbook-authoring",
+      "name": "runbook-authoring",
+      "description": "Reference content for security-documentation — runbook-authoring",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/incident-templates",
+      "name": "incident-templates",
+      "description": "Reference content for security-documentation — incident-templates",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "osk": "1.0",
+  "name": "security-operations",
+  "version": "1.0.0",
+  "description": "Full security operations workflow covering the complete SOC operating model — from alert triage through threat intelligence, vulnerability management, incident detection, incident response, post-incident review, metrics, and compliance reporting. Designed for SOC analysts, security engineers, and security managers running operational security programmes.\n",
+  "frameworks": [
+    "mitre-attack",
+    "nist-csf",
+    "sans-incident-response",
+    "iso-27035"
+  ],
+  "tags": [
+    "security",
+    "soc",
+    "operations",
+    "incident-response",
+    "threat-intelligence",
+    "vulnerability-management",
+    "metrics",
+    "compliance"
+  ],
+  "phases": [
+    {
+      "id": "alert-triage",
+      "lazy": false,
+      "tokens": 568
+    },
+    {
+      "id": "threat-intelligence",
+      "lazy": true,
+      "tokens": 589
+    },
+    {
+      "id": "vulnerability-management",
+      "lazy": true,
+      "tokens": 530
+    },
+    {
+      "id": "incident-detection",
+      "lazy": true,
+      "tokens": 759
+    },
+    {
+      "id": "incident-response",
+      "lazy": true,
+      "tokens": 750
+    },
+    {
+      "id": "post-incident-review",
+      "lazy": true,
+      "tokens": 748
+    },
+    {
+      "id": "security-metrics",
+      "lazy": true,
+      "tokens": 793
+    },
+    {
+      "id": "compliance-reporting",
+      "lazy": true,
+      "tokens": 846
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/security-operations",
+    "action": "https://project-iud7o.vercel.app/security-operations/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/security-operations/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed",
+      "cisa-advisories",
+      "isac-feeds"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "daily",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-kev",
+      "cisa-advisories",
+      "isac-feeds"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 30,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "ot",
+      "remote-workforce"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "critical-infrastructure",
+      "technology",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "soc",
+      "detection",
+      "incident-response",
+      "threat-intelligence",
+      "vulnerability-management",
+      "compliance"
+    ]
+  }
+}

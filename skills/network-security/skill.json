@@ -1,0 +1,82 @@
+{
+  "osk": "1.0",
+  "name": "network-security",
+  "version": "1.0.0",
+  "description": "Network security assessment and hardening workflow. Triggers for: network segmentation review, traffic analysis, firewall rule audits, network inventory, perimeter hardening, lateral movement prevention, or any exercise requiring network threat surface reduction.\n",
+  "frameworks": [
+    "mitre-attack",
+    "nist-csf"
+  ],
+  "tags": [
+    "security",
+    "network",
+    "segmentation",
+    "hardening",
+    "perimeter"
+  ],
+  "phases": [
+    {
+      "id": "network-inventory",
+      "lazy": true,
+      "tokens": 597
+    },
+    {
+      "id": "segmentation-review",
+      "lazy": true,
+      "tokens": 685
+    },
+    {
+      "id": "traffic-analysis",
+      "lazy": true,
+      "tokens": 632
+    },
+    {
+      "id": "hardening-checklist",
+      "lazy": false,
+      "tokens": 859
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/network-security",
+    "action": "https://project-iud7o.vercel.app/network-security/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/network-security/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 90,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "ot",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "critical-infrastructure",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "network",
+      "perimeter",
+      "lateral-movement",
+      "east-west-traffic"
+    ]
+  }
+}

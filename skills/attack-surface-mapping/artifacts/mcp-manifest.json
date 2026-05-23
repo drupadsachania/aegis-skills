@@ -1,0 +1,56 @@
+{
+  "schema": "mcp/1.0",
+  "name": "attack-surface-mapping",
+  "version": "1.0.0",
+  "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the attack-surface-mapping skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "external-discovery",
+              "internal-enumeration",
+              "cloud-exposure",
+              "risk-prioritization"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/external-discovery",
+      "name": "external-discovery",
+      "description": "Reference content for attack-surface-mapping — external-discovery",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/internal-enumeration",
+      "name": "internal-enumeration",
+      "description": "Reference content for attack-surface-mapping — internal-enumeration",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/cloud-exposure",
+      "name": "cloud-exposure",
+      "description": "Reference content for attack-surface-mapping — cloud-exposure",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/risk-prioritization",
+      "name": "risk-prioritization",
+      "description": "Reference content for attack-surface-mapping — risk-prioritization",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

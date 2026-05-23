@@ -1,0 +1,56 @@
+{
+  "schema": "mcp/1.0",
+  "name": "threat-modeling",
+  "version": "1.0.0",
+  "description": "Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers for: new system design review, pre-release threat model, architectural security review, or any exercise requiring a systematic attacker-perspective analysis of a system's design.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the threat-modeling skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "scope-definition",
+              "data-flow-diagramming",
+              "threat-enumeration",
+              "mitigation-mapping"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/scope-definition",
+      "name": "scope-definition",
+      "description": "Reference content for threat-modeling — scope-definition",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/data-flow-diagramming",
+      "name": "data-flow-diagramming",
+      "description": "Reference content for threat-modeling — data-flow-diagramming",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/threat-enumeration",
+      "name": "threat-enumeration",
+      "description": "Reference content for threat-modeling — threat-enumeration",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/mitigation-mapping",
+      "name": "mitigation-mapping",
+      "description": "Reference content for threat-modeling — mitigation-mapping",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

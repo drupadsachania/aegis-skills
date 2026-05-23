@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "infrastructure-security",
+  "version": "1.0.0",
+  "description": "Infrastructure security assessment workflow covering asset discovery, configuration baseline, patch management, hardening controls, and compliance validation. Use for CIS Benchmark assessments, cloud security posture reviews, or infrastructure hardening sprints.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the infrastructure-security skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "asset-discovery",
+              "configuration-baseline",
+              "patch-management",
+              "hardening-controls",
+              "compliance-validation"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/asset-discovery",
+      "name": "asset-discovery",
+      "description": "Reference content for infrastructure-security — asset-discovery",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/configuration-baseline",
+      "name": "configuration-baseline",
+      "description": "Reference content for infrastructure-security — configuration-baseline",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/patch-management",
+      "name": "patch-management",
+      "description": "Reference content for infrastructure-security — patch-management",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/hardening-controls",
+      "name": "hardening-controls",
+      "description": "Reference content for infrastructure-security — hardening-controls",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/compliance-validation",
+      "name": "compliance-validation",
+      "description": "Reference content for infrastructure-security — compliance-validation",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

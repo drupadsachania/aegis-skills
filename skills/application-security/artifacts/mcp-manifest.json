@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "application-security",
+  "version": "1.0.0",
+  "description": "Application security assessment workflow covering threat modelling, static analysis, dependency auditing, API security, and security testing. Triggers for: pre-release security review, SAST/DAST gap analysis, API security hardening, or OWASP Top 10 remediation planning.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the application-security skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "threat-modeling-appsec",
+              "sast-review",
+              "dependency-audit",
+              "api-security",
+              "security-testing"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://project-iud7o.vercel.app/application-security/phase/threat-modeling-appsec",
+      "name": "threat-modeling-appsec",
+      "description": "Reference content for application-security — threat-modeling-appsec",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/application-security/phase/sast-review",
+      "name": "sast-review",
+      "description": "Reference content for application-security — sast-review",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/application-security/phase/dependency-audit",
+      "name": "dependency-audit",
+      "description": "Reference content for application-security — dependency-audit",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/application-security/phase/api-security",
+      "name": "api-security",
+      "description": "Reference content for application-security — api-security",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://project-iud7o.vercel.app/application-security/phase/security-testing",
+      "name": "security-testing",
+      "description": "Reference content for application-security — security-testing",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

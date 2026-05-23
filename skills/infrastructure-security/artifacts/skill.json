@@ -1,0 +1,92 @@
+{
+  "osk": "1.0",
+  "name": "infrastructure-security",
+  "version": "1.0.0",
+  "description": "Infrastructure security assessment workflow covering asset discovery, configuration baseline, patch management, hardening controls, and compliance validation. Use for CIS Benchmark assessments, cloud security posture reviews, or infrastructure hardening sprints.\n",
+  "frameworks": [
+    "cis-benchmarks",
+    "nist-csf",
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "infrastructure",
+    "hardening",
+    "patch-management",
+    "compliance",
+    "cloud"
+  ],
+  "phases": [
+    {
+      "id": "asset-discovery",
+      "lazy": true,
+      "tokens": 556
+    },
+    {
+      "id": "configuration-baseline",
+      "lazy": true,
+      "tokens": 584
+    },
+    {
+      "id": "patch-management",
+      "lazy": true,
+      "tokens": 629
+    },
+    {
+      "id": "hardening-controls",
+      "lazy": false,
+      "tokens": 651
+    },
+    {
+      "id": "compliance-validation",
+      "lazy": true,
+      "tokens": 610
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/infrastructure-security",
+    "action": "https://project-iud7o.vercel.app/infrastructure-security/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/infrastructure-security/download"
+  },
+  "research": {
+    "feeds": [
+      "nvd-cve-feed",
+      "cisa-kev",
+      "cis-benchmarks"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nvd-cve-feed",
+      "cisa-kev",
+      "cis-benchmarks-updates"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "on-premises"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "retail",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "servers",
+      "cloud-workloads",
+      "containers",
+      "configuration",
+      "patch-management"
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "osk": "1.0",
+  "name": "security-documentation",
+  "version": "1.0.0",
+  "description": "Security documentation authoring workflow for policies, runbooks, and incident response templates. Triggers for: new security policy creation, IR runbook authoring, compliance documentation, or any exercise requiring structured security writing that meets audit and operational standards.\n",
+  "frameworks": [
+    "iso-27001",
+    "nist-csf",
+    "sans-policies"
+  ],
+  "tags": [
+    "security",
+    "documentation",
+    "policy",
+    "runbook",
+    "incident-response",
+    "compliance"
+  ],
+  "phases": [
+    {
+      "id": "policy-writing",
+      "lazy": false,
+      "tokens": 738
+    },
+    {
+      "id": "runbook-authoring",
+      "lazy": true,
+      "tokens": 784
+    },
+    {
+      "id": "incident-templates",
+      "lazy": true,
+      "tokens": 874
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://project-iud7o.vercel.app/security-documentation",
+    "action": "https://project-iud7o.vercel.app/security-documentation/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/security-documentation/download"
+  },
+  "research": {
+    "feeds": [
+      "sans-policy-templates",
+      "nist-csf"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "monthly",
+    "sources": [
+      "sans-policy-templates",
+      "nist-csf-updates",
+      "iso-27001-updates"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 180,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "manufacturing",
+      "technology"
+    ],
+    "attack-surface-tags": [
+      "governance",
+      "compliance",
+      "policy",
+      "documentation",
+      "audit"
+    ]
+  }
+}
