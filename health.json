@@ -1,0 +1,122 @@
+{
+  "generated": "2026-05-23T12:21:52.291Z",
+  "skills": {
+    "application-security": {
+      "health-score": 0.84,
+      "attack-coverage": 0.85,
+      "cve-freshness": 0.7,
+      "phase-coverage": 1,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "attack-surface-mapping": {
+      "health-score": 0.85,
+      "attack-coverage": 0.77,
+      "cve-freshness": 1,
+      "phase-coverage": 0.8,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "deception-engineering": {
+      "health-score": 0.98,
+      "attack-coverage": 0.96,
+      "cve-freshness": 1,
+      "phase-coverage": 1,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "2.0.0"
+    },
+    "endpoint-security": {
+      "health-score": 0.9,
+      "attack-coverage": 0.87,
+      "cve-freshness": 1,
+      "phase-coverage": 0.8,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "infrastructure-security": {
+      "health-score": 0.94,
+      "attack-coverage": 0.87,
+      "cve-freshness": 1,
+      "phase-coverage": 1,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "mitre-atlas": {
+      "health-score": 0.63,
+      "attack-coverage": 0.68,
+      "cve-freshness": 0.7,
+      "phase-coverage": 0.4,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "mitre-attack": {
+      "health-score": 0.72,
+      "attack-coverage": 0.78,
+      "cve-freshness": 0.7,
+      "phase-coverage": 0.6,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "mitre-engage": {
+      "health-score": 0.6,
+      "attack-coverage": 0.61,
+      "cve-freshness": 0.7,
+      "phase-coverage": 0.4,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "network-security": {
+      "health-score": 0.87,
+      "attack-coverage": 0.82,
+      "cve-freshness": 1,
+      "phase-coverage": 0.8,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "security-documentation": {
+      "health-score": 0.9,
+      "attack-coverage": 0.97,
+      "cve-freshness": 1,
+      "phase-coverage": 0.6,
+      "relevant-techniques-count": 27,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "security-operations": {
+      "health-score": 0.96,
+      "attack-coverage": 0.92,
+      "cve-freshness": 1,
+      "phase-coverage": 1,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "threat-hunting": {
+      "health-score": 0.91,
+      "attack-coverage": 0.81,
+      "cve-freshness": 1,
+      "phase-coverage": 1,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    },
+    "threat-modeling": {
+      "health-score": 0.77,
+      "attack-coverage": 0.8,
+      "cve-freshness": 0.7,
+      "phase-coverage": 0.8,
+      "relevant-techniques-count": 858,
+      "last-updated": "2026-05-23T12:21:52.291Z",
+      "version": "1.0.0"
+    }
+  }
+}
