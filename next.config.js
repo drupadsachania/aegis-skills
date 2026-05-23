@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@anthropic-ai/sdk', 'openai', '@google/generative-ai'],
   async headers () {
     return [
       {
