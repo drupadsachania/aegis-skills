@@ -19,7 +19,13 @@
     "type": "git",
     "url": "https://github.com/drupadsachania/deception-skills.git"
   },
-  "keywords": ["skills", "ai", "mcp", "openskill", "compiler"],
+  "keywords": [
+    "skills",
+    "ai",
+    "mcp",
+    "openskill",
+    "compiler"
+  ],
   "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.43.0",
@@ -32,7 +38,13 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "autoprefixer": "^10.5.0",
     "jest": "^29.7.0",
-    "node-mocks-http": "^1.14.1"
+    "node-mocks-http": "^1.14.1",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0"
   }
 }
