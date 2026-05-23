@@ -59,7 +59,7 @@ describe('GET /api/[skill]/phase/[phaseId]', () => {
     const res = httpMocks.createResponse()
     await handler(req, res)
     expect(res.statusCode).toBe(404)
-    expect(JSON.parse(res._getData()).error).toMatch(/nonexistent/)
+    expect(JSON.parse(res._getData()).error).toBe('skill not found')
   })
 
   test('returns 404 for unknown phase', async () => {
@@ -72,7 +72,7 @@ describe('GET /api/[skill]/phase/[phaseId]', () => {
     const res = httpMocks.createResponse()
     await handler(req, res)
     expect(res.statusCode).toBe(404)
-    expect(JSON.parse(res._getData()).error).toMatch(/bad-phase/)
+    expect(JSON.parse(res._getData()).error).toBe('phase not found')
   })
 
   test('returns 405 for non-GET requests', async () => {

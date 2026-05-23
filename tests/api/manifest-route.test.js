@@ -42,7 +42,7 @@ describe('GET /api/[skill]/manifest', () => {
     await handler(req, res)
     expect(res.statusCode).toBe(404)
     const data = JSON.parse(res._getData())
-    expect(data.error).toMatch(/nonexistent/)
+    expect(data.error).toBe('skill not found')
   })
 
   test('returns 405 for non-GET requests', async () => {

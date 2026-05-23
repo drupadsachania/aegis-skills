@@ -1,7 +1,7 @@
 'use strict'
 
 function handler (req, res) {
-  res.status(200).json({ ok: true, cwd: process.cwd() })
+  res.status(200).json({ ok: true })
 }
 
 module.exports = handler
