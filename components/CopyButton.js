@@ -1,7 +1,6 @@
 'use strict'
 
 const React = require('react')
-const ReactDOM = require('react-dom')
 const { useState } = React
 
 function CopyButton({ text, label }) {
@@ -9,7 +8,7 @@ function CopyButton({ text, label }) {
 
   function handleClick() {
     navigator.clipboard.writeText(text).then(() => {
-      ReactDOM.flushSync(() => setCopied(true))
+      setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
   }
