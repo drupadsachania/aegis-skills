@@ -46,6 +46,15 @@ describe('generateManifest', () => {
   test('does not include phase content in manifest', () => {
     expect(JSON.stringify(manifest)).not.toContain('reference content')
   })
+
+  test('includes ref path in each phase', () => {
+    const skillWithRef = {
+      ...mockSkill,
+      phases: [{ id: 'phase-zero', lazy: true, tokens: 80, ref: 'references/phase-zero.md' }]
+    }
+    const manifest = generateManifest(skillWithRef, BASE_URL)
+    expect(manifest.phases[0].ref).toBe('references/phase-zero.md')
+  })
 })
 
 describe('validateManifest', () => {

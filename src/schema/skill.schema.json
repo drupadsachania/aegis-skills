@@ -20,7 +20,8 @@
         "properties": {
           "id":     { "type": "string" },
           "lazy":   { "type": "boolean" },
-          "tokens": { "type": "integer", "minimum": 0 }
+          "tokens": { "type": "integer", "minimum": 0 },
+          "ref":    { "type": "string" }
         }
       }
     },
