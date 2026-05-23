@@ -1,16 +1,24 @@
 'use strict'
 
 const React = require('react')
-const { useState } = React
+const { useState, useRef, useEffect } = React
 
 function CopyButton({ text, label }) {
   const [copied, setCopied] = useState(false)
+  const timerRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   function handleClick() {
     navigator.clipboard.writeText(text).then(() => {
+      if (timerRef.current) clearTimeout(timerRef.current)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+      timerRef.current = setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {})
   }
 
   return React.createElement(
