@@ -1,0 +1,15 @@
+# Test Skill
+
+This is the main body of the test skill.
+
+## Core Principle
+
+Do the thing correctly.
+
+
+## phase-zero
+
+# Phase 0 — Setup
+
+This is reference content for phase zero.
+Loaded lazily only when the phase is reached.

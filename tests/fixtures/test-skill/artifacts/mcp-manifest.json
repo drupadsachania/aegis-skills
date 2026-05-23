@@ -1,0 +1,35 @@
+{
+  "schema": "mcp/1.0",
+  "name": "test-skill",
+  "version": "1.0.0",
+  "description": "A minimal test skill for compiler validation.",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the test-skill skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "phase-zero"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://skills.openskill.ai/test-skill/phase/phase-zero",
+      "name": "phase-zero",
+      "description": "Reference content for test-skill — phase-zero",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "osk": "1.0",
+  "name": "test-skill",
+  "version": "1.0.0",
+  "description": "A minimal test skill for compiler validation.",
+  "frameworks": [
+    "mitre-attack"
+  ],
+  "tags": [
+    "test"
+  ],
+  "phases": [
+    {
+      "id": "phase-zero",
+      "lazy": true,
+      "tokens": 27
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://skills.openskill.ai/test-skill",
+    "action": "https://skills.openskill.ai/test-skill/invoke",
+    "artifacts": "https://skills.openskill.ai/test-skill/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack"
+    ],
+    "red-team": false
+  }
+}
