@@ -1,8 +1,9 @@
 'use strict'
 
 const React = require('react')
+const HealthBadge = require('./HealthBadge')
 
-function SkillCard({ skill }) {
+function SkillCard ({ skill, healthScore }) {
   const { name, description, tags, frameworks, phases } = skill
   const excerpt = description && description.length > 120
     ? description.slice(0, 120).trimEnd() + '…'
@@ -17,7 +18,6 @@ function SkillCard({ skill }) {
         'hover:border-indigo-500 transition-colors no-underline'
       ].join(' ')
     },
-    // Name + phase count row
     React.createElement(
       'div',
       { className: 'flex items-start justify-between gap-2 mb-2' },
@@ -27,18 +27,23 @@ function SkillCard({ skill }) {
         name
       ),
       React.createElement(
-        'span',
-        { className: 'shrink-0 text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full' },
-        `${phases} phase${phases === 1 ? '' : 's'}`
+        'div',
+        { className: 'flex items-center gap-1.5 shrink-0' },
+        healthScore != null
+          ? React.createElement(HealthBadge, { score: healthScore })
+          : null,
+        React.createElement(
+          'span',
+          { className: 'text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full' },
+          `${phases} phase${phases === 1 ? '' : 's'}`
+        )
       )
     ),
-    // Description excerpt
     React.createElement(
       'p',
       { className: 'text-zinc-400 text-sm leading-relaxed mb-3' },
       excerpt
     ),
-    // Tags + frameworks
     React.createElement(
       'div',
       { className: 'flex flex-wrap gap-1.5' },

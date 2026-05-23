@@ -68,6 +68,16 @@ describe('listSkills', () => {
     const skills = await listSkills()
     expect(skills).toEqual([])
   })
+
+  test('healthScore field is present on each skill (null or number)', async () => {
+    const skills = await listSkills()
+    for (const skill of skills) {
+      expect('healthScore' in skill).toBe(true)
+      if (skill.healthScore !== null) {
+        expect(typeof skill.healthScore).toBe('number')
+      }
+    }
+  })
 })
 
 describe('getSkillManifest', () => {
