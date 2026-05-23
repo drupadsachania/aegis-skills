@@ -30,9 +30,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://skills.openskill.ai/mitre-atlas",
-    "action": "https://skills.openskill.ai/mitre-atlas/invoke",
-    "artifacts": "https://skills.openskill.ai/mitre-atlas/download"
+    "mcp": "mcp://project-iud7o.vercel.app/mitre-atlas",
+    "action": "https://project-iud7o.vercel.app/mitre-atlas/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/mitre-atlas/download"
   },
   "research": {
     "feeds": [

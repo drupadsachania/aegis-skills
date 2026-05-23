@@ -29,9 +29,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://skills.openskill.ai/mitre-engage",
-    "action": "https://skills.openskill.ai/mitre-engage/invoke",
-    "artifacts": "https://skills.openskill.ai/mitre-engage/download"
+    "mcp": "mcp://project-iud7o.vercel.app/mitre-engage",
+    "action": "https://project-iud7o.vercel.app/mitre-engage/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/mitre-engage/download"
   },
   "research": {
     "feeds": [

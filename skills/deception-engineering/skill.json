@@ -48,9 +48,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://skills.openskill.ai/deception-engineering",
-    "action": "https://skills.openskill.ai/deception-engineering/invoke",
-    "artifacts": "https://skills.openskill.ai/deception-engineering/download"
+    "mcp": "mcp://project-iud7o.vercel.app/deception-engineering",
+    "action": "https://project-iud7o.vercel.app/deception-engineering/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/deception-engineering/download"
   },
   "research": {
     "feeds": [

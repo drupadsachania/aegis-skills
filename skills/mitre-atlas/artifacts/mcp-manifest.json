@@ -27,13 +27,13 @@
   ],
   "resources": [
     {
-      "uri": "https://skills.openskill.ai/mitre-atlas/phase/atlas-tactics-overview",
+      "uri": "https://project-iud7o.vercel.app/mitre-atlas/phase/atlas-tactics-overview",
       "name": "atlas-tactics-overview",
       "description": "Reference content for mitre-atlas — atlas-tactics-overview",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://skills.openskill.ai/mitre-atlas/phase/ml-attack-surface-guide",
+      "uri": "https://project-iud7o.vercel.app/mitre-atlas/phase/ml-attack-surface-guide",
       "name": "ml-attack-surface-guide",
       "description": "Reference content for mitre-atlas — ml-attack-surface-guide",
       "mimeType": "text/markdown"

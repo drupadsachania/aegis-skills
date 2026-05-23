@@ -34,9 +34,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://skills.openskill.ai/mitre-attack",
-    "action": "https://skills.openskill.ai/mitre-attack/invoke",
-    "artifacts": "https://skills.openskill.ai/mitre-attack/download"
+    "mcp": "mcp://project-iud7o.vercel.app/mitre-attack",
+    "action": "https://project-iud7o.vercel.app/mitre-attack/invoke",
+    "artifacts": "https://project-iud7o.vercel.app/mitre-attack/download"
   },
   "research": {
     "feeds": [

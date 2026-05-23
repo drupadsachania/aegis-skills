@@ -27,13 +27,13 @@
   ],
   "resources": [
     {
-      "uri": "https://skills.openskill.ai/mitre-engage/phase/engage-matrix-overview",
+      "uri": "https://project-iud7o.vercel.app/mitre-engage/phase/engage-matrix-overview",
       "name": "engage-matrix-overview",
       "description": "Reference content for mitre-engage — engage-matrix-overview",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://skills.openskill.ai/mitre-engage/phase/activity-planning-guide",
+      "uri": "https://project-iud7o.vercel.app/mitre-engage/phase/activity-planning-guide",
       "name": "activity-planning-guide",
       "description": "Reference content for mitre-engage — activity-planning-guide",
       "mimeType": "text/markdown"
