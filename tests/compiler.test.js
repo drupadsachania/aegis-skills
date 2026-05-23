@@ -97,7 +97,7 @@ describe('buildOpenAiAction', () => {
     expect(body.content['application/json'].schema.properties.phase).toBeDefined()
   })
 
-  test('servers points to openskill.ai', () => {
-    expect(spec.servers[0].url).toBe('https://skills.openskill.ai')
+  test('servers points to configured base URL', () => {
+    expect(spec.servers[0].url).toBe('https://project-iud7o.vercel.app')
   })
 })
