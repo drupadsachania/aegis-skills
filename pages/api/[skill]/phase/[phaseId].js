@@ -4,7 +4,7 @@ const { getSkillManifest, getPhaseContent } = require('../../../../lib/skill-rea
 const { logInvocation, detectPlatform } = require('../../../../lib/telemetry')
 const { handleCors } = require('../../../../lib/cors')
 
-module.exports = async function handler (req, res) {
+async function handler (req, res) {
   if (handleCors(req, res)) return
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -22,3 +22,6 @@ module.exports = async function handler (req, res) {
   res.setHeader('Content-Type', 'text/markdown')
   res.status(200).send(content)
 }
+
+module.exports = handler
+module.exports.default = handler

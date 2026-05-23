@@ -3,7 +3,7 @@
 const { getSkillManifest } = require('../../../lib/skill-reader')
 const { handleCors } = require('../../../lib/cors')
 
-module.exports = async function handler (req, res) {
+async function handler (req, res) {
   if (handleCors(req, res)) return
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -13,3 +13,6 @@ module.exports = async function handler (req, res) {
 
   res.status(200).json(manifest)
 }
+
+module.exports = handler
+module.exports.default = handler
