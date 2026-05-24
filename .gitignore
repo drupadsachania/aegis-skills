@@ -8,3 +8,6 @@ coverage/
 .env*.local
 .next/
 test_output.txt
+
+# Themis local SQLite debrief database — contains run metadata, never commit
+data/
