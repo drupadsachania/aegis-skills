@@ -47,6 +47,7 @@ export interface OrchestrateRequest {
     attackSurfaceTags: string[]
   }
   provider?: Provider
+  threadId?: string   // optional: if provided, resumes an existing session
 }
 
 export interface OrchestrateResponse {
@@ -57,6 +58,7 @@ export interface OrchestrateResponse {
   totalInputTokens: number
   totalOutputTokens: number
   durationMs: number
+  threadId: string    // always returned — use to resume this session
 }
 
 export class ValidationError extends Error {
