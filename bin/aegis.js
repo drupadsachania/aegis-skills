@@ -15,7 +15,7 @@ program
 program
   .command('compile <skillDir>')
   .description('Compile a skill bundle into platform artifacts')
-  .option('--base-url <url>', 'base URL for endpoints', 'https://project-iud7o.vercel.app')
+  .option('--base-url <url>', 'base URL for endpoints', 'https://aegis-skills.vercel.app')
   .option('--out-dir <dir>',  'output directory for artifacts')
   .action(async (skillDir, opts) => {
     try {

@@ -30,31 +30,31 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/application-security/phase/threat-modeling-appsec",
+      "uri": "https://aegis-skills.vercel.app/application-security/phase/threat-modeling-appsec",
       "name": "threat-modeling-appsec",
       "description": "Reference content for application-security — threat-modeling-appsec",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/application-security/phase/sast-review",
+      "uri": "https://aegis-skills.vercel.app/application-security/phase/sast-review",
       "name": "sast-review",
       "description": "Reference content for application-security — sast-review",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/application-security/phase/dependency-audit",
+      "uri": "https://aegis-skills.vercel.app/application-security/phase/dependency-audit",
       "name": "dependency-audit",
       "description": "Reference content for application-security — dependency-audit",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/application-security/phase/api-security",
+      "uri": "https://aegis-skills.vercel.app/application-security/phase/api-security",
       "name": "api-security",
       "description": "Reference content for application-security — api-security",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/application-security/phase/security-testing",
+      "uri": "https://aegis-skills.vercel.app/application-security/phase/security-testing",
       "name": "security-testing",
       "description": "Reference content for application-security — security-testing",
       "mimeType": "text/markdown"

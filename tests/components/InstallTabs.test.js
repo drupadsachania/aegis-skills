@@ -14,8 +14,8 @@ const PROPS = {
   name: 'test-skill',
   systemPrompt: 'You are a test assistant.',
   openaiAction: '{"openapi":"3.0"}',
-  mcpUrl: 'https://project-iud7o.vercel.app/api/test-skill/manifest',
-  mcpConfig: '{"mcpServers":{"test-skill":{"url":"https://project-iud7o.vercel.app/api/test-skill/manifest"}}}'
+  mcpUrl: 'https://aegis-skills.vercel.app/api/test-skill/manifest',
+  mcpConfig: '{"mcpServers":{"test-skill":{"url":"https://aegis-skills.vercel.app/api/test-skill/manifest"}}}'
 }
 
 describe('InstallTabs', () => {

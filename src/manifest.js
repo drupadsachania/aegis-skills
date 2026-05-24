@@ -6,7 +6,7 @@ const schema = require('./schema/skill.schema.json')
 const ajv = new Ajv()
 const validate = ajv.compile(schema)
 
-function generateManifest(skill, baseUrl = 'https://project-iud7o.vercel.app') {
+function generateManifest(skill, baseUrl = 'https://aegis-skills.vercel.app') {
   const host = baseUrl.replace(/\/$/, '')
   const mcpHost = host.replace(/^https?:\/\//, '')
 

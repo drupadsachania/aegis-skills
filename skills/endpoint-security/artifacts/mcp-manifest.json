@@ -29,25 +29,25 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/edr-deployment",
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/edr-deployment",
       "name": "edr-deployment",
       "description": "Reference content for endpoint-security — edr-deployment",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/baseline-hardening",
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/baseline-hardening",
       "name": "baseline-hardening",
       "description": "Reference content for endpoint-security — baseline-hardening",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/malware-analysis",
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/malware-analysis",
       "name": "malware-analysis",
       "description": "Reference content for endpoint-security — malware-analysis",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/endpoint-security/phase/incident-response",
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/incident-response",
       "name": "incident-response",
       "description": "Reference content for endpoint-security — incident-response",
       "mimeType": "text/markdown"

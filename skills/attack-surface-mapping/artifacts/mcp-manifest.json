@@ -29,25 +29,25 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/external-discovery",
+      "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/external-discovery",
       "name": "external-discovery",
       "description": "Reference content for attack-surface-mapping — external-discovery",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/internal-enumeration",
+      "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/internal-enumeration",
       "name": "internal-enumeration",
       "description": "Reference content for attack-surface-mapping — internal-enumeration",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/cloud-exposure",
+      "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/cloud-exposure",
       "name": "cloud-exposure",
       "description": "Reference content for attack-surface-mapping — cloud-exposure",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/attack-surface-mapping/phase/risk-prioritization",
+      "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/risk-prioritization",
       "name": "risk-prioritization",
       "description": "Reference content for attack-surface-mapping — risk-prioritization",
       "mimeType": "text/markdown"

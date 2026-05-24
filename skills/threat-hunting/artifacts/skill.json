@@ -43,9 +43,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/threat-hunting",
-    "action": "https://project-iud7o.vercel.app/threat-hunting/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/threat-hunting/download"
+    "mcp": "mcp://aegis-skills.vercel.app/threat-hunting",
+    "action": "https://aegis-skills.vercel.app/threat-hunting/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/threat-hunting/download"
   },
   "research": {
     "feeds": [

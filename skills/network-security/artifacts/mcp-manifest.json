@@ -29,25 +29,25 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/network-security/phase/network-inventory",
+      "uri": "https://aegis-skills.vercel.app/network-security/phase/network-inventory",
       "name": "network-inventory",
       "description": "Reference content for network-security — network-inventory",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/network-security/phase/segmentation-review",
+      "uri": "https://aegis-skills.vercel.app/network-security/phase/segmentation-review",
       "name": "segmentation-review",
       "description": "Reference content for network-security — segmentation-review",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/network-security/phase/traffic-analysis",
+      "uri": "https://aegis-skills.vercel.app/network-security/phase/traffic-analysis",
       "name": "traffic-analysis",
       "description": "Reference content for network-security — traffic-analysis",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/network-security/phase/hardening-checklist",
+      "uri": "https://aegis-skills.vercel.app/network-security/phase/hardening-checklist",
       "name": "hardening-checklist",
       "description": "Reference content for network-security — hardening-checklist",
       "mimeType": "text/markdown"

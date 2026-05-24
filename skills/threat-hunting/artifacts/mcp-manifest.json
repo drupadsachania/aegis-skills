@@ -30,31 +30,31 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/hypothesis-generation",
+      "uri": "https://aegis-skills.vercel.app/threat-hunting/phase/hypothesis-generation",
       "name": "hypothesis-generation",
       "description": "Reference content for threat-hunting — hypothesis-generation",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/data-collection",
+      "uri": "https://aegis-skills.vercel.app/threat-hunting/phase/data-collection",
       "name": "data-collection",
       "description": "Reference content for threat-hunting — data-collection",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/detection-logic",
+      "uri": "https://aegis-skills.vercel.app/threat-hunting/phase/detection-logic",
       "name": "detection-logic",
       "description": "Reference content for threat-hunting — detection-logic",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/investigation",
+      "uri": "https://aegis-skills.vercel.app/threat-hunting/phase/investigation",
       "name": "investigation",
       "description": "Reference content for threat-hunting — investigation",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-hunting/phase/reporting",
+      "uri": "https://aegis-skills.vercel.app/threat-hunting/phase/reporting",
       "name": "reporting",
       "description": "Reference content for threat-hunting — reporting",
       "mimeType": "text/markdown"

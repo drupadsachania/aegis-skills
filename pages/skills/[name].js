@@ -8,105 +8,172 @@ const InstallTabs = require('../../components/InstallTabs')
 const { listSkills, getSkillManifest } = require('../../lib/skill-reader')
 
 function SkillDetailPage({ manifest, systemPrompt, openaiAction }) {
-  const mcpUrl = `https://project-iud7o.vercel.app/api/${manifest.name}/manifest`
+  const mcpUrl = `https://aegis-skills.vercel.app/api/${manifest.name}/manifest`
   const mcpConfig = JSON.stringify(
     { mcpServers: { [manifest.name]: { url: mcpUrl } } },
     null,
     2
   )
 
+  const tagList = [
+    ...(manifest.tags || []).map(t =>
+      React.createElement('span', { key: `tag-${t}`, className: 'tag-pill' }, t)
+    ),
+    ...(manifest.frameworks || []).map(f =>
+      React.createElement('span', { key: `fw-${f}`, className: 'tag-pill purple' }, f)
+    )
+  ]
+
   return React.createElement(
     Layout,
     null,
     React.createElement(
       'div',
-      { className: 'py-12' },
-      // Header
+      { className: 'container', style: { paddingTop: '80px', paddingBottom: '120px' } },
+
+      // ── Doc meta bar ────────────────────────────────────────────────────────
       React.createElement(
         'div',
-        { className: 'mb-10' },
+        { className: 'hero-meta', style: { marginBottom: '32px' } },
+        React.createElement('span', { className: 'dot' }),
+        React.createElement('span', { className: 'sep' }),
+        'SKILL',
+        React.createElement('span', { className: 'sep' }),
+        manifest.name,
+        React.createElement('span', { className: 'sep' }),
+        React.createElement(
+          'span',
+          {
+            style: {
+              fontFamily: 'var(--f-mono)',
+              fontSize: '10px',
+              color: 'var(--bg)',
+              background: 'var(--gold)',
+              padding: '1px 8px',
+              letterSpacing: '0.06em'
+            }
+          },
+          `v${manifest.version}`
+        )
+      ),
+
+      // ── Title ───────────────────────────────────────────────────────────────
+      React.createElement(
+        'h1',
+        {
+          style: {
+            fontFamily: 'var(--f-display)',
+            fontWeight: 400,
+            fontSize: 'clamp(48px, 6vw, 80px)',
+            lineHeight: 1.0,
+            letterSpacing: '-0.02em',
+            color: 'var(--cream)',
+            marginBottom: '16px'
+          }
+        },
+        manifest.name
+      ),
+
+      // ── Description ─────────────────────────────────────────────────────────
+      React.createElement(
+        'p',
+        {
+          style: {
+            fontFamily: 'var(--f-sans)',
+            fontSize: '17px',
+            color: 'var(--cream-dim)',
+            maxWidth: '660px',
+            lineHeight: 1.65,
+            fontWeight: 300,
+            paddingBottom: '48px',
+            borderBottom: '1px solid var(--border-dim)',
+            marginBottom: '64px'
+          }
+        },
+        manifest.description
+      ),
+
+      // ── Tags & frameworks ────────────────────────────────────────────────────
+      tagList.length > 0
+        ? React.createElement(
+            'div',
+            { style: { display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '64px', marginTop: '-40px' } },
+            ...tagList
+          )
+        : null,
+
+      // ── Phases — lifecycle steps ─────────────────────────────────────────────
+      React.createElement(
+        'div',
+        { style: { marginBottom: '72px' } },
+        // Section header
         React.createElement(
           'div',
-          { className: 'flex items-center gap-3 mb-3' },
+          { style: { display: 'flex', alignItems: 'baseline', gap: '16px', marginBottom: '24px' } },
+          React.createElement('span', { className: 'ds-num' }, '01'),
           React.createElement(
-            'h1',
-            { className: 'text-3xl font-bold text-zinc-100 tracking-tight' },
-            manifest.name
-          ),
-          React.createElement(
-            'span',
-            { className: 'text-xs font-mono px-2 py-1 rounded bg-zinc-800 text-zinc-400 border border-zinc-700' },
-            `v${manifest.version}`
+            'h2',
+            {
+              style: {
+                fontFamily: 'var(--f-display)',
+                fontWeight: 400,
+                fontSize: '28px',
+                letterSpacing: '-0.015em',
+                color: 'var(--cream)',
+                lineHeight: 1.1
+              }
+            },
+            'Phases'
           )
         ),
         React.createElement(
           'p',
-          { className: 'text-zinc-400 leading-relaxed max-w-2xl mb-4' },
-          manifest.description
+          { style: { fontSize: '14px', color: 'var(--muted)', marginBottom: '20px', maxWidth: '560px', lineHeight: 1.7 } },
+          `This skill has ${(manifest.phases || []).length} phase${(manifest.phases || []).length === 1 ? '' : 's'}. Each phase represents a distinct analysis step with its own context window.`
         ),
-        // Tags + frameworks
         React.createElement(
           'div',
-          { className: 'flex flex-wrap gap-2' },
-          ...(manifest.tags || []).map(tag =>
-            React.createElement(
-              'span',
-              { key: `tag-${tag}`, className: 'text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300' },
-              tag
-            )
-          ),
-          ...(manifest.frameworks || []).map(fw =>
-            React.createElement(
-              'span',
-              { key: `fw-${fw}`, className: 'text-xs px-2 py-0.5 rounded bg-indigo-900/40 text-indigo-300 border border-indigo-800/50' },
-              fw
-            )
-          )
-        )
-      ),
-      // Phases
-      React.createElement(
-        'div',
-        { className: 'mb-10' },
-        React.createElement(
-          'h2',
-          { className: 'text-lg font-semibold text-zinc-100 mb-4' },
-          'Phases'
-        ),
-        React.createElement(
-          'ol',
-          { className: 'space-y-2' },
+          { className: 'lifecycle' },
           ...(manifest.phases || []).map((phase, i) =>
             React.createElement(
-              'li',
-              { key: phase.id, className: 'flex items-center gap-3 text-sm' },
-              React.createElement(
-                'span',
-                { className: 'text-indigo-400 font-mono text-xs w-5 shrink-0' },
-                String(i + 1).padStart(2, '0')
-              ),
-              React.createElement(
-                'span',
-                { className: 'text-zinc-100' },
-                phase.id
-              ),
-              React.createElement(
-                'span',
-                { className: 'text-zinc-600 text-xs' },
-                `${phase.tokens.toLocaleString()} tokens`
-              )
+              'div',
+              { key: phase.id, className: 'lifecycle-step' },
+              React.createElement('span', { className: 'lifecycle-num' }, String(i + 1).padStart(2, '0')),
+              React.createElement('span', { className: 'lifecycle-name' }, phase.id),
+              React.createElement('span', { className: 'lifecycle-tokens' }, `${phase.tokens != null ? phase.tokens.toLocaleString() : '—'} tokens`)
             )
           )
         )
       ),
-      // Install section
+
+      // ── Install ───────────────────────────────────────────────────────────────
       React.createElement(
         'div',
         null,
+        // Section header
         React.createElement(
-          'h2',
-          { className: 'text-lg font-semibold text-zinc-100 mb-4' },
-          'Install'
+          'div',
+          { style: { display: 'flex', alignItems: 'baseline', gap: '16px', marginBottom: '24px' } },
+          React.createElement('span', { className: 'ds-num' }, '02'),
+          React.createElement(
+            'h2',
+            {
+              style: {
+                fontFamily: 'var(--f-display)',
+                fontWeight: 400,
+                fontSize: '28px',
+                letterSpacing: '-0.015em',
+                color: 'var(--cream)',
+                lineHeight: 1.1
+              }
+            },
+            'Install'
+          )
+        ),
+        React.createElement(
+          'p',
+          { style: { fontSize: '14px', color: 'var(--muted)', marginBottom: '20px', maxWidth: '560px', lineHeight: 1.7 } },
+          'Choose your deployment target. The same skill source compiles to each format — paste or wire whichever fits your platform.'
         ),
         React.createElement(InstallTabs, {
           name: manifest.name,

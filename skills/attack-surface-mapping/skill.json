@@ -38,9 +38,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/attack-surface-mapping",
-    "action": "https://project-iud7o.vercel.app/attack-surface-mapping/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/attack-surface-mapping/download"
+    "mcp": "mcp://aegis-skills.vercel.app/attack-surface-mapping",
+    "action": "https://aegis-skills.vercel.app/attack-surface-mapping/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/attack-surface-mapping/download"
   },
   "research": {
     "feeds": [

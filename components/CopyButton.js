@@ -25,13 +25,9 @@ function CopyButton({ text, label }) {
     'button',
     {
       onClick: handleClick,
-      className: [
-        'inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors',
-        'bg-zinc-800 text-zinc-300 border border-zinc-700',
-        'hover:bg-indigo-500 hover:text-white hover:border-indigo-500'
-      ].join(' ')
+      className: ['copy-btn', copied ? 'copied' : ''].join(' ').trim()
     },
-    copied ? '✓' : label
+    copied ? 'COPIED' : (label || 'COPY')
   )
 }
 

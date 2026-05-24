@@ -30,31 +30,31 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/asset-discovery",
+      "uri": "https://aegis-skills.vercel.app/infrastructure-security/phase/asset-discovery",
       "name": "asset-discovery",
       "description": "Reference content for infrastructure-security — asset-discovery",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/configuration-baseline",
+      "uri": "https://aegis-skills.vercel.app/infrastructure-security/phase/configuration-baseline",
       "name": "configuration-baseline",
       "description": "Reference content for infrastructure-security — configuration-baseline",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/patch-management",
+      "uri": "https://aegis-skills.vercel.app/infrastructure-security/phase/patch-management",
       "name": "patch-management",
       "description": "Reference content for infrastructure-security — patch-management",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/hardening-controls",
+      "uri": "https://aegis-skills.vercel.app/infrastructure-security/phase/hardening-controls",
       "name": "hardening-controls",
       "description": "Reference content for infrastructure-security — hardening-controls",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/infrastructure-security/phase/compliance-validation",
+      "uri": "https://aegis-skills.vercel.app/infrastructure-security/phase/compliance-validation",
       "name": "compliance-validation",
       "description": "Reference content for infrastructure-security — compliance-validation",
       "mimeType": "text/markdown"

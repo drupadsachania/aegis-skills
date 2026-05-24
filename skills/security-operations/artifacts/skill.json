@@ -62,9 +62,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/security-operations",
-    "action": "https://project-iud7o.vercel.app/security-operations/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/security-operations/download"
+    "mcp": "mcp://aegis-skills.vercel.app/security-operations",
+    "action": "https://aegis-skills.vercel.app/security-operations/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/security-operations/download"
   },
   "research": {
     "feeds": [

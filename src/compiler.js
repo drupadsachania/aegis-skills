@@ -9,7 +9,7 @@ const { buildMcpManifest } = require('./adapters/mcp')
 const { buildOpenAiAction } = require('./adapters/openai-action')
 
 async function compile(skillDir, options = {}) {
-  const baseUrl = options.baseUrl || 'https://project-iud7o.vercel.app'
+  const baseUrl = options.baseUrl || 'https://aegis-skills.vercel.app'
   const outDir  = options.outDir  || path.join(skillDir, 'artifacts')
 
   const skill    = await parseSkill(skillDir)

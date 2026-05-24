@@ -98,6 +98,6 @@ describe('buildOpenAiAction', () => {
   })
 
   test('servers points to configured base URL', () => {
-    expect(spec.servers[0].url).toBe('https://project-iud7o.vercel.app')
+    expect(spec.servers[0].url).toBe('https://aegis-skills.vercel.app')
   })
 })

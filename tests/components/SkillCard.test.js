@@ -7,28 +7,56 @@ require('@testing-library/jest-dom')
 
 const SkillCard = require('../../components/SkillCard')
 
-describe('SkillCard — health badge', () => {
-  test('renders HealthBadge when healthScore prop provided', () => {
-    const skill = {
-      name: 'test-skill',
-      description: 'Test description.',
-      tags: [],
-      frameworks: [],
-      phases: 3
-    }
-    render(React.createElement(SkillCard, { skill, healthScore: 0.92 }))
-    expect(screen.getByText('92%')).toBeInTheDocument()
+// SkillCard renders a <tr> — must be inside a table for valid DOM
+function renderInTable(element) {
+  return render(
+    React.createElement('table', null,
+      React.createElement('tbody', null, element)
+    )
+  )
+}
+
+const skill = {
+  name: 'test-skill',
+  description: 'Test description.',
+  tags: ['network'],
+  frameworks: ['mitre-attack'],
+  phases: 3
+}
+
+describe('SkillCard', () => {
+  test('renders skill name as a link', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByRole('link', { name: 'test-skill' })).toBeInTheDocument()
   })
 
-  test('does not render health badge when healthScore is undefined', () => {
-    const skill = {
-      name: 'test-skill',
-      description: 'Test description.',
-      tags: [],
-      frameworks: [],
-      phases: 3
-    }
-    render(React.createElement(SkillCard, { skill }))
-    expect(screen.queryByText(/\d+%/)).toBeNull()
+  test('renders description excerpt', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByText('Test description.')).toBeInTheDocument()
+  })
+
+  test('renders phase count', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByText('3 phases')).toBeInTheDocument()
+  })
+
+  test('renders health score number when healthScore provided', () => {
+    renderInTable(React.createElement(SkillCard, { skill, healthScore: 92 }))
+    expect(screen.getByText('92')).toBeInTheDocument()
+  })
+
+  test('renders em-dash when healthScore is undefined', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByText('—')).toBeInTheDocument()
+  })
+
+  test('renders tags', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByText('network')).toBeInTheDocument()
+  })
+
+  test('renders framework tags', () => {
+    renderInTable(React.createElement(SkillCard, { skill }))
+    expect(screen.getByText('mitre-attack')).toBeInTheDocument()
   })
 })

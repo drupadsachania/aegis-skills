@@ -33,49 +33,49 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/alert-triage",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/alert-triage",
       "name": "alert-triage",
       "description": "Reference content for security-operations — alert-triage",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/threat-intelligence",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/threat-intelligence",
       "name": "threat-intelligence",
       "description": "Reference content for security-operations — threat-intelligence",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/vulnerability-management",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/vulnerability-management",
       "name": "vulnerability-management",
       "description": "Reference content for security-operations — vulnerability-management",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/incident-detection",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/incident-detection",
       "name": "incident-detection",
       "description": "Reference content for security-operations — incident-detection",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/incident-response",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/incident-response",
       "name": "incident-response",
       "description": "Reference content for security-operations — incident-response",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/post-incident-review",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/post-incident-review",
       "name": "post-incident-review",
       "description": "Reference content for security-operations — post-incident-review",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/security-metrics",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/security-metrics",
       "name": "security-metrics",
       "description": "Reference content for security-operations — security-metrics",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-operations/phase/compliance-reporting",
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/compliance-reporting",
       "name": "compliance-reporting",
       "description": "Reference content for security-operations — compliance-reporting",
       "mimeType": "text/markdown"

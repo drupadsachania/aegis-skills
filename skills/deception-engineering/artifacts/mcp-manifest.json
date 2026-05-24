@@ -30,31 +30,31 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/deception-engineering/phase/attack-surface-taxonomy",
+      "uri": "https://aegis-skills.vercel.app/deception-engineering/phase/attack-surface-taxonomy",
       "name": "attack-surface-taxonomy",
       "description": "Reference content for deception-engineering — attack-surface-taxonomy",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/deception-engineering/phase/signal-source-validity",
+      "uri": "https://aegis-skills.vercel.app/deception-engineering/phase/signal-source-validity",
       "name": "signal-source-validity",
       "description": "Reference content for deception-engineering — signal-source-validity",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/deception-engineering/phase/deception-placement-matrix",
+      "uri": "https://aegis-skills.vercel.app/deception-engineering/phase/deception-placement-matrix",
       "name": "deception-placement-matrix",
       "description": "Reference content for deception-engineering — deception-placement-matrix",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/deception-engineering/phase/signal-writing-guide",
+      "uri": "https://aegis-skills.vercel.app/deception-engineering/phase/signal-writing-guide",
       "name": "signal-writing-guide",
       "description": "Reference content for deception-engineering — signal-writing-guide",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/deception-engineering/phase/documentation-templates",
+      "uri": "https://aegis-skills.vercel.app/deception-engineering/phase/documentation-templates",
       "name": "documentation-templates",
       "description": "Reference content for deception-engineering — documentation-templates",
       "mimeType": "text/markdown"

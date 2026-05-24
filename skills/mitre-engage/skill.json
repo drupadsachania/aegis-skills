@@ -27,9 +27,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/mitre-engage",
-    "action": "https://project-iud7o.vercel.app/mitre-engage/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/mitre-engage/download"
+    "mcp": "mcp://aegis-skills.vercel.app/mitre-engage",
+    "action": "https://aegis-skills.vercel.app/mitre-engage/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/mitre-engage/download"
   },
   "research": {
     "feeds": [

@@ -29,25 +29,25 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/scope-definition",
+      "uri": "https://aegis-skills.vercel.app/threat-modeling/phase/scope-definition",
       "name": "scope-definition",
       "description": "Reference content for threat-modeling — scope-definition",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/data-flow-diagramming",
+      "uri": "https://aegis-skills.vercel.app/threat-modeling/phase/data-flow-diagramming",
       "name": "data-flow-diagramming",
       "description": "Reference content for threat-modeling — data-flow-diagramming",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/threat-enumeration",
+      "uri": "https://aegis-skills.vercel.app/threat-modeling/phase/threat-enumeration",
       "name": "threat-enumeration",
       "description": "Reference content for threat-modeling — threat-enumeration",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/threat-modeling/phase/mitigation-mapping",
+      "uri": "https://aegis-skills.vercel.app/threat-modeling/phase/mitigation-mapping",
       "name": "mitigation-mapping",
       "description": "Reference content for threat-modeling — mitigation-mapping",
       "mimeType": "text/markdown"

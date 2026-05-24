@@ -28,19 +28,19 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/mitre-attack/phase/enterprise-matrix-overview",
+      "uri": "https://aegis-skills.vercel.app/mitre-attack/phase/enterprise-matrix-overview",
       "name": "enterprise-matrix-overview",
       "description": "Reference content for mitre-attack — enterprise-matrix-overview",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/mitre-attack/phase/ics-matrix-overview",
+      "uri": "https://aegis-skills.vercel.app/mitre-attack/phase/ics-matrix-overview",
       "name": "ics-matrix-overview",
       "description": "Reference content for mitre-attack — ics-matrix-overview",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/mitre-attack/phase/ttp-profiling-guide",
+      "uri": "https://aegis-skills.vercel.app/mitre-attack/phase/ttp-profiling-guide",
       "name": "ttp-profiling-guide",
       "description": "Reference content for mitre-attack — ttp-profiling-guide",
       "mimeType": "text/markdown"

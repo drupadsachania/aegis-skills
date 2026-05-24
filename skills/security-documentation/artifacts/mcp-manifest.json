@@ -28,19 +28,19 @@
   ],
   "resources": [
     {
-      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/policy-writing",
+      "uri": "https://aegis-skills.vercel.app/security-documentation/phase/policy-writing",
       "name": "policy-writing",
       "description": "Reference content for security-documentation — policy-writing",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/runbook-authoring",
+      "uri": "https://aegis-skills.vercel.app/security-documentation/phase/runbook-authoring",
       "name": "runbook-authoring",
       "description": "Reference content for security-documentation — runbook-authoring",
       "mimeType": "text/markdown"
     },
     {
-      "uri": "https://project-iud7o.vercel.app/security-documentation/phase/incident-templates",
+      "uri": "https://aegis-skills.vercel.app/security-documentation/phase/incident-templates",
       "name": "incident-templates",
       "description": "Reference content for security-documentation — incident-templates",
       "mimeType": "text/markdown"

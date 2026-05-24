@@ -1,6 +1,6 @@
 'use strict'
 
-const BASE_URL = 'https://project-iud7o.vercel.app'
+const BASE_URL = 'https://aegis-skills.vercel.app'
 
 function buildMcpManifest(skill, baseUrl = BASE_URL) {
   const host = baseUrl.replace(/\/$/, '')

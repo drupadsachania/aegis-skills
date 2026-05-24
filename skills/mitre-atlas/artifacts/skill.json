@@ -28,9 +28,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/mitre-atlas",
-    "action": "https://project-iud7o.vercel.app/mitre-atlas/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/mitre-atlas/download"
+    "mcp": "mcp://aegis-skills.vercel.app/mitre-atlas",
+    "action": "https://aegis-skills.vercel.app/mitre-atlas/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/mitre-atlas/download"
   },
   "research": {
     "feeds": [

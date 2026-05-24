@@ -91,7 +91,7 @@ describe('generateManifest — optional metadata blocks', () => {
         'coverage-gaps': []
       }
     }
-    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    const manifest = generateManifest(skill, 'https://aegis-skills.vercel.app')
     expect(manifest['self-learning']).toBeDefined()
     expect(manifest['self-learning']['update-frequency']).toBe('weekly')
     expect(manifest['self-learning']['health-score']).toBe(1.0)
@@ -112,7 +112,7 @@ describe('generateManifest — optional metadata blocks', () => {
         'attack-surface-tags': ['network', 'endpoint']
       }
     }
-    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    const manifest = generateManifest(skill, 'https://aegis-skills.vercel.app')
     expect(manifest.context).toBeDefined()
     expect(manifest.context.environments).toContain('enterprise')
     expect(manifest.context['attack-surface-tags']).toContain('network')
@@ -127,7 +127,7 @@ describe('generateManifest — optional metadata blocks', () => {
       tags: [],
       phases: [{ id: 'p1', lazy: false, tokens: 10 }]
     }
-    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    const manifest = generateManifest(skill, 'https://aegis-skills.vercel.app')
     expect(manifest['self-learning']).toBeUndefined()
   })
 
@@ -140,7 +140,7 @@ describe('generateManifest — optional metadata blocks', () => {
       tags: [],
       phases: [{ id: 'p1', lazy: false, tokens: 10 }]
     }
-    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    const manifest = generateManifest(skill, 'https://aegis-skills.vercel.app')
     expect(manifest.context).toBeUndefined()
   })
 
@@ -165,7 +165,7 @@ describe('generateManifest — optional metadata blocks', () => {
         'attack-surface-tags': ['network']
       }
     }
-    const manifest = generateManifest(skill, 'https://project-iud7o.vercel.app')
+    const manifest = generateManifest(skill, 'https://aegis-skills.vercel.app')
     expect(() => validateManifest(manifest)).not.toThrow()
   })
 })

@@ -38,9 +38,9 @@
     }
   ],
   "endpoints": {
-    "mcp": "mcp://project-iud7o.vercel.app/threat-modeling",
-    "action": "https://project-iud7o.vercel.app/threat-modeling/invoke",
-    "artifacts": "https://project-iud7o.vercel.app/threat-modeling/download"
+    "mcp": "mcp://aegis-skills.vercel.app/threat-modeling",
+    "action": "https://aegis-skills.vercel.app/threat-modeling/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/threat-modeling/download"
   },
   "research": {
     "feeds": [
