@@ -105,6 +105,9 @@ export async function skillAgentNode(state: ThemisState): Promise<Partial<Themis
 
     const findings = redactSecrets(rawFindings)
 
+    // Approximation: counts user message chars only; tool-turn tokens from
+    // the agent ReAct loop are not tracked here (provider metadata not exposed
+    // through createReactAgent's return value at this LangChain version).
     const inputTokens = Math.ceil(userMessage.length / 4)
     const outputTokens = Math.ceil(findings.length / 4)
 
@@ -125,13 +128,15 @@ export async function skillAgentNode(state: ThemisState): Promise<Partial<Themis
       totalOutputTokens: outputTokens,
     }
   } catch {
+    // FLAG (not PASS) so guardrailSummary reflects the failure; the run
+    // continues but callers can see the agent didn't produce clean findings.
     return {
       subTaskResults: [{
         subTaskId: subTask.id,
         skill: subTask.skill,
         findings: 'Sub-task analysis could not be completed',
         confidence: 'low',
-        guardrail: 'PASS',
+        guardrail: 'FLAG',
         inputTokens: 0,
         outputTokens: 0,
       }],
@@ -178,7 +183,7 @@ export async function auditNode(state: ThemisState): Promise<Partial<ThemisState
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { writeDebrief } = require('../debrief') as typeof import('../debrief')
   writeDebrief({
-    task: state.task,
+    task: state.task,          // used only to derive a hash in writeDebrief — never stored
     environmentProfile: state.context.environments,
     skills: state.skillTrace,
     results: resultsMetadata,
