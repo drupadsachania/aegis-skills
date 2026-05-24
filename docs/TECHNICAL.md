@@ -215,13 +215,20 @@ LLM provider selection is determined at runtime based on available API keys (`li
 
 | Provider | Env var | Fast | Standard | Power |
 |---|---|---|---|---|
-| Anthropic | `ANTHROPIC_API_KEY` | claude-haiku-4-5-20251001 | claude-sonnet-4-6 | claude-opus-4-6 |
-| OpenAI | `OPENAI_API_KEY` | gpt-4o-mini | gpt-4o | o1 |
-| Google | `GOOGLE_API_KEY` | gemini-2.0-flash | gemini-2.5-pro | gemini-2.5-pro |
+| **Anthropic** | `ANTHROPIC_API_KEY` | claude-haiku-4.5 | claude-sonnet-4.6 | claude-opus-4.7 |
+| **OpenAI** | `OPENAI_API_KEY` | gpt-4o-mini | gpt-4o | gpt-5.5-pro |
+| **Google** | `GOOGLE_API_KEY` | gemini-2.0-flash | gemini-2.5-pro | gemini-3.1-pro |
+| **Mistral** | `MISTRAL_API_KEY` | ministral-8b-2512 | mistral-small-2603 | mistral-large |
+| **DeepSeek** | `DEEPSEEK_API_KEY` | deepseek-v3.2 | deepseek-v4-flash | deepseek-v4-pro |
+| **Qwen** | `QWEN_API_KEY` | qwen3-next-80b-a3b-instruct | qwen3.7-max | qwen3-next-80b-a3b-thinking |
+| **NVIDIA** | `NVIDIA_API_KEY` | nemotron-nano-9b-v2 | nemotron-3-nano-30b-a3b | nemotron-3-super-120b-a12b |
 
 **All SDK imports are restricted to `lib/themis/provider.ts`.** No provider SDK may be imported elsewhere.
 
-Note: Google API key is stored in `GOOGLE_API_KEY` (not `GOOGLE_GENERATIVE_AI_API_KEY`).
+**Provider-specific notes:**
+- Anthropic, OpenAI, and Google use official SDKs
+- Mistral, DeepSeek, Qwen, and NVIDIA use generic REST API interface with OpenAI-compatible endpoints
+- API keys are environment variables; set them to enable provider support
 
 ### 4.5 API — POST `/api/themis`
 

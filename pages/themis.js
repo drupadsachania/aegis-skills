@@ -128,36 +128,54 @@ fanOutNode  ── Send() ──▶ skillAgentNode (×N, parallel)
             React.createElement('h2', null, 'LLM Providers')
           ),
           React.createElement('p', null,
-            'Provider selection is determined at runtime based on available API keys:'
+            'Themis supports multiple LLM providers with tiered model selection (fast/standard/power). Provider selection is determined at runtime based on available API keys:'
           ),
-          React.createElement('table', { style: { marginTop: '16px', marginBottom: '20px', width: '100%', borderCollapse: 'collapse', fontSize: '14px' } },
-            React.createElement('thead', null,
-              React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
-                React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Provider'),
-                React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Environment Variable'),
-                React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Models (Fast / Standard / Power)')
-              )
+          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '16px', marginBottom: '20px' } },
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'Anthropic'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'ANTHROPIC_API_KEY'),
+              ' (Claude models)'
             ),
-            React.createElement('tbody', null,
-              React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
-                React.createElement('td', { style: { padding: '8px' } }, 'Anthropic'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'ANTHROPIC_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, 'haiku-4-5 / sonnet-4-6 / opus-4-6')
-              ),
-              React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
-                React.createElement('td', { style: { padding: '8px' } }, 'OpenAI'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'OPENAI_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, '4o-mini / 4o / o1')
-              ),
-              React.createElement('tr', null,
-                React.createElement('td', { style: { padding: '8px' } }, 'Google'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'GOOGLE_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, 'gemini-2.0-flash / gemini-2.5-pro / gemini-2.5-pro')
-              )
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'OpenAI'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'OPENAI_API_KEY'),
+              ' (GPT-4, GPT-5 models)'
+            ),
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'Google'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'GOOGLE_API_KEY'),
+              ' (Gemini models)'
+            ),
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'Mistral'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'MISTRAL_API_KEY'),
+              ' (Mistral models)'
+            ),
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'DeepSeek'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'DEEPSEEK_API_KEY'),
+              ' (DeepSeek models)'
+            ),
+            React.createElement('li', { style: { marginBottom: '12px' } },
+              React.createElement('strong', null, 'Qwen'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'QWEN_API_KEY'),
+              ' (Qwen models)'
+            ),
+            React.createElement('li', null,
+              React.createElement('strong', null, 'NVIDIA'),
+              ' — Set ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'NVIDIA_API_KEY'),
+              ' (Nemotron models)'
             )
           ),
           React.createElement('p', null,
-            'All LLM provider SDKs are restricted to lib/themis/provider.ts. No provider SDK may be imported elsewhere. This is enforced at the bundle level.'
+            'All LLM provider SDKs are restricted to lib/themis/provider.ts. No provider SDK may be imported elsewhere. This is enforced at the bundle level. For detailed model specifications, see the technical documentation.'
           )
         ),
 

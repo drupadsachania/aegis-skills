@@ -1,5 +1,5 @@
 export type Tier = 'fast' | 'standard' | 'power'
-export type Provider = 'anthropic' | 'openai' | 'google'
+export type Provider = 'anthropic' | 'openai' | 'google' | 'mistral' | 'deepseek' | 'qwen' | 'nvidia'
 export type GuardrailVerdict = 'PASS' | 'FLAG' | 'BLOCK'
 
 export interface LLMRequest {

@@ -3,19 +3,39 @@ import { redactSecrets } from './secrets'
 
 const MODELS: Record<Provider, Record<Tier, string>> = {
   anthropic: {
-    fast: 'claude-haiku-4-5-20251001',
-    standard: 'claude-sonnet-4-6',
-    power: 'claude-opus-4-6',
+    fast: 'claude-haiku-4.5',
+    standard: 'claude-sonnet-4.6',
+    power: 'claude-opus-4.7',
   },
   openai: {
     fast: 'gpt-4o-mini',
     standard: 'gpt-4o',
-    power: 'o1',
+    power: 'gpt-5.5-pro',
   },
   google: {
     fast: 'gemini-2.0-flash',
     standard: 'gemini-2.5-pro',
-    power: 'gemini-2.5-pro',
+    power: 'gemini-3.1-pro',
+  },
+  mistral: {
+    fast: 'ministral-8b-2512',
+    standard: 'mistral-small-2603',
+    power: 'mistral-large',
+  },
+  deepseek: {
+    fast: 'deepseek-v3.2',
+    standard: 'deepseek-v4-flash',
+    power: 'deepseek-v4-pro',
+  },
+  qwen: {
+    fast: 'qwen3-next-80b-a3b-instruct',
+    standard: 'qwen3.7-max',
+    power: 'qwen3-next-80b-a3b-thinking',
+  },
+  nvidia: {
+    fast: 'nemotron-nano-9b-v2',
+    standard: 'nemotron-3-nano-30b-a3b',
+    power: 'nemotron-3-super-120b-a12b',
   },
 }
 
@@ -24,6 +44,10 @@ export function availableProviders(): Provider[] {
   if (process.env.ANTHROPIC_API_KEY) result.push('anthropic')
   if (process.env.OPENAI_API_KEY) result.push('openai')
   if (process.env.GOOGLE_API_KEY) result.push('google')
+  if (process.env.MISTRAL_API_KEY) result.push('mistral')
+  if (process.env.DEEPSEEK_API_KEY) result.push('deepseek')
+  if (process.env.QWEN_API_KEY) result.push('qwen')
+  if (process.env.NVIDIA_API_KEY) result.push('nvidia')
   return result
 }
 
@@ -71,19 +95,15 @@ export async function llm(req: LLMRequest): Promise<LLMResponse> {
     const OpenAI = (await import('openai')).default
     const client = new OpenAI({ apiKey, timeout: 45000 })
 
-    // o1 model: no system message — prepend system content to user message
-    const isO1 = model === 'o1'
-    const messages: Array<{ role: 'user' | 'system'; content: string }> = isO1
-      ? [{ role: 'user', content: `[Context]:\n${req.systemPrompt}\n\n[Task]:\n${req.userMessage}` }]
-      : [
-          { role: 'system', content: req.systemPrompt },
-          { role: 'user', content: req.userMessage },
-        ]
+    const messages: Array<{ role: 'user' | 'system'; content: string }> = [
+      { role: 'system', content: req.systemPrompt },
+      { role: 'user', content: req.userMessage },
+    ]
 
     const completion = await client.chat.completions.create({
       model,
       max_tokens: req.maxTokens,
-      temperature: isO1 ? undefined : req.temperature,
+      temperature: req.temperature,
       messages,
     })
 
@@ -108,7 +128,6 @@ export async function llm(req: LLMRequest): Promise<LLMResponse> {
     const genAI = new GoogleGenerativeAI(apiKey)
     const googleModel = genAI.getGenerativeModel({ model })
 
-    // Google SDK doesn't have a direct timeout option; we use AbortSignal
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 45000)
 
@@ -142,6 +161,53 @@ export async function llm(req: LLMRequest): Promise<LLMResponse> {
         throw new ProviderUnavailableError('Google request timed out after 45 seconds')
       }
       throw new ProviderUnavailableError(`Google request failed: ${String(err)}`)
+    }
+  }
+
+  // Generic REST API handler for Mistral, DeepSeek, Qwen, NVIDIA
+  if (['mistral', 'deepseek', 'qwen', 'nvidia'].includes(provider)) {
+    const envVarMap: Record<string, string> = {
+      mistral: 'MISTRAL_API_KEY',
+      deepseek: 'DEEPSEEK_API_KEY',
+      qwen: 'QWEN_API_KEY',
+      nvidia: 'NVIDIA_API_KEY',
+    }
+    const apiKey = process.env[envVarMap[provider]]
+    if (!apiKey) throw new ProviderUnavailableError(`${provider} API key not configured`)
+
+    // Use generic fetch-based approach for REST API providers
+    const response = await fetch(`https://api.${provider}.com/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: req.systemPrompt },
+          { role: 'user', content: req.userMessage },
+        ],
+        max_tokens: req.maxTokens,
+        temperature: req.temperature,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new ProviderUnavailableError(`${provider} request failed with status ${response.status}`)
+    }
+
+    const data = await response.json()
+    const rawContent = data.choices[0]?.message?.content ?? ''
+    const content = redactSecrets(rawContent)
+
+    return {
+      content,
+      model,
+      provider: provider as Provider,
+      inputTokens: data.usage?.prompt_tokens ?? 0,
+      outputTokens: data.usage?.completion_tokens ?? 0,
+      latencyMs: Date.now() - start,
     }
   }
 
