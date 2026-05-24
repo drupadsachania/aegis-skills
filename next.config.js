@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@anthropic-ai/sdk', 'openai', '@google/generative-ai'],
+  serverExternalPackages: [
+    '@anthropic-ai/sdk',
+    'openai',
+    '@google/generative-ai',
+    '@langchain/anthropic',
+    '@langchain/openai',
+    '@langchain/google-genai',
+    '@langchain/core',
+    '@langchain/langgraph',
+    'better-sqlite3',
+    'langsmith',
+  ],
   async headers () {
     return [
       {
