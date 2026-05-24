@@ -393,7 +393,7 @@ function HomePage({ skills: initialSkills }) {
                 null,
                 'An AI-powered threat analysis engine. Decompose a security task, fan out to specialist skill agents in parallel, apply guardrails to every output, and synthesise a structured findings report.'
               ),
-              React.createElement('a', { href: '/api/themis', className: 'twin-link' }, 'Themis API', '→')
+              React.createElement('a', { href: '/themis', className: 'twin-link' }, 'Learn More', '→')
             )
           )
         )
