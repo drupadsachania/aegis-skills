@@ -135,24 +135,24 @@ fanOutNode  ── Send() ──▶ skillAgentNode (×N, parallel)
               React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
                 React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Provider'),
                 React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Environment Variable'),
-                React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Model')
+                React.createElement('th', { style: { textAlign: 'left', padding: '8px', color: 'var(--accent)' } }, 'Models (Fast / Standard / Power)')
               )
             ),
             React.createElement('tbody', null,
               React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
                 React.createElement('td', { style: { padding: '8px' } }, 'Anthropic'),
                 React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'ANTHROPIC_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'claude-3-5-haiku')
+                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, 'haiku-4-5 / sonnet-4-6 / opus-4-6')
               ),
               React.createElement('tr', { style: { borderBottom: '1px solid var(--border-dim)' } },
                 React.createElement('td', { style: { padding: '8px' } }, 'OpenAI'),
                 React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'OPENAI_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'gpt-4o-mini')
+                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, '4o-mini / 4o / o1')
               ),
               React.createElement('tr', null,
                 React.createElement('td', { style: { padding: '8px' } }, 'Google'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'GOOGLE_GENERATIVE_AI_API_KEY'),
-                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'gemini-1.5-flash')
+                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '12px' } }, 'GOOGLE_API_KEY'),
+                React.createElement('td', { style: { padding: '8px', fontFamily: 'var(--f-mono)', fontSize: '11px' } }, 'gemini-2.0-flash / gemini-2.5-pro / gemini-2.5-pro')
               )
             )
           ),

@@ -211,15 +211,17 @@ Both tools sanitise inputs and validate outputs before returning. `fetchSkillPha
 
 ### 4.4 Providers
 
-LLM provider selection is determined at runtime based on available API keys (`lib/themis/provider.ts`). Supported providers:
+LLM provider selection is determined at runtime based on available API keys (`lib/themis/provider.ts`). Supported providers with tiered model selection (fast/standard/power):
 
-| Provider | Env var | Model |
-|---|---|---|
-| Anthropic | `ANTHROPIC_API_KEY` | claude-3-5-haiku-20241022 |
-| OpenAI | `OPENAI_API_KEY` | gpt-4o-mini |
-| Google | `GOOGLE_GENERATIVE_AI_API_KEY` | gemini-1.5-flash |
+| Provider | Env var | Fast | Standard | Power |
+|---|---|---|---|---|
+| Anthropic | `ANTHROPIC_API_KEY` | claude-haiku-4-5-20251001 | claude-sonnet-4-6 | claude-opus-4-6 |
+| OpenAI | `OPENAI_API_KEY` | gpt-4o-mini | gpt-4o | o1 |
+| Google | `GOOGLE_API_KEY` | gemini-2.0-flash | gemini-2.5-pro | gemini-2.5-pro |
 
 **All SDK imports are restricted to `lib/themis/provider.ts`.** No provider SDK may be imported elsewhere.
+
+Note: Google API key is stored in `GOOGLE_API_KEY` (not `GOOGLE_GENERATIVE_AI_API_KEY`).
 
 ### 4.5 API — POST `/api/themis`
 
