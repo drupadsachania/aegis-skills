@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { orchestrate } from '@/lib/themis/index'
 import { sanitiseTask, validateContext } from '@/lib/themis/sanitise'
@@ -203,7 +204,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   if (wantsStream) {
     const { getThemisGraph } = await import('@/lib/themis/graph/index')
-    const streamThreadId = orchestrateReq.threadId ?? crypto.randomUUID()
+    const streamThreadId = orchestrateReq.threadId ?? randomUUID()
     const graph = await getThemisGraph()
 
     const stream = new ReadableStream({

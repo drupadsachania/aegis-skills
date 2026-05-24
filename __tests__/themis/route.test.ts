@@ -50,6 +50,7 @@ const VALID_ORCHESTRATE_RESPONSE: OrchestrateResponse = {
   totalInputTokens: 100,
   totalOutputTokens: 200,
   durationMs: 1500,
+  threadId: 'mock-thread-id',
 }
 
 // Helper to build a Supabase mock that does NOT trigger rate limiting
