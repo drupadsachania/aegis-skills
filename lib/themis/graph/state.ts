@@ -83,29 +83,6 @@ export const ThemisAnnotation = Annotation.Root({
 
 export type ThemisState = typeof ThemisAnnotation.State
 
-// ── Test-facing helper ────────────────────────────────────────────────────────
-// The @langchain/langgraph Annotation API stores reducers under `operator` and
-// defaults under `initialValueFactory`. The tests access `spec.*.reducer` and
-// `spec.*.default`, so we return a view that aliases those names.
-
-type SpecView<T> = {
-  reducer: (prev: T, next: T) => T
-  default: () => T
-}
-
-type AnnotationSpecView = {
-  [K in keyof typeof ThemisAnnotation.spec]: SpecView<unknown>
-}
-
-export function getAnnotation(): { spec: AnnotationSpecView } {
-  const raw = ThemisAnnotation.spec
-  const spec = {} as AnnotationSpecView
-  for (const key of Object.keys(raw) as Array<keyof typeof raw>) {
-    const channel = raw[key] as { operator: (p: unknown, n: unknown) => unknown; initialValueFactory: () => unknown }
-    ;(spec as Record<string, SpecView<unknown>>)[key as string] = {
-      reducer: channel.operator,
-      default: channel.initialValueFactory,
-    }
-  }
-  return { spec }
+export function getAnnotation() {
+  return ThemisAnnotation
 }
