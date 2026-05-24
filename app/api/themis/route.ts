@@ -184,10 +184,64 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     ? (b.provider as OrchestrateRequest['provider'])
     : undefined
 
+  // Validate threadId (optional — must be non-empty string, max 128 chars)
+  const threadId =
+    typeof b.threadId === 'string' && b.threadId.length > 0 && b.threadId.length <= 128
+      ? b.threadId
+      : undefined
+
   const orchestrateReq: OrchestrateRequest = {
     task: sanitisedTask,
     context,
     provider,
+    threadId,
+  }
+
+  // SSE streaming path — stream node-level progress events only
+  // Content (findings, reports) is NEVER emitted — only node names and thread ID
+  const wantsStream = req.headers.get('accept') === 'text/event-stream'
+
+  if (wantsStream) {
+    const { getThemisGraph } = await import('@/lib/themis/graph/index')
+    const streamThreadId = orchestrateReq.threadId ?? crypto.randomUUID()
+    const graph = await getThemisGraph()
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder()
+        try {
+          for await (const chunk of await graph.stream(
+            {
+              task: orchestrateReq.task,
+              context: orchestrateReq.context,
+              provider: orchestrateReq.provider,
+            },
+            { configurable: { thread_id: streamThreadId }, streamMode: 'updates' }
+          )) {
+            // Emit node name only — never emit chunk content (may contain findings)
+            const nodeName = Object.keys(chunk)[0] ?? 'unknown'
+            const data = JSON.stringify({ event: 'node', node: nodeName })
+            controller.enqueue(encoder.encode(`data: ${data}\n\n`))
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ event: 'done', threadId: streamThreadId })}\n\n`))
+          controller.close()
+        } catch {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ event: 'error', error: 'Orchestration failed' })}\n\n`))
+          controller.close()
+        }
+      },
+    })
+
+    return applySecurityHeaders(
+      new NextResponse(stream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
+        },
+      })
+    )
   }
 
   try {
