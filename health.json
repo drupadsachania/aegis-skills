@@ -1,22 +1,22 @@
 {
-  "generated": "2026-05-23T22:23:41.617Z",
+  "generated": "2026-05-24T18:02:11.489Z",
   "skills": {
     "application-security": {
-      "health-score": 0.93,
+      "health-score": 0.84,
       "attack-coverage": 0.85,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "attack-surface-mapping": {
-      "health-score": 0.85,
+      "health-score": 0.76,
       "attack-coverage": 0.77,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "deception-engineering": {
@@ -25,7 +25,7 @@
       "cve-freshness": 1,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "2.0.0"
     },
     "endpoint-security": {
@@ -34,7 +34,7 @@
       "cve-freshness": 1,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "infrastructure-security": {
@@ -43,7 +43,7 @@
       "cve-freshness": 1,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "mitre-atlas": {
@@ -52,7 +52,7 @@
       "cve-freshness": 1,
       "phase-coverage": 0.4,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "mitre-attack": {
@@ -61,7 +61,7 @@
       "cve-freshness": 1,
       "phase-coverage": 0.6,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "mitre-engage": {
@@ -70,7 +70,7 @@
       "cve-freshness": 1,
       "phase-coverage": 0.4,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "network-security": {
@@ -79,34 +79,34 @@
       "cve-freshness": 0.7,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "security-documentation": {
-      "health-score": 0.9,
+      "health-score": 0.81,
       "attack-coverage": 0.97,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.6,
       "relevant-techniques-count": 27,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "security-operations": {
-      "health-score": 0.96,
+      "health-score": 0.87,
       "attack-coverage": 0.92,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "threat-hunting": {
-      "health-score": 0.91,
+      "health-score": 0.82,
       "attack-coverage": 0.81,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     },
     "threat-modeling": {
@@ -115,7 +115,7 @@
       "cve-freshness": 1,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-23T22:23:41.617Z",
+      "last-updated": "2026-05-24T18:02:11.489Z",
       "version": "1.0.0"
     }
   }
