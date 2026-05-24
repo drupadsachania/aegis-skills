@@ -12,7 +12,8 @@ function SkillCard({ skill, healthScore }) {
     ? description.slice(0, 100).trimEnd() + '…'
     : (description || '')
 
-  const pct = healthScore != null ? Math.round(healthScore) : null
+  // healthScore is 0-1, convert to 0-100 percentage
+  const pct = healthScore != null ? Math.round(healthScore * 100) : null
 
   const tagList = [
     ...(tags || []).map(t => React.createElement('span', { key: `tag-${t}`, className: 'tag-pill' }, t)),

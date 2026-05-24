@@ -614,25 +614,37 @@ function HomePage({ skills: initialSkills }) {
 }
 
 async function getStaticProps() {
+  const fs = require('fs')
+  const path = require('path')
   const skills = await listSkills()
 
   // Load health scores and merge into skills
   let healthScores = {}
   try {
-    const healthPath = require('path').join(process.cwd(), 'health.json')
-    const healthData = JSON.parse(require('fs').readFileSync(healthPath, 'utf8'))
-    healthScores = healthData.skills || {}
-  } catch {
-    // health.json not found or parse error — continue without scores
+    const healthPath = path.join(process.cwd(), 'health.json')
+    if (fs.existsSync(healthPath)) {
+      const healthContent = fs.readFileSync(healthPath, 'utf8')
+      const healthData = JSON.parse(healthContent)
+      healthScores = (healthData && healthData.skills) || {}
+    }
+  } catch (err) {
+    console.warn('Health scores not available:', err.message)
+    // Continue without scores if health.json cannot be loaded
   }
 
   // Merge health scores into skills
-  const skillsWithHealth = skills.map(skill => ({
-    ...skill,
-    healthScore: healthScores[skill.name]?.['health-score'] ?? null
-  }))
+  const skillsWithHealth = skills.map(skill => {
+    const score = healthScores[skill.name]?.['health-score']
+    return {
+      ...skill,
+      healthScore: typeof score === 'number' ? score : null
+    }
+  })
 
-  return { props: { skills: skillsWithHealth } }
+  return {
+    props: { skills: skillsWithHealth },
+    revalidate: 3600 // Revalidate every hour
+  }
 }
 
 const pageExports = { default: HomePage, getStaticProps }
