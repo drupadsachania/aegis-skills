@@ -1,4 +1,5 @@
 // Full-graph smoke test with all external calls mocked
+import { ValidationError } from '@/lib/themis/types'
 
 jest.mock('@/lib/themis/llm-factory', () => ({
   modelForTier: jest.fn().mockReturnValue({ invoke: jest.fn() }),
@@ -76,6 +77,6 @@ describe('themisGraph', () => {
         { task: '<script>xss</script>', context: { environments: [], attackSurfaceTags: [] } },
         { configurable: { thread_id: 'test-thread-002' } }
       )
-    ).rejects.toThrow()
+    ).rejects.toThrow(ValidationError)
   })
 })

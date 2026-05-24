@@ -56,12 +56,16 @@ export async function buildThemisGraph() {
   return graph.compile({ checkpointer })
 }
 
-// Singleton — built once per server process, reused across requests
+// Singleton — built once per server process, reused across requests.
+// On rejection the promise is cleared so the next caller can retry.
 let _graphPromise: ReturnType<typeof buildThemisGraph> | null = null
 
 export function getThemisGraph() {
   if (!_graphPromise) {
-    _graphPromise = buildThemisGraph()
+    _graphPromise = buildThemisGraph().catch(err => {
+      _graphPromise = null  // allow retry on next call after transient startup failure
+      return Promise.reject(err)
+    })
   }
   return _graphPromise
 }
