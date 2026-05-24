@@ -491,7 +491,24 @@ function HomePage({ skills: initialSkills }) {
 
 async function getStaticProps() {
   const skills = await listSkills()
-  return { props: { skills } }
+
+  // Load health scores and merge into skills
+  let healthScores = {}
+  try {
+    const healthPath = require('path').join(process.cwd(), 'health.json')
+    const healthData = JSON.parse(require('fs').readFileSync(healthPath, 'utf8'))
+    healthScores = healthData.skills || {}
+  } catch {
+    // health.json not found or parse error — continue without scores
+  }
+
+  // Merge health scores into skills
+  const skillsWithHealth = skills.map(skill => ({
+    ...skill,
+    healthScore: healthScores[skill.name]?.['health-score'] ?? null
+  }))
+
+  return { props: { skills: skillsWithHealth } }
 }
 
 const pageExports = { default: HomePage, getStaticProps }

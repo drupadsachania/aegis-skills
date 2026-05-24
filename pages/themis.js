@@ -301,10 +301,196 @@ fanOutNode  ── Send() ──▶ skillAgentNode (×N, parallel)
           )
         ),
 
+        // ── Installation & Deployment ──
+        React.createElement('section', { className: 'doc-section', id: 'installation' },
+          React.createElement('div', { className: 'doc-section-hd' },
+            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('h2', null, 'Installation & Deployment')
+          ),
+          React.createElement('p', null,
+            'Themis is platform-agnostic and can be deployed as a self-hosted service, embedded in your application, or run locally. Choose the installation method that fits your architecture.'
+          ),
+
+          // ── NPM Package ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 1: Install as NPM Package'),
+          React.createElement('p', null,
+            'For JavaScript and Node.js projects:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
+              'npm install @aegis-skills/themis'
+            )
+          ),
+          React.createElement('p', null,
+            'Import and use:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `import { orchestrate } from '@aegis-skills/themis'
+
+const result = await orchestrate({
+  task: 'Assess attack surface for cloud environment',
+  context: {
+    environments: ['cloud', 'enterprise'],
+    attackSurfaceTags: ['network', 'api']
+  }
+})`
+            )
+          ),
+
+          // ── Docker ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 2: Docker Container'),
+          React.createElement('p', null,
+            'Deploy Themis as a containerized REST API:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
+              `docker run -e ANTHROPIC_API_KEY=sk-... -p 3000:3000 aegis-skills/themis`
+            )
+          ),
+          React.createElement('p', null,
+            'The Themis API will be available at ',
+            React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'http://localhost:3000/api/themis')
+          ),
+
+          // ── Vercel ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 3: Vercel Deployment'),
+          React.createElement('p', null,
+            'Deploy the full Aegis platform (Themis + skills) to Vercel:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `# Clone repository
+git clone https://github.com/drupadsachania/aegis-skills.git
+cd aegis-skills
+
+# Deploy to Vercel
+vercel
+
+# Set environment variables
+vercel env add ANTHROPIC_API_KEY
+vercel env add OPENAI_API_KEY
+# ... add other provider keys as needed
+
+# Deploy with secrets
+vercel --prod`
+            )
+          ),
+
+          // ── Self-Hosted ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 4: Self-Hosted on Linux/macOS'),
+          React.createElement('p', null,
+            'Run Themis locally or on your own infrastructure:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `# Prerequisites: Node.js 20+, npm 10+
+
+# Clone and setup
+git clone https://github.com/drupadsachania/aegis-skills.git
+cd aegis-skills
+npm install
+
+# Configure environment
+cp .env.local.example .env.local
+# Edit .env.local and add your LLM provider API keys
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+npm run start
+
+# Or run with PM2 for persistent service
+pm2 start npm --name themis -- start`
+            )
+          ),
+
+          // ── Environment Variables ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Environment Configuration'),
+          React.createElement('p', null,
+            'Themis requires at least one LLM provider API key. Set environment variables for your chosen provider:'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `# Supported providers (choose at least one):
+ANTHROPIC_API_KEY=sk-ant-...        # Claude models
+OPENAI_API_KEY=sk-...               # GPT models
+GOOGLE_API_KEY=AIz...               # Gemini models
+MISTRAL_API_KEY=...                 # Mistral models
+DEEPSEEK_API_KEY=...                # DeepSeek models
+QWEN_API_KEY=...                    # Qwen models
+NVIDIA_API_KEY=...                  # NVIDIA NIM models
+
+# Optional: Enable LangSmith tracing
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=lsv2_...
+LANGCHAIN_PROJECT=aegis-skills`
+            )
+          ),
+
+          // ── Quick Start ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Quick Start (Local)'),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `# 1. Clone repository
+git clone https://github.com/drupadsachania/aegis-skills.git
+cd aegis-skills
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure LLM provider
+echo "ANTHROPIC_API_KEY=your-api-key-here" > .env.local
+
+# 4. Start local server (http://localhost:3000)
+npm run dev
+
+# 5. Test Themis API
+curl -X POST http://localhost:3000/api/themis \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "task": "Assess attack surface for hybrid cloud",
+    "context": {
+      "environments": ["cloud", "enterprise"],
+      "attackSurfaceTags": ["network", "lateral-movement"]
+    }
+  }'`
+            )
+          ),
+
+          // ── Deployment Best Practices ──
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Deployment Best Practices'),
+          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('strong', null, 'API keys in environment only'),
+              ' — Never commit .env files. Always use platform-specific secret management (Vercel Secrets, AWS Secrets Manager, etc.).'
+            ),
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('strong', null, 'Set ulimit for file descriptors'),
+              ' — Themis uses LangGraph checkpointing. On Linux/macOS: ',
+              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'ulimit -n 4096')
+            ),
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('strong', null, 'Monitor memory usage'),
+              ' — Findings are held in-memory during orchestration. For large tasks, allocate 2GB+ RAM.'
+            ),
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('strong', null, 'Enable request timeouts'),
+              ' — Set reverse proxy timeouts to 90s+ (Themis can take 30-60s per task).'
+            ),
+            React.createElement('li', null,
+              React.createElement('strong', null, 'Health check endpoint'),
+              ' — GET /api/health returns 200 if server is ready.'
+            )
+          )
+        ),
+
         // ── More info ──
         React.createElement('section', { className: 'doc-section' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('span', { className: 'ds-num' }, '08'),
             React.createElement('h2', null, 'Next Steps')
           ),
           React.createElement('p', null,
