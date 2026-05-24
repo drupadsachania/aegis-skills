@@ -1,109 +1,56 @@
-import crypto from 'node:crypto'
-import { OrchestrateRequest, OrchestrateResponse, ProviderUnavailableError } from './types'
+import { randomUUID } from 'node:crypto'
+import type { OrchestrateRequest, OrchestrateResponse } from './types'
+import { ProviderUnavailableError } from './types'
 import { availableProviders } from './provider'
-import { decompose } from './decompose'
-import { dispatch } from './dispatch'
-import { applyGuardrail } from './guardrail'
-import { synthesise } from './synthesise'
-import { redactSecrets } from './secrets'
+import { getThemisGraph } from './graph/index'
 
-function getSupabaseClient() {
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  // Dynamic require to avoid module-level Supabase init in tests
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient(url, key)
-}
-
-async function writeAuditLog(params: {
-  taskHash: string
-  skillSlugs: string[]
-  totalInputTokens: number
-  totalOutputTokens: number
-  durationMs: number
-  guardrailSummary: { passed: number; flagged: number; blocked: number }
-}): Promise<void> {
-  const client = getSupabaseClient()
-  if (!client) return
-  try {
-    await client.from('themis_audit_log').insert({
-      task_hash: params.taskHash,
-      skill_slugs: params.skillSlugs,
-      total_input_tokens: params.totalInputTokens,
-      total_output_tokens: params.totalOutputTokens,
-      duration_ms: params.durationMs,
-      guardrail_passed: params.guardrailSummary.passed,
-      guardrail_flagged: params.guardrailSummary.flagged,
-      guardrail_blocked: params.guardrailSummary.blocked,
-      created_at: new Date().toISOString(),
-    })
-  } catch {
-    // Audit log failure must not break the orchestration response — swallow silently
-  }
-}
-
+/**
+ * orchestrate()
+ *
+ * Entry point for the Themis orchestration layer. Delegates entirely to
+ * the LangGraph StateGraph built in lib/themis/graph/index.ts.
+ *
+ * The graph handles: validate → decompose → skill-agents (parallel) →
+ * guardrail → synthesise → audit.
+ *
+ * State lives only for the duration of one graph.invoke() call (MemorySaver,
+ * in-process only). The only persistent artefact is the metadata-only debrief
+ * record written to local SQLite by auditNode — no findings, no task content.
+ *
+ * If req.threadId is provided, the graph resumes from the last in-memory
+ * checkpoint for that thread (same process, same MemorySaver instance).
+ * Otherwise a new UUID is generated.
+ *
+ * SECURITY: No task content, findings text, or user-derived strings are
+ * ever logged. Redaction is applied in the graph nodes.
+ */
 export async function orchestrate(req: OrchestrateRequest): Promise<OrchestrateResponse> {
-  const startTime = Date.now()
-
-  // Check providers before doing any work
   if (availableProviders().length === 0) {
     throw new ProviderUnavailableError('No AI providers configured')
   }
 
-  // 1. Decompose
-  const subTasks = await decompose(req)
+  const threadId = req.threadId ?? randomUUID()
+  const graph = await getThemisGraph()
 
-  // 2. Dispatch
-  const rawResults = await dispatch(subTasks, req.provider)
-
-  // 3. Guardrail each result
-  const guardrailedResults = await Promise.all(rawResults.map(r => applyGuardrail(r)))
-
-  // 4. Count guardrail outcomes
-  const guardrailSummary = {
-    passed: guardrailedResults.filter(r => r.guardrail === 'PASS').length,
-    flagged: guardrailedResults.filter(r => r.guardrail === 'FLAG').length,
-    blocked: guardrailedResults.filter(r => r.guardrail === 'BLOCK').length,
-  }
-
-  // 5. Filter out BLOCKED results for synthesis
-  const synthesisResults = guardrailedResults.filter(r => r.guardrail !== 'BLOCK')
-
-  // 6. Synthesise
-  const rawReport = await synthesise(req.task, synthesisResults)
-  const report = redactSecrets(rawReport)
-
-  const durationMs = Date.now() - startTime
-
-  // 7. Aggregate token counts
-  const totalInputTokens = guardrailedResults.reduce((sum, r) => sum + r.inputTokens, 0)
-  const totalOutputTokens = guardrailedResults.reduce((sum, r) => sum + r.outputTokens, 0)
-
-  // 8. Build skill trace (unique slugs, no duplicates)
-  const skillTrace = [...new Set(guardrailedResults.map(r => r.skill))]
-
-  // 9. Hash the sanitised task for audit (do NOT log the task content itself)
-  const taskHash = crypto.createHash('sha256').update(req.task).digest('hex')
-
-  // 10. Write audit log (fire-and-forget, non-blocking)
-  writeAuditLog({
-    taskHash,
-    skillSlugs: skillTrace,
-    totalInputTokens,
-    totalOutputTokens,
-    durationMs,
-    guardrailSummary,
-  }).catch(() => {}) // swallow — audit must not break response
+  const finalState = await graph.invoke(
+    {
+      task: req.task,
+      context: req.context,
+      provider: req.provider,
+    },
+    {
+      configurable: { thread_id: threadId },
+    }
+  )
 
   return {
-    report,
-    subTaskResults: guardrailedResults,
-    guardrailSummary,
-    skillTrace,
-    totalInputTokens,
-    totalOutputTokens,
-    durationMs,
+    report: finalState.report ?? '',
+    subTaskResults: finalState.guardrailedResults ?? [],
+    guardrailSummary: finalState.guardrailSummary ?? { passed: 0, flagged: 0, blocked: 0 },
+    skillTrace: finalState.skillTrace ?? [],
+    totalInputTokens: finalState.totalInputTokens ?? 0,
+    totalOutputTokens: finalState.totalOutputTokens ?? 0,
+    durationMs: finalState.durationMs ?? 0,
+    threadId,
   }
 }
