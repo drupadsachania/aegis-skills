@@ -8,10 +8,10 @@ const { getPhaseContent } = require('@/lib/skill-reader') as {
   getPhaseContent: (skillName: string, phaseId: string) => Promise<string | null>
 }
 
-const BLOCKED_CONTENT_PATTERNS = [/<script/i, /javascript:/i, /data:/i, /eval\(/i]
+// `data:` is narrowed to URI scheme context to avoid false-positives on prose text
+const BLOCKED_CONTENT_PATTERNS = [/<script/i, /javascript:/i, /\bdata:[a-z]/i, /eval\(/i]
 
 function validatePhaseContent(text: string): boolean {
-  if (!text || text.length === 0) return false
   if (text.length > 8000) return false
   return !BLOCKED_CONTENT_PATTERNS.some(p => p.test(text))
 }
@@ -38,7 +38,7 @@ export const fetchSkillPhaseTool = new DynamicStructuredTool({
   func: async ({ skillName, phaseId }: { skillName: string; phaseId: string }): Promise<string> => {
     try {
       const content: string | null = await getPhaseContent(skillName, phaseId)
-      if (content === null) {
+      if (content === null || content === '') {
         return `Skill phase "${skillName}/${phaseId}" not found or not accessible.`
       }
       if (!validatePhaseContent(content)) {
