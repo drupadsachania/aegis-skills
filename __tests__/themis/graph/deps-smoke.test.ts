@@ -52,4 +52,9 @@ describe('LangGraph dependency imports', () => {
     const { z } = await import('zod')
     expect(z.string).toBeDefined()
   })
+
+  it('imports langsmith Client', async () => {
+    const { Client } = await import('langsmith')
+    expect(Client).toBeDefined()
+  })
 })
