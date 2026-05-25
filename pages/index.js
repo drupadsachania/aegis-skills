@@ -416,108 +416,64 @@ function HomePage({ skills: initialSkills }) {
             React.createElement('span', { className: 'sec-num' }, '02'),
             React.createElement('span', { className: 'sec-kicker' }, 'Getting Started')
           ),
-          React.createElement('p', null,
-            'Install Aegis skills in your favorite AI platform or download as a standalone package.'
-          ),
 
-          // Two-column layout for installation methods
+          // ── Universal Installation ──
           React.createElement(
             'div',
-            { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginTop: '32px' } },
-            // ── Agent Installation ──
-            React.createElement(
-              'div',
-              null,
-              React.createElement('h3', { style: { fontSize: '16px', marginBottom: '16px', color: 'var(--cream)' } }, 'Install in Your Agent'),
-              React.createElement('p', { style: { fontSize: '13px', color: 'var(--cream-dim)', marginBottom: '16px' } },
-                'Add Aegis skills to ChatGPT, Claude, Cursor, or Gemini in seconds.'
-              ),
-
-              // ChatGPT
-              React.createElement(
-                'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'ChatGPT'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    '1. Go to ChatGPT → Custom GPTs → Actions\n2. Paste this URL:\nhttps://aegis-skills.vercel.app/api/[skill]/manifest\n3. Select a skill (e.g., deception-engineering)\n4. Set authentication to None'
-                  )
-                )
-              ),
-
-              // Claude
-              React.createElement(
-                'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'Claude'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    'Paste any system prompt from a skill detail page into your Claude conversation.'
-                  )
-                )
-              ),
-
-              // Cursor / Gemini
-              React.createElement(
-                'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'Cursor / Gemini'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    'Copy system prompt from skill page → Paste in agent settings'
-                  )
-                )
-              ),
-
-              React.createElement('a', { href: '/docs', style: { fontSize: '12px', color: 'var(--accent)', textDecoration: 'underline', marginTop: '12px', display: 'inline-block' } }, 'Full installation guide →')
+            { style: { marginBottom: '50px' } },
+            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Universal Installation'),
+            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '20px' } },
+              'Install once globally, use with Claude, ChatGPT, Cursor, Gemini, VS Code, or Antigravity CLI.'
             ),
-
-            // ── Package Installation ──
             React.createElement(
               'div',
-              null,
-              React.createElement('h3', { style: { fontSize: '16px', marginBottom: '16px', color: 'var(--cream)' } }, 'Install as Package'),
-              React.createElement('p', { style: { fontSize: '13px', color: 'var(--cream-dim)', marginBottom: '16px' } },
-                'Use Aegis skills in your own application or service.'
-              ),
+              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '13px', color: 'var(--cream)', overflowX: 'auto', marginBottom: '20px' } },
+              React.createElement('div', null, 'npm install -g @aegis-skills/core'),
+              React.createElement('div', { style: { marginTop: '10px' } }, 'aegis init')
+            ),
+            React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
+              React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px' } }, 'aegis init'),
+              ' will:'
+            ),
+            React.createElement(
+              'ul',
+              { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '10px' } },
+              React.createElement('li', null, 'Detect your installed tools (Claude, ChatGPT, Cursor, Gemini, VS Code, Antigravity)'),
+              React.createElement('li', null, 'Interactively select which tools to configure'),
+              React.createElement('li', null, 'Inject skill manifests and system prompts to each tool'),
+              React.createElement('li', null,
+                'Save configuration to ',
+                React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 4px' } }, '~/.aegisrc')
+              )
+            )
+          ),
 
-              // NPM
+          // ── Post-Install Commands ──
+          React.createElement(
+            'div',
+            null,
+            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Available Commands'),
+            React.createElement(
+              'div',
+              { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' } },
+              // List command
               React.createElement(
                 'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'NPM Package'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    'npm install @aegis-skills/[skill-name]'
-                  )
+                { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
+                React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px' } }, 'aegis list'),
+                React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
+                  'Show installed skills and their status for each tool.'
                 )
               ),
-
-              // Docker
+              // Configure command
               React.createElement(
                 'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'Docker Container'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    'docker pull aegis-skills/[skill-name]\ndocker run -e API_KEY=... [image]'
-                  )
+                { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
+                React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px' } }, 'aegis configure --for <tool>'),
+                React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
+                  'Reconfigure a specific tool (claude, chatgpt, cursor, gemini, vscode, antigravity-cli).'
                 )
-              ),
-
-              // Git Clone
-              React.createElement(
-                'div',
-                { style: { marginBottom: '20px' } },
-                React.createElement('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--gold)' } }, 'Git Clone'),
-                React.createElement('div', { className: 'code-block', style: { marginTop: '8px' } },
-                  React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-                    'git clone https://github.com/drupadsachania/aegis-skills.git\nnpm install && npm run build'
-                  )
-                )
-              ),
-
-              React.createElement('a', { href: '/themis', style: { fontSize: '12px', color: 'var(--accent)', textDecoration: 'underline', marginTop: '12px', display: 'inline-block' } }, 'Deployment guide →')
+              )
             )
           )
         )
