@@ -84,11 +84,11 @@ jobs:
       - name: Create PR for stale skills
         if: steps.threshold.outputs.needs_pr == 'true'
         env:
-          GH_TOKEN: ${{ secrets.SKILL_HEALTH_PAT || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SKILL_HEALTH_PAT }}
           FAILING_SKILLS: ${{ steps.threshold.outputs.failing }}
         run: |
-          if [ -z "${{ secrets.SKILL_HEALTH_PAT }}" ]; then
-            echo "SKILL_HEALTH_PAT not set — skipping PR creation"
+          if [ -z "$GH_TOKEN" ]; then
+            echo "SKILL_HEALTH_PAT secret not set — skipping PR creation"
             exit 0
           fi
 
