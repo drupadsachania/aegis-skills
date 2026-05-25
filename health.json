@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-24T18:02:11.489Z",
+  "generated": "2026-05-25T13:51:26.639Z",
   "skills": {
     "application-security": {
       "health-score": 0.84,
@@ -7,7 +7,7 @@
       "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "attack-surface-mapping": {
@@ -16,16 +16,16 @@
       "cve-freshness": 0.7,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "deception-engineering": {
-      "health-score": 0.98,
+      "health-score": 0.89,
       "attack-coverage": 0.96,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "2.0.0"
     },
     "endpoint-security": {
@@ -34,43 +34,43 @@
       "cve-freshness": 1,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "infrastructure-security": {
-      "health-score": 0.94,
+      "health-score": 0.85,
       "attack-coverage": 0.87,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "mitre-atlas": {
-      "health-score": 0.88,
+      "health-score": 0.79,
       "attack-coverage": 1,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.4,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "mitre-attack": {
-      "health-score": 0.92,
+      "health-score": 0.83,
       "attack-coverage": 1,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.6,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "mitre-engage": {
-      "health-score": 0.88,
+      "health-score": 0.79,
       "attack-coverage": 1,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.4,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "network-security": {
@@ -79,7 +79,7 @@
       "cve-freshness": 0.7,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "security-documentation": {
@@ -88,7 +88,7 @@
       "cve-freshness": 0.7,
       "phase-coverage": 0.6,
       "relevant-techniques-count": 27,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "security-operations": {
@@ -97,7 +97,7 @@
       "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "threat-hunting": {
@@ -106,16 +106,16 @@
       "cve-freshness": 0.7,
       "phase-coverage": 1,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     },
     "threat-modeling": {
-      "health-score": 0.95,
+      "health-score": 0.86,
       "attack-coverage": 0.97,
-      "cve-freshness": 1,
+      "cve-freshness": 0.7,
       "phase-coverage": 0.8,
       "relevant-techniques-count": 858,
-      "last-updated": "2026-05-24T18:02:11.489Z",
+      "last-updated": "2026-05-25T13:51:26.639Z",
       "version": "1.0.0"
     }
   }
