@@ -12,8 +12,7 @@
     "test:watch": "jest --watch",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "postinstall": "chmod +x bin/aegis.js 2>/dev/null || true"
+    "start": "next start"
   },
   "author": "Drupad Sachania",
   "repository": {
