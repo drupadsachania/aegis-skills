@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.SKILL_HEALTH_PAT }}
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
@@ -79,7 +79,7 @@ jobs:
         if: steps.threshold.outputs.needs_pr == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.SKILL_HEALTH_PAT }}
           commit-message: "fix(health): skill health below 0.80 threshold"
           branch: skill-health-update/${{ github.run_number }}
           title: "🔴 Skill health update required — skills below 0.80"
