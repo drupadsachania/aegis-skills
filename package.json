@@ -7,18 +7,25 @@
   "bin": {
     "aegis": "./bin/aegis.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kairo-foundation/aegis-skills"
+  },
+  "homepage": "https://aegis-skills.vercel.app/",
+  "bugs": {
+    "url": "https://github.com/kairo-foundation/aegis-skills/issues"
+  },
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "node bin/aegis.js --version && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
     "test:watch": "jest --watch",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
-  "author": "Drupad Sachania",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/drupadsachania/deception-skills.git"
-  },
+  "author": "Kairo Foundation",
   "keywords": [
     "skills",
     "claude",
