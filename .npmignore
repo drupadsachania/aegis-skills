@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Development
+.env.local
+.env.local.example
+__tests__/
+tests/
+jest.config.js
+jest.setup.js
+tsconfig.json
+tsconfig.tsbuildinfo
+run-supply-chain-fix.js
+
+# Build artifacts
+.next/
+out/
+build/
+
+# Documentation (keep only INSTALLATION.md for users)
+docs/superpowers/
+docs/TECHNICAL.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Misc
+*.md
+!README.md
+!LICENSE
+.claude/
+
+# Include these files/folders
+!lib/
+!bin/
+!skills/
+!src/
+!pages/
+!components/
+!styles/
+!app/
+!public/
