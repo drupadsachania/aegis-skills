@@ -90,7 +90,8 @@ function scoreSkill(skill, phaseContents, attackTechniques, cveKeywords) {
   const cveMentioned = [...cveKeywords].filter(kw =>
     kw.length > 3 && allContent.includes(kw.toLowerCase())
   )
-  const cveScore = Math.min(1.0, 0.7 + (cveMentioned.length > 0 ? 0.3 : 0))
+  // Score on a ramp: 0.7 base, +0.1 per CVE/product hit up to 1.0
+  const cveScore = Math.min(1.0, 0.7 + Math.min(0.3, cveMentioned.length * 0.05))
   const phaseScore = Math.min(1.0, (skill.phases || []).length / 5)
 
   const healthScore = Math.round(

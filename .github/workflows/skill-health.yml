@@ -56,13 +56,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add health.json
+          # Always commit — the generated timestamp changes every run so there's always a diff
           git diff --staged --quiet || git commit -m "chore(health): update skill health scores [skip ci]"
-
-      - name: Push changes if any
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git push origin main
-          fi
+          git push origin main || echo "Nothing to push"
 
       - name: Check for skills below threshold
         id: threshold
