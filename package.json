@@ -1,7 +1,7 @@
 {
-  "name": "@aegis/compiler",
+  "name": "@aegis-skills/core",
   "version": "0.1.0",
-  "description": "Aegis — platform-agnostic AI skill compiler. Converts SKILL.md bundles to multi-platform artifacts.",
+  "description": "Universal skill library for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
   "type": "commonjs",
   "main": "src/compiler.js",
   "bin": {
@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "postinstall": "chmod +x bin/aegis.js 2>/dev/null || true"
   },
   "author": "Drupad Sachania",
   "repository": {
@@ -21,10 +22,14 @@
   },
   "keywords": [
     "skills",
-    "ai",
-    "mcp",
-    "openskill",
-    "compiler"
+    "claude",
+    "chatgpt",
+    "cursor",
+    "gemini",
+    "vscode",
+    "security",
+    "mitre",
+    "threat-analysis"
   ],
   "license": "MIT",
   "dependencies": {
@@ -38,8 +43,10 @@
     "@supabase/supabase-js": "^2.43.0",
     "ajv": "^8.17.1",
     "better-sqlite3": "^12.10.0",
+    "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "gray-matter": "^4.0.3",
+    "inquirer": "^8.2.6",
     "langsmith": "^0.6.0",
     "next": "^14.2.3",
     "openai": "6.39.0",
