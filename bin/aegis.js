@@ -2,7 +2,6 @@
 
 const { program } = require('commander')
 const path = require('path')
-const fs = require('fs')
 const pkg = require(path.join(__dirname, '..', 'package.json'))
 
 // Subcommands
