@@ -79,7 +79,7 @@ jobs:
         if: steps.threshold.outputs.needs_pr == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           commit-message: "fix(health): skill health below 0.80 threshold"
           branch: skill-health-update/${{ github.run_number }}
           title: "🔴 Skill health update required — skills below 0.80"
