@@ -1,0 +1,36 @@
+{
+  "osk": "1.0",
+  "name": "reverse-engineering",
+  "version": "1.0.0",
+  "description": "End-to-end binary reverse engineering workflow covering safe sample handling, static/dynamic analysis, code analysis, anti-analysis detection, MITRE ATT&CK mapping, IOC extraction, and analyst reporting.",
+  "frameworks": ["mitre-attack"],
+  "tags": ["security", "malware", "reverse-engineering", "binary-analysis", "ghidra", "ida-pro", "static-analysis", "dynamic-analysis"],
+  "phases": [
+    { "id": "triage-and-safe-handling", "lazy": true, "tokens": 650 },
+    { "id": "static-analysis", "lazy": true, "tokens": 720 },
+    { "id": "dynamic-analysis", "lazy": true, "tokens": 680 },
+    { "id": "code-analysis", "lazy": true, "tokens": 750 },
+    { "id": "reporting", "lazy": true, "tokens": 600 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/reverse-engineering",
+    "action": "https://aegis-skills.vercel.app/reverse-engineering/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/reverse-engineering/download"
+  },
+  "research": {
+    "feeds": ["mitre-attack", "vx-underground"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["mitre-attack", "vx-underground", "malapi-io"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "cloud", "ot"],
+    "industry-verticals": ["financial-services", "government", "defense", "technology"],
+    "attack-surface-tags": ["malware", "binary", "executable", "firmware"]
+  }
+}

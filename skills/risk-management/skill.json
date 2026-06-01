@@ -1,0 +1,36 @@
+{
+  "osk": "1.0",
+  "name": "risk-management",
+  "version": "1.0.0",
+  "description": "End-to-end information security risk management programme covering threat-informed risk identification, qualitative and FAIR quantitative assessment, treatment selection, risk register governance, and executive risk reporting.",
+  "frameworks": ["nist-csf", "iso-31000", "fair-model"],
+  "tags": ["security", "risk", "grc", "risk-register", "risk-appetite", "threat-modelling", "fair"],
+  "phases": [
+    { "id": "risk-identification", "lazy": true, "tokens": 620 },
+    { "id": "risk-assessment", "lazy": true, "tokens": 680 },
+    { "id": "risk-treatment", "lazy": true, "tokens": 650 },
+    { "id": "risk-register", "lazy": true, "tokens": 600 },
+    { "id": "risk-reporting", "lazy": true, "tokens": 580 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/risk-management",
+    "action": "https://aegis-skills.vercel.app/risk-management/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/risk-management/download"
+  },
+  "research": {
+    "feeds": ["nist-csf", "nvd-cve-feed"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["nist-sp-800-30", "iso-31000", "fair-model"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "cloud", "hybrid", "ot"],
+    "industry-verticals": ["financial-services", "healthcare", "government", "critical-infrastructure", "energy"],
+    "attack-surface-tags": ["risk", "compliance", "third-party", "supply-chain", "data-protection"]
+  }
+}

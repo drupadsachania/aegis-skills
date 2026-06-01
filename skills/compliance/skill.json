@@ -1,0 +1,36 @@
+{
+  "osk": "1.0",
+  "name": "compliance",
+  "version": "1.0.0",
+  "description": "End-to-end security compliance workflow supporting SOC 2, ISO 27001:2022, PCI-DSS v4.0, HIPAA, GDPR, NIST CSF 2.0, and CIS Controls v8. Covers scope definition, control mapping, assessment, evidence collection, and remediation planning.",
+  "frameworks": ["nist-csf", "cis-controls", "iso-27001", "pci-dss"],
+  "tags": ["security", "compliance", "audit", "soc2", "iso27001", "pci-dss", "hipaa", "gdpr", "nist-csf"],
+  "phases": [
+    { "id": "scope-definition", "lazy": true, "tokens": 580 },
+    { "id": "standard-mapping", "lazy": true, "tokens": 700 },
+    { "id": "control-assessment", "lazy": true, "tokens": 650 },
+    { "id": "evidence-collection", "lazy": true, "tokens": 620 },
+    { "id": "remediation-roadmap", "lazy": true, "tokens": 580 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/compliance",
+    "action": "https://aegis-skills.vercel.app/compliance/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/compliance/download"
+  },
+  "research": {
+    "feeds": ["nist-csf", "cis-controls"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["aicpa-tsc", "iso-27001-2022", "pci-ssc", "nist-csf-2"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "cloud", "saas", "hybrid"],
+    "industry-verticals": ["financial-services", "healthcare", "e-commerce", "saas-providers", "government"],
+    "attack-surface-tags": ["compliance", "audit", "data-protection", "access-control", "encryption"]
+  }
+}

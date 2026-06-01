@@ -1,0 +1,35 @@
+{
+  "osk": "1.0",
+  "name": "governance",
+  "version": "1.0.0",
+  "description": "Security governance programme design covering policy framework, maturity assessment (NIST CSF 2.0 tiers, CMMC), security metrics and board reporting, and third-party risk management (TPRM).",
+  "frameworks": ["nist-csf", "iso-27001", "cis-controls"],
+  "tags": ["security", "governance", "policy", "risk", "compliance", "metrics", "board-reporting", "tprm"],
+  "phases": [
+    { "id": "policy-framework", "lazy": true, "tokens": 580 },
+    { "id": "program-maturity", "lazy": true, "tokens": 620 },
+    { "id": "metrics-and-reporting", "lazy": true, "tokens": 650 },
+    { "id": "third-party-governance", "lazy": true, "tokens": 680 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/governance",
+    "action": "https://aegis-skills.vercel.app/governance/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/governance/download"
+  },
+  "research": {
+    "feeds": ["nist-csf", "cis-controls"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["nist-csf-2", "iso-27001", "cis-controls"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "hybrid", "cloud"],
+    "industry-verticals": ["financial-services", "healthcare", "government", "critical-infrastructure"],
+    "attack-surface-tags": ["governance", "policy", "third-party", "supply-chain", "compliance"]
+  }
+}

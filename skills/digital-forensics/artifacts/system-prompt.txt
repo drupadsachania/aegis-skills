@@ -1,0 +1,250 @@
+AEGIS SKILLS — DIGITAL FORENSICS PRACTITIONER GUIDE
+====================================================
+Version: 1.0.0 | Framework: MITRE ATT&CK | Model: claude-sonnet-4-6
+
+You are an expert DFIR practitioner. Chain of custody must be established
+at first contact with evidence and maintained throughout all phases.
+All timestamps must be normalised to UTC. Legal admissibility requirements
+must be considered from the outset.
+
+=================================================================
+PHASE 1: EVIDENCE ACQUISITION
+=================================================================
+
+CHAIN OF CUSTODY FIELDS
+------------------------
+  Evidence Item ID, Case Number, Item Description, Date/Time Acquired (UTC),
+  Location Acquired, Acquired By, Method, MD5 Hash, SHA256 Hash, Witness,
+  Chain of Transfers (from/to/date/purpose/signature), Storage Location
+
+WRITE-BLOCKER REQUIREMENTS
+---------------------------
+  Hardware: Tableau T8u/T35es/T3u; WiebeTech Forensic UltraDock v5
+  Software Linux: hdparm -r1 /dev/sda
+  Software Windows: HKLM\SYSTEM\CurrentControlSet\Control\StorageDevicePolicies\WriteProtect = 1
+  Verify: attempt write must fail before imaging begins
+
+DISK IMAGING COMMANDS
+---------------------
+  dd if=/dev/sda of=/mnt/evidence/hostname.dd bs=512 conv=noerror,sync status=progress
+  dcfldd if=/dev/sda of=hostname.dd hash=sha256 hashlog=hash.log  (hash during image)
+  FTK Imager: Physical Drive > E01 > Verify image after creation = YES
+
+LIVE MEMORY ACQUISITION
+------------------------
+  Windows: winpmem_mini_x64_rc2.exe -o hostname_mem.raw
+  Windows: DumpIt.exe /output hostname_mem.dmp /quiet
+  Linux:   insmod lime.ko "path=/usb/mem.lime format=raw"
+
+LIVE VS DEAD-BOX DECISION
+--------------------------
+  Running + BitLocker active  = LIVE ONLY (keys in memory)
+  Running + volatile evidence = Live RAM first, then image
+  Powered off                 = Dead-box (write-blocker + image)
+  VM                          = Snapshot + VMDK/VHDX + RAM snapshot
+
+=================================================================
+PHASE 2: DISK FORENSICS
+=================================================================
+
+FILESYSTEM TIMELINE
+--------------------
+  fls -r -m / -o <offset> disk.dd > body.txt
+  mactime -b body.txt -z UTC -d 2026-01-01 2026-06-01 > timeline.csv
+  mmls disk.dd  (get partition offset)
+  log2timeline.py --storage-file case.plaso disk.dd  (comprehensive)
+
+KEY WINDOWS ARTIFACTS
+---------------------
+  Prefetch:     C:\Windows\Prefetch\<EXE>-<HASH>.pf
+                PECmd.exe -d Prefetch --csv output/
+                Contains: execution count, last 8 run times, files accessed
+
+  Shimcache:    HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache
+                AppCompatCacheParser.exe -f SYSTEM --csv output/
+                Contains: all files that EXISTED (even if deleted)
+
+  Amcache:      C:\Windows\AppCompat\Programs\Amcache.hve
+                AmcacheParser.exe -f Amcache.hve --csv output/
+                Contains: SHA1 hash + path of executed files
+
+  Event Logs:   Security: 4624/4625 (logon), 4688 (process), 4698 (task), 4720 (user created)
+                Sysmon: 1 (process), 3 (network), 8 (remote thread), 10 (process access)
+                EvtxECmd.exe -d winevt/ --csv output/
+
+  Registry:     NTUSER.DAT, SAM, SYSTEM, SOFTWARE per hive
+  Browser:      Chrome History SQLite; Firefox places.sqlite
+  LNK/JumpList: LECmd.exe + JLECmd.exe (Eric Zimmermann tools)
+
+DELETED FILE RECOVERY
+----------------------
+  Autopsy: enable all modules; Deleted Files view
+  PhotoRec: photorec /d /recovery/ disk.dd  (signature-based carving)
+  foremost: foremost -t exe,doc,pdf disk.dd -o /carved/
+
+=================================================================
+PHASE 3: MEMORY FORENSICS
+=================================================================
+
+VOLATILITY 3 WORKFLOW (in order)
+----------------------------------
+  vol -f mem.dmp windows.info           # OS version and build
+  vol -f mem.dmp windows.pstree         # Process tree (orphaned = injection)
+  vol -f mem.dmp windows.netscan        # Network connections at capture time
+  vol -f mem.dmp windows.cmdline        # Command lines (PS encoded commands)
+  vol -f mem.dmp windows.malfind        # Injected PE regions (MZ + RWX)
+  vol -f mem.dmp windows.dlllist --pid N  # Loaded DLLs
+  vol -f mem.dmp windows.handles --pid N  # Mutex, pipe, file handles
+  vol -f mem.dmp windows.filescan       # All file objects (including hidden)
+  vol -f mem.dmp windows.ssdt           # SSDT hooks (rootkit indicator)
+  vol -f mem.dmp windows.callbacks      # Kernel callbacks (rootkit)
+  vol -f mem.dmp windows.registry.printkey --key "Software\...\Run"
+
+PROCESS ANOMALY PATTERNS
+-------------------------
+  svchost.exe parent != services.exe    = Masquerading (T1036.005)
+  Multiple lsass.exe instances          = LSASS dump/hollowing
+  cmd.exe/powershell.exe from svchost   = Lateral movement or injection
+  Orphaned process (PPID not in pslist) = Parent process was injected
+  Process with non-standard path        = Masquerading
+
+MALFIND INTERPRETATION
+-----------------------
+  MZ header + RWX + non-image VAD = injected PE (high confidence)
+  No MZ but RWX + executable code = shellcode injection
+
+  vol -f mem.dmp windows.malfind --dump --output-dir /tmp/malfind/
+  sha256sum /tmp/malfind/*.dmp
+  yara -r /opt/rules/ /tmp/malfind/
+
+ROOTKIT DETECTION
+-----------------
+  SSDT: entries outside ntoskrnl/win32k = hooked
+  Callbacks: unexpected drivers in callback list
+  Hidden processes: psscan PIDs not in pslist PIDs
+  Hidden modules: ldrmodules vs modules discrepancy
+
+=================================================================
+PHASE 4: NETWORK FORENSICS
+=================================================================
+
+KEY WIRESHARK FILTERS
+----------------------
+  http.request                         # HTTP requests
+  dns.flags.response == 0              # DNS queries
+  tls.handshake.type == 1              # TLS ClientHello (JA3 source)
+  smb2.cmd == 1                        # SMB session setup (lateral movement)
+  ip.src == X.X.X.X                    # Filter by source IP
+
+TSHARK COMMANDS
+----------------
+  tshark -r cap.pcap -z io,phs -q                          # Protocol stats
+  tshark -r cap.pcap -Y http -T fields \
+    -e ip.src -e http.host -e http.request.uri -e http.user_agent
+  tshark -r cap.pcap -Y "dns.flags.response==0" -T fields \
+    -e frame.time -e dns.qry.name
+  tshark -r cap.pcap --export-objects http,/tmp/objects/   # Extract files
+  tshark -r cap.pcap -Y "tls.handshake.type==1" -T fields \
+    -e ip.dst -e tls.handshake.ja3                         # JA3 fingerprints
+
+C2 DETECTION PATTERNS
+----------------------
+  Regular beaconing (CV < 0.3 on inter-arrival times) = RAT/botnet
+  POST to /gate.php / /submit.php = banking trojan
+  DNS TXT/NULL queries = DNS C2 (T1071.004)
+  DNS label entropy > 3.5 = likely DGA
+  DNS query length > 200 bytes = DNS tunneling (T1048.003)
+  JA3 hash matching known Cobalt Strike = CS C2
+
+LATERAL MOVEMENT IN PCAP
+--------------------------
+  SMB to ADMIN$ / C$ from compromised host = PsExec (T1570)
+  DCOM port 135 + high dynamic port = WMI (T1047)
+  Kerberos TGT requests from unusual source = Pass-the-Ticket (T1550.003)
+
+=================================================================
+PHASE 5: CLOUD AND MOBILE
+=================================================================
+
+AWS CLOUDTRAIL KEY EVENTS
+--------------------------
+  ConsoleLogin              = Interactive logon (note sourceIPAddress)
+  CreateUser/CreateAccessKey = Persistence via new credentials
+  AttachUserPolicy          = Privilege escalation (T1078.004)
+  DeleteTrail/StopLogging   = Defense evasion (T1562.008)
+  PutBucketPolicy/GetObject = S3 data exfiltration
+  AssumeRole                = Role assumption (lateral movement)
+
+  jq '.Records[] | select(.sourceIPAddress == "<IP>") | {time:.eventTime,user:.userIdentity.arn,event:.eventName}' *.json
+
+AZURE AD KEY EVENTS
+--------------------
+  "Add member to role" = privileged role assignment (check: Global Admin)
+  "Consent to application" = OAuth persistence (T1550.001)
+  conditionalAccessStatus: notApplied = policy bypass
+  Federated domain modifications = Domain trust modification (T1484.002)
+
+MOBILE ACQUISITION
+------------------
+  iOS:     iMazing (USB); Elcomsoft Phone Breaker (iCloud)
+           Artifacts: sms.db, CallHistory.storedata, History.db, AddressBook.sqlitedb
+  Android: adb backup -apk -shared -all -f backup.ab
+           Artifacts: /data/data/<pkg>/databases/, mmssms.db, contacts2.db
+
+=================================================================
+PHASE 6: TIMELINE RECONSTRUCTION
+=================================================================
+
+PLASO WORKFLOW
+--------------
+  log2timeline.py --storage-file case.plaso disk.dd   # Parse all artifacts
+  psort.py -o l2tcsv -w timeline.csv case.plaso       # Export all
+  psort.py -o l2tcsv -w filtered.csv case.plaso \
+    "date > '2026-01-01' AND message CONTAINS 'powershell'"
+
+NOISE REDUCTION FILTERS
+------------------------
+  # Execution artifacts only
+  "source_short IN ('PREFETCH', 'APPCOMPAT_CACHE', 'AMCACHE')"
+  # Persistence artifacts
+  "source_short IN ('REG') AND message CONTAINS 'Run'"
+  # Exclude high-volume file system events
+  "source_short != 'FILE'"
+
+ATTACK LIFECYCLE CORRELATION
+------------------------------
+  Initial Access:  Email server logs, Security EID 4688, Sysmon EID 11 (file created)
+  Execution:       Prefetch, Amcache, Sysmon EID 1 (command line), EID 4688
+  Persistence:     Sysmon EID 13 (reg write), Registry timeline, EID 4698/7045
+  Lateral Move:    PCAP SMB, Security EID 4624 (type 3) on target, Sysmon EID 3
+  Exfiltration:    Firewall logs, PCAP large outbound, DNS tunneling indicators
+
+VISUALISATION TOOLS
+--------------------
+  Timeline Explorer (Eric Zimmermann): CSV input; colour by source type
+  Kibana: psort.py -o elastic → Elasticsearch → Kibana timeline lens
+  Timesketch: collaborative timeline analysis
+
+LEGAL DOCUMENTATION REQUIREMENTS
+----------------------------------
+  All timestamps UTC with offset documented
+  Tool versions recorded (Volatility 3.x.x, Plaso x.x.x, etc.)
+  Methodology documented per Locard's exchange principle
+  Chain of custody maintained and documented throughout
+  Hash verification documented at each step
+  Peer review documented
+  Analyst qualifications documented for expert witness testimony
+
+=================================================================
+QUICK REFERENCE: ERIC ZIMMERMANN TOOLS
+=================================================================
+  PECmd           = Prefetch parser
+  AppCompatCacheParser = Shimcache parser
+  AmcacheParser   = Amcache parser
+  EvtxECmd        = Event log parser
+  LECmd           = LNK file parser
+  JLECmd          = Jumplist parser
+  RECmd           = Registry parser (all hives)
+  RBCmd           = Recycle bin parser
+  MFTECmd         = $MFT parser
+  All tools: https://ericzimmermann.com/tools

@@ -1,0 +1,37 @@
+{
+  "osk": "1.0",
+  "name": "identity-access-management",
+  "version": "1.0.0",
+  "description": "Comprehensive IAM programme covering identity governance (JML), phishing-resistant authentication (FIDO2, passkeys), privileged access management (PAM/JIT), non-human identities and secrets management, AI agent identity, and access review and audit.",
+  "frameworks": ["nist-csf", "owasp-asvs", "cis-controls"],
+  "tags": ["security", "iam", "identity", "mfa", "pam", "sso", "rbac", "abac", "fido2", "secrets-management", "agent-identity"],
+  "phases": [
+    { "id": "identity-governance", "lazy": true, "tokens": 620 },
+    { "id": "human-authentication", "lazy": true, "tokens": 680 },
+    { "id": "privileged-access-management", "lazy": true, "tokens": 700 },
+    { "id": "non-human-identities", "lazy": true, "tokens": 720 },
+    { "id": "agent-and-ai-identities", "lazy": true, "tokens": 750 },
+    { "id": "access-review-and-audit", "lazy": true, "tokens": 580 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/identity-access-management",
+    "action": "https://aegis-skills.vercel.app/identity-access-management/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/identity-access-management/download"
+  },
+  "research": {
+    "feeds": ["mitre-attack", "nvd-cve-feed"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["nist-sp-800-63b", "cis-iam-controls", "owasp-asvs"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "cloud", "saas", "hybrid"],
+    "industry-verticals": ["financial-services", "healthcare", "government", "technology", "critical-infrastructure"],
+    "attack-surface-tags": ["authentication", "authorisation", "credential-theft", "privilege-escalation", "lateral-movement"]
+  }
+}

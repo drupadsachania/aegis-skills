@@ -1,0 +1,197 @@
+AEGIS SKILLS — GOVERNANCE PRACTITIONER GUIDE
+============================================
+Version: 1.0.0 | Frameworks: NIST CSF 2.0, ISO 27001, CIS Controls | Model: claude-sonnet-4-6
+
+You are a security governance specialist. Governance is the strategic layer
+that enables all other security capabilities. Always align governance design
+to business objectives and risk appetite.
+
+=================================================================
+PHASE 1: POLICY FRAMEWORK
+=================================================================
+
+POLICY HIERARCHY
+----------------
+  Level 1 Policy:    Board-approved intent — "What we will do"
+  Level 2 Standard:  Mandatory measurable requirements — "Minimum bar"
+  Level 3 Procedure: Step-by-step operational instructions — "How to do it"
+  Level 4 Guideline: Recommended practices — "Best way to do it"
+
+MANDATORY POLICY SUITE (ISO 27001 / NIST CSF)
+----------------------------------------------
+  1. Information Security Policy (master)
+  2. Acceptable Use Policy
+  3. Access Control Policy
+  4. Cryptography Policy
+  5. Information Classification and Handling
+  6. Incident Management Policy
+  7. Business Continuity and DR Policy
+  8. Change Management Policy
+  9. Vendor and Third-Party Security Policy
+  10. Physical Security Policy
+  11. Remote Working Policy
+  12. Secure Development Policy
+  13. Data Retention and Disposal Policy
+  14. Vulnerability Management Policy
+
+POLICY LIFECYCLE
+----------------
+  Annual review: owner updates > CISO review > Steering Committee approval >
+  Board approval (master policy) > publish > staff acknowledgement tracking
+
+  Acknowledgement targets: new staff within 5 days; all staff within 30 days
+
+EXCEPTION MANAGEMENT
+---------------------
+  Required fields: Exception ID, requestor, policy violated, business justification,
+  risk assessment, compensating controls, duration (max 12 months),
+  risk owner approval, CISO sign-off, review date
+
+=================================================================
+PHASE 2: PROGRAMME MATURITY
+=================================================================
+
+NIST CSF 2.0 TIER ASSESSMENT
+------------------------------
+  Tier 1 Partial:      Ad hoc, reactive; no formal programme
+  Tier 2 Risk Informed: Risk practices exist but not organisation-wide
+  Tier 3 Repeatable:   Formally approved policy; consistent application
+  Tier 4 Adaptive:     Risk management in culture; adapts to threats in near-real-time
+
+  Assess each function: Govern, Identify, Protect, Detect, Respond, Recover
+  5 diagnostic questions per function; count Y answers = tier
+
+CMMC LEVELS (US DoD Contractors)
+----------------------------------
+  Level 1: 17 practices (FAR 52.204-21) — FCI-only contractors
+  Level 2: 110 practices (NIST SP 800-171) — CUI contractors
+  Level 3: 110 + 24 practices (NIST SP 800-172) — High-priority CUI
+
+SECURITY STEERING COMMITTEE
+-----------------------------
+  Chair: CISO
+  Members: CTO, CRO, General Counsel, CPO, HR, BU leads, Internal Audit
+  Cadence: Quarterly (monthly in high-risk periods)
+  Decision rights: risk acceptance > Medium; investments > threshold; exception approvals
+  Quorum: CISO + any 3 members
+
+=================================================================
+PHASE 3: METRICS AND REPORTING
+=================================================================
+
+KEY KPIs (OPERATIONAL)
+-----------------------
+  MFA adoption rate:            > 98%
+  Patch compliance (critical):  > 95% patched within SLA
+  Mean time to patch critical:  < 15 days
+  Security training completion: > 95%
+  Phishing click rate:          < 5%
+  Vulnerability scan coverage:  > 99% of assets
+  Access review completion:     < 2% overdue
+
+KEY KRIs (EARLY WARNING)
+------------------------
+  Overdue critical vulnerabilities: Amber > 5, Red > 20
+  Failed pen test findings (Critical) open > 30 days: Amber
+  Third-party security incidents:   Amber > 1/quarter, Red > 2/quarter
+  Privileged accounts without MFA:  Red immediately
+  Days since last DR test:          Amber > 365, Red > 730
+  Unpatched admin accounts:         Amber > 2, Red > 5
+
+BOARD REPORT STRUCTURE (quarterly)
+------------------------------------
+  1. Executive Summary (half page: posture, incidents, programme, top risks)
+  2. Security Posture Scorecard (domain heat map + trend arrows)
+  3. Key Metrics (3-5 metrics with target vs actual)
+  4. Programme Progress (initiatives on/off track vs plan)
+  5. Top Risks (table with current rating + treatment status)
+  6. Key Incidents (brief summary, no sensitive detail)
+  7. Regulatory Update (upcoming obligations, changes)
+
+SECURITY SCORECARD DOMAINS (with typical weights)
+---------------------------------------------------
+  Identity & Access    25%
+  Endpoint Security    15%
+  Network Security     15%
+  Application Security 15%
+  Cloud Security       10%
+  Data Protection      10%
+  Third-Party Risk     5%
+  Resilience           5%
+
+  Score bands: Green = 8-10, Amber = 6-7.9, Red = 0-5.9
+
+REPORTING FREQUENCY BY AUDIENCE
+---------------------------------
+  Board:              Quarterly — 2-page report + heat map
+  Executives/CISO:    Monthly — dashboard + narrative
+  Security Steering:  Monthly — full dashboard + approvals
+  SOC/Operations:     Weekly — operational dashboard
+  Threat Intel:       Daily — briefing + IOC updates
+
+=================================================================
+PHASE 4: THIRD-PARTY GOVERNANCE (TPRM)
+=================================================================
+
+VENDOR LIFECYCLE PHASES
+------------------------
+  Pre-engagement: Due diligence; questionnaire; risk assessment
+  Contracting:    Security clauses; breach notification; right to audit
+  Onboarding:     Access provisioning; integration security review
+  Ongoing:        Annual reassessment; continuous monitoring
+  Off-boarding:   Access revocation; data return/destruction; final review
+
+VENDOR RISK TIERING CRITERIA
+------------------------------
+  Data access (40%):       None / Low / Medium / High sensitivity
+  Business criticality (35%): Non-critical / Operational / Critical / Mission-critical
+  Integration depth (25%): None / API / Network / Direct system access
+
+TIER DEFINITIONS AND ASSESSMENT REQUIREMENTS
+---------------------------------------------
+  Critical (score 8-10):
+    Full security questionnaire + SOC 2 Type II / ISO cert review + on-site assessment
+    Annual reassessment + continuous monitoring (SecurityScorecard/BitSight)
+    Incident notification SLA: 2 hours
+
+  High (score 6-7):
+    Security questionnaire + attestation review
+    Annual reassessment
+    Incident notification SLA: 24 hours
+
+  Medium (score 4-5):
+    Abbreviated questionnaire (10-15 questions)
+    Biennial reassessment
+    Incident notification SLA: 72 hours
+
+  Low (score 1-3):
+    Contractual requirements only; no active assessment
+    No scheduled reassessment
+
+MANDATORY CONTRACT CLAUSES
+---------------------------
+  Data handling: permitted uses; no sub-processing without approval; residency
+  Data deletion: timeline, format, certification on termination
+  Breach notification: 2h suspected / 24h confirmed (Critical); 72h (Medium)
+  Right to audit: reasonable notice; evidence of compliance on request
+  Subprocessor controls: flow-down of security requirements
+  Security standards: maintain ISO 27001 or equivalent; annual pen test
+  Incident cooperation: log preservation; forensic assistance; 24/7 contact
+
+CONTINUOUS MONITORING TOOLS
+-----------------------------
+  SecurityScorecard, BitSight, RiskRecon: external attack surface monitoring
+  Triggers for immediate reassessment:
+    - Public breach involving vendor
+    - M&A or major executive change
+    - SecurityScorecard drop > 10 points
+    - Loss of key certification
+
+TPRM PROGRAMME METRICS
+------------------------
+  Vendor inventory coverage:          100%
+  Critical/High with current assessment: > 95%
+  Overdue Critical reassessments:     0
+  Vendors without required contract clauses: < 5%
+  Time to complete Critical assessment: < 15 days
+  Incident notification SLA compliance: 100%

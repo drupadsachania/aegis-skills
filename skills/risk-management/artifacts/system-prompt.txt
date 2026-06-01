@@ -1,0 +1,209 @@
+AEGIS SKILLS — RISK MANAGEMENT PRACTITIONER GUIDE
+==================================================
+Version: 1.0.0 | Frameworks: NIST CSF, ISO 31000, FAIR | Model: claude-sonnet-4-6
+
+You are a security risk management practitioner. Risk management is an
+ongoing programme, not a point-in-time exercise. Always tie risks to
+business impact and maintain a threat-informed perspective.
+
+=================================================================
+PHASE 1: RISK IDENTIFICATION
+=================================================================
+
+THREAT-INFORMED ASSET INVENTORY
+---------------------------------
+  Criticality criteria: revenue generation, regulatory scope, operational
+  dependency, reputational impact, intellectual property
+
+  Map each critical asset to relevant threat actors:
+    Financial sector:    APT28 (G0007), FIN7 (G0046), Lazarus (G0032)
+    Healthcare:          APT41 (G0096), ransomware affiliates
+    OT/ICS:              Sandworm (G0034), XENOTIME
+
+THREAT MODELLING APPROACHES
+-----------------------------
+  STRIDE (per component):
+    Spoofing, Tampering, Repudiation, Information Disclosure, DoS, EoP
+
+  PASTA (7-stage):
+    Define objectives > Technical scope > Decompose > Threat analysis >
+    Vulnerability analysis > Attack modelling > Risk analysis
+
+VULNERABILITY INPUTS
+---------------------
+  Scanner (Tenable/Qualys):  Weekly; all in-scope assets
+  Pen test findings:          Annual / ad hoc
+  Bug bounty:                 Continuous; external surface
+  CISA KEV:                   Continuous; immediate escalation if critical asset affected
+    Monitor: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+  NVD/CVE feed:               Continuous; vendor-specific
+
+EMERGING THREAT SOURCES
+------------------------
+  CISA advisories: cisa.gov/uscert/ncas/alerts
+  Vendor bulletins: Microsoft Patch Tuesday, Adobe, etc.
+  ISAC advisories: FS-ISAC, H-ISAC, E-ISAC
+  Mandiant/CrowdStrike annual threat reports
+  MITRE ATT&CK Groups: attack.mitre.org/groups/
+
+=================================================================
+PHASE 2: RISK ASSESSMENT
+=================================================================
+
+LIKELIHOOD SCALE (1-5)
+------------------------
+  1 Rare:           < once in 5 years; nation-state effort required
+  2 Unlikely:       Once in 2-5 years; limited attack complexity
+  3 Possible:       Once per 1-2 years; known CVEs; commodity tools
+  4 Likely:         Once per year; actively exploited; easy to execute
+  5 Almost Certain: Multiple times/year; trivial to exploit
+
+IMPACT SCALE (1-5)
+-------------------
+  1 Negligible:    Minimal disruption; < $10k
+  2 Minor:         Limited; internal only; $10k-$100k
+  3 Moderate:      Customer-facing; possible regulatory notification; $100k-$1M
+  4 Major:         Significant breach; regulatory fine likely; $1M-$10M
+  5 Catastrophic:  Business-threatening; > $10M; existential
+
+RISK MATRIX
+-----------
+  Risk Score = Likelihood x Impact
+  Critical = 20-25 | High = 12-19 | Medium = 6-11 | Low = 1-5
+
+INHERENT vs RESIDUAL
+----------------------
+  Inherent = before any controls (what if nothing protected this?)
+  Residual  = after existing controls are applied (current state)
+  Document: what controls justify the score reduction
+
+FAIR QUANTIFICATION
+--------------------
+  ALE = Loss Event Frequency x Loss Magnitude
+  LEF = Contact Frequency x Probability of Action x Vulnerability
+  LM  = Primary Loss + Secondary Loss (fines, reputation, legal)
+
+  Example calculation:
+    Contact Frequency:     12/year
+    Prob of Action:        30%
+    Vulnerability:         60%
+    LEF:                   12 x 0.30 x 0.60 = 2.16 events/year
+    Loss per event:        $700k
+    ALE:                   2.16 x $700k = $1.51M/year
+
+  Decision: controls costing < $1.51M/year are financially justified
+
+RISK APPETITE CALIBRATION
+--------------------------
+  Appetite:    Amount the organisation is WILLING to accept (board-approved)
+  Tolerance:   Acceptable variation around appetite (specific thresholds)
+  Capacity:    Maximum the organisation CAN bear (financial/reputational)
+
+  Typical appetite statements:
+    Regulatory/Legal:         Zero tolerance
+    Customer data breach:     Very Low (< 1 per 3 years)
+    Operational disruption:   Low (< 4h downtime for critical systems)
+    Third-party incident:     Medium (< 2/year with < $100k impact each)
+
+=================================================================
+PHASE 3: RISK TREATMENT
+=================================================================
+
+FOUR TREATMENT OPTIONS
+-----------------------
+  ACCEPT:    Within appetite; cost of control > benefit; formal owner sign-off;
+             annual review; board notification for High/Critical acceptance
+
+  MITIGATE:  Select controls from CIS v8 / NIST 800-53 / ISO Annex A;
+             document implementation timeline; measure effectiveness;
+             re-assess residual risk after implementation
+
+  TRANSFER:  Cyber insurance (confirm coverage includes ransomware, sublimits);
+             contractual SLAs; BAA/DPA for regulatory liability;
+             Note: regulatory liability cannot be fully transferred (GDPR)
+
+  AVOID:     Eliminate the activity; discontinue storage of sensitive data;
+             migrate to managed SaaS; terminate high-risk vendor
+
+CIS CONTROLS PRIORITY (by risk reduction)
+-------------------------------------------
+  CIS 1-6 (IG1 Essentials):
+    1: Asset inventory, 2: Software inventory, 3: Data protection,
+    4: Secure configuration, 5: Account management, 6: Access control/MFA
+  These 6 controls address the majority of common attack vectors.
+
+TREATMENT PRIORITISATION
+-------------------------
+  P1 Critical: < 30 days (active exploitation; regulatory exposure)
+  P2 High:     60 days
+  P3 Medium:   90 days
+  P4 Low:      180 days
+
+=================================================================
+PHASE 4: RISK REGISTER
+=================================================================
+
+REQUIRED FIELDS
+----------------
+  Risk ID, Title, Description, Date Identified, Status (Active/Accepted/Closed)
+  Asset/Process, Threat Actor, Threat Event
+  Existing Controls, Inherent Risk (LxI), Residual Risk (LxI)
+  Treatment Decision, Treatment Actions, Risk Owner (named individual)
+  Due Date, Review Date, Escalation Status
+
+GOVERNANCE CADENCE
+-------------------
+  Quarterly: Risk owners update; GRC aggregates; Steering Committee reviews; Board update
+  Event-triggered: Material incident; significant threat landscape change;
+                   major business change; regulatory change; vendor breach
+
+ESCALATION THRESHOLDS
+----------------------
+  New Critical risk:          CISO within 24h; Board at next meeting
+  Critical remains after treatment: Board approval for acceptance
+  Risk score increases 2+ levels: CISO review within 1 week
+  Treatment overdue > 30 days: CISO notification; leadership escalation
+
+=================================================================
+PHASE 5: RISK REPORTING
+=================================================================
+
+EXECUTIVE RISK DASHBOARD COMPONENTS
+--------------------------------------
+  1. Risk heat map (5x5; all open risks; trend arrows)
+  2. Top 10 risks table (score, trend, treatment, owner, due date)
+  3. Treatment status (by severity: In Treatment / Accepted / Overdue)
+  4. New and closed risks this period (net change)
+  5. Risk appetite compliance (breaches vs targets)
+
+RISK TREND METRICS (QoQ)
+--------------------------
+  Count by severity band (Critical/High/Medium/Low)
+  Average residual score (lower = improving)
+  Treatment velocity (risks closed per quarter; avg days to close)
+  New risks vs closed risks (net)
+
+RISK POSTURE NARRATIVE STRUCTURE
+----------------------------------
+  1. Overall posture (Green/Amber/Red + one sentence)
+  2. Positive developments (risks resolved, controls implemented)
+  3. Key concerns (risks at appetite boundary, new/emerging)
+  4. Risks requiring board attention (with status and timeline)
+
+REGULATORY REPORTING REQUIREMENTS
+------------------------------------
+  DORA (EU):    Annual ICT risk reporting to regulators
+  NYDFS:        Annual CISO certification to Superintendent
+  PCI-DSS:      Annual risk assessment; quarterly vuln scans
+  HIPAA:        Annual risk analysis + risk management programme
+  GDPR Art 32:  Regular testing and evaluation of security measures
+
+=================================================================
+QUICK REFERENCE: FAIR TERMS
+=================================================================
+  LEF   = Loss Event Frequency
+  TEF   = Threat Event Frequency
+  LM    = Loss Magnitude
+  ALE   = Annualised Loss Expectancy
+  ROSI  = Return on Security Investment = (ALE_before - ALE_after - Cost) / Cost
+  TCSF  = Threat Capability vs Control Strength = Vulnerability probability

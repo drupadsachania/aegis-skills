@@ -1,0 +1,36 @@
+{
+  "osk": "1.0",
+  "name": "operational-technology",
+  "version": "1.0.0",
+  "description": "OT/ICS security programme covering passive asset discovery, Purdue model zone classification, consequence-based risk assessment, ISA/IEC 62443 zone and conduit network security, safety-first incident response, and NERC CIP compliance.",
+  "frameworks": ["isa-iec-62443", "mitre-attack", "nerc-cip"],
+  "tags": ["security", "ot-security", "ics", "scada", "plc", "hmi", "industrial", "purdue-model", "isa62443", "nerc-cip"],
+  "phases": [
+    { "id": "ot-asset-discovery", "lazy": true, "tokens": 650 },
+    { "id": "risk-and-vulnerability-assessment", "lazy": true, "tokens": 700 },
+    { "id": "network-security", "lazy": true, "tokens": 720 },
+    { "id": "incident-detection-and-response", "lazy": true, "tokens": 680 },
+    { "id": "resilience-and-compliance", "lazy": true, "tokens": 750 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/operational-technology",
+    "action": "https://aegis-skills.vercel.app/operational-technology/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/operational-technology/download"
+  },
+  "research": {
+    "feeds": ["mitre-attack", "ics-cert-advisories"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["ics-cert", "isa-iec-62443", "cisa-ot-advisories"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["ot", "enterprise", "hybrid"],
+    "industry-verticals": ["energy", "utilities", "manufacturing", "oil-and-gas", "water-treatment", "critical-infrastructure"],
+    "attack-surface-tags": ["ot-network", "plc", "hmi", "scada", "historian", "remote-access", "it-ot-convergence"]
+  }
+}

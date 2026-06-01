@@ -1,0 +1,37 @@
+{
+  "osk": "1.0",
+  "name": "digital-forensics",
+  "version": "1.0.0",
+  "description": "End-to-end DFIR workflow covering evidence acquisition with chain of custody, disk forensics, memory forensics, network analysis, cloud and mobile evidence collection, and super-timeline reconstruction.",
+  "frameworks": ["mitre-attack"],
+  "tags": ["security", "forensics", "incident-response", "dfir", "volatility", "memory-forensics", "disk-forensics", "chain-of-custody"],
+  "phases": [
+    { "id": "evidence-acquisition", "lazy": true, "tokens": 620 },
+    { "id": "disk-forensics", "lazy": true, "tokens": 750 },
+    { "id": "memory-forensics", "lazy": true, "tokens": 720 },
+    { "id": "network-forensics", "lazy": true, "tokens": 680 },
+    { "id": "cloud-and-mobile", "lazy": true, "tokens": 650 },
+    { "id": "timeline-reconstruction", "lazy": true, "tokens": 700 }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/digital-forensics",
+    "action": "https://aegis-skills.vercel.app/digital-forensics/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/digital-forensics/download"
+  },
+  "research": {
+    "feeds": ["mitre-attack", "sans-advisories"],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": ["mitre-attack", "volatility-foundation", "sans-for508", "magnet-forensics"],
+    "health-score": 1.0,
+    "stale-threshold-days": 60,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": ["enterprise", "cloud", "hybrid"],
+    "industry-verticals": ["financial-services", "healthcare", "legal", "government"],
+    "attack-surface-tags": ["endpoint", "memory", "network", "cloud", "mobile"]
+  }
+}
