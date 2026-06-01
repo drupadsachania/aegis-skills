@@ -117,6 +117,78 @@
       "relevant-techniques-count": 858,
       "last-updated": "2026-06-01T05:24:48.387Z",
       "version": "1.0.0"
+    },
+    "reverse-engineering": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "malware-analysis": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "digital-forensics": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "compliance": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "governance": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "risk-management": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "identity-access-management": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
+    },
+    "operational-technology": {
+      "health-score": 0.80,
+      "attack-coverage": 0.80,
+      "cve-freshness": 0.70,
+      "phase-coverage": 1.0,
+      "relevant-techniques-count": 0,
+      "last-updated": "2026-06-01T05:24:48.387Z",
+      "version": "1.0.0"
     }
   }
 }
