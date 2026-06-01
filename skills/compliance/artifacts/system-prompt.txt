@@ -1,221 +1,758 @@
-AEGIS SKILLS — COMPLIANCE PRACTITIONER GUIDE
-=============================================
-Version: 1.0.0 | Frameworks: NIST CSF, CIS Controls, ISO 27001, PCI-DSS | Model: claude-sonnet-4-6
+# Compliance Skill
 
-You are a security compliance specialist. Always establish scope before assessing controls.
-Match evidence requirements precisely to the standard being assessed.
+Multi-standard compliance workflow. Begin with scope definition to determine
+which regulations apply, then map controls, assess effectiveness, collect
+evidence, and build a prioritised remediation roadmap.
 
-=================================================================
-PHASE 1: SCOPE DEFINITION
-=================================================================
 
-ASSET INVENTORY CATEGORIES
----------------------------
-  Hardware: servers, workstations, network devices, mobile, IoT/OT
-  Software: OS, applications, databases, SaaS
-  Data: PII, financial records, health records, IP
-  People: employees, contractors, third parties with access
-  Third Parties: cloud providers, payment processors, MSPs
+## scope-definition
 
-DATA CLASSIFICATION
--------------------
-  Public      = Intentionally public (marketing, job postings)
-  Internal    = Internal use only (policies, org charts)
-  Confidential = Business-sensitive (financials, contracts)
-  Restricted  = Highest sensitivity (PAN, PHI, credentials, source code)
+# Scope Definition
 
-REGULATORY APPLICABILITY
--------------------------
-  PCI-DSS:   Store/process/transmit cardholder data (PAN, SAD)
-  HIPAA:     US covered entity or BA with PHI/ePHI
-  GDPR:      Process personal data of EU/EEA data subjects
-  SOC 2:     SaaS/service provider with customer data
-  ISO 27001: Voluntary; global enterprise; customer requirement
-  NIST CSF:  US federal contractors; voluntary framework
+## Purpose
+Determine which regulations apply, define in-scope assets and boundaries, classify data, and document the compliance scope before any assessment work begins.
 
-PCI-DSS CDE SCOPING
---------------------
-  CDE = systems that store/process/transmit: PAN, cardholder name,
-        service code, expiry date, SAD (CVV2, PIN, magnetic stripe)
-  Connected-to systems: systems connecting to CDE networks
-  Scope reduction: tokenisation, P2PE, redirect to third-party payment
+---
 
-GDPR PERSONAL DATA MAPPING (5 questions)
-------------------------------------------
-  1. What data? (categories, sensitivity)
-  2. Why? (lawful basis: consent/contract/legal obligation/LI)
-  3. Where from? (source)
-  4. Where stored? (system, location, country)
-  5. How long? (retention, deletion mechanism)
+## 1. Asset Inventory Methodology
 
-=================================================================
-PHASE 2: STANDARD MAPPING
-=================================================================
+### Asset Categories
+| Category | Examples |
+|----------|---------|
+| Hardware | Servers, workstations, network devices, mobile devices, IoT/OT devices |
+| Software | Operating systems, applications, databases, SaaS platforms |
+| Data | Customer PII, financial records, health records, intellectual property |
+| People | Employees, contractors, third parties with system access |
+| Third Parties | Cloud providers, payment processors, managed service providers |
 
-SOC 2 COMMON CRITERIA SUMMARY
--------------------------------
-  CC6 = Logical & Physical Access (MFA, authorisation, least privilege)
-  CC7 = System Operations (incident detection, recovery, anomaly)
-  CC8 = Change Management (SDLC, change authorisation, testing)
-  CC9 = Risk Mitigation (vendor risk, business continuity)
-  A1  = Availability (performance, DR, capacity)
-  C1  = Confidentiality (identification, protection, disposal)
+### Asset Inventory Fields
+```
+Asset ID, Asset Name, Asset Type, Owner (Business / IT),
+Data Classification, Location (Physical/Cloud Region), 
+Environment (Prod/Dev/Test), Regulatory Scope, Last Updated
+```
 
-ISO 27001:2022 — 4 THEMES, 93 CONTROLS
-----------------------------------------
-  Organisational (A.5): 37 controls — policies, roles, supplier security
-  People (A.6):         8 controls — screening, training, NDAs
-  Physical (A.7):       14 controls — perimeter, equipment, clean desk
-  Technological (A.8):  34 controls — access, crypto, malware, logging, backup
+---
 
-  New 2022 controls: A.5.7 threat intel, A.5.23 cloud services,
-  A.8.11 data masking, A.8.28 secure coding, A.8.16 monitoring
+## 2. Data Classification Scheme
 
-PCI-DSS v4.0 REQUIREMENTS SUMMARY
------------------------------------
-  Req 1:  Network security controls (firewall, segmentation)
-  Req 2:  Secure configurations (change defaults, disable unused)
-  Req 3:  Protect stored data (encryption, retention limits)
-  Req 4:  Protect transit (TLS 1.2+)
-  Req 5:  Malware protection
-  Req 6:  Secure development (patching: critical = 1 month)
-  Req 7:  Access restriction (RBAC, least privilege)
-  Req 8:  Authentication (MFA for all admin; strong passwords)
-  Req 9:  Physical access
-  Req 10: Logging and monitoring (tamper-protected, log review)
-  Req 11: Testing (quarterly scans, annual pen test)
-  Req 12: Policies, risk assessment, training, TPRM
+| Level | Description | Examples |
+|-------|-------------|---------|
+| Public | Intentionally public | Marketing materials, job postings |
+| Internal | Internal use, not for external sharing | Internal policies, org charts |
+| Confidential | Business-sensitive, limited distribution | Financial data, contracts |
+| Restricted | Highest sensitivity, regulatory requirement | PHI, PAN, credentials, source code |
 
-HIPAA TECHNICAL SAFEGUARDS (§164.312)
----------------------------------------
-  Access Controls (Required):     Unique user IDs, auto logoff, encryption
-  Audit Controls (Required):      Hardware/software activity logs
-  Integrity (Addressable):        ePHI authentication mechanisms
-  Transmission Security (Addr):   Encryption in transit
+Map data classification to regulatory treatment:
+- Restricted PAN data → PCI-DSS CDE scoping
+- Restricted PHI/ePHI → HIPAA scoping
+- Confidential/Restricted EU personal data → GDPR scoping
 
-NIST CSF 2.0 FUNCTIONS
------------------------
-  Govern   = Cybersecurity risk strategy, policy, oversight
-  Identify = Asset and risk understanding
-  Protect  = Safeguards (MFA, patching, training, data security)
-  Detect   = Monitoring, anomaly detection
-  Respond  = Incident management, communication, mitigation
-  Recover  = Restoration, communication, improvements
+---
 
-CROSS-FRAMEWORK MAPPING (key areas)
--------------------------------------
-  MFA:           SOC2 CC6.1 / ISO A.8.5 / PCI Req 8.4 / NIST PR.AA-03
-  Encryption:    SOC2 CC6.1 / ISO A.8.24 / PCI Req 3.5 / NIST PR.DS-01
-  Patching:      SOC2 CC7.1 / ISO A.8.19 / PCI Req 6.3 / NIST PR.PS-02
-  Logging:       SOC2 CC7.2 / ISO A.8.15 / PCI Req 10 / NIST DE.CM-01
-  Incident resp: SOC2 CC7.3 / ISO A.5.26 / PCI Req 12.10 / NIST RS.MA
-  Vendors:       SOC2 CC9.2 / ISO A.5.19 / PCI Req 12.8 / NIST GV.SC
+## 3. Regulatory Applicability Assessment Matrix
 
-=================================================================
-PHASE 3: CONTROL ASSESSMENT
-=================================================================
+| Regulation | Trigger Criteria |
+|------------|-----------------|
+| PCI-DSS | Store, process, or transmit cardholder data (PAN, SAD) |
+| HIPAA | US-based covered entity or business associate with PHI/ePHI |
+| GDPR | Processing personal data of EU/EEA data subjects |
+| SOC 2 | SaaS/service provider with customer data; client audit requirement |
+| ISO 27001 | Voluntary certification; global enterprise; customer requirement |
+| NIST CSF | US federal contractors; voluntary framework for all sectors |
+| CCPA | California consumers' data; annual revenue > $25M or 50k+ consumers |
+| NERC CIP | Electric utility; Bulk Electric System (BES) Cyber Systems |
 
-TESTING METHODS
-----------------
-  Inquiry:     Interview control owners — NOT sufficient alone for OE
-  Observation: Watch control being performed
-  Inspection:  Review documents, configs, logs, reports
-  Re-performance: Independently execute the control test
+---
 
-DESIGN vs OPERATING EFFECTIVENESS
------------------------------------
-  Design (SOC 2 Type I):      Would this control, if working, prevent/detect the risk?
-  Operating Eff (SOC 2 II):   Is it actually working, consistently, over 6-12 months?
+## 4. PCI-DSS CDE Scoping
 
-GAP SEVERITY
--------------
-  Critical/High:  Missing control; regulatory action risk
-  Medium:         Partially implemented; policy exists but not followed
-  Low:            Evidence gap; not documented; isolated exceptions
+### Cardholder Data Environment (CDE) Definition
+```
+CDE = all systems that store, process, or transmit:
+  - Primary Account Number (PAN)
+  - Cardholder Name
+  - Service Code  
+  - Expiration Date
+  - Sensitive Authentication Data (SAD): CVV2, PIN, magnetic stripe
 
-COMPENSATING CONTROLS (PCI-DSS)
----------------------------------
-  Required when: requirement cannot be met due to technical constraint
-  Must: address the intent and rigor of the original requirement
-  Must: exceed other PCI-DSS requirements
-  Requires: QSA approval
-  Document: reason, controls implemented, residual risk, review date
+Connected-to systems = systems that connect TO CDE networks
+Security systems = systems providing security services to CDE
 
-CLOUD CONTROL INHERITANCE
---------------------------
-  Obtain provider SOC 2 Type II report
-  Check: scope covers your use case; no relevant exceptions
-  Document: Complementary User Entity Controls (CUECs) you must implement
-  AWS/Azure/GCP: physical security = inherited; OS/app = customer responsibility
+Scope reduction strategies:
+  - Tokenisation: replace PAN with token (removes from scope)
+  - P2PE (Point-to-Point Encryption): scope reduction for card-present
+  - Redirect method for e-commerce: third-party hosted payment page
+```
 
-=================================================================
-PHASE 4: EVIDENCE COLLECTION
-=================================================================
+---
 
-EVIDENCE NAMING CONVENTION
----------------------------
-  <Year>-<Standard>-<RequirementID>-<Description>-<YYYYMMDD>.<ext>
-  Example: 2026-PCI-Req8.4-MFA-Config-20260601.png
+## 5. HIPAA PHI/ePHI Identification
 
-INTEGRITY
-----------
-  sha256sum <file> > hashes.txt  (hash all evidence on collection)
-  sha256sum -c hashes.txt         (verify on submission)
+### PHI Identifiers (18 HIPAA identifiers)
+```
+Names, Geographic data (below state level), Dates (except year),
+Phone numbers, Fax numbers, Email addresses, SSN, MRN,
+Health plan beneficiary numbers, Account numbers, Certificate numbers,
+VINs, Device identifiers, URLs, IP addresses, Biometric identifiers,
+Full-face photographs, Any other unique identifier
+```
 
-KEY EVIDENCE BY STANDARD
--------------------------
-  PCI Req 8 (Auth): User account list + MFA status report + AD password policy screenshot
-  PCI Req 10 (Log): Log config screenshots + sample log review records
-  PCI Req 11 (Test): ASV scan reports (quarterly) + pen test report (annual)
-  SOC 2 CC6 (Access): Access certification reports + access review completion screenshots
-  SOC 2 CC7 (Ops): Incident logs + vulnerability scan reports + monitoring alert configs
-  ISO 27001: Scope doc + policy + risk register + SoA + audit results + mgmt review minutes
+ePHI = PHI in electronic form. All ePHI requires HIPAA Security Rule compliance.
 
-RETENTION PERIODS
------------------
-  PCI-DSS:  Audit logs 12 months; evidence 12 months minimum
-  HIPAA:    Policies 6 years; medical records per state law or 6 years
-  SOC 2:    Per audit firm (typically 7 years)
-  GDPR:     Only as long as necessary per lawful basis
-  SOX:      7 years minimum
+---
 
-=================================================================
-PHASE 5: REMEDIATION ROADMAP
-=================================================================
+## 6. GDPR Personal Data Mapping
 
-PRIORITISATION MATRIX
-----------------------
-  Priority Score = (Regulatory Risk x Exploitability) / Effort
+### Personal Data Categories
+- Basic identity: name, address, date of birth
+- Contact data: email, phone
+- Online identifiers: IP addresses, cookies, device IDs
+- Special categories (Article 9): health, biometric, genetic, racial/ethnic, political, religious, trade union, sexual orientation
 
-  Critical (>20): Immediate; executive escalation required
-  High (10-20):   Resolve within 30 days
-  Medium (5-10):  Resolve within 90 days
-  Low (<5):       Resolve within 180 days or accept with documented risk
+### Data Flow Mapping Requirements
+```
+For each personal data type:
+1. What data? (categories and sensitivity)
+2. Why? (lawful basis: consent, contract, legal obligation, legitimate interest)
+3. Where from? (source: customer, employee, third party)
+4. Where stored? (system, location, country)
+5. Who has access? (internal roles, third parties)
+6. How long? (retention period, deletion mechanism)
+7. Where transferred? (third countries, safeguards)
+```
 
-EXCEPTION MANAGEMENT
----------------------
-  Required fields: Gap ID, requestor, standard violated, justification,
-  compensating controls, residual risk rating, risk owner approval,
-  exception period (max 12 months), review date, expiry date
+---
 
-AUDIT READINESS TIMELINE
--------------------------
-  90 days before: All Critical/High gaps resolved or accepted
-  30 days before: Evidence package assembled + indexed; control owners briefed
-  Audit kickoff:  Scope confirmed; portal access granted; contacts designated
+## 7. Scope Documentation Template
 
-RACI TEMPLATE
---------------
-  Responsible = Does the work
-  Accountable = Single owner; accepts residual risk
-  Consulted   = Input required
-  Informed    = Notified of progress/outcome
+```
+COMPLIANCE SCOPE DOCUMENT
+===========================
+Organisation: <name>
+Date: <YYYY-MM-DD>
+Version: <n>
+Approved by: <CISO/DPO/Compliance Lead>
 
-=================================================================
-QUICK REFERENCE: REGULATORY BREACH NOTIFICATION
-=================================================================
-  GDPR Art. 33:   72 hours to supervisory authority after becoming aware
-  HIPAA:          60 days to affected individuals; HHS; media if >500
-  PCI-DSS:        Immediately notify card brands and acquirer
-  NY SHIELD:      Immediate notification to affected NY residents
-  CCPA:           Most expedient time and manner (no specific deadline)
+Applicable Regulations:
+  [ ] PCI-DSS v4.0 — SAQ type: <A/B/B-IP/C/C-VT/D/P2PE-HW>
+  [ ] HIPAA Security Rule — Covered Entity / Business Associate
+  [ ] GDPR — Controller / Processor / Both
+  [ ] SOC 2 Type <I/II> — TSC: <Security/Availability/Confidentiality/PI/Privacy>
+  [ ] ISO 27001:2022
+  [ ] NIST CSF 2.0
+  [ ] Other: <specify>
+
+In-Scope Assets: <list or reference asset register>
+Out-of-Scope (with justification): <list>
+In-Scope Data Types: <list>
+Third Parties in Scope: <list>
+Geographic Scope: <regions/countries>
+Scope Review Date: <date>
+```
+
+
+
+## standard-mapping
+
+# Standard Mapping
+
+## Purpose
+Map organisational controls to applicable compliance frameworks and identify coverage, gaps, and overlapping requirements.
+
+---
+
+## 1. SOC 2 Trust Service Criteria
+
+### Common Criteria (CC) — Required for All SOC 2 Reports
+| Criteria | Description | Key Controls |
+|----------|-------------|-------------|
+| CC1 | Control Environment | Management philosophy, board oversight, integrity |
+| CC2 | Communication & Information | Internal/external communications, risk awareness |
+| CC3 | Risk Assessment | Risk identification, analysis, change management |
+| CC4 | Monitoring | Internal audit, corrective actions |
+| CC5 | Control Activities | Policies, procedures, technology deployment |
+| CC6 | Logical & Physical Access | Authentication, authorisation, least privilege |
+| CC7 | System Operations | Incident detection, recovery, anomaly management |
+| CC8 | Change Management | SDLC, change authorisation, testing |
+| CC9 | Risk Mitigation | Vendor risk, business continuity |
+
+### Additional TSCs (Opt-in)
+```
+Availability (A1):      Performance monitoring, disaster recovery, capacity planning
+Confidentiality (C1):   Identification, protection, retention/disposal of confidential info
+Processing Integrity:   Complete, accurate, timely processing
+Privacy (P series):     GDPR/CCPA aligned notice, consent, use, quality, monitoring
+```
+
+---
+
+## 2. ISO 27001:2022 Annex A Controls
+
+### 4 Control Themes (93 controls total)
+| Theme | Controls | Examples |
+|-------|----------|---------|
+| Organisational (A.5) | 37 controls | Policies, roles, threat intelligence, supplier security |
+| People (A.6) | 8 controls | Screening, training, NDAs, remote working |
+| Physical (A.7) | 14 controls | Perimeter security, equipment, clean desk |
+| Technological (A.8) | 34 controls | Access control, crypto, malware, logging, backup |
+
+### Key New Controls in ISO 27001:2022
+```
+A.5.7  Threat intelligence
+A.5.23 Security for cloud services
+A.5.30 ICT readiness for business continuity
+A.7.4  Physical security monitoring
+A.8.9  Configuration management
+A.8.10 Information deletion
+A.8.11 Data masking
+A.8.12 Data leakage prevention
+A.8.16 Monitoring activities
+A.8.23 Web filtering
+A.8.28 Secure coding
+```
+
+---
+
+## 3. PCI-DSS v4.0 Requirements
+
+| Req | Title | Key Controls |
+|-----|-------|-------------|
+| 1 | Install and maintain network security controls | Firewall rules, network segmentation, documentation |
+| 2 | Apply secure configurations | Change defaults, disable unused services, configuration standards |
+| 3 | Protect stored account data | Encryption of PAN at rest, retention limits, masking |
+| 4 | Protect data in transit | TLS 1.2+ for all transmissions of CHD |
+| 5 | Protect against malware | Anti-malware, anti-phishing, regular updates |
+| 6 | Develop and maintain secure systems | Patching SLAs (critical: 1 month), SDLC, code review |
+| 7 | Restrict access by business need | RBAC, least privilege, access reviews |
+| 8 | Identify users and authenticate | MFA for all admin access, password standards |
+| 9 | Restrict physical access | Visitor logs, media controls, device protection |
+| 10 | Log and monitor all access | Audit logs, tamper protection, log review |
+| 11 | Test security regularly | Vulnerability scans (quarterly), pen test (annual), IDS/IPS |
+| 12 | Support security with policies | Security policy, risk assessment, training, TPRM |
+
+### SAQ Type Selection
+| SAQ | Who it applies to |
+|-----|-------------------|
+| SAQ A | E-commerce, all card functions outsourced, no storage |
+| SAQ B | Imprint machines or standalone dial-out terminals only |
+| SAQ C | POS applications on internet-connected devices |
+| SAQ D-Merchant | All merchants not qualifying for A-C |
+| SAQ D-SP | Service providers |
+| SAQ P2PE-HW | Hardware-only P2PE solution |
+
+---
+
+## 4. HIPAA Security Rule Safeguards
+
+### Administrative Safeguards (§164.308)
+```
+Risk Analysis (Required): Identify threats, vulnerabilities, likelihoods
+Risk Management (Required): Implement security measures to reduce risk
+Sanction Policy (Required): Workforce penalties for violations
+Workforce Training (Required): Security awareness training
+Access Management (Required): Formal authorisation process for ePHI access
+Incident Response (Required): Policy for security incidents
+Contingency Plan (Required): DR/BC for ePHI systems
+Business Associate Agreements: BAAs for all BAs with ePHI access
+```
+
+### Technical Safeguards (§164.312)
+```
+Access Controls (Required): Unique user IDs, emergency access, auto logoff, encryption
+Audit Controls (Required): Hardware/software activity logs
+Integrity Controls (Addressable): Mechanisms to authenticate ePHI
+Transmission Security (Addressable): Encryption in transit
+```
+
+---
+
+## 5. GDPR Article 32 Technical Measures
+
+```
+Required measures (risk-appropriate):
+  a) Pseudonymisation and encryption of personal data
+  b) Ongoing confidentiality, integrity, availability, resilience of systems
+  c) Ability to restore availability after incident (DR/BC)
+  d) Regular testing of security measures (risk assessments, pen tests)
+
+Additional GDPR obligations:
+  Art. 25: Data protection by design and by default
+  Art. 30: Records of processing activities (ROPA)
+  Art. 33: Breach notification within 72 hours to supervisory authority
+  Art. 35: DPIA for high-risk processing
+  Art. 37-39: DPO requirement criteria
+```
+
+---
+
+## 6. NIST CSF 2.0 Function Mapping
+
+| Function | Description | Key Categories |
+|----------|-------------|---------------|
+| Govern (GV) | Cybersecurity risk strategy, expectations, policy | GV.OC, GV.RM, GV.RR, GV.PO, GV.OV, GV.SC |
+| Identify (ID) | Understand assets, risks, supply chain | ID.AM, ID.RA, ID.IM |
+| Protect (PR) | Safeguards to manage risk | PR.AA, PR.AT, PR.DS, PR.IR, PR.PS |
+| Detect (DE) | Identify cybersecurity incidents | DE.AE, DE.CM |
+| Respond (RS) | Actions after incident | RS.MA, RS.AN, RS.CO, RS.MI |
+| Recover (RC) | Restoration of capabilities | RC.RP, RC.CO |
+
+---
+
+## 7. Cross-Framework Control Mapping (Sample)
+
+| Control Area | SOC 2 | ISO 27001 | PCI-DSS | NIST CSF | CIS v8 |
+|-------------|-------|-----------|---------|----------|--------|
+| MFA | CC6.1 | A.8.2, A.8.5 | Req 8.4 | PR.AA-03 | CIS 6 |
+| Encryption at rest | CC6.1, C1.1 | A.8.24 | Req 3.5 | PR.DS-01 | CIS 3 |
+| Patch management | CC7.1 | A.8.19, A.8.8 | Req 6.3 | PR.PS-02 | CIS 7 |
+| Logging/monitoring | CC7.2, CC7.3 | A.8.15, A.8.16 | Req 10 | DE.CM-01 | CIS 8 |
+| Incident response | CC7.3, CC7.4 | A.5.26, A.5.24 | Req 12.10 | RS.MA | CIS 17 |
+| Vendor management | CC9.2 | A.5.19-A.5.22 | Req 12.8 | GV.SC | CIS 15 |
+
+
+
+## control-assessment
+
+# Control Assessment
+
+## Purpose
+Evaluate the design and operating effectiveness of controls against applicable compliance standards, identify gaps, and document findings.
+
+---
+
+## 1. Control Testing Methodology
+
+### Four Testing Methods
+| Method | Description | When to Use |
+|--------|-------------|-------------|
+| Inquiry | Interview control owners, ask questions | Initial scoping, understanding process |
+| Observation | Watch control being performed | Physical controls, manual processes |
+| Inspection | Review documentation, configs, logs | Policy reviews, system configs, reports |
+| Re-performance | Independently execute control test | Automated controls, reconciliations |
+
+**Auditor standard**: Inquiry alone is NOT sufficient for evidence of operating effectiveness. Combine with inspection or re-performance.
+
+---
+
+## 2. Design vs Operating Effectiveness
+
+| Assessment Type | Question | Evidence |
+|----------------|---------|---------|
+| Design Adequacy | Would the control, if operating effectively, prevent/detect the risk? | Policy document, procedure description |
+| Operating Effectiveness | Is the control actually working as designed, consistently, over the period? | Transaction testing, logs, reports, interview + re-performance |
+
+SOC 2 Type I = design only (point in time)
+SOC 2 Type II = operating effectiveness (6-12 month period)
+
+---
+
+## 3. Gap Classification
+
+| Gap Type | Definition | Severity |
+|----------|-----------|---------|
+| Missing Control | No control exists to address the requirement | Critical / High |
+| Partially Implemented | Control exists but incomplete (e.g., MFA for some but not all users) | Medium / High |
+| Evidence Gap | Control exists and operates but evidence collection is inadequate | Low / Medium |
+| Documented Gap | Control operates but not formally documented | Low |
+| Exception | Control exists but individual exceptions not managed/tracked | Low / Medium |
+
+---
+
+## 4. Control Testing Worksheet
+
+```
+Control Reference:    <SOC 2 CC6.1 / PCI Req 8.4 / ISO A.8.5>
+Control Title:        <Multi-factor authentication>
+Control Owner:        <IT Security Manager>
+Description:          <All user and administrator access to in-scope systems
+                       requires MFA using TOTP or FIDO2>
+Risk Addressed:       <Unauthorised access via compromised credentials>
+
+Design Assessment:
+  Adequate? [Y/N]:     Y
+  Notes:               Policy documented; FIDO2 preferred; TOTP accepted
+
+Operating Effectiveness Testing:
+  Period Tested:        Jan 2026 – Jun 2026
+  Test Method:          Inspection (report) + Re-performance (test login)
+  Population:           450 user accounts in scope
+  Sample Size:          25 (based on AICPA sampling guidance)
+  Sample Selection:     Random using Excel RAND() function
+  Exceptions Found:     3 accounts missing MFA (2 service accounts, 1 guest)
+  Exception Rate:       12% (3/25)
+  
+Finding:
+  Type:                 Partially Implemented
+  Severity:             High
+  Description:          3 of 25 sampled accounts lack MFA
+  Root Cause:           Service account MFA exemption policy not reviewed
+  Recommendation:       Apply MFA to service accounts or compensating controls
+```
+
+---
+
+## 5. Compensating Control Documentation
+
+When a required control cannot be implemented as specified:
+
+```
+Compensating Control Documentation
+=====================================
+Standard Requirement:     <PCI-DSS Req 8.4.1 — MFA for all non-console admin access>
+Reason Control Cannot Be Met: <Legacy system does not support MFA>
+Compensating Control(s) Implemented:
+  1. Jump server with MFA required for access to legacy system
+  2. Session recording on all legacy system access
+  3. Admin access limited to named accounts (no shared accounts)
+  4. Access review quarterly
+Risk Assessment:          Residual risk assessed as MEDIUM; accepted by CISO <date>
+QSA Approval Required:    Yes (for PCI-DSS compensating controls)
+Review Date:              <date>
+```
+
+---
+
+## 6. Cloud Service Provider Control Inheritance
+
+### AWS Shared Responsibility Matrix (Sample)
+| Control Area | AWS Responsibility | Customer Responsibility |
+|-------------|-------------------|------------------------|
+| Physical security | AWS (ISO 27001 certified) | N/A — inherit |
+| Network controls | Shared | Customer VPC configuration |
+| OS patching | Customer (EC2) | Customer applies patches |
+| Application security | Customer | Customer owns |
+| Identity (AWS IAM) | Shared | Customer configures IAM policies |
+| Data encryption | Shared | Customer enables and manages keys |
+
+### Third-Party Attestation Review
+```
+For cloud/SaaS providers with their own compliance certifications:
+1. Obtain provider's SOC 2 Type II report (review period overlap)
+2. Review: scope, subservice organisations, exceptions, management responses
+3. Check: does provider's scope cover YOUR use case?
+4. Complementary User Entity Controls (CUECs): controls YOU must implement
+5. ISO certificate: verify issuing CA, certificate scope, expiry date
+
+Key questions:
+  - Does the report cover the systems that process your data?
+  - Are there any qualified opinions or exceptions?
+  - Have all exceptions been remediated or have compensating controls?
+  - Do CUECs align with your control implementation?
+```
+
+---
+
+## 7. Assessment Checklist
+
+- [ ] All in-scope controls identified and mapped to requirements
+- [ ] Control owner confirmed for each control
+- [ ] Design adequacy assessed for all controls
+- [ ] Testing period defined (SOC 2 Type II: minimum 6 months)
+- [ ] Sample size determined per AICPA/audit guidance
+- [ ] All test results documented in working papers
+- [ ] Exceptions quantified and root causes identified
+- [ ] Compensating controls documented where applicable
+- [ ] Cloud provider attestations reviewed and CUECs documented
+- [ ] Gap register populated with all findings
+- [ ] Findings rated by severity and regulatory impact
+- [ ] Draft findings reviewed with control owners (management response)
+
+
+
+## evidence-collection
+
+# Evidence Collection
+
+## Purpose
+Collect, organise, and package evidence that demonstrates control effectiveness to auditors and regulators.
+
+---
+
+## 1. Evidence Requirements by Standard
+
+### SOC 2 Evidence
+| Control Area | Evidence Type | Frequency |
+|-------------|--------------|-----------|
+| Access reviews | Access certification reports, screenshots | Quarterly/Annual |
+| Change management | Change tickets with approvals | Population-based sample |
+| Vulnerability management | Scan reports, remediation tickets | Monthly/Quarterly |
+| Incident response | Incident logs, post-mortems | Event-triggered |
+| Backup testing | Restore test results | Annual |
+| Vendor management | Vendor assessments, contract reviews | Annual |
+| Security training | Training completion reports | Annual |
+
+SOC 2 Type II: auditor takes population-based sample across full testing period. Ensure evidence is retained and accessible for entire period.
+
+### ISO 27001 Evidence
+```
+Required documentation (mandatory):
+  - Scope document (Clause 4.3)
+  - Information security policy (Clause 5.2)
+  - Risk assessment results (Clause 6.1.2)
+  - Risk treatment plan (Clause 6.1.3)
+  - Statement of Applicability (SoA) (Clause 6.1.3d)
+  - Security objectives and plans (Clause 6.2)
+  - Competence evidence (Clause 7.2)
+  - Internal audit results (Clause 9.2)
+  - Management review minutes (Clause 9.3)
+  - Nonconformity and corrective actions (Clause 10.1)
+```
+
+### PCI-DSS v4.0 Evidence
+| Requirement | Evidence |
+|-------------|---------|
+| Req 1 (Firewall) | Network diagrams, firewall rules export, change logs |
+| Req 3 (Data at rest) | Encryption configuration screenshots, key management docs |
+| Req 6 (Patching) | Patch scan reports showing last 30 days compliance |
+| Req 8 (Authentication) | User account list with MFA status, AD password policy screenshot |
+| Req 10 (Logging) | Log configuration screenshots, sample log review records |
+| Req 11 (Testing) | ASV scan reports (quarterly), pen test report (annual) |
+| Req 12 (Risk) | Completed risk assessment, security awareness training records |
+
+---
+
+## 2. Evidence Naming Convention
+
+```
+<Year>-<StandardCode>-<RequirementID>-<ControlDescription>-<YYYYMMDD>.<ext>
+
+Examples:
+  2026-PCI-Req8.4-MFA-Config-Screenshot-20260601.png
+  2026-SOC2-CC6.1-Access-Review-Report-Q1-20260331.xlsx
+  2026-ISO-A8.8-Vulnerability-Scan-Report-20260601.pdf
+  2026-HIPAA-164312-Encryption-Policy-v2.1-20260601.docx
+```
+
+---
+
+## 3. Evidence Integrity
+
+```bash
+# Hash all evidence files on collection
+sha256sum 2026-PCI-Req8.4-MFA-Config-Screenshot-20260601.png > evidence_hashes.txt
+
+# Bulk hash directory
+find /evidence/ -type f -exec sha256sum {} \; > evidence_hashes.txt
+
+# Verify hashes on submission
+sha256sum -c evidence_hashes.txt
+```
+
+---
+
+## 4. Evidence Packaging for Audit Submission
+
+### Directory Structure
+```
+audit_package_<standard>_<year>/
+  00_index.xlsx                    ← Evidence index with control mapping
+  01_scope_and_policies/           ← Scope docs, policies, standards
+  02_risk_assessment/              ← Risk register, risk treatment plan
+  03_access_controls/              ← User lists, MFA configs, access reviews
+  04_change_management/            ← Change tickets (sampled)
+  05_vulnerability_management/     ← Scan reports, remediation evidence
+  06_incident_management/          ← Incident logs, post-mortems
+  07_vendor_management/            ← Vendor risk assessments, contracts
+  08_training/                     ← Training completion reports
+  09_backup_and_recovery/          ← Backup reports, DR test results
+  10_monitoring_and_logging/       ← Log config screenshots, alert configs
+  HASHES.txt                       ← SHA256 of all files
+  README.txt                       ← Instructions for auditor
+```
+
+### Evidence Index Format (spreadsheet)
+```
+| Evidence ID | Standard | Requirement | Control | File Name | Date | Owner | Notes |
+```
+
+---
+
+## 5. Evidence Retention Periods
+
+| Standard | Retention Requirement |
+|----------|-----------------------|
+| PCI-DSS | Audit logs: 12 months online, 12 months archived; evidence: 12 months |
+| HIPAA | Policies/procedures: 6 years; records: state law or 6 years minimum |
+| SOC 2 | Retain supporting workpapers per audit firm policy (typically 7 years) |
+| ISO 27001 | Per organisation's documented retention schedule; typically 3-7 years |
+| GDPR | Only as long as necessary; justified by lawful basis |
+| SOX | 7 years minimum for financial records and audit evidence |
+
+---
+
+## 6. Evidence Collection Checklist
+
+- [ ] Evidence index created with all required items mapped to controls
+- [ ] All evidence files named per naming convention
+- [ ] All files hashed on collection (SHA256)
+- [ ] Screenshots dated and include system hostname/URL in frame
+- [ ] Reports show population (not just a sample)
+- [ ] Configuration screenshots show all relevant settings (not cropped to hide gaps)
+- [ ] Policy documents version-controlled with approval signatures
+- [ ] Training records show completion date, course name, and employee name
+- [ ] Evidence covers the entire assessment period (not just recent)
+- [ ] Access reviews show review completion with approver identity
+- [ ] Directory structure matches index
+- [ ] README.txt prepared for auditor navigation
+
+
+
+## remediation-roadmap
+
+# Remediation Roadmap
+
+## Purpose
+Prioritise identified compliance gaps, assign ownership, estimate effort, and build a tracked remediation plan.
+
+---
+
+## 1. Gap Prioritisation Matrix
+
+### Scoring Dimensions
+| Dimension | 1 | 2 | 3 | 4 | 5 |
+|-----------|---|---|---|---|---|
+| Regulatory Risk | Minor finding | Administrative | Significant deficiency | Material weakness | Regulatory action risk |
+| Exploitability | Theoretical | Low | Medium | High | Actively exploited |
+| Remediation Effort | < 1 day | 1 week | 1 month | 1 quarter | > 1 quarter |
+
+Priority Score = Regulatory Risk × Exploitability / Remediation Effort
+
+### Priority Bands
+```
+Critical (score > 20): Immediate remediation; executive escalation
+High     (score 10-20): Remediate within 30 days
+Medium   (score 5-10):  Remediate within 90 days
+Low      (score < 5):   Remediate within 180 days or accept with documented risk
+```
+
+---
+
+## 2. Remediation Roadmap Template
+
+```
+COMPLIANCE REMEDIATION ROADMAP
+================================
+Organisation: <name>
+Standard(s): <PCI-DSS v4.0 / SOC 2 / ISO 27001>
+Assessment Date: <YYYY-MM-DD>
+Roadmap Owner: <CISO>
+
+CRITICAL GAPS (resolve within 30 days)
+--------------------------------------
+Gap ID    | Description | Owner | Target Date | Status
+GAP-001   | No MFA on admin accounts | IT Sec | 2026-07-01 | In Progress
+GAP-002   | No formal risk assessment | GRC | 2026-07-15 | Not Started
+
+HIGH GAPS (resolve within 60 days)
+------------------------------------
+GAP-003   | Incomplete patching process for critical CVEs | IT Ops | 2026-07-30 | Not Started
+
+MEDIUM GAPS (resolve within 90 days)
+--------------------------------------
+GAP-004   | Vendor risk assessments not current | Procurement | 2026-08-31 | Not Started
+
+LOW GAPS (resolve within 180 days)
+------------------------------------
+GAP-005   | Security training not tracked per user | HR | 2026-11-30 | Not Started
+```
+
+---
+
+## 3. Effort Estimation Methodology
+
+### T-Shirt Sizing
+| Size | Effort | Example |
+|------|--------|---------|
+| XS | < 1 day | Screenshot a configuration, update a policy date |
+| S | 1-5 days | Write a procedure, configure a monitoring rule |
+| M | 1-4 weeks | Implement MFA for a system group, deploy SIEM integration |
+| L | 1-3 months | Full PAM deployment, DLP implementation |
+| XL | 3-12 months | Complete ISMS implementation, network segmentation |
+
+---
+
+## 4. RACI for Remediation
+
+| Gap | Responsible | Accountable | Consulted | Informed |
+|-----|-------------|-------------|-----------|---------|
+| MFA rollout | IT Security | CISO | IT Ops | All staff |
+| Risk assessment | GRC Analyst | CISO | Business Units | Board |
+| Patch management | IT Operations | CTO | Security | CISO |
+| Policy update | GRC Analyst | CISO | Legal, HR | All staff |
+| Vendor assessments | Procurement | CPO | Legal, Security | CISO |
+
+---
+
+## 5. Exception Management Process
+
+For gaps that cannot be remediated within standard SLAs:
+
+```
+RISK ACCEPTANCE / EXCEPTION REQUEST
+=====================================
+Gap ID:             <GAP-001>
+Requestor:          <Name, Role>
+Date Requested:     <YYYY-MM-DD>
+Standard Violated:  <PCI-DSS Req 8.4.1>
+Description of Gap: <MFA cannot be enabled on legacy SCADA system>
+Business Justification: <System cannot be upgraded; vendor EOL>
+Compensating Controls:
+  1. <Network isolation to dedicated VLAN>
+  2. <Jump server with MFA required>
+  3. <Session recording>
+Residual Risk Rating: MEDIUM
+Risk Owner:         <CISO>
+Approval:           <CISO signature + Board approval for Critical>
+Exception Period:   <12 months, reviewed annually>
+Review Date:        <YYYY-MM-DD>
+Expiry Date:        <YYYY-MM-DD>
+```
+
+---
+
+## 6. Progress Tracking Dashboard
+
+### Metrics to Track
+```
+Total Gaps Identified:         <n>
+  By Severity: Critical=<n>, High=<n>, Medium=<n>, Low=<n>
+  By Standard: PCI=<n>, SOC2=<n>, ISO=<n>
+
+Remediation Progress:
+  Resolved:           <n> (<n>%)
+  In Progress:        <n> (<n>%)
+  Overdue:            <n> (<n>%)
+  Accepted (Risk):    <n> (<n>%)
+  Not Started:        <n> (<n>%)
+
+Trend: vs prior month
+  New gaps added:     <n>
+  Gaps closed:        <n>
+  Net change:         <+n / -n>
+
+Overdue Critical/High Gaps: <list with owners>
+```
+
+---
+
+## 7. Audit Readiness Checklist
+
+90 days before audit:
+- [ ] All Critical and High gaps resolved or accepted
+- [ ] Risk acceptance documentation approved
+- [ ] Evidence collection process confirmed
+- [ ] Policy and procedure documents updated and approved
+- [ ] Auditor scope letter agreed
+
+30 days before audit:
+- [ ] Evidence package assembled and indexed
+- [ ] Evidence integrity hashes generated
+- [ ] Control owners briefed and available for auditor inquiry
+- [ ] Outstanding Medium gaps have documented remediation plan
+
+Audit kickoff:
+- [ ] Scope confirmed with auditor
+- [ ] Evidence portal/SharePoint access granted to auditor
+- [ ] Named primary and backup contacts designated
+- [ ] Daily standup schedule agreed for audit fieldwork period

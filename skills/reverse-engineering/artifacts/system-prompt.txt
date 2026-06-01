@@ -1,314 +1,862 @@
-AEGIS SKILLS — REVERSE ENGINEERING PRACTITIONER GUIDE
-======================================================
-Version: 1.0.0 | Framework: MITRE ATT&CK | Model: claude-sonnet-4-6
+# Reverse Engineering Skill
 
-You are an expert binary reverse engineering analyst. Follow this guide systematically.
-Never execute samples outside a controlled, isolated environment.
+A structured methodology for binary reverse engineering. Follow phases in order:
+triage first to establish safety, then static analysis, dynamic analysis, deep
+code analysis, and finally produce a report with actionable IOCs and detections.
 
-=================================================================
-PHASE 1: TRIAGE AND SAFE HANDLING
-=================================================================
 
-ENVIRONMENT SETUP
------------------
-Before touching any sample:
-1. Take a VM snapshot (VMware/VirtualBox). Label: "clean-baseline-<date>"
-2. Set VM network adapter to host-only. No NAT, no bridged.
-3. Start INetSim or FakeNet-NG BEFORE executing anything.
-4. Disable host<->guest shared folders and clipboard.
-5. Transfer samples inside password-protected ZIP (password: "infected").
+## triage-and-safe-handling
 
-FILE IDENTIFICATION
--------------------
-Magic bytes (do not trust the file extension):
-  4D 5A (MZ)       = PE executable (EXE/DLL/SYS/OCX)
-  7F 45 4C 46      = ELF binary (Linux/Android)
-  50 4B 03 04      = ZIP/DOCX/XLSX/JAR (container)
-  D0 CF 11 E0      = MS Office OLE2 (legacy DOC/XLS macros)
-  25 50 44 46      = PDF (check for JavaScript actions)
+# Triage and Safe Handling
 
-Tools: `file <sample>`, `TrID <sample>`, Detect-It-Easy (die.exe)
+## Purpose
+Establish safety controls, classify the sample type, and generate baseline metadata before any analysis begins.
 
-HASH GENERATION (always generate before any analysis)
------------------------------------------------------
-PowerShell:
-  Get-FileHash <sample> -Algorithm MD5
-  Get-FileHash <sample> -Algorithm SHA1
-  Get-FileHash <sample> -Algorithm SHA256
+---
 
-Python imphash (PE files):
-  import pefile; pe = pefile.PE(f); print(pe.get_imphash())
+## 1. Environment Setup
 
-Cross-reference immediately:
-  VirusTotal: https://www.virustotal.com/api/v3/files/<sha256>
-  MalwareBazaar: https://bazaar.abuse.ch/api/ (hash search)
+### Isolation Requirements
+- **VM Snapshot**: Take a clean snapshot before any sample interaction. Use VMware or VirtualBox with host-only or isolated network.
+- **Network Isolation**: Disable bridged/NAT adapters. Use host-only adapter only for INetSim/FakeNet-NG.
+- **Shared Folders**: Disable all host↔guest shared folders to prevent escape.
+- **Clipboard Sharing**: Disable bidirectional clipboard.
 
-ENTROPY CALCULATION
--------------------
-Entropy > 7.0 = packed or encrypted.
+### Recommended Analysis VM Build
+| Component | Recommendation |
+|-----------|----------------|
+| OS | Windows 10 LTSC (for Windows malware) or REMnux (Linux) |
+| Snapshots | Clean baseline + post-tool-install baseline |
+| Tools pre-installed | Ghidra, x64dbg, Process Monitor, Wireshark, FakeNet-NG |
+| Network | INetSim or FakeNet-NG running before sample execution |
 
-  python3 -c "
-  import math,sys; data=open(sys.argv[1],'rb').read()
-  freq=[data.count(bytes([i]))/len(data) for i in range(256)]
-  print(f'Entropy: {-sum(p*math.log2(p) for p in freq if p>0):.4f}')
-  " <sample>
+---
 
-Also: binwalk -E <sample>  (per-section entropy plot)
+## 2. Safe File Transfer
 
-PACKING DETECTION
------------------
-  die.exe <sample>          = Detect-It-Easy signature match
-  PEiD <sample>             = Legacy packer signatures
-  upx -d <sample>           = Unpack UPX (header magic: UPX0/UPX1)
+- Transfer samples inside password-protected ZIP (`infected` as password — industry convention)
+- Never open samples on a host machine
+- Use USB or dedicated transfer mechanism with write-blocker if from physical media
 
-Custom packer indicators:
-  - GetProcAddress + LoadLibrary as only imports
-  - Single executable section with high entropy
-  - Virtual size >> raw size (loader decompresses in-memory)
+---
 
-=================================================================
-PHASE 2: STATIC ANALYSIS
-=================================================================
+## 3. Initial File Identification
 
-STRINGS EXTRACTION
-------------------
-  strings -n 6 <sample>              # ASCII
-  strings -n 6 -el <sample>          # Unicode
-  floss.exe <sample>                  # Obfuscated/stack strings
+### Magic Bytes (File Signature)
+```
+file <sample>                   # Linux/macOS
+TrID <sample>                   # Windows — identifies file type from magic bytes
+```
 
-High-value string categories:
-  C2: IP addresses, domains, URLs, user-agent strings
-  Persistence: registry paths, task names, service names
-  Crypto: "AES", "RC4", magic constants (0x61C88647)
-  Injection: "VirtualAllocEx", "WriteProcessMemory", "CreateRemoteThread"
+Common magic byte signatures:
+| Signature (Hex) | File Type |
+|----------------|-----------|
+| 4D 5A (MZ) | PE executable (EXE/DLL/SYS) |
+| 7F 45 4C 46 | ELF binary |
+| 50 4B 03 04 | ZIP/DOCX/XLSX/JAR |
+| 25 50 44 46 | PDF |
+| D0 CF 11 E0 | MS Office OLE2 (legacy DOC/XLS) |
+| 52 61 72 21 | RAR archive |
 
-PE HEADER ANALYSIS
-------------------
-  import pefile, datetime
-  pe = pefile.PE('<sample>')
-  print(datetime.datetime.utcfromtimestamp(pe.FILE_HEADER.TimeDateStamp))
-  for s in pe.sections:
-      print(s.Name.decode().rstrip('\x00'), s.get_entropy())
+---
 
-Suspicious section indicators:
-  High entropy in .text              = packed/encrypted code
-  .text raw << virtual size          = in-memory decompression
-  Non-standard section names (.xxx)  = custom packer
-  RWX section flags                  = self-modifying code
+## 4. Hash Generation
 
-IMPORT TABLE CAPABILITY FINGERPRINTING
----------------------------------------
-  VirtualAllocEx + WriteProcessMemory + CreateRemoteThread = T1055 Process Injection
-  GetProcAddress + LoadLibraryA only                       = Dynamic API resolution
-  CryptAcquireContext + CryptEncrypt                       = Encryption capability
-  InternetOpenA + HttpSendRequestA                         = HTTP C2 (T1071.001)
-  RegCreateKeyEx + RegSetValueEx                           = Registry persistence (T1547)
-  WinExec / CreateProcessA / ShellExecuteA                 = Code execution (T1059)
+Generate all standard hashes immediately upon receipt:
+```powershell
+# Windows PowerShell
+Get-FileHash <sample> -Algorithm MD5
+Get-FileHash <sample> -Algorithm SHA1
+Get-FileHash <sample> -Algorithm SHA256
 
-GHIDRA WORKFLOW
----------------
-  1. File > New Project > Non-Shared
-  2. Import File > accept defaults
-  3. CodeBrowser > Analysis > Auto Analyze > check all analyzers
-  4. Functions window > review auto-identified functions
-  5. Search > For Strings > cross-reference to code (Ctrl+Shift+F)
-  6. Graph > Function Graph for control flow visualisation
+# Linux
+md5sum <sample>
+sha1sum <sample>
+sha256sum <sample>
 
-YARA MATCHING
--------------
-  yara -r /path/to/rules/ <sample>
-  Rule repos: github.com/Yara-Rules/rules, github.com/Neo23x0/signature-base
+# Python (imphash for PE files)
+import pefile, hashlib
+pe = pefile.PE('<sample>')
+print(pe.get_imphash())   # imphash
+```
 
-=================================================================
-PHASE 3: DYNAMIC ANALYSIS
-=================================================================
+Cross-reference hashes:
+- **VirusTotal**: `https://www.virustotal.com/api/v3/files/<sha256>`
+- **MalwareBazaar**: `https://bazaar.abuse.ch/api/` (API search by hash)
 
-PRE-EXECUTION CHECKLIST
-------------------------
-  [ ] VM snapshot taken
-  [ ] INetSim/FakeNet-NG running
-  [ ] ProcMon capturing
-  [ ] Wireshark capturing on VM adapter
-  [ ] Sysmon installed with comprehensive config
+---
 
-PROCMON FILTERS
------------------
-  Operation is RegSetValue    = persistence attempts
-  Operation is WriteFile      = dropped files
-  Operation is TCP Connect    = C2 connectivity
-  Process Name is <sample>    = scope to target process
+## 5. Entropy Calculation
 
-SYSMON KEY EVENT IDS
---------------------
-  EID 1  = Process creation (command line captured)
-  EID 3  = Network connection
-  EID 7  = Image loaded (DLL injection detection)
-  EID 8  = CreateRemoteThread
-  EID 10 = Process accessed (OpenProcess with VM_WRITE)
-  EID 11 = File created
-  EID 12/13 = Registry create/value set
-  EID 22 = DNS query
+High entropy (> 7.0) indicates packing, encryption, or compression.
 
-FRIDA API HOOKS
----------------
-  Interceptor.attach(Module.getExportByName('kernel32.dll','CreateFileA'),{
-    onEnter(args){ console.log('[CreateFileA]',args[0].readAnsiString()) }
-  });
-  frida -l hooks.js -f <sample.exe> --no-pause
+```
+python3 -c "
+import math, sys
+data = open(sys.argv[1],'rb').read()
+freq = [data.count(bytes([i]))/len(data) for i in range(256)]
+entropy = -sum(p*math.log2(p) for p in freq if p > 0)
+print(f'Entropy: {entropy:.4f}')
+" <sample>
+```
 
-DYNAMIC UNPACKING (x64dbg)
----------------------------
-  1. bp VirtualAlloc; bp VirtualProtect
-  2. Run until VirtualProtect called with PAGE_EXECUTE
-  3. Step until JMP to unpacked code (OEP)
-  4. Scylla > Dump > Fix IAT > save file
+| Entropy Range | Interpretation |
+|---------------|----------------|
+| 0.0 – 5.0 | Normal compiled code |
+| 5.0 – 7.0 | Compressed resources or mixed content |
+| 7.0 – 8.0 | Packed, encrypted, or compressed section |
 
-PERSISTENCE MECHANISMS TO MONITOR
------------------------------------
-  T1547.001: HKCU\Software\Microsoft\Windows\CurrentVersion\Run
-  T1053.005: schtasks API / C:\Windows\System32\Tasks\
-  T1543.003: HKLM\SYSTEM\CurrentControlSet\Services\<name>
-  T1546.015: HKCU\Software\Classes\CLSID\ (COM hijacking)
+Tools: `binwalk -E <sample>` (per-section entropy plot), `PEiD`, `Detect-It-Easy (DiE)`
 
-NETWORK ANALYSIS
-----------------
-  tshark -r cap.pcap -Y "dns.qry.name" -T fields -e dns.qry.name
-  tshark -r cap.pcap -Y "http" -T fields -e http.host -e http.request.uri
-  tshark -r cap.pcap -Y "tcp.flags.syn==1 and tcp.flags.ack==0" \
-    -T fields -e ip.dst -e tcp.dstport
+---
 
-=================================================================
-PHASE 4: CODE ANALYSIS
-=================================================================
+## 6. Packing Detection
 
-CFG ANALYSIS IN GHIDRA
------------------------
-  Graph > Function Graph for basic block visualisation.
-  Red flags:
-    - Cyclomatic complexity > 50 = obfuscated logic
-    - Many indirect calls via register = dynamic API resolution
-    - Tight loop with XOR/ADD/ROR = crypto/encoding routine
+```
+Detect-It-Easy (DiE): die.exe <sample>         # identifies packer signatures
+PEiD: <sample>                                   # signature-based packer ID
+```
 
-CRYPTO FUNCTION RECOGNITION
------------------------------
-  MD5:     constants 0x67452301, 0xEFCDAB89
-  SHA-256: constants 0x6A09E667, 0xBB67AE85
-  AES:     S-Box = 256-byte substitution tables (4 tables)
-  RC4:     256-byte key-scheduling loop + constant 0x61C88647
-  TEA:     constant 0x9E3779B9 in delta loop
+Common packers:
+- **UPX**: Header magic `UPX0`/`UPX1` in section names; unpack with `upx -d <sample>`
+- **MPRESS**: `.MPRESS1`/`.MPRESS2` sections
+- **Themida/WinLicense**: Heavily obfuscated, requires manual unpacking
+- **Custom packers**: No signature match, high entropy, few imports (usually GetProcAddress + LoadLibrary)
 
-ANTI-DEBUG DETECTION (T1622)
-------------------------------
-  PEB.BeingDebugged: mov eax, fs:[30h]; movzx eax, byte [eax+2]
-  NtQueryInformationProcess ProcessDebugPort (class 7)
-  Timing: GetTickCount delta check > threshold
+---
 
-  Bypass: ScyllaHide plugin in x64dbg; NOP out jnz after IsDebuggerPresent
+## 7. Code Signing Verification
 
-ANTI-VM DETECTION (T1497)
---------------------------
-  CPUID hypervisor bit: eax=1, ECX bit 31
-  VMware registry: HKLM\SOFTWARE\VMware, Inc.\VMware Tools
-  VirtualBox: C:\Windows\System32\drivers\VBoxGuest.sys
-  MAC OUI: 00:0C:29 / 00:50:56 (VMware), 08:00:27 (VBox)
-  Process names: vmtoolsd.exe, vboxservice.exe
+```powershell
+# Windows: check Authenticode signature
+Get-AuthenticodeSignature <sample>
 
-PROCESS INJECTION VARIANTS (T1055)
-------------------------------------
-  T1055.001 DLL Injection:
-    OpenProcess > VirtualAllocEx > WriteProcessMemory > CreateRemoteThread(LoadLibrary)
+# sigcheck (Sysinternals)
+sigcheck.exe -a -h <sample>
+```
 
-  T1055.012 Process Hollowing:
-    CreateProcess(SUSPENDED) > ZwUnmapViewOfSection > VirtualAllocEx >
-    WriteProcessMemory > SetThreadContext > ResumeThread
+Note: Stolen or self-signed certificates are a red flag. Check certificate chain, issuer, and revocation status.
 
-  T1055.004 APC Injection:
-    OpenProcess > VirtualAllocEx > WriteProcessMemory > OpenThread > QueueUserAPC
+---
 
-ATT&CK TECHNIQUE MAPPING
--------------------------
-  HTTP/HTTPS custom headers           = T1071.001 Web Protocols
-  DNS encoded data                    = T1071.004 / T1048.003
-  RC4/AES encrypted C2 comms         = T1573.001 Symmetric Cryptography
-  Registry run key writes             = T1547.001 Registry Run Keys
-  schtasks API calls                  = T1053.005 Scheduled Task
-  Shadow copy deletion                = T1490 Inhibit System Recovery
-  Process injection                   = T1055.xxx
-  LSASS access                        = T1003.001 LSASS Memory
-  GetComputerName/GetSystemInfo       = T1082 System Information Discovery
-  FindFirstFile/FindNextFile          = T1083 File and Directory Discovery
-  NetShareEnum                        = T1135 Network Share Discovery
-  DeleteFileA on self                 = T1070.004 File Deletion
+## 8. Initial Threat Classification
 
-=================================================================
-PHASE 5: REPORTING
-=================================================================
+| Indicator | Possible Classification |
+|-----------|------------------------|
+| High entropy + few imports | Packed dropper |
+| Office macro + download URLs | Phishing dropper |
+| PE with network imports (WinINet/WinHTTP) | Downloader/backdoor |
+| PE with crypto imports (CryptAcquireContext) | Ransomware/encrypted C2 |
+| ELF with setuid or socket calls | Linux implant/rootkit |
+| PDF with JavaScript | PDF exploit |
 
-REPORT STRUCTURE
-----------------
-  1. Executive Summary (3-5 sentences, non-technical)
-  2. Sample Metadata (hashes, type, packer, compile time, VT score)
-  3. Key Findings (bulleted capabilities)
-  4. Technical Analysis Detail
-  5. MITRE ATT&CK Mapping Table (Tactic / Technique ID / Name / Evidence / Confidence)
-  6. IOC Package (file/network/host indicators)
-  7. Defensive Recommendations
-  8. YARA Rules
-  9. Appendix
+Document classification in analysis notes before proceeding.
 
-IOC PACKAGE
------------
-  File:    MD5, SHA1, SHA256, imphash, ssdeep; dropped file paths + hashes
-  Network: C2 domains, IPs, ports, URLs, SSL cert fingerprints, JA3 hashes, user-agents
-  Host:    Registry keys, mutex names, service names, file paths, named pipes, task names
 
-YARA RULE SKELETON
-------------------
-  rule Family_Variant_YYYY {
-    meta:
-      description = "..."
-      author = "..."
-      hash = "<sha256>"
-      mitre_attack = "T1055.012, T1071.001"
-    strings:
-      $str1 = "unique-string" ascii wide
-      $api1 = "VirtualAllocEx" ascii
-      $mutex = "mutex-name" ascii wide
-    condition:
-      uint16(0) == 0x5A4D and filesize < 5MB and
-      (2 of ($str*) or ($api1 and $mutex))
+
+## static-analysis
+
+# Static Analysis
+
+## Purpose
+Extract maximum intelligence from the binary without executing it: strings, imports, headers, and structure.
+
+---
+
+## 1. Strings Extraction
+
+```bash
+# Basic strings extraction (ASCII + Unicode, min 6 chars)
+strings -n 6 <sample>               # ASCII
+strings -n 6 -el <sample>           # Unicode (little-endian)
+
+# Windows: Sysinternals strings
+strings.exe -a -n 6 <sample>
+
+# FLOSS (FireEye Labs Obfuscated String Solver) — decodes obfuscated strings
+floss.exe <sample>
+floss --only-stack-strings <sample>   # stack-decoded strings only
+```
+
+### High-Value String Categories
+| Category | Examples |
+|----------|----------|
+| C2 indicators | IP addresses, domains, URLs |
+| File paths | `C:\Users\`, `%APPDATA%`, `C:\Windows\Temp\` |
+| Registry keys | `HKCU\Software\`, `HKLM\SYSTEM\` |
+| API names | `CreateRemoteThread`, `VirtualAllocEx`, `WriteProcessMemory` |
+| Crypto constants | `AES`, `RC4`, magic constants (0x61C88647 for RC4) |
+| Mutex names | Random-looking strings that could be mutex identifiers |
+| User-agent strings | Reveal C2 framework (e.g., Cobalt Strike default UA) |
+
+---
+
+## 2. PE Header Analysis
+
+```python
+import pefile
+pe = pefile.PE('<sample>')
+
+# TimeDateStamp (compile time — may be spoofed)
+import datetime
+ts = pe.FILE_HEADER.TimeDateStamp
+print(datetime.datetime.utcfromtimestamp(ts))
+
+# Sections analysis
+for section in pe.sections:
+    name = section.Name.decode().rstrip('\x00')
+    entropy = section.get_entropy()
+    virt_size = section.Misc_VirtualSize
+    raw_size = section.SizeOfRawData
+    print(f"{name}: entropy={entropy:.2f}, virt={virt_size}, raw={raw_size}")
+
+# Subsystem
+subsystems = {2: 'GUI', 3: 'Console', 1: 'Native'}
+print(subsystems.get(pe.OPTIONAL_HEADER.Subsystem, 'Unknown'))
+```
+
+### Suspicious Section Indicators
+| Indicator | Meaning |
+|-----------|---------|
+| High entropy in `.text` | Code may be packed or encrypted |
+| `.text` raw size much smaller than virtual size | Loader unpacks in memory |
+| Section name not in standard set | Custom packer or malicious |
+| Executable + writable section flags | Self-modifying code |
+
+Standard sections: `.text`, `.data`, `.rdata`, `.rsrc`, `.reloc`, `.bss`
+
+---
+
+## 3. Imports/Exports Table Analysis
+
+```python
+# Import analysis
+if hasattr(pe, 'DIRECTORY_ENTRY_IMPORT'):
+    for entry in pe.DIRECTORY_ENTRY_IMPORT:
+        print(entry.dll.decode())
+        for imp in entry.imports:
+            if imp.name:
+                print(f"  {imp.name.decode()}")
+
+# Export analysis (DLLs)
+if hasattr(pe, 'DIRECTORY_ENTRY_EXPORT'):
+    for exp in pe.DIRECTORY_ENTRY_EXPORT.symbols:
+        print(exp.name.decode() if exp.name else f"Ordinal #{exp.ordinal}")
+```
+
+### Capability Fingerprinting via Imports
+| Import Category | Associated Capability |
+|-----------------|----------------------|
+| `VirtualAllocEx`, `WriteProcessMemory`, `CreateRemoteThread` | Process injection (T1055) |
+| `GetProcAddress`, `LoadLibraryA` only | Dynamic API resolution (evasion) |
+| `CryptAcquireContext`, `CryptEncrypt` | Encryption capability |
+| `InternetOpenA`, `HttpSendRequestA` | HTTP C2 (T1071.001) |
+| `WinExec`, `CreateProcessA`, `ShellExecuteA` | Code execution |
+| `RegCreateKeyEx`, `RegSetValueEx` | Registry persistence (T1547) |
+| `FindFirstFileA`, `ReadFile`, `CopyFileA` | File operations / staging |
+| `NetShareEnum`, `WNetOpenEnum` | Network share enumeration (T1135) |
+
+---
+
+## 4. Ghidra Setup and Auto-Analysis
+
+```
+1. File → New Project → Non-Shared → select workspace directory
+2. Import File → select sample → accept defaults
+3. Double-click binary in project → open CodeBrowser
+4. Analysis → Auto Analyze → check all relevant analyzers → Analyze
+   Key analyzers: PCode Analyzer, Decompiler Parameter ID, Aggressive Instruction Finder
+5. Window → Functions → review auto-identified functions
+6. Search → For Strings → locate high-value strings, cross-reference to code
+```
+
+### Binary Ninja Quick Setup
+```python
+# Headless analysis
+import binaryninja as bn
+bv = bn.load('<sample>')
+bv.update_analysis_and_wait()
+for func in bv.functions:
+    print(f"{func.start:#x}: {func.name}")
+```
+
+---
+
+## 5. ELF Analysis
+
+```bash
+readelf -h <sample>          # ELF header (entry point, type, machine)
+readelf -S <sample>          # Section headers
+readelf -d <sample>          # Dynamic section (shared libraries)
+readelf -s <sample>          # Symbol table
+objdump -d <sample>          # Disassembly
+ldd <sample>                 # Shared library dependencies (don't execute!)
+```
+
+---
+
+## 6. YARA Rule Matching
+
+```bash
+# Scan with community rules
+yara /path/to/rules/*.yar <sample>
+
+# Scan with specific rule set
+yara -r /path/to/rules/ <sample>
+
+# Key rule repositories
+# https://github.com/Yara-Rules/rules
+# https://github.com/Neo23x0/signature-base
+# https://github.com/mandiant/red_team_tool_countermeasures
+```
+
+---
+
+## 7. Obfuscation Indicators Checklist
+
+- [ ] Low import count (< 5 unique DLLs)
+- [ ] GetProcAddress/LoadLibrary as primary imports
+- [ ] High section entropy (> 7.0)
+- [ ] Non-standard section names
+- [ ] Large sections with mostly zeros in raw data
+- [ ] No recognisable strings (encoded/encrypted)
+- [ ] FLOSS recovers strings not found by standard `strings`
+- [ ] Mismatch between file type detection and extension
+
+
+
+## dynamic-analysis
+
+# Dynamic Analysis
+
+## Purpose
+Execute the sample in a controlled environment and capture runtime behaviour: API calls, network traffic, file/registry changes, child processes.
+
+---
+
+## 1. Sandbox Environment Configuration
+
+### Pre-Execution Checklist
+- [ ] VM snapshot taken (clean baseline)
+- [ ] Network adapter set to host-only or isolated segment
+- [ ] INetSim or FakeNet-NG running and listening
+- [ ] Process Monitor (ProcMon) running with capture active
+- [ ] Wireshark capturing on VM adapter
+- [ ] x64dbg or WinDbg attached (optional for step-through)
+- [ ] Sysmon installed with comprehensive config (SwiftOnSecurity or Olaf Hartong config)
+
+### INetSim Configuration
+```ini
+# /etc/inetsim/inetsim.conf
+start_service dns
+start_service http
+start_service https
+start_service smtp
+start_service ftp
+dns_default_ip    <analysis-vm-ip>
+http_static_dir   /var/lib/inetsim/http/fakefiles/
+```
+
+### FakeNet-NG (Windows)
+```
+fakenet.exe -c configs/default.ini
+# Intercepts all outbound connections, responds with configurable responses
+# Output: PCAP + console logs
+```
+
+---
+
+## 2. Process Monitoring
+
+### Process Monitor (ProcMon) Filters
+```
+Operation is RegSetValue     → Registry writes
+Operation is WriteFile        → File writes
+Operation is TCP Connect      → Network connections
+Process Name is <sample>      → Scope to sample process
+```
+
+Key Sysmon Event IDs:
+| Event ID | Description |
+|----------|-------------|
+| 1 | Process creation (command line, parent PID) |
+| 3 | Network connection |
+| 7 | Image loaded (DLLs) |
+| 8 | CreateRemoteThread |
+| 10 | Process access (OpenProcess with PROCESS_VM_WRITE) |
+| 11 | File created |
+| 12/13 | Registry create/set value |
+| 22 | DNS query |
+
+---
+
+## 3. API Monitoring
+
+### API Monitor (Windows)
+```
+1. Launch API Monitor → select process to attach or launch
+2. Filter by API groups: Registry, File System, Network, Crypto, Process/Thread
+3. Capture API call sequence with parameters and return values
+```
+
+### Frida Hooks (Cross-platform)
+```javascript
+// Hook CreateFileA
+Interceptor.attach(Module.getExportByName('kernel32.dll', 'CreateFileA'), {
+  onEnter: function(args) {
+    console.log('[CreateFileA] filename:', args[0].readAnsiString());
   }
+});
 
-CONFIDENCE LEVELS
------------------
-  High   = Multiple independent evidence sources; unambiguous observation
-  Medium = Partial evidence; inference required
-  Low    = Circumstantial; needs corroboration
+// Hook InternetConnectA
+Interceptor.attach(Module.getExportByName('wininet.dll', 'InternetConnectA'), {
+  onEnter: function(args) {
+    console.log('[InternetConnectA] host:', args[1].readAnsiString(), 
+                'port:', args[2].toInt32());
+  }
+});
+```
 
-ANALYST CHECKLIST BEFORE DISTRIBUTION
----------------------------------------
-  [ ] IOCs verified against known-clean corpus
-  [ ] Network IOCs checked against CDN/update server lists
-  [ ] YARA false-positive rate tested (< 0.01%)
-  [ ] ATT&CK mappings validated against ATT&CK Navigator
-  [ ] Peer review completed
-  [ ] TLP marking applied
+```bash
+frida -l hooks.js -f <sample.exe> --no-pause   # Launch and hook
+frida -l hooks.js <pid>                          # Attach to running process
+```
 
-=================================================================
-QUICK REFERENCE: COMMON PACKERS
-=================================================================
-  UPX:        Section names UPX0/UPX1; unpack: upx -d
-  MPRESS:     Sections .MPRESS1/.MPRESS2
-  Themida:    No readable strings; heavy VM obfuscation
-  Enigma:     .enigma1/.enigma2 sections
-  ASPack:     .aspack/.adata sections
+---
 
-=================================================================
-QUICK REFERENCE: GHIDRA SHORTCUTS
-=================================================================
-  G          = Go to address
-  L          = Rename label/variable
-  Ctrl+E     = Decompile function
-  Ctrl+Shift+F = Search all memory
-  X          = Show cross-references
-  ;          = Add comment
+## 4. Network Traffic Capture and Analysis
+
+### Wireshark Capture Filters
+```
+# Capture only from analysis VM
+host <vm-ip>
+
+# DNS queries only
+udp port 53
+
+# HTTP traffic
+tcp port 80 or tcp port 443
+```
+
+### Tshark Analysis
+```bash
+tshark -r capture.pcap -Y "http" -T fields -e http.host -e http.request.uri
+tshark -r capture.pcap -Y "dns.qry.name" -T fields -e dns.qry.name
+tshark -r capture.pcap -Y "tcp.flags.syn==1 and tcp.flags.ack==0" \
+  -T fields -e ip.dst -e tcp.dstport   # All new TCP connections
+```
+
+---
+
+## 5. Dynamic Unpacking with Debugger
+
+### OEP (Original Entry Point) Finding
+```
+1. Load sample in x64dbg
+2. Set breakpoint on memory allocation: bp VirtualAlloc; bp VirtualProtect
+3. Run → when VirtualProtect called with PAGE_EXECUTE, likely OEP nearby
+4. Step through until JMP to unpacked code
+5. Dump process memory: Scylla → Dump → Fix IAT → Dump to file
+```
+
+### Breakpoints for Common Anti-Analysis Bypass
+```
+# Anti-debug
+bp IsDebuggerPresent
+bp CheckRemoteDebuggerPresent
+bp NtQueryInformationProcess    # ProcessDebugPort query
+
+# Timing attacks
+bp GetTickCount
+bp QueryPerformanceCounter
+bp Sleep
+```
+
+---
+
+## 6. Persistence Mechanism Capture
+
+Monitor for these persistence TTPs during dynamic analysis:
+
+| Mechanism | Registry Key / Path | ATT&CK |
+|-----------|--------------------|----|
+| Run Key | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` | T1547.001 |
+| RunOnce | `HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce` | T1547.001 |
+| Scheduled Task | `C:\Windows\System32\Tasks\` + `schtasks` API | T1053.005 |
+| Service Installation | `HKLM\SYSTEM\CurrentControlSet\Services\<name>` | T1543.003 |
+| Startup Folder | `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup` | T1547.001 |
+| DLL Hijacking | Non-standard DLL path loaded at process start | T1574.001 |
+| COM Object | `HKCU\Software\Classes\CLSID\` | T1546.015 |
+
+---
+
+## 7. Post-Execution Evidence Collection
+
+```
+# Collect from analysis VM before reverting snapshot
+1. ProcMon save: File → Save → PML format
+2. Wireshark save: File → Save As → PCAP format
+3. Sysmon log export: wevtutil epl Microsoft-Windows-Sysmon/Operational sysmon.evtx
+4. Prefetch: copy C:\Windows\Prefetch\<sample>*.pf
+5. Registry hive export: reg export HKCU\Software sample_hkcu.reg
+6. Memory dump: procdump.exe -ma <pid> memdump.dmp
+```
+
+
+
+## code-analysis
+
+# Code Analysis
+
+## Purpose
+Deep-dive into disassembled and decompiled code to understand functionality, identify key algorithms, map MITRE ATT&CK techniques, and detect anti-analysis measures.
+
+---
+
+## 1. Control Flow Graph Analysis
+
+### Ghidra CFG Navigation
+```
+1. Functions window → double-click suspicious function
+2. Graph → Function Graph (shows basic blocks and edges)
+3. Look for:
+   - Large number of basic blocks (complex logic)
+   - Loops with arithmetic (crypto/encoding routines)
+   - Multiple conditional jumps checking same variable (anti-analysis dispatcher)
+   - Single large function (unpacker stub)
+```
+
+### Complexity Indicators
+| Indicator | Implication |
+|-----------|-------------|
+| Cyclomatic complexity > 50 | Obfuscated or complex logic |
+| Many indirect calls via register | Dynamic API resolution |
+| Tight loop with XOR/ADD/ROR | Encryption or decoding |
+| Function with single indirect JMP | Trampoline / hook |
+
+---
+
+## 2. Decompilation Review
+
+### Ghidra Decompiler Tips
+```
+1. Right-click function → Decompile (Ctrl+E from listing view)
+2. Rename variables: click variable → L (rename)
+3. Retype variables: click variable → Ctrl+L (retype)
+4. Create structure: Data → Create Structure at address
+5. Override call signature: right-click call → Override Signature
+```
+
+### Hex-Rays (IDA Pro) Tips
+```
+// Set variable type
+Alt+Q → enter type declaration
+
+// Rename
+N → rename variable or function
+
+// Convert to struct access
+T → set structure offset
+
+// Force re-decompilation with type info
+Ctrl+F5
+```
+
+---
+
+## 3. Function Identification and Naming
+
+### Crypto Function Recognition
+| Pattern | Likely Algorithm |
+|---------|-----------------|
+| Constants 0x67452301, 0xEFCDAB89 | MD5 initialisation |
+| Constants 0x6A09E667, 0xBB67AE85 | SHA-256 initialisation |
+| S-Box 4×256 byte tables | AES |
+| 256-byte key-scheduling loop | RC4 |
+| Constants 0x61C88647 or 0x9E3779B9 | TEA/XTEA |
+| 16-byte table lookup in 256-byte array | Serpent or Blowfish |
+
+### Network Function Patterns
+```
+# Common C2 communication patterns:
+- Socket creation: WSASocket/socket → connect/WSAConnect → send/recv
+- HTTP API: InternetOpen → InternetConnect → HttpOpenRequest → HttpSendRequest
+- Raw TLS: schannel InitializeSecurityContext + EncryptMessage
+- Custom protocol: look for packet header construction (magic bytes + length)
+```
+
+---
+
+## 4. Anti-Analysis Technique Detection
+
+### Anti-Debug Techniques (T1622)
+```assembly
+; IsDebuggerPresent (direct PEB check)
+mov eax, fs:[30h]       ; PEB pointer
+movzx eax, byte [eax+2] ; BeingDebugged flag
+test eax, eax
+jnz <debug_detected>
+
+; NtQueryInformationProcess ProcessDebugPort
+push 0
+push 4
+push <output_var>
+push 7              ; ProcessDebugPort class
+push -1             ; Current process
+call NtQueryInformationProcess
+
+; Timing check
+call GetTickCount
+; ... code ...
+call GetTickCount
+sub eax, <first_value>
+cmp eax, 1000       ; If > 1 second → debugger present
+```
+
+Bypass techniques in x64dbg:
+```
+ScyllaHide plugin → automatically patches anti-debug calls
+Manually NOP out IsDebuggerPresent check
+Set hardware breakpoint on PEB.BeingDebugged → patch to 0
+```
+
+### Anti-VM Techniques (T1497)
+| Check | Method |
+|-------|--------|
+| CPUID hypervisor bit | `cpuid eax=1` → bit 31 of ECX |
+| VMware registry keys | `HKLM\SOFTWARE\VMware, Inc.\VMware Tools` |
+| VirtualBox files | `C:\Windows\System32\drivers\VBoxGuest.sys` |
+| MAC address OUI | VMware: 00:0C:29, 00:50:56; VirtualBox: 08:00:27 |
+| Process names | `vmtoolsd.exe`, `vboxservice.exe`, `vmsrvc.exe` |
+| Screen resolution | 800×600 = typical fresh VM |
+
+### Anti-Sandbox Techniques
+| Technique | Description |
+|-----------|-------------|
+| Long sleep (T1497.003) | `Sleep(300000)` — 5 minutes |
+| User interaction check | `GetCursorPos` — no mouse movement in sandbox |
+| Recent file check | Count files in %TEMP%, %USERPROFILE%\Documents |
+| Screen resolution check | < 800×600 = sandbox |
+| Disk size check | < 60 GB = likely sandbox |
+| Username/hostname check | Common sandbox names: `sandbox`, `malware`, `virus` |
+| Loaded DLL count | < 100 loaded DLLs = sandbox |
+
+---
+
+## 5. Process Injection Analysis
+
+### Injection Variants (T1055)
+| Sub-Technique | API Sequence |
+|---------------|-------------|
+| T1055.001 DLL Injection | OpenProcess → VirtualAllocEx → WriteProcessMemory → CreateRemoteThread(LoadLibrary) |
+| T1055.002 PE Injection | OpenProcess → VirtualAllocEx → WriteProcessMemory → CreateRemoteThread(entry) |
+| T1055.003 Thread Hijacking | OpenProcess → OpenThread → SuspendThread → GetThreadContext → SetThreadContext → ResumeThread |
+| T1055.012 Process Hollowing | CreateProcess(SUSPENDED) → ZwUnmapViewOfSection → VirtualAllocEx → WriteProcessMemory → SetThreadContext → ResumeThread |
+| T1055.004 Asynchronous Procedure Call | OpenProcess → VirtualAllocEx → WriteProcessMemory → OpenThread → QueueUserAPC |
+| T1055.013 Process Doppelganging | NtCreateTransaction → CreateFileTransacted → NtCreateSection → RollbackTransaction |
+
+---
+
+## 6. MITRE ATT&CK Technique Mapping
+
+### Mapping Workflow
+```
+1. For each identified capability, map to ATT&CK technique
+2. Note technique ID, sub-technique ID, and confidence level (High/Medium/Low)
+3. Document evidence (function address, API call sequence, strings)
+```
+
+### Common Technique Mapping Table
+| Code Pattern | ATT&CK Technique |
+|-------------|-----------------|
+| HTTP/HTTPS with custom headers | T1071.001 Web Protocols |
+| DNS requests for encoded data | T1071.004 DNS |
+| Hardcoded RC4/AES C2 comms | T1573.001 Symmetric Cryptography |
+| Registry run key persistence | T1547.001 Registry Run Keys |
+| Scheduled task creation | T1053.005 Scheduled Task |
+| Shadow copy deletion (vssadmin) | T1490 Inhibit System Recovery |
+| Process injection (any variant) | T1055 Process Injection |
+| Credential API calls (LSASS) | T1003.001 LSASS Memory |
+| System info collection | T1082 System Information Discovery |
+| File/directory enumeration | T1083 File & Directory Discovery |
+| Network share enumeration | T1135 Network Share Discovery |
+| Self-delete on exit | T1070.004 File Deletion |
+
+
+
+## reporting
+
+# Reporting
+
+## Purpose
+Produce a structured analyst report with IOC package, YARA rules, and defensive recommendations.
+
+---
+
+## 1. Technical Report Structure
+
+```
+REVERSE ENGINEERING REPORT
+===========================
+Sample: <SHA256>
+Date: <YYYY-MM-DD>
+Analyst: <name>
+Classification: <TLP:AMBER | TLP:RED | etc.>
+Confidence: <High | Medium | Low>
+
+1. EXECUTIVE SUMMARY (3-5 sentences, non-technical)
+2. SAMPLE METADATA
+3. KEY FINDINGS
+4. TECHNICAL ANALYSIS DETAIL
+5. MITRE ATT&CK MAPPING
+6. IOC PACKAGE
+7. DEFENSIVE RECOMMENDATIONS
+8. YARA RULES
+9. APPENDIX
+```
+
+---
+
+## 2. Sample Metadata Block
+
+```yaml
+file_name: <original filename>
+file_size: <bytes>
+file_type: <PE32+ executable / ELF 64-bit / etc.>
+md5: <hash>
+sha1: <hash>
+sha256: <hash>
+imphash: <hash>
+ssdeep: <fuzzy hash>
+compile_timestamp: <UTC datetime or "spoofed">
+packer: <UPX 3.96 / None / Unknown custom>
+architecture: x86 / x64 / ARM
+subsystem: GUI / Console / Native
+vt_score: <n/70>
+first_seen: <date from VT>
+```
+
+---
+
+## 3. IOC Extraction Template
+
+### File Indicators
+Hashes:
+  MD5:    <hash>
+  SHA1:   <hash>
+  SHA256: <hash>
+
+Dropped Files:
+  Path: <full path>
+  Hash: <sha256>
+  Purpose: <loader / config / payload>
+
+### Network Indicators
+C2 Domains:
+  <domain> (<IP>, <geolocation>, <first-seen>)
+
+C2 IPs:
+  <IP>:<port> (<geolocation>, <ASN>)
+
+URLs:
+  <full URL>
+
+SSL Certificate:
+  Fingerprint: <SHA1>
+  Subject: <CN=...>
+
+User-Agent:
+  <string>
+
+JA3 Fingerprint:
+  <ja3_hash>
+
+### Host Indicators
+Registry Keys:
+  Created: <HKLM\...>
+  Value: <name> = <data>
+
+Mutex: <mutex name>
+Service Name: <service name>; Path: <binary path>
+Scheduled Task Name: <task name>; Command: <cmd>
+Named Pipe: \\.\pipe\<name>
+
+---
+
+## 4. MITRE ATT&CK TTP Summary Table
+
+| Tactic          | Technique ID | Technique Name            | Evidence | Confidence |
+|-----------------|--------------|---------------------------|----------|------------|
+| Execution       | T1059.003    | Windows Command Shell     | <ref>    | High       |
+| Persistence     | T1547.001    | Registry Run Keys         | <ref>    | High       |
+| Defense Evasion | T1027        | Obfuscated Files/Info     | <ref>    | High       |
+| Defense Evasion | T1055.012    | Process Hollowing         | <ref>    | Medium     |
+| C2              | T1071.001    | Web Protocols             | <ref>    | High       |
+| Exfiltration    | T1041        | Exfiltration Over C2      | <ref>    | Medium     |
+
+---
+
+## 5. YARA Rule Authoring Template
+
+```yara
+rule MalwareFamily_Variant_Year {
+    meta:
+        description = "Brief description"
+        author = "Analyst name"
+        date = "YYYY-MM-DD"
+        hash = "SHA256 of sample"
+        tlp = "AMBER"
+        mitre_attack = "T1055.012, T1071.001"
+
+    strings:
+        $str1 = "unique string" ascii wide
+        $str2 = "unique string" ascii wide nocase
+        $bytes1 = { 4D 5A 90 00 03 00 00 00 }
+        $api1 = "VirtualAllocEx" ascii
+        $api2 = "WriteProcessMemory" ascii
+        $api3 = "CreateRemoteThread" ascii
+        $mutex = "mutex_name" ascii wide
+
+    condition:
+        uint16(0) == 0x5A4D and
+        filesize < 5MB and
+        (
+            (2 of ($str*)) or
+            ($bytes1 and 1 of ($api*)) or
+            ($mutex)
+        )
+}
+```
+
+---
+
+## 6. Defensive Recommendations Template
+
+DETECTION RECOMMENDATIONS:
+1. Network: Block C2 IPs/domains at perimeter; deploy Suricata/Snort rules; TLS inspection for JA3 fingerprint
+2. Endpoint: Sigma rule for process injection (Sysmon EID 8); alert on new service matching pattern; monitor registry path
+3. Email/Web Gateway: Block file hashes; block download of identified file types from external sources
+4. Hunting Query (KQL Sentinel):
+   DeviceFileEvents | where FileName has "<indicator>" | project Timestamp, DeviceName, InitiatingProcessFileName, FolderPath
+5. Patching: Apply patches for identified CVEs; disable features not required
+
+---
+
+## 7. Confidence Level Definitions
+
+| Level  | Definition |
+|--------|-----------|
+| High   | Multiple independent sources of evidence; technique unambiguously observed |
+| Medium | Technique inferred from partial evidence; manual unpacking may have altered analysis |
+| Low    | Circumstantial indicators only; requires further corroboration |
+
+---
+
+## 8. Analyst Notes Checklist
+
+- [ ] All IOCs independently verified (no false positives from common system files)
+- [ ] Network IOCs checked against benign infrastructure (CDNs, update servers)
+- [ ] YARA rule tested against clean corpus (false positive rate < 0.01%)
+- [ ] ATT&CK mappings reviewed against ATT&CK Navigator for completeness
+- [ ] Report peer-reviewed by second analyst before distribution
+- [ ] TLP classification applied and enforced in distribution

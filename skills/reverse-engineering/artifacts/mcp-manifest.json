@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "reverse-engineering",
+  "version": "1.0.0",
+  "description": "End-to-end binary reverse engineering workflow for security analysts. Covers safe sample handling, static and dynamic analysis, code analysis, anti-analysis technique detection, MITRE ATT&CK TTP mapping, IOC extraction, and analyst reporting. Triggers for: malware triage, binary analysis, firmware analysis, packed executable analysis, or any reverse engineering task.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the reverse-engineering skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "triage-and-safe-handling",
+              "static-analysis",
+              "dynamic-analysis",
+              "code-analysis",
+              "reporting"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/reverse-engineering/phase/triage-and-safe-handling",
+      "name": "triage-and-safe-handling",
+      "description": "Reference content for reverse-engineering — triage-and-safe-handling",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/reverse-engineering/phase/static-analysis",
+      "name": "static-analysis",
+      "description": "Reference content for reverse-engineering — static-analysis",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/reverse-engineering/phase/dynamic-analysis",
+      "name": "dynamic-analysis",
+      "description": "Reference content for reverse-engineering — dynamic-analysis",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/reverse-engineering/phase/code-analysis",
+      "name": "code-analysis",
+      "description": "Reference content for reverse-engineering — code-analysis",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/reverse-engineering/phase/reporting",
+      "name": "reporting",
+      "description": "Reference content for reverse-engineering — reporting",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

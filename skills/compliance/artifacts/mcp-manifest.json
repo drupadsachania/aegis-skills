@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "compliance",
+  "version": "1.0.0",
+  "description": "End-to-end security compliance workflow covering scope definition, regulatory mapping, control assessment, evidence collection, and remediation roadmap. Supports SOC 2, ISO 27001:2022, PCI-DSS v4.0, HIPAA, GDPR, NIST CSF 2.0, and CIS Controls v8. Triggers for: compliance audit preparation, control gap assessment, evidence collection, regulatory mapping, or remediation planning.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the compliance skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "scope-definition",
+              "standard-mapping",
+              "control-assessment",
+              "evidence-collection",
+              "remediation-roadmap"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/compliance/phase/scope-definition",
+      "name": "scope-definition",
+      "description": "Reference content for compliance — scope-definition",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/compliance/phase/standard-mapping",
+      "name": "standard-mapping",
+      "description": "Reference content for compliance — standard-mapping",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/compliance/phase/control-assessment",
+      "name": "control-assessment",
+      "description": "Reference content for compliance — control-assessment",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/compliance/phase/evidence-collection",
+      "name": "evidence-collection",
+      "description": "Reference content for compliance — evidence-collection",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/compliance/phase/remediation-roadmap",
+      "name": "remediation-roadmap",
+      "description": "Reference content for compliance — remediation-roadmap",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

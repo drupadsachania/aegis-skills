@@ -1,0 +1,70 @@
+{
+  "schema": "mcp/1.0",
+  "name": "digital-forensics",
+  "version": "1.0.0",
+  "description": "End-to-end digital forensics and incident response (DFIR) workflow. Covers evidence acquisition with chain of custody, disk and memory forensics, network forensics, cloud and mobile evidence, and timeline reconstruction. Triggers for: incident investigation, evidence collection, memory forensics, disk imaging, DFIR engagements, or legal/regulatory evidence requirements.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the digital-forensics skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "evidence-acquisition",
+              "disk-forensics",
+              "memory-forensics",
+              "network-forensics",
+              "cloud-and-mobile",
+              "timeline-reconstruction"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/evidence-acquisition",
+      "name": "evidence-acquisition",
+      "description": "Reference content for digital-forensics — evidence-acquisition",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/disk-forensics",
+      "name": "disk-forensics",
+      "description": "Reference content for digital-forensics — disk-forensics",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/memory-forensics",
+      "name": "memory-forensics",
+      "description": "Reference content for digital-forensics — memory-forensics",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/network-forensics",
+      "name": "network-forensics",
+      "description": "Reference content for digital-forensics — network-forensics",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/cloud-and-mobile",
+      "name": "cloud-and-mobile",
+      "description": "Reference content for digital-forensics — cloud-and-mobile",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/digital-forensics/phase/timeline-reconstruction",
+      "name": "timeline-reconstruction",
+      "description": "Reference content for digital-forensics — timeline-reconstruction",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

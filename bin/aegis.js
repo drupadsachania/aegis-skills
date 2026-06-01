@@ -8,6 +8,7 @@ const pkg = require(path.join(__dirname, '..', 'package.json'))
 const initCmd = require('../lib/cli/init')
 const configureCmd = require('../lib/cli/configure')
 const listCmd = require('../lib/cli/list')
+const compileCmd = require('../lib/cli/compile')
 
 program
   .name('aegis')
@@ -29,6 +30,11 @@ program
   .command('list')
   .description('List installed skills and their status')
   .action(listCmd)
+
+program
+  .command('compile [skill]')
+  .description('Compile skill artifacts (all skills, or a named skill)')
+  .action(compileCmd)
 
 program.parse(process.argv)
 

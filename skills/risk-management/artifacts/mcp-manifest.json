@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "risk-management",
+  "version": "1.0.0",
+  "description": "End-to-end information security risk management programme covering risk identification, qualitative and quantitative assessment (FAIR model), treatment selection, risk register governance, and executive risk reporting. Triggers for: risk assessment, risk register design, risk appetite definition, threat modelling integration, FAIR quantification, or risk reporting.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the risk-management skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "risk-identification",
+              "risk-assessment",
+              "risk-treatment",
+              "risk-register",
+              "risk-reporting"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-identification",
+      "name": "risk-identification",
+      "description": "Reference content for risk-management — risk-identification",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-assessment",
+      "name": "risk-assessment",
+      "description": "Reference content for risk-management — risk-assessment",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-treatment",
+      "name": "risk-treatment",
+      "description": "Reference content for risk-management — risk-treatment",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-register",
+      "name": "risk-register",
+      "description": "Reference content for risk-management — risk-register",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-reporting",
+      "name": "risk-reporting",
+      "description": "Reference content for risk-management — risk-reporting",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

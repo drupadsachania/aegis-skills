@@ -1,250 +1,1175 @@
-AEGIS SKILLS — DIGITAL FORENSICS PRACTITIONER GUIDE
-====================================================
-Version: 1.0.0 | Framework: MITRE ATT&CK | Model: claude-sonnet-4-6
+# Digital Forensics Skill
 
-You are an expert DFIR practitioner. Chain of custody must be established
-at first contact with evidence and maintained throughout all phases.
-All timestamps must be normalised to UTC. Legal admissibility requirements
-must be considered from the outset.
+Structured DFIR methodology following forensic soundness principles.
+Chain of custody must be established at evidence acquisition and maintained
+throughout all analysis phases. Legal admissibility requirements must be
+considered from the first contact with evidence.
 
-=================================================================
-PHASE 1: EVIDENCE ACQUISITION
-=================================================================
 
-CHAIN OF CUSTODY FIELDS
-------------------------
-  Evidence Item ID, Case Number, Item Description, Date/Time Acquired (UTC),
-  Location Acquired, Acquired By, Method, MD5 Hash, SHA256 Hash, Witness,
-  Chain of Transfers (from/to/date/purpose/signature), Storage Location
+## evidence-acquisition
 
-WRITE-BLOCKER REQUIREMENTS
----------------------------
-  Hardware: Tableau T8u/T35es/T3u; WiebeTech Forensic UltraDock v5
-  Software Linux: hdparm -r1 /dev/sda
-  Software Windows: HKLM\SYSTEM\CurrentControlSet\Control\StorageDevicePolicies\WriteProtect = 1
-  Verify: attempt write must fail before imaging begins
+# Evidence Acquisition
 
-DISK IMAGING COMMANDS
----------------------
-  dd if=/dev/sda of=/mnt/evidence/hostname.dd bs=512 conv=noerror,sync status=progress
-  dcfldd if=/dev/sda of=hostname.dd hash=sha256 hashlog=hash.log  (hash during image)
-  FTK Imager: Physical Drive > E01 > Verify image after creation = YES
+## Purpose
+Acquire digital evidence in a forensically sound manner, maintaining chain of custody and ensuring legal admissibility.
 
-LIVE MEMORY ACQUISITION
-------------------------
-  Windows: winpmem_mini_x64_rc2.exe -o hostname_mem.raw
-  Windows: DumpIt.exe /output hostname_mem.dmp /quiet
-  Linux:   insmod lime.ko "path=/usb/mem.lime format=raw"
+---
 
-LIVE VS DEAD-BOX DECISION
---------------------------
-  Running + BitLocker active  = LIVE ONLY (keys in memory)
-  Running + volatile evidence = Live RAM first, then image
-  Powered off                 = Dead-box (write-blocker + image)
-  VM                          = Snapshot + VMDK/VHDX + RAM snapshot
+## 1. Chain of Custody Documentation
 
-=================================================================
-PHASE 2: DISK FORENSICS
-=================================================================
+### Chain of Custody Form Fields
+```
+Evidence Item ID:      <sequential ID, e.g. EV-2026-001>
+Case Number:           <case reference>
+Item Description:      <make/model/serial/hostname/IP>
+Date/Time Acquired:    <UTC timestamp>
+Location Acquired:     <physical address or logical location>
+Acquired By:           <full name, role>
+Method:                <dd imaging / FTK Imager / live acquisition>
+MD5 Hash:              <hash of image>
+SHA256 Hash:           <hash of image>
+Witness:               <name of witness present>
+Chain of Transfers:    [table: from/to/date/time/purpose/signature]
+Storage Location:      <safe/evidence bag/digital vault>
+```
 
-FILESYSTEM TIMELINE
---------------------
-  fls -r -m / -o <offset> disk.dd > body.txt
-  mactime -b body.txt -z UTC -d 2026-01-01 2026-06-01 > timeline.csv
-  mmls disk.dd  (get partition offset)
-  log2timeline.py --storage-file case.plaso disk.dd  (comprehensive)
+Each time evidence changes hands, the chain of transfers table must be updated.
 
-KEY WINDOWS ARTIFACTS
----------------------
-  Prefetch:     C:\Windows\Prefetch\<EXE>-<HASH>.pf
-                PECmd.exe -d Prefetch --csv output/
-                Contains: execution count, last 8 run times, files accessed
+---
 
-  Shimcache:    HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache
-                AppCompatCacheParser.exe -f SYSTEM --csv output/
-                Contains: all files that EXISTED (even if deleted)
+## 2. Write-Blocker Requirements
 
-  Amcache:      C:\Windows\AppCompat\Programs\Amcache.hve
-                AmcacheParser.exe -f Amcache.hve --csv output/
-                Contains: SHA1 hash + path of executed files
+**Always use write-blockers for dead-box acquisition.**
 
-  Event Logs:   Security: 4624/4625 (logon), 4688 (process), 4698 (task), 4720 (user created)
-                Sysmon: 1 (process), 3 (network), 8 (remote thread), 10 (process access)
-                EvtxECmd.exe -d winevt/ --csv output/
+Hardware write-blockers:
+- Tableau Forensic Bridges (T8u, T35es, T3u for SATA/IDE/USB)
+- WiebeTech Forensic UltraDock v5
 
-  Registry:     NTUSER.DAT, SAM, SYSTEM, SOFTWARE per hive
-  Browser:      Chrome History SQLite; Firefox places.sqlite
-  LNK/JumpList: LECmd.exe + JLECmd.exe (Eric Zimmermann tools)
+Software write-blockers:
+- Linux: `hdparm -r1 /dev/sda` (read-only mode)
+- Windows: registry key `HKLM\SYSTEM\CurrentControlSet\Control\StorageDevicePolicies\WriteProtect = 1`
 
-DELETED FILE RECOVERY
-----------------------
-  Autopsy: enable all modules; Deleted Files view
-  PhotoRec: photorec /d /recovery/ disk.dd  (signature-based carving)
-  foremost: foremost -t exe,doc,pdf disk.dd -o /carved/
+Verify write-blocker is functioning before imaging:
+```bash
+# Attempt write → should fail
+dd if=/dev/zero of=/dev/sda bs=512 count=1   # Should return "permission denied"
+```
 
-=================================================================
-PHASE 3: MEMORY FORENSICS
-=================================================================
+---
 
-VOLATILITY 3 WORKFLOW (in order)
-----------------------------------
-  vol -f mem.dmp windows.info           # OS version and build
-  vol -f mem.dmp windows.pstree         # Process tree (orphaned = injection)
-  vol -f mem.dmp windows.netscan        # Network connections at capture time
-  vol -f mem.dmp windows.cmdline        # Command lines (PS encoded commands)
-  vol -f mem.dmp windows.malfind        # Injected PE regions (MZ + RWX)
-  vol -f mem.dmp windows.dlllist --pid N  # Loaded DLLs
-  vol -f mem.dmp windows.handles --pid N  # Mutex, pipe, file handles
-  vol -f mem.dmp windows.filescan       # All file objects (including hidden)
-  vol -f mem.dmp windows.ssdt           # SSDT hooks (rootkit indicator)
-  vol -f mem.dmp windows.callbacks      # Kernel callbacks (rootkit)
-  vol -f mem.dmp windows.registry.printkey --key "Software\...\Run"
+## 3. Disk Imaging
 
-PROCESS ANOMALY PATTERNS
--------------------------
-  svchost.exe parent != services.exe    = Masquerading (T1036.005)
-  Multiple lsass.exe instances          = LSASS dump/hollowing
-  cmd.exe/powershell.exe from svchost   = Lateral movement or injection
-  Orphaned process (PPID not in pslist) = Parent process was injected
-  Process with non-standard path        = Masquerading
+### dd (Linux)
+```bash
+# Basic image
+dd if=/dev/sda of=/mnt/evidence/hostname_disk.dd bs=512 conv=noerror,sync
 
-MALFIND INTERPRETATION
------------------------
-  MZ header + RWX + non-image VAD = injected PE (high confidence)
-  No MZ but RWX + executable code = shellcode injection
+# With progress
+dd if=/dev/sda of=/mnt/evidence/hostname_disk.dd bs=512 conv=noerror,sync status=progress
 
-  vol -f mem.dmp windows.malfind --dump --output-dir /tmp/malfind/
-  sha256sum /tmp/malfind/*.dmp
-  yara -r /opt/rules/ /tmp/malfind/
+# Compressed image
+dd if=/dev/sda bs=512 conv=noerror,sync | gzip -9 > hostname_disk.dd.gz
 
-ROOTKIT DETECTION
------------------
-  SSDT: entries outside ntoskrnl/win32k = hooked
-  Callbacks: unexpected drivers in callback list
-  Hidden processes: psscan PIDs not in pslist PIDs
-  Hidden modules: ldrmodules vs modules discrepancy
+# Verify hash during imaging (dcfldd)
+dcfldd if=/dev/sda of=/mnt/evidence/hostname_disk.dd hash=sha256 \
+  hashlog=/mnt/evidence/hostname_hash.log
+```
 
-=================================================================
-PHASE 4: NETWORK FORENSICS
-=================================================================
+### FTK Imager (Windows)
+```
+File > Create Disk Image > Physical Drive
+Select drive > Add > E01 format > set case/evidence info
+Set image fragment size (0 = single file)
+Verify image after creation = YES (always)
+Image type: E01 (Expert Witness) — preferred; or RAW (.dd)
+```
 
-KEY WIRESHARK FILTERS
-----------------------
-  http.request                         # HTTP requests
-  dns.flags.response == 0              # DNS queries
-  tls.handshake.type == 1              # TLS ClientHello (JA3 source)
-  smb2.cmd == 1                        # SMB session setup (lateral movement)
-  ip.src == X.X.X.X                    # Filter by source IP
+---
 
-TSHARK COMMANDS
-----------------
-  tshark -r cap.pcap -z io,phs -q                          # Protocol stats
-  tshark -r cap.pcap -Y http -T fields \
-    -e ip.src -e http.host -e http.request.uri -e http.user_agent
-  tshark -r cap.pcap -Y "dns.flags.response==0" -T fields \
-    -e frame.time -e dns.qry.name
-  tshark -r cap.pcap --export-objects http,/tmp/objects/   # Extract files
-  tshark -r cap.pcap -Y "tls.handshake.type==1" -T fields \
-    -e ip.dst -e tls.handshake.ja3                         # JA3 fingerprints
+## 4. Hash Verification
 
-C2 DETECTION PATTERNS
-----------------------
-  Regular beaconing (CV < 0.3 on inter-arrival times) = RAT/botnet
-  POST to /gate.php / /submit.php = banking trojan
-  DNS TXT/NULL queries = DNS C2 (T1071.004)
-  DNS label entropy > 3.5 = likely DGA
-  DNS query length > 200 bytes = DNS tunneling (T1048.003)
-  JA3 hash matching known Cobalt Strike = CS C2
+```bash
+# Before imaging (source hash)
+md5sum /dev/sda      # Note: hashing live device has race condition risk
+sha256sum /dev/sda
 
-LATERAL MOVEMENT IN PCAP
---------------------------
-  SMB to ADMIN$ / C$ from compromised host = PsExec (T1570)
-  DCOM port 135 + high dynamic port = WMI (T1047)
-  Kerberos TGT requests from unusual source = Pass-the-Ticket (T1550.003)
+# After imaging (image hash)
+md5sum hostname_disk.dd
+sha256sum hostname_disk.dd
 
-=================================================================
-PHASE 5: CLOUD AND MOBILE
-=================================================================
+# E01 format: FTK Imager verifies internally
+# Manual E01 hash verification
+ewfverify hostname_disk.E01
+```
 
-AWS CLOUDTRAIL KEY EVENTS
---------------------------
-  ConsoleLogin              = Interactive logon (note sourceIPAddress)
-  CreateUser/CreateAccessKey = Persistence via new credentials
-  AttachUserPolicy          = Privilege escalation (T1078.004)
-  DeleteTrail/StopLogging   = Defense evasion (T1562.008)
-  PutBucketPolicy/GetObject = S3 data exfiltration
-  AssumeRole                = Role assumption (lateral movement)
+Source hash should match image hash. Any discrepancy = re-image or document reason.
 
-  jq '.Records[] | select(.sourceIPAddress == "<IP>") | {time:.eventTime,user:.userIdentity.arn,event:.eventName}' *.json
+---
 
-AZURE AD KEY EVENTS
---------------------
-  "Add member to role" = privileged role assignment (check: Global Admin)
-  "Consent to application" = OAuth persistence (T1550.001)
-  conditionalAccessStatus: notApplied = policy bypass
-  Federated domain modifications = Domain trust modification (T1484.002)
+## 5. Live Acquisition vs Dead-Box Decision
 
-MOBILE ACQUISITION
-------------------
-  iOS:     iMazing (USB); Elcomsoft Phone Breaker (iCloud)
-           Artifacts: sms.db, CallHistory.storedata, History.db, AddressBook.sqlitedb
-  Android: adb backup -apk -shared -all -f backup.ab
-           Artifacts: /data/data/<pkg>/databases/, mmssms.db, contacts2.db
+| Scenario | Recommendation |
+|----------|----------------|
+| Running system with potential memory artifacts | Live acquisition (RAM + disk) |
+| System about to be powered off by others | Live RAM first, then disk image |
+| Powered off system | Dead-box (write-blocker + imaging) |
+| Virtual machine | Snapshot + VMDK/VHDX copy + RAM snapshot |
+| Cloud instance | API-based snapshot; provider cooperation |
+| Full-disk encryption (BitLocker) | Live acquisition ONLY; keys in memory |
 
-=================================================================
-PHASE 6: TIMELINE RECONSTRUCTION
-=================================================================
+### Live Memory Acquisition
+```
+# Windows — WinPmem
+winpmem_mini_x64_rc2.exe -o hostname_mem.aff4
+winpmem_mini_x64_rc2.exe -o hostname_mem.raw  # raw format
 
-PLASO WORKFLOW
---------------
-  log2timeline.py --storage-file case.plaso disk.dd   # Parse all artifacts
-  psort.py -o l2tcsv -w timeline.csv case.plaso       # Export all
-  psort.py -o l2tcsv -w filtered.csv case.plaso \
-    "date > '2026-01-01' AND message CONTAINS 'powershell'"
+# Windows — DumpIt (Comae)
+DumpIt.exe /output hostname_mem.dmp /quiet
 
-NOISE REDUCTION FILTERS
-------------------------
-  # Execution artifacts only
-  "source_short IN ('PREFETCH', 'APPCOMPAT_CACHE', 'AMCACHE')"
-  # Persistence artifacts
-  "source_short IN ('REG') AND message CONTAINS 'Run'"
-  # Exclude high-volume file system events
-  "source_short != 'FILE'"
+# Linux — LiME (kernel module)
+insmod lime-$(uname -r).ko "path=/mnt/usb/hostname_mem.lime format=raw"
 
-ATTACK LIFECYCLE CORRELATION
-------------------------------
-  Initial Access:  Email server logs, Security EID 4688, Sysmon EID 11 (file created)
-  Execution:       Prefetch, Amcache, Sysmon EID 1 (command line), EID 4688
-  Persistence:     Sysmon EID 13 (reg write), Registry timeline, EID 4698/7045
-  Lateral Move:    PCAP SMB, Security EID 4624 (type 3) on target, Sysmon EID 3
-  Exfiltration:    Firewall logs, PCAP large outbound, DNS tunneling indicators
+# macOS — osxpmem
+osxpmem.app/osxpmem -o hostname_mem.aff4
+```
 
-VISUALISATION TOOLS
---------------------
-  Timeline Explorer (Eric Zimmermann): CSV input; colour by source type
-  Kibana: psort.py -o elastic → Elasticsearch → Kibana timeline lens
-  Timesketch: collaborative timeline analysis
+---
 
-LEGAL DOCUMENTATION REQUIREMENTS
-----------------------------------
-  All timestamps UTC with offset documented
-  Tool versions recorded (Volatility 3.x.x, Plaso x.x.x, etc.)
-  Methodology documented per Locard's exchange principle
-  Chain of custody maintained and documented throughout
-  Hash verification documented at each step
-  Peer review documented
-  Analyst qualifications documented for expert witness testimony
+## 6. Evidence Packaging and Labeling
 
-=================================================================
-QUICK REFERENCE: ERIC ZIMMERMANN TOOLS
-=================================================================
-  PECmd           = Prefetch parser
-  AppCompatCacheParser = Shimcache parser
-  AmcacheParser   = Amcache parser
-  EvtxECmd        = Event log parser
-  LECmd           = LNK file parser
-  JLECmd          = Jumplist parser
-  RECmd           = Registry parser (all hives)
-  RBCmd           = Recycle bin parser
-  MFTECmd         = $MFT parser
-  All tools: https://ericzimmermann.com/tools
+Physical media:
+- Anti-static bags for drives/chips
+- Evidence tape over USB/SATA ports
+- Tamper-evident label with case ID and hash
+- Documentation of physical condition on receipt (photos)
+
+Digital evidence:
+- Store images on forensically clean media (verify with zeros)
+- Hash images and store hash file separately
+- Encrypt images at rest (AES-256) for PII/PHI content
+- Maintain access log (who accessed what image when)
+
+---
+
+## 7. Legal Hold Requirements
+
+- Preserve all evidence in original state from legal hold notice date
+- Do NOT wipe, re-image, or modify any system under legal hold
+- Notify IT operations and HR of legal hold scope
+- Document what was preserved vs. what was not available
+- Retain evidence per jurisdiction and regulation:
+  - US federal: up to 5 years (SOX), 7 years (financial records)
+  - GDPR: only as long as necessary for legitimate purpose
+  - Criminal matters: preserve indefinitely until case closure
+
+
+
+## disk-forensics
+
+# Disk Forensics
+
+## Purpose
+Extract and analyse filesystem artifacts: timeline, deleted files, browser history, Windows-specific artifacts, and application artifacts.
+
+---
+
+## 1. Filesystem Timeline Creation
+
+### NTFS (Windows) — The Sleuth Kit
+```bash
+# Create body file from NTFS image
+fls -r -m / -o <partition_offset> hostname_disk.dd > hostname_body.txt
+
+# Convert to timeline
+mactime -b hostname_body.txt -d > hostname_timeline.csv
+mactime -b hostname_body.txt -z UTC -d 2026-01-01 2026-06-01 > filtered.csv
+
+# Get partition offset
+mmls hostname_disk.dd  # shows start sector of each partition
+```
+
+### Plaso / log2timeline
+```bash
+# Create plaso storage file (parses ALL artifact types)
+log2timeline.py --storage-file hostname.plaso hostname_disk.dd
+
+# Filter and export to CSV
+psort.py -o L2tcsv -w hostname_timeline.csv hostname.plaso "date > '2026-01-01'"
+
+# Filter by artifact types
+psort.py hostname.plaso "source_short == 'LOG'" -o L2tcsv -w logs.csv
+```
+
+---
+
+## 2. Deleted File Recovery
+
+### Autopsy
+```
+1. New Case > Add Data Source > Disk Image (hostname_disk.dd)
+2. Enable modules: File Type Identification, Hash Lookup, Keyword Search
+3. Deleted Files view shows recovered entries
+4. File Recovery: right-click > Extract File(s)
+5. Validate extracted files by hash
+```
+
+### PhotoRec (command-line)
+```bash
+photorec /d /mnt/recovery/ hostname_disk.dd
+# Carves files by signature regardless of filesystem
+# Recovers: documents, images, archives, executables
+# Note: filenames not recovered, only content
+```
+
+---
+
+## 3. Windows Artifact Analysis
+
+### Prefetch Files
+```
+Location: C:\Windows\Prefetch\<EXECNAME>-<HASH>.pf
+Contains: execution count, last run time, files/directories accessed
+
+# Parse with PECmd (Eric Zimmermann Tools)
+PECmd.exe -d C:\Windows\Prefetch --csv C:\output\ --csvf prefetch.csv
+
+# Key information:
+# - Last run time (8 timestamps)
+# - Run count
+# - Files loaded (DLLs, data files — can show staged data)
+```
+
+### Shimcache (AppCompatCache)
+```
+Registry: HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache
+
+# Parse with AppCompatCacheParser.exe (Eric Zimmermann)
+AppCompatCacheParser.exe -f SYSTEM --csv C:\output\ --csvf shimcache.csv
+
+# Contains: file path, last modified time, execution flag (XP/2003 only)
+# KEY USE: files that existed on system even if deleted
+```
+
+### Amcache
+```
+Location: C:\Windows\AppCompat\Programs\Amcache.hve
+
+# Parse with AmcacheParser.exe (Eric Zimmermann)
+AmcacheParser.exe -f Amcache.hve --csv C:\output\ --csvf amcache.csv
+
+# Contains: SHA1 hash, publisher, install date, file path
+# KEY USE: hash of executed files even if deleted
+```
+
+### Windows Event Logs
+```powershell
+# Export relevant logs
+wevtutil epl Security Security.evtx
+wevtutil epl System System.evtx
+wevtutil epl Microsoft-Windows-Sysmon/Operational Sysmon.evtx
+wevtutil epl Microsoft-Windows-PowerShell/Operational PS.evtx
+
+# Key Security event IDs:
+# 4624 - Logon success (type 2=interactive, 3=network, 10=remote)
+# 4625 - Logon failure
+# 4634/4647 - Logoff
+# 4648 - Logon with explicit credentials (runas)
+# 4672 - Special privileges assigned (admin logon)
+# 4688 - Process creation (if auditing enabled)
+# 4698 - Scheduled task created
+# 4720 - User account created
+# 4776 - NTLM authentication attempt
+# 4768 - Kerberos TGT request
+# 4769 - Kerberos service ticket request
+
+# Analyse with EvtxECmd (Eric Zimmermann)
+EvtxECmd.exe -d C:\Windows\System32\winevt\Logs --csv C:\output\ --csvf evtx.csv
+```
+
+---
+
+## 4. Browser Artifacts
+
+### Chrome/Chromium
+```
+Profile location: %LOCALAPPDATA%\Google\Chrome\User Data\Default\
+
+# Databases (SQLite):
+History:          History (URLs, visits, download history)
+Cookies:          Cookies
+Web Data:         Web Data (form autofill)
+Login Data:       Login Data (saved passwords — encrypted)
+Downloads:        entries in History database
+
+# Query History
+sqlite3 History "SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC LIMIT 100;"
+
+# Convert Chrome timestamp (microseconds since Jan 1, 1601)
+python3 -c "from datetime import datetime, timedelta; ts=<chrome_ts>; print(datetime(1601,1,1)+timedelta(microseconds=ts))"
+```
+
+### Firefox
+```
+Profile: %APPDATA%\Mozilla\Firefox\Profiles\<profile>\
+places.sqlite  → URLs, bookmarks, history
+cookies.sqlite → Cookies
+formhistory.sqlite → Form data
+```
+
+---
+
+## 5. LNK Files and Jumplists
+
+```
+LNK files: %USERPROFILE%\AppData\Roaming\Microsoft\Windows\Recent\
+Jumplists: %USERPROFILE%\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations\
+
+# Parse with LECmd (LNK) and JLECmd (Jumplist) — Eric Zimmermann Tools
+LECmd.exe -d "C:\Users\<user>\Recent" --csv C:\output\ --csvf lnk.csv
+JLECmd.exe -d "C:\Users\<user>\Recent\AutomaticDestinations" --csv C:\output\
+
+# LNK files contain: target path, MAC timestamps, volume serial, machine ID
+# Jumplists contain: recently opened files per application
+```
+
+---
+
+## 6. Disk Forensics Checklist
+
+- [ ] Filesystem timeline created (fls + mactime or log2timeline)
+- [ ] Deleted file recovery attempted
+- [ ] Prefetch files parsed and reviewed
+- [ ] Shimcache parsed (files that existed, with timestamps)
+- [ ] Amcache parsed (hashes of executed files)
+- [ ] Event logs exported and key security events reviewed
+- [ ] Browser history, cookies, and downloads extracted
+- [ ] LNK files and jumplists parsed
+- [ ] Registry hives exported: SYSTEM, SOFTWARE, SAM, NTUSER.DAT
+- [ ] $MFT and $UsnJrnl analysed for file creation/deletion activity
+- [ ] Recycle Bin analysed ($I files contain original path + deletion time)
+
+
+
+## memory-forensics
+
+# Memory Forensics
+
+## Purpose
+Analyse RAM captures to detect malicious processes, network connections, injected code, credential material, and rootkit indicators that leave no disk trace.
+
+---
+
+## 1. Volatility 3 Plugin Workflow
+
+### Initial Triage Sequence
+```bash
+# Step 1: Identify OS and build
+vol -f memory.dmp windows.info
+
+# Step 2: Running processes (flat list)
+vol -f memory.dmp windows.pslist
+
+# Step 3: Process tree (shows parent-child, orphaned processes)
+vol -f memory.dmp windows.pstree
+
+# Step 4: Network connections at time of capture
+vol -f memory.dmp windows.netscan
+
+# Step 5: Command lines (reveals encoded PS, LOLBins)
+vol -f memory.dmp windows.cmdline
+
+# Step 6: Find injected code (malfind)
+vol -f memory.dmp windows.malfind
+
+# Step 7: DLLs loaded per process
+vol -f memory.dmp windows.dlllist --pid <pid>
+
+# Step 8: Process handles (files, mutexes, pipes, events)
+vol -f memory.dmp windows.handles --pid <pid>
+
+# Step 9: File system objects
+vol -f memory.dmp windows.filescan
+
+# Step 10: Registry
+vol -f memory.dmp windows.registry.hivelist
+vol -f memory.dmp windows.registry.printkey --key "Software\Microsoft\Windows\CurrentVersion\Run"
+```
+
+---
+
+## 2. Process Tree Anomaly Detection
+
+### Legitimate Parent-Child Relationships
+| Process | Expected Parent |
+|---------|----------------|
+| explorer.exe | userinit.exe |
+| cmd.exe / powershell.exe | explorer.exe (interactive) or legitimate parent |
+| svchost.exe | services.exe |
+| lsass.exe | wininit.exe |
+| csrss.exe | smss.exe |
+| services.exe | wininit.exe |
+| spoolsv.exe | services.exe |
+
+### Suspicious Anomalies
+| Observation | Suspicion |
+|-------------|-----------|
+| svchost.exe parent != services.exe | Masquerading (T1036.005) |
+| lsass.exe not child of wininit.exe | LSASS impersonation |
+| Multiple lsass.exe | LSASS dump/hollowing |
+| cmd.exe or powershell.exe from svchost | Lateral movement or injection |
+| Orphaned process (PPID not in process list) | Injection or parent process terminated |
+| Process with unusual path (not System32) | Masquerading |
+
+---
+
+## 3. Network Connection Analysis
+
+```bash
+# All network connections
+vol -f memory.dmp windows.netscan
+
+# Output fields: Proto, Local, Foreign, State, PID, Owner, Created
+
+# Key states to investigate:
+# ESTABLISHED: active connection at capture time
+# CLOSE_WAIT / TIME_WAIT: recently closed
+# LISTENING: local server (potential backdoor)
+
+# Filter for non-standard ports
+vol -f memory.dmp windows.netscan | grep -vE ":(80|443|445|135|139|3389|53) "
+```
+
+---
+
+## 4. Injected Code Detection — malfind
+
+### Interpreting malfind Output
+```
+malfind output fields:
+  PID, Process name, Virtual address, Size, Protection, Disassembly
+
+High-confidence injection indicators:
+  - MZ header (4D 5A) found in non-image VAD region
+  - Region has PAGE_EXECUTE_READWRITE (0x40) or PAGE_EXECUTE_WRITECOPY
+  - Region is private (not backed by file on disk)
+
+False positive indicators:
+  - Region is in a known .NET JIT compilation area
+  - Disassembly shows unrecognisable data (not code)
+  - Parent process is a known code-generating tool
+```
+
+```bash
+# Dump suspicious regions for further analysis
+vol -f memory.dmp windows.malfind --dump --output-dir /tmp/malfind/
+
+# Hash and YARA scan dumped regions
+sha256sum /tmp/malfind/*.dmp
+yara -r /opt/rules/ /tmp/malfind/
+```
+
+---
+
+## 5. Credential Extraction Artifacts
+
+**Important: Credential extraction requires explicit legal authorisation.
+Document authorisation reference in analysis notes before proceeding.**
+
+```bash
+# SAM database hashes (offline account hashes)
+vol -f memory.dmp windows.hashdump
+
+# LSA secrets (service account credentials, cached domain credentials)
+vol -f memory.dmp windows.lsadump
+
+# Cached domain credentials
+vol -f memory.dmp windows.cachedump
+
+# Note: These capabilities should only be used by:
+# 1. Authorised forensic investigators with legal authorisation
+# 2. Penetration testers with explicit written scope
+# 3. Incident responders under explicit mandate
+```
+
+---
+
+## 6. Rootkit Detection
+
+### SSDT Hook Analysis
+```bash
+# Windows System Service Descriptor Table
+vol -f memory.dmp windows.ssdt
+
+# Clean system: all SSDT entries point to ntoskrnl.exe or win32k.sys
+# Rootkit indicator: entry points to unknown driver or user-space address
+
+# Output interpretation:
+# Index | Function | Symbol | Owner
+# 0     | NtAcceptConnectPort | ntoskrnl.exe | CLEAN
+# 47    | NtCreateFile | rootkit.sys | SUSPICIOUS
+```
+
+### Kernel Callbacks
+```bash
+vol -f memory.dmp windows.callbacks
+
+# Kernel callbacks used by rootkits:
+# PsSetCreateProcessNotifyRoutine (process creation monitoring)
+# PsSetCreateThreadNotifyRoutine (thread creation)
+# PsSetLoadImageNotifyRoutine (image load)
+# CmRegisterCallback (registry access)
+# FsRtlRegisterFileSystemFilterCallbacks (filesystem filter)
+```
+
+### Hidden Objects Detection
+```bash
+# Compare pslist (walks PEB) vs psscan (scans pool tags)
+# Processes in psscan but not pslist = hidden by DKOM
+vol -f memory.dmp windows.pslist | awk '{print $1}' > pslist_pids.txt
+vol -f memory.dmp windows.psscan | awk '{print $1}' > psscan_pids.txt
+diff pslist_pids.txt psscan_pids.txt
+
+# Modules comparison
+vol -f memory.dmp windows.ldrmodules   # PEB module list
+vol -f memory.dmp windows.modules      # kernel module list (pool scan)
+# Discrepancy = hidden module
+```
+
+---
+
+## 7. Memory Forensics Checklist
+
+- [ ] OS version confirmed (windows.info)
+- [ ] Process list + tree reviewed for anomalies
+- [ ] Network connections enumerated and cross-referenced with threat intel
+- [ ] Command lines extracted and decoded (base64/hex PS encoded commands)
+- [ ] malfind complete; all suspicious regions investigated
+- [ ] DLL lists reviewed for unusual entries (non-standard paths)
+- [ ] File handles reviewed for suspicious named pipes
+- [ ] Mutex handles documented (malware family fingerprinting)
+- [ ] SSDT reviewed for hooks
+- [ ] Kernel callbacks reviewed
+- [ ] psscan vs pslist comparison for hidden processes
+- [ ] Memory dumps hashed and YARA-scanned
+- [ ] Credential extraction performed only with legal authorisation documented
+
+
+
+## network-forensics
+
+# Network Forensics
+
+## Purpose
+Analyse network traffic captures to reconstruct attack timelines, identify C2 communications, detect lateral movement, and find data exfiltration.
+
+---
+
+## 1. PCAP Analysis with Wireshark / tshark
+
+### Key Display Filters (Wireshark)
+```
+# HTTP requests
+http.request
+
+# DNS queries
+dns.flags.response == 0
+
+# SMB authentication (lateral movement indicator)
+smb2.cmd == 1 or smb.cmd == 115
+
+# Kerberos (T1550.003 Pass-the-Ticket)
+kerberos
+
+# All connections from specific host
+ip.src == 192.168.1.100
+
+# Large outbound transfers (exfiltration indicator)
+ip.dst != 10.0.0.0/8 and tcp.len > 1000 and ip.src == 192.168.0.0/16
+
+# TLS without SNI (unusual, may indicate C2)
+tls.handshake.type == 1 and !tls.handshake.extensions_server_name
+```
+
+### tshark Command Reference
+```bash
+# Protocol statistics
+tshark -r capture.pcap -z io,phs -q
+
+# HTTP hosts and URIs
+tshark -r capture.pcap -Y http.request -T fields \
+  -e ip.src -e http.host -e http.request.uri -e http.user_agent
+
+# DNS queries
+tshark -r capture.pcap -Y "dns.flags.response==0" -T fields \
+  -e frame.time -e ip.src -e dns.qry.name -e dns.qry.type
+
+# Extract files from HTTP traffic
+tshark -r capture.pcap --export-objects http,/tmp/http_objects/
+
+# TLS/SSL certificates
+tshark -r capture.pcap -Y ssl.handshake.type==11 -T fields \
+  -e x509ce.dNSName -e pkix1explicit.serialNumber
+
+# JA3 fingerprints
+tshark -r capture.pcap -Y "tls.handshake.type==1" -T fields \
+  -e ip.dst -e tls.handshake.ja3
+```
+
+---
+
+## 2. C2 Traffic Pattern Identification
+
+### Beaconing Detection
+```python
+# Detect regular beaconing by analysing inter-arrival times
+import pyshark, statistics
+from collections import defaultdict
+
+cap = pyshark.FileCapture('capture.pcap', display_filter='tcp')
+connections = defaultdict(list)
+
+for pkt in cap:
+    try:
+        key = (pkt.ip.src, pkt.ip.dst, pkt.tcp.dstport)
+        connections[key].append(float(pkt.sniff_timestamp))
+    except: pass
+
+for conn, times in connections.items():
+    if len(times) > 5:
+        intervals = [times[i+1]-times[i] for i in range(len(times)-1)]
+        cv = statistics.stdev(intervals)/statistics.mean(intervals) if statistics.mean(intervals) > 0 else 999
+        if cv < 0.3:   # Low variance = regular beaconing
+            print(f"Beacon detected: {conn}, interval ~{statistics.mean(intervals):.1f}s, CV={cv:.3f}")
+```
+
+### JA3/JA3S Fingerprint Matching
+Known malicious JA3 hashes:
+| JA3 Hash | Associated Tool |
+|----------|----------------|
+| 51c64c77e60f3980eea90869b68c58a8 | Cobalt Strike default (pre-4.0) |
+| 6bca5a11f8b9f0aa9900eee42dc98625 | Metasploit meterpreter |
+| a0e9f5d64349fb13191bc781f81f42e1 | Go default TLS client |
+| 771,4866-4865-4867:23-65281-10-11-35-16 | Python requests library |
+
+```bash
+# ja3er lookup (community database)
+curl "https://ja3er.com/search/<ja3_hash>"
+```
+
+---
+
+## 3. Lateral Movement Indicators
+
+### SMB Lateral Movement (T1021.002)
+```
+Wireshark filter: smb2 and ip.src == <suspected_compromised_host>
+
+Key SMB events to look for:
+- NTLM authentication to multiple hosts in short time window
+- Access to ADMIN$ or C$ shares
+- File writes to \\<target>\ADMIN$\ (PsExec-style)
+- DCE/RPC calls for service creation (T1570)
+- Named pipe access for remote execution
+
+# SMB authentication brute force pattern:
+# Many failed auth (status: STATUS_LOGON_FAILURE) from same source
+```
+
+### WMI Lateral Movement (T1047)
+```
+WMI over network: DCOM on port 135 + dynamic high port
+tshark filter: dcerpc and ip.src == <source>
+
+WBEMPROX command execution signs:
+- ExecMethod call for Win32_Process.Create
+- Connection to port 135 then high dynamic port
+```
+
+### PsExec Artifacts (T1570)
+```
+Network indicators:
+- SMB connection to ADMIN$ share
+- File written: \\target\ADMIN$\PSEXESVC.exe
+- Named pipe: \\target\pipe\PSEXESVC
+- Service creation event (Security EID 7045)
+```
+
+---
+
+## 4. Data Exfiltration Detection
+
+### Volume-Based Detection
+```bash
+# Find large outbound transfers
+tshark -r capture.pcap -z conv,tcp -q | sort -k8 -n -r | head -20
+# Sort by bytes transferred; filter for external IPs
+
+# Large DNS responses (possible DNS tunneling T1048.003)
+tshark -r capture.pcap -Y "dns.resp.len > 200" -T fields \
+  -e ip.src -e dns.qry.name -e dns.resp.len
+```
+
+### DNS Tunneling Detection
+```python
+# Suspicious indicators:
+# 1. High query frequency to single domain
+# 2. Queries with long subdomains (>50 chars)
+# 3. Encoded data patterns in subdomain labels
+# 4. Low TTL responses
+# 5. TXT record responses with encoded data
+
+# Example: base64 in DNS name
+# aGVsbG8gd29ybGQ=.tunnel.attacker.com  ← obvious
+# More subtle: hex encoding in subdomain labels
+```
+
+---
+
+## 5. Protocol Reconstruction
+
+### HTTP Session Reconstruction
+```bash
+# Follow specific HTTP stream
+tshark -r capture.pcap -z follow,http,ascii,<stream_num> -q
+
+# Extract specific file type
+tshark -r capture.pcap -Y "http.content_type contains \"application/\"" \
+  --export-objects http,/tmp/extracted/
+
+# Decode gzip-encoded HTTP body
+tshark -r capture.pcap -Y http -T fields -e http.file_data | xxd -r -p | gunzip
+```
+
+### SMTP Email Reconstruction
+```bash
+# Follow SMTP stream
+tshark -r capture.pcap -z follow,tcp,ascii,<stream_num> -q
+
+# Extract MIME attachments from SMTP
+tcpflow -r capture.pcap -o /tmp/tcpflow/ port 25
+# Then: munpack or ripmime for MIME extraction
+```
+
+---
+
+## 6. Network Forensics Checklist
+
+- [ ] PCAP collected with full packet capture (not sampled)
+- [ ] Protocol statistics reviewed (io,phs)
+- [ ] HTTP sessions extracted and files recovered
+- [ ] DNS queries extracted (look for DGA, DNS tunneling)
+- [ ] TLS fingerprints (JA3) checked against known-malicious list
+- [ ] Beaconing analysis performed on outbound connections
+- [ ] SMB/RPC lateral movement indicators checked
+- [ ] Large outbound transfers investigated
+- [ ] Passive DNS correlation: what IPs resolved to which domains
+- [ ] All C2 indicators extracted and documented
+
+
+
+## cloud-and-mobile
+
+# Cloud and Mobile Forensics
+
+## Purpose
+Collect and analyse digital evidence from cloud platforms (AWS, Azure) and mobile devices (iOS, Android).
+
+---
+
+## 1. AWS CloudTrail Analysis
+
+### Log Collection
+```bash
+# Download CloudTrail logs from S3
+aws s3 sync s3://<bucket-name>/AWSLogs/<account-id>/CloudTrail/<region>/ \
+  /tmp/cloudtrail/ --profile forensics-readonly
+
+# Lookup events via API (last 90 days without log archiving)
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=EventName,AttributeValue=ConsoleLogin \
+  --start-time 2026-01-01T00:00:00Z \
+  --end-time 2026-06-01T00:00:00Z \
+  --output json > console_logins.json
+```
+
+### Key Event Names for Forensics
+| Event | Investigation Relevance |
+|-------|------------------------|
+| ConsoleLogin | Who logged into AWS console; sourceIPAddress |
+| AssumeRole | Role assumptions (lateral movement) |
+| CreateUser / CreateAccessKey | Persistence via new credentials |
+| AttachUserPolicy / PutRolePolicy | Privilege escalation (T1078.004) |
+| GetSecretValue | Secret access (Secrets Manager) |
+| DeleteTrail / StopLogging | Defence evasion (T1562.008) |
+| RunInstances | New EC2 launch (potential C2) |
+| AuthorizeSecurityGroupIngress | Firewall modification |
+| PutBucketPolicy / GetObject | Data exfiltration from S3 |
+
+### CloudTrail Query Pattern
+```bash
+# Find all API calls from a suspicious IP
+jq '.Records[] | select(.sourceIPAddress == "<suspicious_ip>") | {time: .eventTime, user: .userIdentity.arn, event: .eventName, region: .awsRegion}' *.json
+
+# Find privilege escalation attempts
+jq '.Records[] | select(.eventName | test("AttachUserPolicy|PutRolePolicy|CreateRole|AssumeRole")) | {time: .eventTime, user: .userIdentity.arn, event: .eventName}' *.json
+
+# Failed API calls (access denied = reconnaissance or failed attack)
+jq '.Records[] | select(.errorCode == "AccessDenied" or .errorCode == "UnauthorizedAccess")' *.json
+```
+
+---
+
+## 2. Azure AD Audit Logs
+
+### Log Sources
+```
+Azure AD Sign-In Logs:          audit: who logged in, from where, MFA status
+Azure AD Audit Logs:            changes to users, groups, roles, apps
+Azure Activity Log:             resource creation/modification/deletion
+Microsoft Defender for Cloud:   security alerts
+Azure Sentinel (if deployed):   SIEM correlation
+
+# Export via Azure CLI
+az monitor activity-log list --start-time 2026-01-01T00:00:00Z > activity.json
+az ad audit-log list --filter "activityDateTime ge 2026-01-01" > audit.json
+```
+
+### Key Azure Investigation Areas
+```
+Privileged Role Assignments:
+  "activityDisplayName": "Add member to role"
+  Check: was the role Global Administrator, Application Administrator, etc.
+
+Conditional Access Bypass:
+  Sign-in logs: "conditionalAccessStatus": "notApplied"
+  Indicates sign-in from non-compliant device or unusual location
+
+OAuth App Consent:
+  "activityDisplayName": "Consent to application"
+  Attackers grant OAuth apps broad permissions for persistence
+
+Federated Identity Changes:
+  Modifications to trusted domains (T1484.002 Domain Trust Modification)
+```
+
+---
+
+## 3. iOS Forensic Acquisition
+
+### iCloud Backup (logical acquisition)
+```
+Tools: iMazing, libimobiledevice, Elcomsoft Phone Breaker
+
+# iMazing process:
+1. Connect iPhone to forensic workstation
+2. iMazing > Back Up > Choose location
+3. Enable: Include deleted data (if available)
+4. Verify backup integrity (hash backup directory)
+
+# iCloud backup acquisition (requires Apple ID credentials and 2FA):
+Elcomsoft Phone Breaker > iCloud > Enter credentials > Download backup
+```
+
+### iOS Artifact Locations (in backup)
+```
+SQLite databases extracted from backup:
+  SMS/iMessage:        Library/SMS/sms.db
+  Call log:            Library/CallHistoryDB/CallHistory.storedata
+  Safari history:      Library/Safari/History.db
+  Contacts:            Library/AddressBook/AddressBook.sqlitedb
+  Location history:    Library/Caches/com.apple.routined/
+  Wi-Fi networks:      Library/Preferences/com.apple.wifi.plist
+  Installed apps:      Library/Preferences/com.apple.mobile.installation.plist
+```
+
+---
+
+## 4. Android Forensic Acquisition
+
+### ADB Backup (logical — requires device unlock)
+```bash
+# Backup all apps
+adb backup -apk -shared -all -f android_backup.ab
+
+# Convert to tar for analysis
+dd if=android_backup.ab bs=1 skip=24 | python3 -c \
+  "import zlib,sys; sys.stdout.buffer.write(zlib.decompress(sys.stdin.buffer.read()))" > backup.tar
+
+# Or: Android Backup Extractor
+java -jar abe.jar unpack android_backup.ab backup.tar <password>
+tar xf backup.tar
+```
+
+### Android Artifact Locations
+```
+/data/data/<package>/databases/    → SQLite databases per app
+/data/data/com.android.providers.telephony/databases/mmssms.db → SMS
+/data/data/com.android.providers.contacts/databases/contacts2.db → Contacts
+/data/app/ → Installed APKs
+/sdcard/DCIM/ → Photos/videos
+/sdcard/WhatsApp/ → WhatsApp media and backups
+```
+
+---
+
+## 5. Container Forensics
+
+### Docker
+```bash
+# List container history (even stopped)
+docker ps -a
+
+# Inspect container metadata
+docker inspect <container_id> > container_inspect.json
+
+# Export container filesystem
+docker export <container_id> -o container_fs.tar
+tar xf container_fs.tar -C /tmp/container_analysis/
+
+# Docker layer analysis (image history)
+docker history <image_id> --no-trunc
+
+# Docker daemon logs
+journalctl -u docker --since "2026-01-01" > docker_daemon.log
+```
+
+### Kubernetes Audit Logs
+```bash
+# kube-apiserver audit log location (typical):
+/var/log/kubernetes/audit.log
+
+# Key events:
+# verb=create resource=pods → pod creation (potential backdoor deployment)
+# verb=exec resource=pods → kubectl exec (lateral movement / persistence check)
+# user.username=system:anonymous → anonymous API access (misconfiguration)
+
+# Filter for privilege escalation
+jq 'select(.objectRef.resource=="clusterrolebindings" or .objectRef.resource=="rolebindings") | select(.verb=="create" or .verb=="update")' audit.log
+```
+
+---
+
+## 6. Cloud and Mobile Checklist
+
+- [ ] CloudTrail / Azure Activity logs collected for full incident timeframe
+- [ ] IAM changes during incident timeframe reviewed (new users, role assignments)
+- [ ] API calls from suspicious IPs extracted
+- [ ] OAuth app consents reviewed (Azure/Google)
+- [ ] Mobile acquisition method documented (logical/physical, tool used)
+- [ ] Mobile backup integrity verified (hash)
+- [ ] SMS, call log, and messaging app databases exported
+- [ ] Location data extracted and cross-referenced with timeline
+- [ ] Container audit logs collected if containers in scope
+- [ ] Cloud storage access logs reviewed (S3 access logs, Azure Storage analytics)
+
+
+
+## timeline-reconstruction
+
+# Timeline Reconstruction
+
+## Purpose
+Build a unified, normalised super-timeline from all evidence sources to reconstruct the complete attack narrative for legal reporting and incident response.
+
+---
+
+## 1. Super-Timeline Construction with Plaso
+
+### Data Sources to Include
+```bash
+# Create storage file from disk image
+log2timeline.py --storage-file case.plaso /dev/sda   # Live disk
+log2timeline.py --storage-file case.plaso disk.dd    # Image file
+
+# Add memory dump artifacts
+log2timeline.py --storage-file case.plaso --parsers=volatility memory.dmp
+
+# Add Windows event logs (standalone)
+log2timeline.py --storage-file case.plaso --parsers=winevt* evtx_directory/
+
+# Add network PCAP
+log2timeline.py --storage-file case.plaso --parsers=wireshark capture.pcap
+
+# Add cloud logs (JSON)
+log2timeline.py --storage-file case.plaso --parsers=jsonl cloudtrail_logs/
+```
+
+### Supported Artifact Parsers (key ones)
+| Parser | Artifacts |
+|--------|-----------|
+| winevt | Windows Event Logs |
+| prefetch | Prefetch files |
+| winreg | Registry hives |
+| mft | $MFT (NTFS) |
+| usnjrnl | $UsnJrnl |
+| lnk | LNK files |
+| olecf | Office documents, jumplists |
+| sqlite | Browser databases, mobile artifacts |
+| syslog | Linux syslogs |
+| bash_history | Linux bash history |
+
+---
+
+## 2. Timeline Export and Filtering
+
+```bash
+# Export to CSV (L2T format)
+psort.py -o l2tcsv -w timeline.csv case.plaso
+
+# Export to JSON
+psort.py -o json_line -w timeline.jsonl case.plaso
+
+# Filter by time range
+psort.py -o l2tcsv -w filtered.csv case.plaso "date > '2026-01-01 00:00:00' AND date < '2026-06-01 00:00:00'"
+
+# Filter by source type
+psort.py -o l2tcsv -w reg_events.csv case.plaso "source_short == 'REG'"
+
+# Filter by keyword
+psort.py -o l2tcsv -w suspicious.csv case.plaso "message CONTAINS 'powershell'"
+
+# Filter by specific file/path
+psort.py -o l2tcsv -w appcompat.csv case.plaso "source_long == 'APPCOMPAT_CACHE'"
+```
+
+---
+
+## 3. Timeline Noise Reduction
+
+### Common High-Volume Sources to Filter Initially
+```bash
+# Exclude known-noisy sources for initial triage
+psort.py case.plaso -o l2tcsv -w triage.csv \
+  "source_short != 'FILE' AND source_short != 'WEBHIST' AND date > '2026-05-01'"
+
+# Focus on execution-related artifacts
+psort.py case.plaso -o l2tcsv -w executions.csv \
+  "source_short IN ('PREFETCH', 'APPCOMPAT_CACHE', 'AMCACHE', 'EID 4688')"
+
+# Focus on persistence artifacts
+psort.py case.plaso -o l2tcsv -w persistence.csv \
+  "source_short IN ('REG', 'EID 7045', 'EID 4698')"
+```
+
+---
+
+## 4. Event Correlation Across Sources
+
+### Correlation Pattern: Process Execution
+```
+Timeline correlation for a suspicious process:
+1. Prefetch: <process>.pf created/modified → timestamp of first/last execution
+2. Amcache: hash of executed binary → verify integrity
+3. Shimcache: file path existed → may predate execution
+4. Security EID 4688: process creation (if audit policy enabled)
+5. Sysmon EID 1: process creation with command line
+6. Network: outbound connection from same PID around same time (Sysmon EID 3)
+7. File system: files created/modified in same timeframe
+8. Registry: run key modification for persistence
+```
+
+### Correlation Pattern: Lateral Movement
+```
+Source host:
+  Sysmon EID 3: outbound SMB (port 445) to target host
+  Sysmon EID 1: net.exe, psexec.exe, wmic.exe execution
+  Security EID 4648: logon with explicit credentials
+
+Target host:
+  Security EID 4624 Type 3: network logon from source host
+  Security EID 4672: privileged logon (admin access)
+  Security EID 7045: new service installed (PsExec)
+  Sysmon EID 1: PSEXESVC.exe process creation
+  File system: %SystemRoot%\PSEXESVC.exe created
+```
+
+---
+
+## 5. Timeline Visualisation
+
+### Timeline Explorer (Eric Zimmermann)
+```
+1. Load CSV timeline file
+2. Set date/time column
+3. Colour code by source_short
+4. Filter by time range and keywords
+5. Bookmark significant events
+6. Export filtered view for report
+```
+
+### Kibana / Elastic Stack
+```bash
+# Import plaso timeline to Elasticsearch
+psort.py -o elastic -w ES case.plaso --elastic_server_url http://localhost:9200 \
+  --index_name case_timeline
+
+# Kibana: Create timeline visualisation
+# X-axis: timestamp, Y-axis: event count
+# Colour by: source_short (artifact type)
+# Filter: timerange matching incident window
+```
+
+---
+
+## 6. Narrative Construction
+
+### Incident Timeline Narrative Template
+```
+INCIDENT TIMELINE RECONSTRUCTION
+==================================
+
+T-00:00 [Date/Time UTC] INITIAL ACCESS
+  - Source: Email attachment (filename: <name>, hash: <sha256>)
+  - Evidence: Mail server logs, Security EID 4688, Sysmon EID 11
+
+T+00:05 EXECUTION
+  - Macro executed in <document>
+  - PowerShell launched (encoded command decoded: <decoded>)
+  - Evidence: Sysmon EID 1, Security EID 4103
+
+T+00:10 DISCOVERY
+  - Whoami, net user /domain, arp -a executed
+  - Evidence: Sysmon EID 1, cmd.exe command lines
+
+T+00:45 PERSISTENCE
+  - Registry run key set: HKCU\...\Run\<name> = <path>
+  - Evidence: Sysmon EID 13, Registry timeline
+
+T+01:30 LATERAL MOVEMENT
+  - PsExec used to execute on <target_host>
+  - Evidence: SMB connection in PCAP, Security EID 4624 on target
+
+T+06:00 EXFILTRATION
+  - <n> GB uploaded to <C2>
+  - Evidence: Firewall logs, PCAP large outbound transfer
+```
+
+---
+
+## 7. Expert Witness Documentation
+
+If timeline will be used in legal proceedings:
+- All timestamps in UTC with offset documented
+- Tool versions documented (Volatility 3.x.x, Plaso x.x)
+- Methodology documented (Locard's principle — every contact leaves a trace)
+- Chain of custody maintained and documented
+- Hash verification at each step documented
+- Analyst CV/qualifications documented
+- Peer review documented
+- Preserve all working files and intermediate outputs
+
+---
+
+## 8. Timeline Checklist
+
+- [ ] All available evidence sources ingested into plaso
+- [ ] Timezone confirmed and all timestamps normalised to UTC
+- [ ] High-noise sources filtered for initial triage
+- [ ] Initial access event identified and timestamped
+- [ ] Execution timeline reconstructed (prefetch, amcache, shimcache, EID 4688)
+- [ ] Persistence mechanisms timestamped
+- [ ] Lateral movement events correlated (source + target hosts)
+- [ ] Data exfiltration timeframe identified
+- [ ] Narrative written covering full attack lifecycle
+- [ ] Timeline reviewed by second analyst
+- [ ] Expert witness documentation completed if required

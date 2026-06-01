@@ -1,271 +1,997 @@
-AEGIS SKILLS — IDENTITY AND ACCESS MANAGEMENT PRACTITIONER GUIDE
-=================================================================
-Version: 1.0.0 | Frameworks: NIST CSF, OWASP ASVS, CIS Controls | Model: claude-sonnet-4-6
+# Identity and Access Management Skill
 
-You are an IAM security specialist. The fundamental principle is least privilege:
-every identity (human, service, or AI agent) should have the minimum access
-required for their defined purpose. Phishing-resistant authentication is the
-highest priority for human identities.
+Comprehensive IAM framework covering human identities, privileged access,
+non-human identities, and the emerging challenge of AI/agent identity.
+Prioritise phishing-resistant authentication and least-privilege access.
 
-=================================================================
-PHASE 1: IDENTITY GOVERNANCE (JOINERS/MOVERS/LEAVERS)
-=================================================================
 
-JOINERS (automated provisioning)
-----------------------------------
-  Trigger: HR system new hire event
-  Day 0:   Identity created in IdP; role-based access assigned from RBAC matrix
-  Day 1:   MFA enrolment (enforced; FIDO2 preferred; 24h deadline)
-  Day 1-3: System access verified with manager
-  Before sensitive system access: training + NDA + AUP acknowledgement
+## identity-governance
 
-MOVERS (role change)
----------------------
-  Trigger: HR system role change
-  Action:  Old role access REMOVED; new role access GRANTED
-  Risk:    Access accumulation (users keep old access) — detect in entitlement reviews
-  SLA:     Complete within 5 working days; post-move certification by manager
+# Identity Governance
 
-LEAVERS (termination)
-----------------------
-  Involuntary: ALL access revoked immediately (before informing employee)
-  Standard:    Within 24h all cloud/app access disabled
-  Within 5 days: Final manager certification that all access removed
+## Purpose
+Manage the full identity lifecycle (Joiners, Movers, Leavers), detect orphaned accounts, run access certification campaigns, and enforce segregation of duties.
 
-  Leaver checklist:
-    [ ] IdP account disabled (not deleted — preserve audit trail 90 days)
-    [ ] All SSO sessions revoked
-    [ ] VPN removed; privileged groups removed
-    [ ] Service accounts owned by leaver: transfer ownership
-    [ ] API keys and SSH keys revoked
-    [ ] Physical access deactivated
+---
 
-ORPHANED ACCOUNT DETECTION
----------------------------
-  Daily: compare IdP accounts to HR active list; flag discrepancies
-  Dormant standard users:   last login > 90 days → notify manager; disable if no response
-  Dormant privileged users: last login > 30 days → immediate disable + investigation
-  SLA: Orphaned accounts disabled within 24h; deleted within 30 days
+## 1. Identity Lifecycle Management
 
-ACCESS CERTIFICATION CAMPAIGNS
---------------------------------
-  Privileged accounts:     Quarterly (Security team + Manager review)
-  Sensitive systems (std): Quarterly (Manager review)
-  Non-sensitive systems:   Annual (Manager review)
-  Service accounts:        Quarterly (System/App owner review)
+### Joiners (New Employee/Contractor)
+```
+Trigger: HR system provisioning event (new hire record active)
 
-  Decisions: Certify / Revoke / Escalate
-  SLA: 10 working days; auto-revoke on non-response
-  Audit trail: decision + timestamp + reviewer identity
+Automated provisioning workflow:
+  1. HR system creates employee record (Day 0)
+  2. Identity Provider (Azure AD/Okta) creates identity (Day 0)
+  3. Role-based access assignment from RBAC matrix (Day 0-1)
+  4. Welcome email with self-service MFA enrolment instructions (Day 1)
+  5. MFA enrolment deadline: first login or within 24h (enforced)
+  6. System access verified and confirmed (Day 1-3)
 
-SOD TOXIC COMBINATIONS
-------------------------
-  Finance: AP entry + AP approval; GL entry + GL reconciliation; Payroll edit + run
-  IT: Change requester + approver; Security admin + audit log access
-  Procurement: PO creation + goods receipt
+Joiner checklist:
+  [ ] Identity created in IdP
+  [ ] MFA enrolled (phishing-resistant preferred)
+  [ ] Role-based access groups assigned
+  [ ] Privileged access: separate privileged account if role requires
+  [ ] Training completion required before access to sensitive systems
+  [ ] NDA and acceptable use policy acknowledged
+```
 
-=================================================================
-PHASE 2: HUMAN AUTHENTICATION
-=================================================================
+### Movers (Role Change)
+```
+Trigger: HR system role change event
 
-MFA HIERARCHY (from strongest to weakest)
--------------------------------------------
-  Tier 1 (phishing-resistant): FIDO2/WebAuthn
-    Hardware: YubiKey 5, Feitian, Google Titan
-    Platform: Windows Hello (TPM), Touch ID, Face ID
-    Why: credential bound to origin; cannot be replayed by attacker-controlled site
-    NIST 800-63B AAL3 for high-value transactions
+Workflow:
+  1. HR system notifies IAM system of role change
+  2. Existing access reviewed against new role requirements
+  3. Access for old role REMOVED (don't accumulate access)
+  4. New role access GRANTED
+  5. Transition period: max 5 working days to complete access change
+  6. Post-move access certification: manager confirms access is correct
 
-  Tier 2 (phishable but better):
-    TOTP: Google/Microsoft Authenticator, Authy (phishable via AiTM attack)
-    Push: Duo, Okta Verify (enable number matching to prevent MFA fatigue)
+Key risk: Access accumulation — users keeping old role access when moving.
+Detection: entitlement review; user has access from multiple different role sets.
+```
 
-  Tier 3 (deprecated for high-risk):
-    SMS/Voice OTP: vulnerable to SIM swapping, SS7 attacks
-    NEVER use for admin accounts, privileged access, financial transactions
+### Leavers (Termination)
+```
+Trigger: HR system termination event (voluntary or involuntary)
 
-PASSKEYS (FIDO2 discoverable credentials)
-------------------------------------------
-  Synced passkeys: stored in iCloud Keychain / Google PM — good UX, not hardware-bound
-  Device-bound: stored in TPM/Secure Enclave — best security, single device
+Timeline (from HR notification):
+  Immediate (day 0, involuntary): All access revoked immediately; devices seized
+  Within 24h (all terminations):  All cloud and application access disabled
+  Within 48h:                     Service accounts transferred/disabled
+  Within 5 days:                  Formal certification by manager that access removed
 
-  Deployment: enrol admin/privileged users first; all users over 3-6 months
-  Recovery: backup hardware token or in-person identity verification
+Departing employee risk mitigation:
+  - Notify manager before informing employee (involuntary)
+  - Revoke remote access (VPN, SSO) immediately
+  - Disable email; set up auto-forward for legitimate business continuity
+  - Transfer ownership of business files before account deletion
+  - Audit privileged access for recent unusual activity (look-back 30 days)
+```
 
-PASSWORD POLICY (NIST SP 800-63B)
------------------------------------
-  Minimum: 12 characters
-  Maximum: Allow at least 64 (passphrase support)
-  Complexity: DO NOT mandate; allow all characters including Unicode
-  Expiry: NO mandatory rotation (only on evidence of compromise)
-  Breach check: HIBP API (k-anonymity: send first 5 chars of SHA1)
-    curl https://api.pwnedpasswords.com/range/<first-5-sha1-chars>
+---
 
-SSO PATTERNS
--------------
-  SAML 2.0:   IdP signs XML assertion; SP validates signature; SP-initiated preferred
-  OIDC:       OAuth 2.0 + ID token (JWT); Authorization Code + PKCE for all public clients
-  Token lifetimes: access token 15-60 min; refresh token 24h max; rotate on use
+## 2. Orphaned Account Detection
 
-SESSION MANAGEMENT
-------------------
-  Standard users: 60-min inactivity timeout
-  Admin/privileged: 15-30 min inactivity timeout
-  HttpOnly + Secure + SameSite=Strict on all session cookies
-  Back-channel logout (OIDC) or SAML SLO for coordinated session termination
+```
+Definition: Active account with no associated active employee/contractor in HR system
 
-=================================================================
-PHASE 3: PRIVILEGED ACCESS MANAGEMENT
-=================================================================
+Detection:
+  1. Daily sync: compare IdP accounts to HR active employee list
+  2. Flag accounts where HR record is inactive but IdP account is active
+  3. Service accounts: flag accounts not associated with a named owner
+  4. Dormant detection: accounts with last login > 90 days (standard user)
+                        accounts with last login > 30 days (privileged user)
 
-PAM COMPONENTS
----------------
-  Credential Vault:   CyberArk, HashiCorp Vault, BeyondTrust — no standing passwords
-  JIT Elevation:      Azure PIM, CyberArk EPM, Delinea — time-limited privilege
-  Session Recording:  Keystroke + video; immutable; searchable; 12 months minimum
-  Discovery:          CyberArk DNA, BeyondTrust — find all privileged accounts
+Remediation SLA:
+  Orphaned accounts (no HR record):   Disable within 24h; delete within 30 days
+  Dormant standard accounts:          Manager notification; disable if no response in 5 days
+  Dormant privileged accounts:        Immediate disable; investigation
+```
 
-JIT ACCESS WORKFLOW
---------------------
-  1. Request: user specifies system, reason, duration (max 8h)
-  2. Approval: pre-approved tasks → auto-approve with MFA
-              Other tasks → send to approver (SLA: 15 min for normal, immediate for emergency)
-  3. Grant: time-limited credentials issued; session recording activated
-  4. Expiry: credentials auto-revoked; session closed
-  5. Post-session: user documents actions; audit log retained
+---
 
-PRIVILEGED ACCOUNT DISCOVERY
-------------------------------
-  AD query: Get-ADUser -Filter {AdminCount -eq 1} | Select Name,SamAccountName,Enabled
-            Get-ADGroupMember "Domain Admins" -Recursive | Select Name
+## 3. Access Certification Campaigns
 
-  Find local admins (all endpoints): CyberArk DNA scan or custom WMI query
-  Service accounts: Get-ADUser -Filter {ServicePrincipalNames -like "*"} | ...
+### Campaign Frequency
+| Account Type | Frequency | Reviewer |
+|-------------|-----------|---------|
+| Standard user — sensitive systems | Quarterly | Manager |
+| Standard user — non-sensitive | Annual | Manager |
+| Privileged accounts | Quarterly | Security team + Manager |
+| Service accounts | Quarterly | System/App owner |
+| External/contractor accounts | Quarterly | Sponsor |
 
-BREAK-GLASS PROCEDURE
-----------------------
-  Accounts: named (not generic); stored in physical safe + encrypted offline
-  Access: dual-control (2 named individuals required)
-  On use: document reason, timestamp, actions taken
-  After use: change password immediately; report to CISO within 24h
+### Certification Decision Options
+```
+Certify:  Access is appropriate for user's role → retain
+Revoke:   Access is no longer needed or appropriate → remove immediately
+Escalate: Reviewer is unsure; requires additional review by security team
 
-ATT&CK TECHNIQUE MITIGATIONS
-------------------------------
-  T1078 Valid Accounts:        Vault credentials; rotate regularly; MFA
-  T1548 Abuse Elevation:       Endpoint privilege management; EPM solution
-  T1134 Access Token Manip:    Session recording; anomaly detection on token use
-  T1003.001 LSASS Memory:      EDR; RunAsPPL for LSASS; restrict debug privileges
+SLA:
+  Reviewers must respond within 10 working days of campaign open
+  Reminders at day 5 and day 8
+  Unreviewed access at campaign close = AUTO-REVOKE (fail-safe)
+```
 
-=================================================================
-PHASE 4: NON-HUMAN IDENTITIES
-=================================================================
+---
 
-SERVICE ACCOUNT STANDARDS
---------------------------
-  Naming: svc-<application>-<environment>-<purpose>
-  One account per service (no shared); minimum permissions; no interactive logon
-  Owner: named individual (not team); document in service account register
-  Privileged service accounts: PAM vaulting; daily rotation
+## 4. Segregation of Duties (SoD)
 
-API KEY STANDARDS
-------------------
-  Generation: >= 32 bytes random (CSPRNG); scoped; expiry mandatory (max 1 year)
-  Storage: secrets manager ONLY; never in code, git, logs, or environment variables
-  Rotation: automated 30 days before expiry; emergency on compromise
-  Audit: log every use (key ID, timestamp, IP, endpoint)
+### Common Toxic Combinations
+| Domain | Toxic Combination | Risk |
+|--------|------------------|------|
+| Finance | AP entry + AP approval | Fraud: approve own invoices |
+| Finance | GL entry + GL reconciliation | Manipulation: hide errors or fraud |
+| Finance | Payroll maintenance + payroll processing | Ghost employees |
+| IT | Change requester + change approver | Unauthorised changes |
+| IT | Security admin + audit log access | Cover tracks after breach |
+| Procurement | PO creation + goods receipt | Fictitious purchases |
 
-SECRETS MANAGEMENT
--------------------
-  HashiCorp Vault: dynamic secrets (short-lived DB creds); lease management; audit log
-    vault read database/creds/my-role  → gets time-limited DB credentials
+### SoD Matrix Design
+```
+For each sensitive permission pair:
+  Prohibited:     Combination must never co-exist (toxic combination)
+  Controlled:     Combination allowed only with compensating control (dual approval)
+  Permitted:      Combination is acceptable
 
-  AWS Secrets Manager:
-    aws secretsmanager rotate-secret --rotation-rules AutomaticallyAfterDays=30
+Implementation:
+  1. Document prohibited combinations in SoD matrix
+  2. Configure IAM system to prevent provisioning of prohibited combinations
+  3. Run periodic batch detection for existing violations
+  4. Violations: immediate investigation + remediation within 5 days
+```
 
-  Azure Key Vault:
-    Use Managed Identity (no credentials needed in app code)
 
-ROTATION SCHEDULE
------------------
-  Service account passwords: 30 days
-  API keys:                  90 days (emergency: immediate on compromise)
-  TLS certificates:          90 days (automated via ACME/cert-manager)
-  Database credentials:      30 days (dynamic secrets preferred)
-  SSH private keys:          1 year (immediate on owner departure)
 
-=================================================================
-PHASE 5: AGENT AND AI IDENTITIES
-=================================================================
+## human-authentication
 
-CORE PRINCIPLES
----------------
-  1. Distinct identity per agent (not shared credentials)
-  2. Agent identity separate from user identity (explicit delegation required)
-  3. Capability scoping: minimum tools needed for defined task
-  4. Deny-by-default: start with no permissions, add only what is needed
-  5. Trust does NOT flow up the chain (sub-agent cannot gain orchestrator's permissions)
+# Human Authentication
 
-CAPABILITY SCOPING EXAMPLES
------------------------------
-  Research agent:    read:web-search, read:documents  (no write)
-  Code agent:        read:repo, write:feature-branch  (no merge/deploy)
-  Email agent:       read:calendar, write:email-draft (NOT send-email)
-  Customer service:  read:customer-record, write:ticket (NOT billing access)
+## Purpose
+Design and deploy phishing-resistant authentication for human users aligned to NIST SP 800-63B.
 
-TRUST CHAIN
------------
-  Human → Orchestrator → Sub-Agent
-  Delegation shrinks permissions at each level
-  Sub-agent cannot request permissions outside its capability token
+---
 
-CAPABILITY TOKEN (short-lived, scoped)
-----------------------------------------
-  JWT with: agent_id, task_id, capabilities (allowlist), exp (1h max), jti (revocable)
-  Sign with RS256; validate on every tool call
-  Revoke on: task completion, anomaly detection, human intervention
+## 1. MFA Standards Hierarchy
 
-PROMPT INJECTION DEFENCE
-------------------------
-  Input sanitisation: detect "ignore instructions", "you are now", "forget everything"
-  Instruction hierarchy: system prompt > user instructions > external content
-  Monitor: log all refused requests; alert on repeated injection patterns
+### Tier 1 (Highest Assurance) — Phishing-Resistant
+```
+FIDO2/WebAuthn:
+  Hardware tokens:  YubiKey 5 series (USB-A/C, NFC), Feitian, Google Titan
+  Platform:         Windows Hello (TPM-backed), Touch ID, Face ID
+  
+  Why phishing-resistant: credential bound to relying party origin;
+  cannot be intercepted and replayed by attacker-controlled site
 
-AGENT MONITORING
-----------------
-  Log: agent_id, action, tool_called, timestamp, session_id (all tool calls)
-  Alert on: tool calls outside defined capability set; credential requests out of scope
-  Kill switch: flag agent_id; all subsequent tool calls rejected
+  Deployment:
+  1. Register FIDO2 credential per user per device
+  2. Minimum 2 FIDO2 credentials per user (primary + backup)
+  3. Recovery flow: in-person identity verification or backup hardware token
+  
+  NIST SP 800-63B AAL3 requirement for high-value transactions.
+```
 
-=================================================================
-PHASE 6: ACCESS REVIEW AND AUDIT
-=================================================================
+### Tier 2 (Medium Assurance) — Phishable but Better than SMS
+```
+TOTP (Time-based One-Time Password):
+  Apps: Google Authenticator, Microsoft Authenticator, Authy, 1Password
+  RFC 6238 / HOTP (counter-based) RFC 4226
+  
+  Limitation: TOTP codes can be phished in real-time (adversary-in-the-middle)
+  Use when FIDO2 not yet deployed; phase out for high-risk users
 
-CAMPAIGN WORKFLOW
-------------------
-  Day 1:   Campaign opens; reviewers notified
-  Day 5:   First reminder
-  Day 8:   Second reminder; escalate to reviewer's manager
-  Day 10:  Campaign closes; uncertified = auto-revoke (fail-safe)
-  Post:    Audit report generated (decisions, timestamps, reviewer IDs)
+Push Notification (e.g. Duo, Okta Verify):
+  Better UX than TOTP; same phishability risk
+  Enable number matching to prevent MFA fatigue attacks
+  Enable additional context (location, device) in push notification
+```
 
-SOD DETECTION
--------------
-  Real-time: block provisioning when prohibited combination detected
-  Batch (weekly): scan all current entitlements against SoD matrix
+### Tier 3 (Deprecated for High-Risk)
+```
+SMS / Voice OTP:
+  Vulnerable to: SIM swapping, SS7 attacks, social engineering of carrier
+  NIST SP 800-63B: "RESTRICTED" — only with risk acceptance
+  Acceptable use: low-risk consumer applications only
+  NEVER use for: admin accounts, privileged access, financial transactions
+```
+
+---
+
+## 2. SSO Architecture
+
+### SAML 2.0
+```
+Flow: SP-initiated or IdP-initiated
+Key components:
+  IdP: Azure AD, Okta, Ping Identity, Google Workspace
+  SP: SaaS applications (Salesforce, Workday, etc.)
+
+SAML assertion: signed XML containing NameID, attributes, and conditions
+Clock skew tolerance: < 5 minutes (NTP synchronisation required)
+Binding: HTTP POST (preferred); HTTP Redirect for AuthnRequest only
+```
+
+### OIDC / OAuth 2.0
+```
+OIDC: authentication layer on top of OAuth 2.0
+Authorization Code Flow (most secure for web apps):
+  1. User initiates login → app redirects to IdP with client_id + scope
+  2. User authenticates at IdP
+  3. IdP returns authorization code to redirect_uri
+  4. App exchanges code for id_token + access_token (server-side)
+  5. App validates id_token signature (JWKS endpoint)
+
+PKCE (Proof Key for Code Exchange): Required for mobile/SPA/public clients
+  Prevents authorization code interception attacks
+
+Token lifetimes (NIST 800-63B guidance):
+  Access token:  15-60 minutes (short-lived)
+  Refresh token: 24 hours max (revokable)
+  ID token:      Same as access token
+```
+
+---
+
+## 3. Passwordless Design
+
+### FIDO2 Passkeys
+```
+Passkeys = discoverable FIDO2 credentials (synced or device-bound)
+
+Synced passkeys (platform): stored in iCloud Keychain / Google Password Manager
+  - Good UX: available on all user devices
+  - Risk: credential leaves device (phishing-resistant but not hardware-bound)
+
+Device-bound passkeys: stored in device TPM (Windows Hello) or Secure Enclave (iOS/Mac)
+  - Better security: credential cannot be extracted
+  - Limited to single device; need backup credential
+
+Deployment steps:
+  1. Enable FIDO2 in IdP (Azure AD, Okta)
+  2. Communicate to users: QR code enrolment or guided session
+  3. Enforce passkey for admin and privileged users first
+  4. Phase in for all users over 3-6 months
+  5. Disable SMS as fallback for enrolled users
+```
+
+---
+
+## 4. Password Policy (NIST SP 800-63B Aligned)
+
+```
+NIST SP 800-63B recommendations:
+  Minimum length:      12 characters (8 for low-risk systems)
+  Maximum length:      At least 64 characters (allow passphrases)
+  Character sets:      Allow all printable ASCII + Unicode; DO NOT require complexity
+  Complexity rules:    REMOVE mandatory complexity rules (they don't improve security)
+  Expiry:              NO mandatory rotation unless evidence of compromise
+  History:             Prohibit last 5 passwords
+  Breach check:        Check against HaveIBeenPwned (HIBP) API on creation
+
+  HIBP API check:
+  k1 = SHA1(password)[:5]  # k-anonymity model — send only first 5 chars
+  curl https://api.pwnedpasswords.com/range/<k1>
+  # Response: list of suffixes; check if full SHA1 appears → reject if so
+```
+
+---
+
+## 5. Session Management
+
+```
+Session timeout:
+  Standard users:       60-minute inactivity timeout
+  Admin/privileged:     15-30 minute inactivity timeout
+  High-risk actions:    Step-up authentication required (re-authenticate)
+
+Token security:
+  HttpOnly flag:        Prevents XSS access to session cookie
+  Secure flag:          HTTPS only
+  SameSite=Strict:      CSRF protection
+  
+Refresh token rotation:
+  Issue new refresh token on each use
+  Revoke old refresh token immediately
+  Refresh token compromise detection: if old RT used after rotation = revoke all
+
+Session revocation:
+  Immediate revocation on: logout, password change, MFA change,
+  suspicious activity detection, admin revocation
+  
+  OIDC back-channel logout: IdP notifies all SPs of logout event
+  SAML SLO (Single Logout): propagate logout to all SAML SPs
+```
+
+
+
+## privileged-access-management
+
+# Privileged Access Management
+
+## Purpose
+Design and operate a PAM programme covering credential vaulting, just-in-time access, session recording, and detection of ATT&CK techniques T1078, T1548, T1134.
+
+---
+
+## 1. PAM Architecture Components
+
+| Component | Function | Example Products |
+|-----------|---------|-----------------|
+| Credential Vault | Secure storage and rotation of privileged credentials | CyberArk, HashiCorp Vault, BeyondTrust |
+| Session Manager | Record and monitor privileged sessions | CyberArk PVWA, BeyondTrust PRA |
+| Just-in-Time | Time-limited privilege elevation | CyberArk EPM, Delinea Server Suite, Azure PIM |
+| Privilege Discovery | Find unmanaged privileged accounts | CyberArk DNA, BeyondTrust Discovery |
+| Session Recording | Video + keystroke capture of privileged sessions | CyberArk SMP, ObserveIT |
+
+---
+
+## 2. Just-in-Time (JIT) Access
+
+```
+JIT Access Design Principles:
+  - No standing privileged access for regular operational work
+  - Privilege granted on demand, time-limited, auto-expiry
+  - Access request requires justification (business reason)
+  - Approval workflow (manager or security team, or auto-approve with MFA for pre-approved tasks)
+  - Maximum duration: 4-8 hours per session; 1 business day for planned maintenance
+
+JIT Workflow:
+  1. User requests privileged access → specify system, reason, duration
+  2. Automated approval check: is this pre-approved task? → auto-approve with MFA
+     Or: send to approver → approve/deny within SLA
+  3. Time-limited credentials issued (or role activated for duration)
+  4. Session recording activated automatically
+  5. On expiry: credentials revoked; session closed; recording stored
+  6. Post-session review: user documents what was done
+
+Azure AD Privileged Identity Management (PIM) example:
+  1. Assign users as "Eligible" for privileged roles (not "Active")
+  2. User activates role when needed: justify + MFA + time limit
+  3. Role active for specified duration (max 8 hours)
+  4. Audit log captures activation, approver, and duration
+```
+
+---
+
+## 3. Privileged Account Discovery and Vaulting
+
+### Account Discovery
+```
+Types of privileged accounts to discover:
+  - Local admin accounts on all endpoints (T1078.003)
+  - Domain admin accounts (T1078.002)
+  - Service accounts with admin rights
+  - Application service accounts (SQL, IIS, scheduled tasks)
+  - Cloud IAM admin roles
+  - Shared/generic admin accounts (violates individual accountability)
+  - SSH root keys and sudo entries
+  - Network device credentials
+
+Discovery tools:
+  CyberArk DNA: scans AD, Windows endpoints, Unix/Linux for privileged accounts
+  BeyondTrust Privileged Discovery: agent-based and agentless scan
+  Manual: AD PowerShell query
+    Get-ADUser -Filter {AdminCount -eq 1} | Select Name,SamAccountName,Enabled
+    Get-ADGroupMember "Domain Admins" -Recursive | Select Name
+```
+
+### Vaulting Process
+```
+1. Discover all privileged accounts (AD scan + manual review)
+2. Vault credentials (PAM tool takes ownership of password)
+3. Users access via PAM interface — never see actual password
+4. Automatic rotation: daily for most privileged (service accounts),
+                        on use for shared accounts,
+                        on access revocation (immediately)
+5. Verify: try to use password outside PAM — should fail (rotated)
+```
+
+---
+
+## 4. Session Recording and Monitoring
+
+```
+Recording requirements:
+  - All privileged sessions: record keystroke + video
+  - Store recordings: minimum 12 months (90 days for low-risk)
+  - Immutable storage (write-once; cannot be deleted by recorded user)
+  - Search capability: command search across all recordings
+
+Real-time alerting on:
+  - Specific commands: rm -rf, shutdown, drop table, format, icacls, net user
+  - Data access: bulk SELECT queries, file enumeration of sensitive dirs
+  - Lateral movement: psexec, wmic /node, net use commands
+  - Credential access: mimikatz strings, procdump on lsass
+
+Integration with SIEM:
+  Stream keylog events to SIEM for anomaly detection
+  Alert on: unusual hours, unusual commands, unusual systems accessed
+```
+
+---
+
+## 5. Break-Glass Procedures
+
+```
+Break-glass (emergency access) design:
+  Use case: PAM system unavailable during critical incident
+
+  Break-glass accounts:
+    - Named accounts (not generic "admin")
+    - Stored credentials in physical safe AND encrypted offline store
+    - Dual-control: requires 2 named individuals to access
+    - Password complexity: 25+ character random password
+    - Change password after EVERY use
+
+  Activation procedure:
+    1. Declare break-glass event with timestamp and reason
+    2. Two named individuals present (both log their presence)
+    3. Retrieve credential (physical safe + audit log entry)
+    4. Use credential; session recording via alternative means if possible
+    5. Change credential immediately after session
+    6. Post-incident review: document all actions taken
+    7. Report to CISO within 24 hours
+```
+
+---
+
+## 6. ATT&CK Technique Coverage
+
+| Technique | Description | PAM Control |
+|-----------|-------------|-------------|
+| T1078 Valid Accounts | Use of compromised credentials | Vaulting; regular rotation; MFA |
+| T1078.002 Domain Accounts | Admin account misuse | JIT; session recording; alerts |
+| T1078.003 Local Accounts | Local admin exploitation | Discover and vault; LAPS deployment |
+| T1548 Abuse Elevation | UAC bypass; sudo abuse | Endpoint privilege management; sudo rules |
+| T1134 Access Token Manipulation | Token theft/impersonation | Session recording; anomaly detection |
+| T1098 Account Manipulation | Adding accounts/privileges | Change monitoring; JIT for role changes |
+| T1003.001 LSASS Memory | Credential harvesting from memory | EDR; restrict LSASS access; RunAsPPL |
+
+
+
+## non-human-identities
+
+# Non-Human Identities
+
+## Purpose
+Govern service accounts, API keys, certificates, and secrets using dedicated secrets management platforms with automated rotation.
+
+---
+
+## 1. Service Account Governance
+
+### Naming Convention and Standards
+```
+Naming: svc-<application>-<environment>-<purpose>
+  Examples: svc-payroll-prod-db, svc-monitoring-prod-api
+
+Standards:
+  - One account per application/service (no shared service accounts)
+  - Minimum permissions: only what the service requires to function
+  - No interactive logon rights (deny interactive logon policy in AD)
+  - Document in service account register: owner, system, permissions, rotation schedule
+  - Owner = named individual (not a team; individual accountable)
+
+Privileged service accounts (have admin rights):
+  - Require PAM vaulting
+  - Automatic password rotation (daily or on-use)
+  - Session recording if used interactively
+```
+
+### Service Account Register Fields
+```
+Account Name, Service/Application, System/Host, Owner (individual),
+Permissions, Password Rotation Schedule, Last Rotation Date,
+PAM Vaulted (Y/N), Review Date, Status (Active/Inactive/To-Delete)
+```
+
+---
+
+## 2. API Key Lifecycle
+
+### API Key Security Requirements
+```
+Generation:
+  - Minimum 32 bytes random (256 bits) — generated by CSPRNG
+  - Never generate predictable keys (no UUIDs based on time, no sequential IDs)
+  - Scope to minimum permissions (read-only if write not needed)
+  - Expiry date mandatory (maximum 1 year; 90 days for high-risk)
+
+Storage:
+  - NEVER store in code (even if "private" repository — check git history)
+  - Store in secrets manager: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault
+  - Environment variables for local development (not hardcoded)
+
+Rotation:
+  - Automated rotation before expiry (30 days before)
+  - Emergency rotation on suspected compromise (immediate)
+  - Zero-downtime rotation: new key active → update all consumers → revoke old
+
+Audit logging:
+  - Log every API key use (key ID, timestamp, IP, endpoint)
+  - Alert on: first use from new IP, unusual request volume, off-hours usage
+```
+
+---
+
+## 3. Certificate Management
+
+### CA Hierarchy Design
+```
+Root CA (offline, air-gapped):
+  Certificate lifetime: 10-20 years
+  Storage: HSM in physical vault; split key management
+  Purpose: only sign Intermediate CA certificates
+
+Intermediate CA (online):
+  Certificate lifetime: 5 years
+  Storage: HSM (FIPS 140-2 Level 3)
+  Purpose: sign end-entity certificates
+
+End-Entity Certificates:
+  TLS: 90 days (Let's Encrypt cadence) or 1 year max (CA/Browser Forum)
+  Code signing: 1-3 years
+  Client certificates: 1 year
+```
+
+### Certificate Inventory
+```
+Required fields:
+  FQDN/Subject, Issuing CA, Expiry Date, Owner, System, Auto-renewal (Y/N),
+  ACME account (if Let's Encrypt), Renewal Method, Alert Date (30 days before expiry)
+
+Certificate discovery tools:
+  Venafi TLS Protect, cert-manager (Kubernetes), Keyfactor Command,
+  AWS Certificate Manager (ACM) — auto-renewal for ACM-managed certs
+  
+  Manual discovery:
+  nmap --script ssl-cert <network-range>
+  openssl s_client -connect <host>:443 | openssl x509 -noout -dates
+```
+
+### Automated Renewal (ACME/cert-manager)
+```
+Let's Encrypt + ACME:
+  certbot renew --cert-name <fqdn> --pre-hook "..." --post-hook "..."
+  Add to cron: 0 0,12 * * * certbot renew --quiet
+
+cert-manager (Kubernetes):
+  apiVersion: cert-manager.io/v1
+  kind: Certificate
+  spec:
+    renewBefore: 720h   # 30 days before expiry
+    issuerRef:
+      name: letsencrypt-prod
+      kind: ClusterIssuer
+```
+
+---
+
+## 4. Secrets Management Platforms
+
+### HashiCorp Vault
+```
+Key capabilities:
+  Dynamic secrets:  Vault generates short-lived creds on demand (e.g. DB passwords)
+  Static secrets:   Store and retrieve static secrets with versioning
+  PKI secrets:      Issue X.509 certificates on demand
+  Lease management: All secrets have TTL; auto-expire
+  Audit log:        Every secret access logged (who, when, path)
+
+Dynamic DB credentials example:
+  vault write database/config/my-postgresql \
+    plugin_name=postgresql-database-plugin \
+    connection_url="postgresql://{{username}}:{{password}}@host/db" \
+    allowed_roles="my-role"
+  
+  vault read database/creds/my-role
+  # Returns: username, password, lease_duration (e.g. 1h)
+  # Credentials auto-revoked when lease expires
+```
+
+### AWS Secrets Manager
+```
+# Create secret
+aws secretsmanager create-secret \
+  --name prod/db/password \
+  --secret-string '{"username":"app","password":"<random>"}'
+
+# Automatic rotation (Lambda function)
+aws secretsmanager rotate-secret \
+  --secret-id prod/db/password \
+  --rotation-lambda-arn arn:aws:lambda:... \
+  --rotation-rules AutomaticallyAfterDays=30
+
+# Application retrieval (Python)
+import boto3, json
+client = boto3.client('secretsmanager')
+secret = json.loads(client.get_secret_value(SecretId='prod/db/password')['SecretString'])
+```
+
+### Azure Key Vault
+```
+# Store secret
+az keyvault secret set --vault-name MyVault --name db-password --value <value>
+
+# Managed Identity access (no credentials needed in app)
+from azure.identity import ManagedIdentityCredential
+from azure.keyvault.secrets import SecretClient
+client = SecretClient(vault_url="https://MyVault.vault.azure.net/",
+                      credential=ManagedIdentityCredential())
+secret = client.get_secret("db-password")
+```
+
+---
+
+## 5. Rotation Policies
+
+| Secret Type | Normal Rotation | Emergency Rotation Trigger |
+|-------------|----------------|---------------------------|
+| Service account passwords | 30 days | Suspected compromise; staff change |
+| API keys | 90 days | Key exposed in logs/code; staff change |
+| Database credentials | 30 days (dynamic preferred) | DB breach; staff change |
+| TLS certificates | 90 days (auto) | Key compromise; CA compromise |
+| Code signing certificates | 1 year | Key compromise |
+| OAuth client secrets | 90 days | Secret exposure; staff change |
+| SSH private keys | 1 year | Key exposure; owner departure |
+
+
+
+## agent-and-ai-identities
+
+# Agent and AI Identities
+
+## Purpose
+Design secure identity and access patterns for AI agents and LLM-based systems, applying least privilege, capability scoping, and trust chain controls.
+
+---
+
+## 1. LLM Agent Identity Model
+
+### Core Principles
+```
+1. Distinct identity per agent
+   - Each agent has its own identity (not shared credentials)
+   - Agent identity is named and attributed (auditability)
+   - Identity type: OAuth 2.0 client credentials or capability token
+
+2. Agent identity separate from user identity
+   - An agent acting on behalf of a user does NOT have the user's full permissions
+   - Agent has its own scoped permission set
+   - Explicit delegation required from user to agent
+
+3. Non-human identity management applies
+   - Treat agent credentials like service accounts
+   - Rotate credentials; store in secrets manager; audit usage
+   - No ambient authority: agent cannot use credentials it wasn't explicitly given
+
+4. Agent identity visibility
+   - System should be able to identify which agent made any given API call
+   - Include agent_id in audit logs, not just user context
+```
+
+---
+
+## 2. Capability Scoping (Least Privilege for Agents)
+
+### Design Principles
+```
+Agent permission boundary = minimum set of tools/APIs needed for the defined task
+
+Examples:
+  Research agent:     read:web-search, read:documents     (no write permissions)
+  Email drafting:     read:calendar, write:email-draft    (no send permission)
+  Code agent:         read:repo, write:feature-branch     (no merge/deploy)
+  Customer service:   read:customer-record, write:ticket  (no billing access)
+
+Deny-by-default:
+  - Start with no permissions
+  - Add only what is needed for the specific task
+  - Reject requests for permissions not in the defined capability set
+  - Log and alert on permission requests outside defined scope
+```
+
+### Tool Call Allowlist Pattern
+```python
+# Example: agent capability enforcement
+AGENT_ALLOWED_TOOLS = {
+    "research_agent": ["web_search", "read_document", "summarise"],
+    "code_agent": ["read_file", "write_file", "run_tests"],
+    "email_agent": ["read_calendar", "draft_email"]
+    # Note: send_email NOT in email_agent — requires human approval
+}
+
+def validate_tool_call(agent_id: str, tool_name: str) -> bool:
+    allowed = AGENT_ALLOWED_TOOLS.get(agent_id, [])
+    if tool_name not in allowed:
+        log_security_event(f"Agent {agent_id} attempted disallowed tool: {tool_name}")
+        raise PermissionError(f"Agent {agent_id} not permitted to use {tool_name}")
+    return True
+```
+
+---
+
+## 3. Trust Chain Design
+
+### Human → Orchestrator → Sub-Agent
+```
+Trust hierarchy:
+  Level 1: Human user (highest trust)
+  Level 2: Orchestrator agent (delegated by human, bounded permissions)
+  Level 3: Sub-agent (delegated by orchestrator, further bounded)
+
+Principles:
+  - Trust does NOT flow up the chain (sub-agent cannot gain orchestrator's permissions)
+  - Delegation must be explicit (no inherited ambient authority)
+  - Each level can only delegate a SUBSET of its own permissions
+  - Permission scope shrinks at each delegation step
+
+Example:
+  Human has: read, write, admin
+  Human delegates to Orchestrator: read, write (not admin)
+  Orchestrator delegates to Sub-Agent: read (not write)
+  Sub-Agent cannot request write or admin — even if a malicious prompt asks for it
+```
+
+### Capability Token Pattern
+```python
+# Short-lived scoped token for agent task
+import jwt, datetime
+
+def create_agent_capability_token(
+    agent_id: str, 
+    task_id: str,
+    allowed_tools: list,
+    duration_minutes: int = 60
+) -> str:
+    payload = {
+        "sub": agent_id,
+        "task_id": task_id,
+        "capabilities": allowed_tools,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=duration_minutes),
+        "iat": datetime.datetime.utcnow(),
+        "jti": str(uuid.uuid4())   # unique token ID for revocation
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm="RS256")
+
+# Token validation on each tool call
+def validate_agent_token(token: str, requested_tool: str) -> bool:
+    claims = jwt.decode(token, PUBLIC_KEY, algorithms=["RS256"])
+    return requested_tool in claims["capabilities"]
+```
+
+---
+
+## 4. Authentication Patterns for Agents
+
+### OAuth 2.0 Client Credentials (Machine-to-Machine)
+```
+Use when: agent needs to call external APIs on its own behalf (not user-delegated)
+
+Flow:
+  POST /oauth/token
+    grant_type=client_credentials
+    client_id=<agent-client-id>
+    client_secret=<stored in secrets manager>
+    scope=<minimum required scope>
+  
+  Returns: access_token (short-lived, 15-60 minutes)
+
+Token storage: in-memory only; never persisted to disk; refresh on expiry
+```
+
+---
+
+## 5. Prompt Injection Defence
+
+### Input Sanitisation
+```python
+# Detect and block common prompt injection patterns
+INJECTION_PATTERNS = [
+    r"ignore (previous|all) (instructions|context)",
+    r"you are now",
+    r"forget (everything|all|your instructions)",
+    r"system:.*override",
+    r"<system>",
+    r"\[INST\]",
+    r"do not follow",
+]
+
+def sanitise_user_input(input_text: str) -> str:
+    for pattern in INJECTION_PATTERNS:
+        if re.search(pattern, input_text, re.IGNORECASE):
+            raise ValueError("Potential prompt injection detected")
+    return input_text
+```
+
+### Instruction Hierarchy Enforcement
+```
+Principle: System prompt instructions override user instructions.
+           User instructions override external content.
+
+Implementation:
+  1. System prompt: define what agent can/cannot do (non-negotiable)
+  2. Validate: agent responses do not violate system constraints
+  3. Boundary: agent should refuse requests that violate system prompt constraints
+  4. Monitoring: log when agent refuses requests; pattern-detect repeated injection attempts
+```
+
+---
+
+## 6. Agent Monitoring and Kill Switch
+
+```python
+# Agent action logging
+def log_agent_action(agent_id: str, action: str, tool: str, result: str):
+    log_entry = {
+        "timestamp": datetime.datetime.utcnow().isoformat(),
+        "agent_id": agent_id,
+        "action": action,
+        "tool": tool,
+        "result_preview": result[:100],   # truncate PII risk
+        "session_id": current_session_id
+    }
+    audit_logger.info(json.dumps(log_entry))
+
+# Kill switch implementation
+AGENT_KILL_SWITCH = {}   # agent_id -> True (killed)
+
+def check_kill_switch(agent_id: str):
+    if AGENT_KILL_SWITCH.get(agent_id, False):
+        raise AgentTerminatedError(f"Agent {agent_id} has been terminated")
+
+# Anomaly detection triggers for kill switch:
+# - Unexpected tool calls outside defined capability set
+# - Requests for credentials not in scope
+# - Data exfiltration patterns (large read operations)
+# - Repeated prompt injection attempts from agent output
+```
+
+
+
+## access-review-and-audit
+
+# Access Review and Audit
+
+## Purpose
+Design and operate access certification campaigns, detect SoD violations, and produce access audit reports.
+
+---
+
+## 1. Entitlement Review Workflow
+
+### Campaign Configuration
+```
+Campaign types:
+  User Access Review:      Manager reviews all access for their direct reports
+  Application Access Review: App owner reviews all users with access
+  Privileged Access Review: Security team reviews all privileged accounts
+  Service Account Review:  System owner reviews all service accounts
+
+Workflow steps:
+  1. Campaign launched: reviewers notified by email + in-app
+  2. Review interface: Certify / Revoke / Escalate per entitlement
+  3. Reminders: Day 5 and Day 8 of 10-day window
+  4. Overdue escalation: manager of reviewer notified at Day 10
+  5. Campaign close: all uncertified = AUTO-REVOKE
+  6. Audit report generated: decisions, timestamps, reviewer identities
+```
+
+### Sample Size for Audit Evidence
+```
+Population size:    Sample size (AICPA guidance):
+  1-25:             All
+  26-50:            15
+  51-99:            25
+  100-249:          30
+  250+:             40-60
+
+For continuous controls (automation), test entire population.
+For manual controls, sample as above.
+```
+
+---
+
+## 2. SoD Conflict Detection Automation
+
+### Detection Methods
+```
+Real-time (provisioning):
+  When access request submitted:
+    1. Check against SoD matrix: does requested role/permission conflict with existing?
+    2. If conflict: block provisioning; notify requester and security team
+    3. Allow only with documented compensating control and approver sign-off
+
+Periodic batch (existing access):
+  Weekly: run SoD analysis against all current user entitlements
+  Report: all active SoD violations with owner, system, conflicting permissions
   SLA: violations remediated or accepted within 5 business days
 
-UNUSED ENTITLEMENTS
---------------------
+Detection query example (pseudocode):
+  FOR EACH user IN active_users:
+    entitlements = get_all_entitlements(user)
+    FOR EACH (perm_a, perm_b) IN sod_matrix WHERE status = "prohibited":
+      IF perm_a IN entitlements AND perm_b IN entitlements:
+        flag_violation(user, perm_a, perm_b)
+```
+
+---
+
+## 3. Access Analytics
+
+### Unused Entitlements Report
+```
+Logic:
+  Last-used date per entitlement (from application access logs)
   Unused > 90 days: flag for review
   Unused > 180 days: recommend revoke
-  Never used: immediate investigation
+  Never used after provisioning: immediate investigation
 
-IAM PROGRAMME METRICS
-----------------------
-  Orphaned accounts:           0 (daily check)
-  Leaver access removal SLA:   > 99% within 24h
-  MFA enrolment rate:          > 98%
-  Privileged standing access:  0 (all JIT)
-  Certification completion:    > 99% per campaign
-  SoD violations resolved:     > 95% within SLA
-  Unused entitlements:         < 10% of total
+Query (SQL example):
+  SELECT user_id, entitlement_id, granted_date, last_used_date
+  FROM entitlements e
+  LEFT JOIN usage_log u ON e.user_id = u.user_id AND e.system = u.system
+  WHERE last_used_date < DATEADD(day, -90, GETDATE()) OR last_used_date IS NULL
+  ORDER BY last_used_date ASC
+```
+
+### Overprivileged Accounts Report
+```
+Signals of overprivilege:
+  - User has access to more systems than their role template specifies
+  - User is member of privileged group (Domain Admins) but role doesn't require it
+  - User has admin rights on system they are not the owner of
+  - Access accumulated over multiple role changes (access creep)
+
+AD overprivilege detection:
+  Get-ADUser -Filter * -Properties MemberOf | 
+    Where-Object {$_.MemberOf -match "Domain Admins|Enterprise Admins"} |
+    Select Name, SamAccountName
+```
+
+---
+
+## 4. De-provisioning Verification
+
+```
+After leaver de-provisioning (automated and confirmed):
+
+Verification checks:
+  [ ] Azure AD / Okta account disabled (not deleted — preserve audit trail 90 days)
+  [ ] All SSO-federated applications: session revoked
+  [ ] VPN access removed
+  [ ] Email disabled; auto-forward set (if business requirement) with time limit
+  [ ] Privileged accounts removed from all admin groups
+  [ ] Service accounts owned by departing employee: transferred to new owner
+  [ ] SSH keys removed from all systems
+  [ ] API keys revoked (check secrets manager + code repositories)
+  [ ] Physical access cards deactivated
+  [ ] Shared account passwords changed if departing user had access
+
+Verification timing:
+  Within 4 hours (involuntary/high-risk): all access removed
+  Within 24 hours (standard): all access removed
+  Within 5 days: final certification by manager
+
+Audit trail: retain access records for terminated users for minimum 1 year.
+```
+
+---
+
+## 5. IAM Programme Metrics
+
+| Metric | Target | Frequency |
+|--------|--------|-----------|
+| Orphaned accounts (no HR record) | 0 | Daily |
+| Leavers: access removed within SLA | > 99% | Monthly |
+| MFA enrolment rate (all users) | > 98% | Monthly |
+| Privileged accounts with standing access | 0 (all JIT) | Monthly |
+| Access certification completion rate | > 99% | Per campaign |
+| SoD violations resolved within SLA | > 95% | Monthly |
+| Overdue access reviews | < 2% | Monthly |
+| Unused entitlements (>90 days) | < 10% | Quarterly |
+| De-provisioning verification pass rate | 100% | Monthly |
+| Service accounts without named owner | 0 | Monthly |

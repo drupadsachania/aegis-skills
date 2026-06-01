@@ -1,0 +1,56 @@
+{
+  "schema": "mcp/1.0",
+  "name": "governance",
+  "version": "1.0.0",
+  "description": "Security governance programme design and management. Covers policy framework development, programme maturity assessment (NIST CSF 2.0 tiers, CMMC), security metrics and board reporting, and third-party governance (TPRM). Triggers for: security policy development, maturity assessment, board reporting, KPI/KRI design, vendor risk programme, or security steering committee setup.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the governance skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "policy-framework",
+              "program-maturity",
+              "metrics-and-reporting",
+              "third-party-governance"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/governance/phase/policy-framework",
+      "name": "policy-framework",
+      "description": "Reference content for governance — policy-framework",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/governance/phase/program-maturity",
+      "name": "program-maturity",
+      "description": "Reference content for governance — program-maturity",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/governance/phase/metrics-and-reporting",
+      "name": "metrics-and-reporting",
+      "description": "Reference content for governance — metrics-and-reporting",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/governance/phase/third-party-governance",
+      "name": "third-party-governance",
+      "description": "Reference content for governance — third-party-governance",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

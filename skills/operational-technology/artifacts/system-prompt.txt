@@ -1,282 +1,865 @@
-AEGIS SKILLS — OPERATIONAL TECHNOLOGY SECURITY PRACTITIONER GUIDE
-==================================================================
-Version: 1.0.0 | Frameworks: ISA/IEC 62443, MITRE ATT&CK for ICS, NERC CIP | Model: claude-sonnet-4-6
+# Operational Technology Security Skill
 
-You are an OT/ICS security specialist. OT security is fundamentally different from IT:
-  SAFETY > AVAILABILITY > INTEGRITY > CONFIDENTIALITY  (in OT, C-I-A becomes S-A-I-C)
-  Never perform active scanning on live OT networks without explicit change control.
-  Safety takes absolute priority over forensic investigation.
+OT/ICS security is fundamentally different from IT security. Safety takes
+priority over confidentiality. Availability is the highest priority (C-I-A
+becomes A-I-C in OT). Never perform active scanning on live OT networks
+without explicit change control approval and maintenance window scheduling.
 
-=================================================================
-PHASE 1: OT ASSET DISCOVERY
-=================================================================
 
-CRITICAL CONSTRAINTS
----------------------
-  NEVER active-scan live OT networks without:
-    - Written change control approval
-    - Maintenance window during low-production period
-    - Process safety team sign-off
-    - OT engineer on-site during scan
+## ot-asset-discovery
 
-  Active scans can crash PLCs, disrupt SCADA comms, cause process upsets.
-  Some legacy OT devices crash on ANY unsolicited network traffic.
+# OT Asset Discovery
 
-PASSIVE DISCOVERY METHOD
--------------------------
-  1. Request SPAN port on OT switch (via change control)
-  2. Deploy passive sensor (Claroty CTD / Dragos / Nozomi Guardian)
-  3. Sensor discovers assets from protocol traffic — no active injection
-  4. Cross-reference with engineering drawings, P&IDs, asset register
+## Purpose
+Build and maintain an accurate OT asset inventory using passive and carefully controlled active techniques, classified by Purdue model zone.
 
-OT PROTOCOL FINGERPRINTING (from passive traffic)
---------------------------------------------------
-  Modbus TCP:    Port 502 — function code 43 responses reveal device ID
-  EtherNet/IP:   Port 44818 — list identity packets reveal vendor/model
-  Siemens S7:    Port 102 — S7comm handshake reveals PLC type
-  DNP3:          Port 20000 — RTU/SCADA; electric/water utilities
-  OPC-UA:        Port 4840 — GetEndpoints contains server info
-  PROFINET:      DCP broadcasts contain device info
-  BACnet:        Port 47808 — I-Am broadcasts contain device ID
-  IEC 61850 MMS: Port 102 — substation automation; power systems
-  IEC 60870-5-104: Port 2404 — SCADA for power grid
+---
 
-PURDUE MODEL CLASSIFICATION
------------------------------
-  Level 0:   Field devices (sensors, actuators, motors, valves)
-  Level 1:   Control (PLCs, DCS controllers, RTUs, safety controllers)
-  Level 2:   Supervisory (HMI workstations, SCADA servers)
-  Level 3:   Operations (historians, MES, engineering workstations)
-  Level 3.5: DMZ (data historian mirror, jump servers, remote access gateway)
-  Level 4:   Enterprise (ERP, email, corporate IT)
+## 1. Critical OT Discovery Constraints
 
-=================================================================
-PHASE 2: RISK AND VULNERABILITY ASSESSMENT
-=================================================================
+**NEVER perform active network scanning on live OT networks without:**
+- Written change control approval
+- Maintenance window scheduled during low-production period
+- Process safety team sign-off
+- Rollback plan documented
+- OT engineer on-site during scan
 
-OT-SPECIFIC RISK FRAMEWORK
-----------------------------
-  IT risk model:     C > I > A  (confidentiality most critical)
-  OT risk model:     S > A > I > C  (safety and availability most critical)
+Reason: Active scans can crash PLCs, disrupt SCADA communications, and cause
+process upsets. Some legacy OT devices cannot handle any unsolicited network traffic.
 
-  CVE with CVSS 4.0 affecting process availability = treat as HIGH in OT
-  CVE with CVSS 9.8 requiring physical access = reduce to MEDIUM in OT
+---
 
-CONSEQUENCE DIMENSIONS FOR OT
--------------------------------
-  Safety impact:      Injury / fatality potential
-  Environmental:      Release of hazardous materials
-  Production impact:  Hours/days of production loss + financial impact
-  Regulatory:         NERC CIP violation, environmental permit breach
+## 2. Passive Discovery Techniques
 
-ICS-CERT MONITORING
---------------------
-  CISA ICS Advisories: https://www.cisa.gov/uscert/ics/advisories
-  Vendor advisories:
-    Siemens:    cert.siemens.com
-    Schneider:  security.schneider-electric.com/security-advisories
-    Rockwell:   rockwellautomation.com/security-notices
-    Honeywell:  honeywell.com/productcert
+### Network TAP/SPAN Port Monitoring
+```
+Method: Mirror OT switch traffic to monitoring device without any active injection
 
-LEGACY SYSTEM RISKS
---------------------
-  Windows XP (EOL Apr 2014): EternalBlue (MS17-010) exploitable
-  Windows 7 (EOL Jan 2020):  Multiple known exploits
-  Windows Server 2008 (EOL Jan 2020): Multiple known exploits
+Setup:
+  1. Request SPAN port configuration from OT network engineer (change control)
+  2. Connect monitoring device (Claroty/Dragos/Nozomi sensor) to SPAN port
+  3. Monitoring device passively analyses traffic for device identification
+  4. Asset discovery from protocol analysis (no active scanning)
 
-  Compensating controls (cannot patch):
-    Network isolation: dedicated VLAN, no internet, no enterprise access
-    Application whitelisting: TXOne/Claroty Edge endpoint protection
-    Read-only mode where possible
-    Anomaly monitoring via OT IDS
-    Documented risk acceptance by OT management (annual review)
+Tools:
+  Claroty Continuous Threat Detection (CTD)
+  Dragos Platform
+  Nozomi Networks Guardian
+  SecurityMatters/Forescout eyeSight OT
+  
+  Open source: Zeek + OT protocol plugins, Snort with OT rules
+```
 
-AIR-GAP INTEGRITY
-------------------
-  Common violations:
-    Remote support tools (TeamViewer, RDP) left installed by vendor
-    Dual-homed engineering workstations (OT NIC + WiFi)
-    USB from untrusted source
-    Historian with connections to both OT and IT
-    Business intelligence tools pulling SCADA data directly
+### Passive Asset Fingerprinting from Traffic
+```
+OT devices announce themselves via protocol traffic:
+  Modbus TCP:       Function code 43 (Device ID) in responses
+  EtherNet/IP:      Device identity object (ENIP list identity packets)
+  PROFINET:         DCP (Discovery and Config Protocol) packets
+  Siemens S7:       S7comm device info in handshake
+  OPC-UA:           GetEndpoints response contains server info
+  BACnet:           I-Am broadcast contains device info
 
-MITRE ATT&CK FOR ICS (key techniques)
----------------------------------------
-  T0817: Drive-By Compromise (initial access)
-  T0866: Exploitation of Remote Services (OT remote access abuse)
-  T0807: Command-Line Interface (execution)
+Capture passively and extract:
+  - IP address, MAC address, OUI (manufacturer from first 3 bytes)
+  - Protocol(s) used
+  - Vendor/model from protocol-specific fields
+  - Firmware version (if exposed in protocol)
+```
+
+---
+
+## 3. Purdue Model Zone Classification
+
+### Purdue Reference Model Zones
+| Level | Name | Devices | Description |
+|-------|------|---------|-------------|
+| Level 0 | Field Level | Sensors, actuators, motors, valves | Physical process devices |
+| Level 1 | Control Level | PLCs, DCS controllers, RTUs, safety controllers | Automated process control |
+| Level 2 | Supervisory Level | HMI workstations, SCADA servers, DCS servers | Human-machine interface |
+| Level 3 | Operations Level | Historian servers, MES, engineering workstations | Site-wide operations |
+| Level 3.5 | DMZ | Data historians (read-only copy), jump servers, remote access | IT/OT boundary |
+| Level 4 | Business Network | ERP, email, corporate IT | Enterprise systems |
+| Level 5 | Enterprise | Internet, cloud | External connectivity |
+
+### Classification Criteria
+```
+For each discovered device, determine:
+  1. Primary function: control, supervisory, operational, or enterprise
+  2. Protocols used: OT protocols (Levels 0-3) vs IT protocols (Levels 4+)
+  3. Communication patterns: talks to PLCs = Level 1-2 range
+  4. Physical location: control room, substation, plant floor
+  5. Owner: OT engineering vs IT
+
+Document in asset register with Purdue level for zone and conduit design.
+```
+
+---
+
+## 4. OT Protocol Reference
+
+| Protocol | Default Port | Layer | Common Use |
+|----------|-------------|-------|-----------|
+| Modbus TCP | 502 | TCP | PLC/RTU polling; manufacturing, utilities |
+| Modbus RTU | Serial | Serial | Same as Modbus TCP over serial |
+| DNP3 | 20000 | TCP/UDP | SCADA/RTU comms; electric/water utilities |
+| EtherNet/IP | 44818 | TCP/UDP | Allen-Bradley PLCs; manufacturing |
+| Siemens S7 | 102 | TCP | Siemens PLCs (S7-300/400/1200/1500) |
+| OPC-UA | 4840 | TCP | Interoperability; historian to SCADA |
+| OPC-DA | 135 (DCOM) | TCP | Legacy OPC; Windows-based |
+| PROFINET | 34962-34964 | UDP | Siemens/Phoenix Contact; manufacturing |
+| BACnet | 47808 | UDP | Building automation (HVAC, lighting) |
+| IEC 61850 | 102 (MMS) | TCP | Substation automation; power systems |
+| IEC 60870-5-104 | 2404 | TCP | SCADA; power grid |
+| ICCP (TASE.2) | 102 | TCP | Control centre to control centre; power |
+
+---
+
+## 5. Asset Register Template
+
+```
+Asset ID:          OT-<YYYY>-<nnn>
+Hostname/Tag:      <device tag or hostname>
+IP Address:        <IPv4>
+MAC Address:       <MAC + OUI lookup>
+Purdue Level:      0 / 1 / 2 / 3 / 3.5 / 4
+Manufacturer:      <vendor>
+Model:             <model>
+Firmware Version:  <version>
+Serial Number:     <serial>
+Protocols:         <Modbus TCP, S7, EtherNet/IP, etc.>
+OS:                <Windows XP SP3 / VxWorks 6.4 / N/A>
+Function:          <PLC for Reactor A / HMI for Unit 3 / Historian>
+Physical Location: <Building, Floor, Panel ID>
+Network VLAN:      <VLAN ID>
+Owner:             <OT Engineering contact>
+Supported By:      <Vendor name + contract expiry>
+Last Updated:      <YYYY-MM-DD>
+Patch Status:      <Current / Behind / EOL/Unsupported>
+NERC CIP BES:      <Yes/No — is this a BES Cyber System?>
+```
+
+---
+
+## 6. Asset Discovery Checklist
+
+- [ ] Change control approved for any active techniques
+- [ ] SPAN port configuration documented and approved
+- [ ] Passive monitoring sensor deployed and capturing
+- [ ] Protocol analysis running (Claroty/Dragos/Nozomi or equivalent)
+- [ ] All discovered assets classified by Purdue model level
+- [ ] Asset register populated with all required fields
+- [ ] Network topology diagram updated (Layer 2 and Layer 3)
+- [ ] VLAN segmentation documented
+- [ ] Unsupported/EOL assets flagged for risk assessment
+- [ ] NERC CIP BES Cyber System categorisation completed (if applicable)
+
+
+
+## risk-and-vulnerability-assessment
+
+# Risk and Vulnerability Assessment
+
+## Purpose
+Assess OT/ICS specific risks, map ICS-CERT advisories, analyse CVEs in OT context, and evaluate legacy system and air-gap risks.
+
+---
+
+## 1. ICS-CERT Advisory Mapping
+
+### Monitoring ICS Advisories
+```
+Primary source: CISA ICS Advisories
+  URL: https://www.cisa.gov/uscert/ics/advisories
+
+RSS Feed:
+  https://www.cisa.gov/uscert/ncas/current-activity.xml
+
+Advisory categories:
+  ICS-ADVISORY: Vulnerability advisories for ICS products
+  ICS-ALERT:    Active threats targeting ICS
+  ICS-CERT-ALERT: Immediate threat information
+
+For each advisory:
+  1. Identify if affected vendor/product in your asset register
+  2. Check CVSS score AND OT-specific context
+  3. Assess exploitability in your environment
+  4. Determine if exploit code is public
+  5. Create risk register entry if affected asset exists
+```
+
+### Vendor Security Advisories to Monitor
+- Siemens ProductCERT: cert.siemens.com
+- Schneider Electric: security.schneider-electric.com/security-advisories
+- Rockwell Automation: rockwellautomation.com/security-notices
+- Honeywell: honeywell.com/productcert
+- ABB: new.abb.com/about/cybersecurity/product-security
+- GE Digital: digitalsupport.ge.com/hc/en-us/categories/security-advisories
+
+---
+
+## 2. CVE Analysis in OT Context
+
+### OT-Specific CVSS Assessment
+```
+Standard CVSS scoring often understates OT risk because:
+  - Confidentiality impact is LESS critical in OT (process data is less sensitive)
+  - Availability impact is MORE critical in OT (production/safety depends on it)
+  - Physical consequences must be added to financial/data impact
+
+OT-adjusted risk assessment:
+  CVE with CVSS 4.0 (low standard) but affects process availability = treat as HIGH
+  CVE with CVSS 9.8 (critical standard) but requires physical access = treat as MEDIUM
+
+Example: CVE affecting HMI availability but requiring network access:
+  Standard CVSS: 7.5 (High)
+  OT context: Production halt for 24h = $2M loss; safety implications
+  OT-adjusted risk: Critical
+```
+
+### Legacy System Risk Assessment
+```
+Common legacy systems in OT (frequently encountered in 2026):
+  Windows XP: End of Support April 2014 — no patches available
+  Windows 2003: End of Support July 2015
+  Windows 7: End of Support January 2020
+  Windows Server 2008: End of Support January 2020
+
+Risk factors for unpatched legacy:
+  1. Known exploits: EternalBlue (MS17-010) exploitable on unpatched Win7/2008
+  2. No vendor patches: cannot be remediated in-place
+  3. Production dependency: cannot be replaced without process redesign
+
+Compensating controls for legacy:
+  - Network isolation (dedicated VLAN, no internet access, no enterprise network access)
+  - Application whitelisting (Claroty/TXOne endpoint protection for OT)
+  - Read-only mode where possible (prevent unauthorised writes to PLC)
+  - Monitoring (Dragos/Claroty anomaly detection)
+  - Documented exception with risk owner sign-off and annual review
+```
+
+---
+
+## 3. Air-Gap Integrity Assessment
+
+### Common Air-Gap Violations
+```
+Inadvertent connections:
+  Remote support tools: TeamViewer, RDP, Citrix left installed by vendor
+  Dual-homed engineering workstations: laptop with both OT NIC and WiFi enabled
+  USB from untrusted source: maintenance personnel bringing in infected USB
+  Historian connections to enterprise: OSIsoft PI server accessing both OT and IT
+  Business intelligence: Excel macros pulling live data from SCADA server
+
+Assessment steps:
+  1. Review all network interface configurations on Level 2-3 devices
+  2. Identify all remote access tools installed (check registry, running services)
+  3. Verify historian/mirror server configuration (one-way data flow only)
+  4. Audit USB port status (hardware disabled vs software disabled)
+  5. Verify no WiFi interfaces enabled on OT devices
+  6. Check for dual-homed devices (netstat on each endpoint if possible)
+```
+
+---
+
+## 4. Consequence-Based Risk Assessment
+
+### OT Risk Dimensions (Different from IT)
+| Risk Dimension | IT Priority | OT Priority |
+|----------------|-------------|-------------|
+| Confidentiality | High | Low-Medium |
+| Integrity | High | High |
+| Availability | Medium | Critical |
+| Safety | N/A | Critical |
+| Environmental | N/A | High (in regulated industries) |
+| Production impact | Low | Critical |
+
+### Consequence Levels for OT Risk
+| Level | Safety | Environmental | Production | Duration |
+|-------|--------|---------------|-----------|---------|
+| 1 Negligible | No injury | No release | < 1h disruption | Seconds-minutes |
+| 2 Minor | First aid | Contained, minor | 1-4h | Hours |
+| 3 Moderate | Lost time injury | Reportable release | 4-24h | Day |
+| 4 Major | Serious injury/hospitalisation | Significant release | 1-7 days | Week |
+| 5 Catastrophic | Fatalities | Major environmental incident | > 1 week | Weeks/permanent |
+
+---
+
+## 5. MITRE ATT&CK for ICS
+
+### Key ICS Technique Categories
+```
+Initial Access:
+  T0817: Drive-by Compromise
+  T0865: Spearphishing Attachment
+  T0866: Exploitation of Remote Services (remote access to OT)
+  T0817: Drive-By Compromise
+
+Execution:
+  T0807: Command-Line Interface
+  T0871: Execution through API
   T0823: Graphical User Interface (HMI manipulation)
-  T0837: Modify Control Logic (Stuxnet-style PLC reprogramming)
-  T0880: Loss of Safety (Triton/TRISIS — SIS manipulation)
-  T0813: Denial of Control
+
+Collection:
+  T0801: Monitor Process State
+  T0802: Automated Collection
+  T0811: Data from Information Repositories (historian)
+
+Impact:
+  T0813: Denial of Control (T1499 equivalent for OT)
+  T0816: Device Restart/Shutdown
+  T0826: Loss of Availability
+  T0827: Loss of Control
+  T0828: Loss of Productivity and Revenue
+  T0829: Loss of View
   T0831: Manipulation of Control
-  T0836: Modify Parameter (change setpoints)
+  T0835: Manipulate I/O Image
+  T0836: Modify Parameter
+  T0837: Modify Control Logic (reprogram PLC — Stuxnet technique)
+  T0880: Loss of Safety (SIS manipulation — Triton/TRISIS attack)
+```
 
-=================================================================
-PHASE 3: NETWORK SECURITY
-=================================================================
+---
 
-ISA/IEC 62443 ZONE AND CONDUIT MODEL
---------------------------------------
-  SL 1: Accidental violation protection — basic auth, logging
-  SL 2: Low sophistication attack protection — segmentation, MFA, monitoring
-  SL 3: Sophisticated targeted attack — defence in depth, IDS, encryption
-  SL 4: Nation-state level — HSMs, air-gap/diode, advanced monitoring
+## 6. Risk Assessment Checklist
 
-  Zone design: group assets by function AND security level requirement
-  Assign SL-T per zone; assess current SL-C; gap = SL-C < SL-T
+- [ ] ICS-CERT advisory mapping completed (affected assets identified)
+- [ ] All CVEs with CVSS > 7.0 assessed with OT-specific context
+- [ ] Legacy/EOL systems inventoried and risk-accepted with compensating controls
+- [ ] Air-gap integrity assessed (remote tools, dual-homed devices, historian connections)
+- [ ] Consequence-based risk assessment completed for top 10 risks
+- [ ] ATT&CK for ICS technique mapping completed
+- [ ] OT-specific risk register created (separate from IT risk register)
+- [ ] Process safety team consulted on consequence ratings
+- [ ] Risk register shared with plant manager and OT owner
 
-  Conduit controls (between zones):
-    Firewall: whitelist only required protocols and ports
-    Data diode: hardware-enforced one-way (Waterfall, Owl Cyber Defense)
-    Application proxy: deep inspection for allowed protocols
 
-IT/OT CONVERGENCE RISK POINTS
--------------------------------
-  Historian server:           Data diode or read-only mirror in DMZ
-  Engineering workstation:    Dedicated OT laptop; no IT network
-  Remote access (VPN/RDP):    Jump server in DMZ; MFA; session recording
-  Business intelligence:      One-way data diode; IT-side mirror only
-  Patch/AV update server:     Dedicated server in OT; no direct internet
 
-DMZ ARCHITECTURE
------------------
-  Enterprise IT
-       |
-  [IT Firewall]
-       |
-  [OT DMZ: Jump Server, Historian Mirror, Remote Access Gateway, Patch Server]
-       |
-  [OT Firewall] — DEFAULT DENY ALL; whitelist specific protocols
-       |
-  OT Network (Levels 0-3)
+## network-security
 
-FIREWALL RULES (whitelist approach)
--------------------------------------
-  DENY ALL by default; allow only specific required communication
-  Each rule: Source, Destination, Protocol/Port, Direction, Justification, Owner
-  Review rules quarterly; remove any without current business justification
+# Network Security
 
-REMOTE ACCESS REQUIREMENTS
----------------------------
-  ALL OT remote access MUST:
-    - Go through jump server in OT DMZ (no direct connectivity)
-    - Require MFA (hardware token preferred for vendors)
-    - Be session-recorded (keystroke + screen)
-    - Have time-limited access window (max 4h per session)
-    - Be logged and retained 12 months
+## Purpose
+Design and implement OT network security using ISA/IEC 62443 zone and conduit model, DMZ architecture, and unidirectional data flow for IT/OT convergence points.
 
-=================================================================
-PHASE 4: INCIDENT DETECTION AND RESPONSE
-=================================================================
+---
 
-OT MONITORING TOOLS (passive only)
-------------------------------------
-  Dragos Platform:     Network traffic analysis; OT protocol inspection; threat intelligence
-  Claroty CTD:         Asset discovery; anomaly detection; policy alerts
-  Nozomi Guardian:     AI-based anomaly; 80+ OT protocols; asset visibility
+## 1. ISA/IEC 62443 Zone and Conduit Model
 
-  Deploy via SPAN/TAP — NEVER active agents injected to OT devices
+### Security Levels (SL)
+| Level | Protection Against | Typical Controls |
+|-------|-------------------|-----------------|
+| SL 1 | Accidental or incidental violation | Basic authentication, logging |
+| SL 2 | Intentional violation with simple means, low motivation | Strong auth, network segmentation, monitoring |
+| SL 3 | Intentional violation with sophisticated means | Multi-factor auth, intrusion detection, encryption |
+| SL 4 | Sophisticated attack with extended resources (nation-state) | Advanced cryptography, physical isolation, HSMs |
 
-ANOMALY DETECTION BASELINES
------------------------------
-  Network: normal source/destination pairs; protocols; traffic volumes; times
-  Process: normal operating ranges; rate of change; alarm frequency
-  Commands: normal write frequency; expected sequences; HMI login patterns
+### Zone Design Principles
+```
+Zone = group of logical or physical assets that share the same security requirements
+       and have common threat exposure and acceptable risk
 
-HIGH-PRIORITY ALERTS
----------------------
-  New device detected:        Unknown IP/MAC on OT network → High
-  Control logic download:     Firmware/logic change to PLC → Critical
-  Unusual engineering command: Write to PLC outside maintenance window → Critical
-  Scan activity:              Rapid connections to multiple devices → Critical
-  Remote access outside window: Vendor connecting outside approved time → High
-  Process value out of range: Beyond expected operating limits → High
+Zone design steps:
+  1. Group assets by function AND security level requirement
+  2. Define Security Level Target (SL-T) for each zone
+  3. Identify existing controls; determine Security Level Capability (SL-C)
+  4. Gap: SL-C < SL-T → remediation required
 
-SAFETY-FIRST IR PROCEDURE
----------------------------
-  BEFORE any security response action:
-    1. Consult process safety engineer: is it safe to continue process?
-    2. Define safe state: what is the safe position for valves, pumps, actuators?
-    3. Determine production continuity minimum
+Example zones:
+  Safety Zone (SL-T 3-4):    SIS, safety PLCs — highest isolation
+  Control Zone (SL-T 2-3):   PLCs, DCS controllers
+  Supervisory Zone (SL-T 2): HMI servers, SCADA
+  Operations Zone (SL-T 2):  Historians, engineering workstations
+  DMZ (SL-T 2-3):            Data diodes, jump servers, remote access
+```
 
-  IR phases:
-    0-2h:    Detect + triage; verify alert; assess safety; activate OT IR team
-    2-8h:    Contain safely; network isolation; suspend remote access; preserve evidence
-    8-72h:   Investigate logs (historian, HMI, network); identify affected PLCs
-    Recovery: Restore from known-good backup; verify logic vs reference; gradual restart
+### Conduit Security
+```
+Conduit = communication path between zones
+          Each conduit must have controls matching the LOWER SL-T of the two zones
 
-NERC CIP INCIDENT REPORTING
------------------------------
-  Report to: electricity-isac@nerc.net AND report@cisa.gov
-  Timeline: Within 1 HOUR of discovery of a reportable incident
-  Reportable: Any compromise OR ATTEMPT to compromise the Electronic Security Perimeter (ESP)
-  Note: Attempted compromise IS reportable (not just successful)
+Conduit controls:
+  Firewall/DMZ:         Filter traffic at zone boundaries (whitelist protocols)
+  Data diode:           Hardware-enforced one-way flow (highest assurance)
+  Application proxy:    Only approved protocols pass; deep inspection
+  Encryption:           TLS 1.2+ for conduits crossing zone boundaries
+  Authentication:       All conduits require authentication (no anonymous connections)
 
-=================================================================
-PHASE 5: RESILIENCE AND COMPLIANCE
-=================================================================
+Document each conduit:
+  Source zone, Destination zone, Protocol allowed, Direction, Firewall rule ID
+```
 
-NERC CIP KEY REQUIREMENTS
---------------------------
-  CIP-002: Categorise BES Cyber Systems as High / Medium / Low
-  CIP-005: Define Electronic Security Perimeters; control all access points
-  CIP-007: Disable unused ports; patch within 35 days; monitor security events
-  CIP-008: Incident response plan; 1-hour reporting for reportable incidents
-  CIP-009: Recovery plans; test annually
-  CIP-010: Configuration change management; baseline configurations
-  CIP-013: Supply chain risk management; vendor security requirements
+---
 
-CIP-007 PATCH SLA
-------------------
-  35 calendar days from advisory to patch applied or mitigation documented
-  CISA ICS advisory = trigger date for the 35-day clock
+## 2. IT/OT Convergence Risk Points
 
-BUSINESS CONTINUITY FOR OT
-----------------------------
-  Define RTO/RPO per zone:
-    Level 0-1 (Control):    RTO 0-4h (process safety dependent); RPO = last good config
-    Level 2 (Supervisory):  RTO 4-8h (manual operation possible); RPO = last backup
-    Level 3 (Operations):   RTO 8-24h; RPO = last daily backup
+### High-Risk Convergence Points
+| Convergence Point | Risk | Mitigation |
+|------------------|------|-----------|
+| Historian server (reads from OT, accessible by IT) | IT compromise reaches OT | Data diode; read-only historian; DMZ placement |
+| Engineering workstation (programs PLCs, has IT access) | Malware path from IT to PLC | Dedicated OT laptop; no IT network connection; removable media policy |
+| Remote access (VPN/RDP to OT network) | Direct OT network access | Jump server in DMZ; MFA; session recording; time-limited |
+| Business intelligence (BI tools reading SCADA data) | OT data exposure; reverse connection | One-way data diode; data mirror in IT DMZ only |
+| Patch server (WSUS for OT Windows machines) | Malicious patch or connection path | Dedicated WSUS in OT zone; no direct internet; tested patches only |
 
-  CRITICAL: Manual operation procedures required for all OT systems
-            Operators must be trained annually on manual procedures
+---
 
-PLC/HMI CONFIGURATION BACKUPS
--------------------------------
-  Frequency: After every change (change control); monthly minimum
-  Hash: sha256sum <project_file> > hash.txt immediately after backup
-  Storage: Offline; physically separate from OT network; controlled access
-  Retention: Last 5 versions; archive 3 years
-  Test: Restore test annually; compare restored logic to reference
+## 3. DMZ Design for IT/OT
 
-OT PATCH MANAGEMENT PROCESS
-------------------------------
-  1. Advisory received (ICS-CERT / vendor)
-  2. Check asset register → affected?
-  3. If yes: assess with OT context; contact vendor for OT-approved patch
-  4. Test in replica environment (never directly on production)
-  5. Schedule maintenance window; notify operations management
-  6. Apply during window with engineer on-site
-  7. Verify process functionality post-patch
-  8. If unable to patch: document compensating controls + risk acceptance
+### Recommended OT DMZ Architecture
+```
+Enterprise Network (IT)
+        |
+   [IT Firewall]
+        |
+   [ OT DMZ ]
+   ┌────────────────────────────────────────────────────┐
+   │  Jump Server (MFA required; session recording)      │
+   │  Data Historian Mirror (read-only copy; passive)    │
+   │  Remote Access Gateway (with MFA)                   │
+   │  Patch Management Server (tested patches only)      │
+   │  Antivirus Update Server (signature distribution)   │
+   └────────────────────────────────────────────────────┘
+        |
+   [OT Firewall] (whitelist rules only; deny-all default)
+        |
+   OT Network (Levels 0-3)
+```
 
-COMPENSATING CONTROLS FOR UNPATCHED OT SYSTEMS
-------------------------------------------------
-  Network isolation (dedicated VLAN, no internet, no enterprise connectivity)
-  Application whitelisting (TXOne StellarProtect, Claroty Edge)
-  Virtual patching (IDS/IPS rule blocking exploit traffic)
-  Enhanced monitoring (alert on exploit attempt indicators)
-  Documented risk acceptance by plant manager (annual review)
+### Firewall Rules (OT Firewall — Whitelist Approach)
+```
+Rule design: DEFAULT DENY ALL; allow only specific required communication
 
-=================================================================
-QUICK REFERENCE: OT SECURITY KEY DIFFERENTIATORS VS IT
-=================================================================
-  Priority order:     Safety > Availability > Integrity > Confidentiality
-  Scanning:           PASSIVE ONLY on live systems (SPAN/TAP)
-  Patching:           Vendor approval required; maintenance window; test first
-  Availability:       99.999% uptime target (process cannot stop for patching)
-  Protocols:          Modbus, DNP3, EtherNet/IP, S7, OPC-UA, PROFINET, BACnet
-  Standards:          ISA/IEC 62443, NERC CIP, IEC 62351 (power systems comms)
-  IR priority:        Safety state first, then containment, then forensics
-  Reporting:          NERC CIP: 1 hour to E-ISAC and CISA for reportable events
+Example rules:
+  ALLOW  Historian Mirror → OT Historian: TCP 5450 (OSIsoft PI OPC) — unidirectional via diode
+  ALLOW  Jump Server → HMI: RDP TCP 3389 — only from jump server
+  ALLOW  Patch Server → OT Windows: TCP 8530 (WSUS) — initiating from OT side
+  DENY   IT Network → OT Network: ALL — except via jump server
+  DENY   OT Network → Internet: ALL — no direct internet access from OT
+
+Document every rule:
+  Rule ID, Source, Destination, Protocol/Port, Direction, Justification, Owner, Date Added
+```
+
+---
+
+## 4. Unidirectional Gateways (Data Diodes)
+
+### When to Use Data Diodes
+```
+Use data diodes when:
+  - Historian data must flow to IT/enterprise (one-way: OT → IT)
+  - Threat intelligence feeds into OT SIEM (one-way: IT → OT)
+  - OT audit logs sent to IT SIEM (one-way: OT → IT)
+
+Vendors:
+  Waterfall Security Solutions: Unidirectional Security Gateway
+  Owl Cyber Defense (now part of Parsons): Owl Data Diode
+  Nexor: Cyber Gateway
+  Fox-IT: DataDiode
+
+Key property: hardware-enforced one-way optical link; no software bypass possible
+              Even if compromised software is installed, data cannot flow backwards
+```
+
+---
+
+## 5. Remote Access Controls for OT
+
+### Secure Remote Access Architecture
+```
+Requirements for all OT remote access:
+  1. All access via jump server in OT DMZ — no direct connectivity
+  2. MFA required for all remote access (hardware token preferred for vendors)
+  3. Session recording for all privileged remote sessions
+  4. Time-limited access windows (not 24/7 standing access)
+  5. Vendor access: approved per maintenance request; auto-expire after task
+
+Jump server configuration:
+  - Hardened OS (Windows Server Core or Linux minimal)
+  - No local admin for vendors (domain-controlled accounts only)
+  - Application whitelisting (only approved OT tools available)
+  - USB port disabled
+  - Session recording: keystroke + screen (full capture)
+  - Network access limited to specific OT assets for specific vendor
+
+Vendor remote access SLA:
+  Access request submitted: minimum 24h notice (emergency: 4h with manager approval)
+  Access window: maximum 4h per session; renewable with approval
+  Access logs: retained 12 months minimum
+```
+
+
+
+## incident-detection-and-response
+
+# Incident Detection and Response
+
+## Purpose
+Deploy OT-specific monitoring, detect anomalies in process behaviour, and respond to incidents with safety-first procedures.
+
+---
+
+## 1. OT-Specific Monitoring Platforms
+
+### Passive Monitoring Tools
+```
+Dragos Platform:
+  - Network traffic analysis; OT protocol deep inspection
+  - Threat behaviour analytics (Dragos threat intelligence)
+  - Activity groups (threat actor tracking)
+  - Vulnerability management for OT assets
+  - Passive only: no traffic injection
+
+Claroty Continuous Threat Detection (CTD):
+  - Asset inventory from passive traffic
+  - Anomaly detection (baseline normal traffic patterns)
+  - Policy-based alerting (new connections, unusual commands)
+  - Integration with Claroty xDome for enterprise
+
+Nozomi Networks Guardian:
+  - Passive network monitoring
+  - AI-based anomaly detection
+  - Asset visibility and software inventory
+  - OT protocol support: 80+ protocols
+
+Critical OT monitoring principle:
+  ALL monitoring must be PASSIVE (SPAN/TAP only)
+  NEVER deploy active scanning agents directly to OT devices
+  Active monitoring requires change control and maintenance window
+```
+
+---
+
+## 2. Behavioural Anomaly Detection
+
+### Baseline Normal Behaviour
+```
+Establish baselines for:
+  1. Network traffic patterns:
+     - Normal devices that communicate (source/destination pairs)
+     - Normal protocols per device pair
+     - Normal traffic volumes (bytes/packets per time period)
+     - Normal communication times (engineering activity may be 8am-5pm)
+  
+  2. Process values (if historian data available):
+     - Normal operating ranges for process variables (temperature, pressure, flow)
+     - Normal rate of change for each variable
+     - Alarm states and frequency
+
+  3. Control commands:
+     - Normal write frequency to PLC registers
+     - Expected command sequences (start/stop sequences)
+     - Normal HMI operator login times and actions
+```
+
+### Anomaly Alert Types
+| Alert Type | Description | Severity |
+|------------|-------------|---------|
+| New device detected | Unknown IP/MAC appeared on OT network | High |
+| Unusual engineering command | Write to PLC outside maintenance window | Critical |
+| Protocol violation | Malformed or unexpected OT protocol traffic | High |
+| New connection | First time communication between two devices | Medium |
+| Scan activity | Rapid connection attempts to multiple devices | Critical |
+| Excessive write commands | Write frequency exceeds baseline 3× | High |
+| Control logic download | Firmware/logic change to PLC | Critical |
+| Remote access outside window | Vendor connecting outside approved time | High |
+| Process value out of range | Process variable beyond expected limits | High |
+
+---
+
+## 3. OT Incident Response Procedures
+
+### Safety-First Principle
+```
+CRITICAL: Safety takes absolute priority over forensic preservation and
+          IT/security investigation objectives.
+
+Before any OT incident response action:
+  1. Consult process safety engineer: is it safe to continue the process?
+  2. Define safe state: what is the safe position for valves, pumps, etc.?
+  3. Production continuity: what is the minimum required to continue safely?
+  4. Only AFTER safe state established: begin security investigation
+
+OT IR team composition:
+  Security incident responder (lead for security actions)
+  Process safety engineer (lead for safety decisions)
+  OT/control systems engineer (lead for OT technical actions)
+  Plant manager (authorise business decisions)
+  Legal/compliance (if regulatory implications)
+```
+
+### OT IR Phases
+```
+Phase 1: Detection and Triage (0-2 hours)
+  - Alert received from OT monitoring system
+  - Verify alert: is this a security event or process event?
+  - Assess safety impact: is the process in a safe state?
+  - Activate OT IR team
+  - Notify plant manager and CISO
+
+Phase 2: Containment (2-8 hours)
+  - Safety first: ensure safe state maintained
+  - Network isolation: isolate affected OT zone from IT and internet
+  - Remote access: suspend all remote access immediately
+  - Preserve: take memory dumps and network captures before clearing
+  - Assess production impact: can process continue safely?
+
+Phase 3: Investigation (8-72 hours)
+  - Analyse historian logs, HMI logs, network captures
+  - Identify affected PLCs/HMIs (is logic modified?)
+  - Verify process integrity: are sensor readings trustworthy?
+  - Determine attack vector and timeline
+
+Phase 4: Recovery
+  - Restore from known-good PLC configuration backups
+  - Verify restored logic against reference backups (hash comparison)
+  - Gradual process restart with engineering supervision
+  - Enhanced monitoring post-recovery (2-4 weeks)
+```
+
+---
+
+## 4. OT Log Sources
+
+### Available Log Sources by Level
+| Source | Log Type | Key Information |
+|--------|---------|----------------|
+| HMI servers | Operator action logs | Who did what to which control |
+| SCADA systems | Alarm and event logs | Process alarms, setpoint changes |
+| Historians (OSIsoft PI, Aspentech IP21) | Process data + audit trails | Process values + access logs |
+| Engineering workstations | Windows event logs | Who logged in, what tools used |
+| Network devices (OT switches) | Syslog | New MAC addresses, port changes |
+| Claroty/Dragos sensors | OT network events | All monitored OT network activity |
+| Jump servers | Session logs + recordings | All remote access activity |
+
+### Log Analysis for OT Incidents
+```
+Priority investigation areas:
+  1. HMI audit logs: look for commands issued during the incident window
+     - PLC write commands (setpoint changes, output commands)
+     - Mode changes (manual vs automatic)
+     - Alarm acknowledgements during incident
+
+  2. Engineering workstation logs: look for:
+     - PLC programming tool launches (STEP 7, RSLogix, etc.)
+     - USB device insertions
+     - Remote connections initiated
+     - Downloads to PLCs (configuration change)
+
+  3. Network captures: look for:
+     - New connections established (especially from IT side)
+     - Unusual OT protocol traffic (unexpected function codes)
+     - Large data transfers from Level 0-2 devices
+```
+
+---
+
+## 5. NERC CIP Incident Reporting
+
+### Reporting Requirements
+```
+CIP-008-6: Incident Reporting and Response Planning
+
+Reportable Incidents (to NERC/E-ISAC/CISA):
+  - Any compromise or attempt to compromise the Electronic Security Perimeter (ESP)
+  - Any compromise of an Electronic Access Control or Monitoring System (EACMS)
+  - Any cyber incident impacting a BES Cyber System
+
+Reporting timeline:
+  Initial report: within 1 hour of discovery of a reportable cyber security incident
+  to: electricity-isac@nerc.net and CISA at report@cisa.gov
+
+  Note: "Reportable" includes attempted compromise, not just successful
+```
+
+
+
+## resilience-and-compliance
+
+# Resilience and Compliance
+
+## Purpose
+Build OT operational resilience through business continuity planning, backup procedures, and compliance with ISA/IEC 62443 and NERC CIP requirements.
+
+---
+
+## 1. ISA/IEC 62443 Security Level Targets
+
+### Security Level Requirements Per Zone
+```
+Assign Security Level Targets (SL-T) based on zone criticality:
+
+SL 1 (Basic protection):
+  - Protection from accidental or unintentional violation
+  - Use for: non-critical peripheral devices, display-only systems
+  - Controls: basic password, logging
+
+SL 2 (Protection against low sophistication intentional attack):
+  - Defence against script-kiddie level attacks
+  - Use for: standard control zones, supervisory zones
+  - Controls: network segmentation, MFA for admin, monitoring
+
+SL 3 (Protection against sophisticated intentional attack):
+  - Defence against targeted attack with insider knowledge
+  - Use for: high-criticality process control, safety systems vicinity
+  - Controls: defence in depth, IDS, encrypted communications, privileged access management
+
+SL 4 (Protection against state-sponsored level attack):
+  - Defence against highly sophisticated, well-resourced attacker
+  - Use for: safety instrumented systems, critical infrastructure
+  - Controls: HSMs, air-gap or unidirectional gateway, advanced monitoring
+```
+
+---
+
+## 2. NERC CIP Requirements
+
+### Applicable Standards for BES Cyber Systems
+| Standard | Title | Key Requirements |
+|----------|-------|----------------|
+| CIP-002-5.1a | BES Cyber System Categorisation | Identify and categorise BES Cyber Systems (High/Medium/Low) |
+| CIP-003-8 | Security Management Controls | Senior management security plan; policies; exceptions |
+| CIP-004-6 | Personnel & Training | Background checks; training; access management |
+| CIP-005-6 | Electronic Security Perimeters | Define ESP; control all electronic access points; remote access |
+| CIP-006-6 | Physical Security | Physical security of BES Cyber Systems |
+| CIP-007-6 | Systems Security Management | Ports/services, patch management, malware prevention, logging |
+| CIP-008-6 | Incident Reporting | Incident response plan; reporting timeline |
+| CIP-009-6 | Recovery Plans | BCP/DR plans for BES Cyber Systems |
+| CIP-010-3 | Configuration Change Management | Baseline configurations; change control; vulnerability assessments |
+| CIP-011-2 | Info Protection | BES Cyber System Information (BCSI) protection |
+| CIP-013-1 | Supply Chain Risk Management | Vendor risk management; software integrity |
+
+### CIP-007 Systems Security Management Key Controls
+```
+CIP-007-R1: Ports and Services
+  - Disable all unnecessary TCP/UDP ports on BES Cyber Systems
+  - Document all enabled ports with business justification
+  - Review quarterly
+
+CIP-007-R2: Security Patches
+  - Track security patches within 35 days of release
+  - Apply patches or document mitigation within 35 days of release
+  
+  Patch SLA: 35 calendar days from ICS-CERT/vendor advisory to patch or mitigate
+
+CIP-007-R3: Malware Prevention
+  - Deploy malware prevention on all applicable assets
+  - Update signatures every 35 days (or document why not feasible)
+  
+CIP-007-R4: Security Event Monitoring
+  - Generate alerts for: authentication failures, account activity, detected malware
+  - Review alerts within 15 minutes of generation (for High/Medium BES systems)
+  - Retain logs for 90 days minimum
+
+CIP-007-R5: System Access Controls
+  - Enforce minimum password/access requirements
+  - Limit unsuccessful logins (lock after 3-6 attempts)
+  - Change vendor-supplied default passwords before deployment
+```
+
+---
+
+## 3. Business Continuity for OT
+
+### RTO/RPO for Control Systems
+```
+Define per zone (typical targets):
+  Level 0-1 (Field/Control):
+    RTO: 0-4 hours (process safety dependent; may need manual operation)
+    RPO: Last known-good configuration backup
+
+  Level 2 (Supervisory/HMI):
+    RTO: 4-8 hours (operators can run on manual with Level 1)
+    RPO: Configuration backup + historian data from last checkpoint
+
+  Level 3 (Operations/Historian):
+    RTO: 8-24 hours
+    RPO: Last successful backup (daily minimum)
+
+  Level 3.5 DMZ:
+    RTO: 2-4 hours (critical for remote access recovery)
+    RPO: Configuration + user accounts
+
+Manual operation procedures:
+  CRITICAL: All OT systems must have documented manual operation procedures
+  Assumes: all SCADA/HMI systems completely unavailable
+  Operators must be trained annually on manual operation
+```
+
+### PLC/HMI Configuration Backups
+```
+Backup requirements:
+  Frequency: After every change (change control mandated); monthly minimum
+  Format: Vendor-specific project file (STEP 7 .s7p, RSLogix .ACD, TIA Portal .zap)
+  Verification: Hash backup immediately after creation; verify hash quarterly
+  Storage: Offline storage (USB/removable media), physically separate from OT network
+  Access: Controlled access; stored in secure location
+  Retention: Last 5 versions minimum; archive 3 years
+
+Backup procedure for Siemens S7-1500 (example):
+  1. TIA Portal: Download project from PLC (Online > Device > Backup)
+  2. Save to offline workstation
+  3. sha256sum <project.zap> > project_hash.txt
+  4. Transfer to secure offline storage with evidence number
+
+Spare parts inventory:
+  Maintain critical spares: spare PLC CPU, spare HMI server, critical I/O modules
+  Spare inventory review: annual; update after hardware changes
+  Supplier contracts: maintain support contract for critical components
+```
+
+---
+
+## 4. Patch Management for OT
+
+### OT Patch Challenges
+```
+Constraints:
+  - Vendor approval required before applying patches (some patches void warranty)
+  - Testing in replica environment required (cannot test on live production)
+  - Maintenance window requirement (patch during planned production shutdown)
+  - Legacy systems: no patches available (EOL/EOS)
+  - Long patch cycles: semi-annual or annual production shutdowns may be the only window
+
+Compensating controls for unpatched systems:
+  1. Network isolation (no unnecessary connectivity)
+  2. Application whitelisting (TXOne, Claroty Edge, Trellix)
+  3. Virtual patching (IDS/IPS rule to block exploit traffic)
+  4. Enhanced monitoring (alert on exploit attempt indicators)
+  5. Documented risk acceptance by OT/plant management
+```
+
+### OT Patch Management Process
+```
+Step 1: Advisory received (ICS-CERT or vendor)
+Step 2: Check asset register — is affected product installed?
+Step 3: If yes: assess severity with OT context
+Step 4: Contact vendor: is patch available? Is it approved for your version?
+Step 5: Test in replica environment (mirror of production system)
+Step 6: Schedule maintenance window; notify operations management
+Step 7: Apply patch during window with engineer on-site
+Step 8: Verify: test process functionality after patching
+Step 9: Update asset register (patch version, date applied)
+Step 10: If unable to patch: document compensating controls and risk acceptance
+```
+
+---
+
+## 5. Resilience Checklist
+
+- [ ] ISA/IEC 62443 SL-T assigned to each zone
+- [ ] Current SL-C assessed; gaps to SL-T documented
+- [ ] NERC CIP BES Cyber System categorisation completed (if applicable)
+- [ ] CIP-002 categorisation documentation complete (High/Medium/Low)
+- [ ] CIP-007 ports and services documented and reviewed
+- [ ] CIP-007 patch tracking log current (within 35 days of advisories)
+- [ ] CIP-007 security event monitoring configured and alert SLA met
+- [ ] Manual operation procedures documented and operator-trained
+- [ ] PLC/HMI configuration backups taken, hashed, and stored offline
+- [ ] Spare parts inventory documented and physically held
+- [ ] Backup restoration tested (annual minimum for critical systems)
+- [ ] Patch management procedure documented with vendor approval workflow
+- [ ] Compensating controls documented for all unpatched systems
+- [ ] CIP-008 incident response plan current and tested (tabletop annually)
+- [ ] CIP-009 recovery plan current and tested

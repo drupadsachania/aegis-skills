@@ -1,0 +1,70 @@
+{
+  "schema": "mcp/1.0",
+  "name": "identity-access-management",
+  "version": "1.0.0",
+  "description": "Comprehensive IAM programme covering identity governance (Joiners/Movers/Leavers), human authentication (FIDO2, SSO, passwordless), privileged access management (PAM), non-human identities (service accounts, API keys, secrets), AI/agent identity, and access review and audit. Triggers for: MFA deployment, PAM design, secrets management, identity governance, agent identity, or access review programme.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the identity-access-management skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "identity-governance",
+              "human-authentication",
+              "privileged-access-management",
+              "non-human-identities",
+              "agent-and-ai-identities",
+              "access-review-and-audit"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/identity-governance",
+      "name": "identity-governance",
+      "description": "Reference content for identity-access-management — identity-governance",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/human-authentication",
+      "name": "human-authentication",
+      "description": "Reference content for identity-access-management — human-authentication",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/privileged-access-management",
+      "name": "privileged-access-management",
+      "description": "Reference content for identity-access-management — privileged-access-management",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/non-human-identities",
+      "name": "non-human-identities",
+      "description": "Reference content for identity-access-management — non-human-identities",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/agent-and-ai-identities",
+      "name": "agent-and-ai-identities",
+      "description": "Reference content for identity-access-management — agent-and-ai-identities",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/access-review-and-audit",
+      "name": "access-review-and-audit",
+      "description": "Reference content for identity-access-management — access-review-and-audit",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

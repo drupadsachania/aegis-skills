@@ -1,0 +1,63 @@
+{
+  "schema": "mcp/1.0",
+  "name": "operational-technology",
+  "version": "1.0.0",
+  "description": "OT/ICS security programme covering asset discovery, risk assessment, network security (ISA/IEC 62443 zone and conduit model), incident detection and response, and compliance with NERC CIP and ISA/IEC 62443. Triggers for: OT asset inventory, ICS security assessment, OT network segmentation, NERC CIP compliance, ICS incident response, or Purdue model zone design.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the operational-technology skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "ot-asset-discovery",
+              "risk-and-vulnerability-assessment",
+              "network-security",
+              "incident-detection-and-response",
+              "resilience-and-compliance"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/ot-asset-discovery",
+      "name": "ot-asset-discovery",
+      "description": "Reference content for operational-technology — ot-asset-discovery",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/risk-and-vulnerability-assessment",
+      "name": "risk-and-vulnerability-assessment",
+      "description": "Reference content for operational-technology — risk-and-vulnerability-assessment",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/network-security",
+      "name": "network-security",
+      "description": "Reference content for operational-technology — network-security",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/incident-detection-and-response",
+      "name": "incident-detection-and-response",
+      "description": "Reference content for operational-technology — incident-detection-and-response",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/resilience-and-compliance",
+      "name": "resilience-and-compliance",
+      "description": "Reference content for operational-technology — resilience-and-compliance",
+      "mimeType": "text/markdown"
+    }
+  ]
+}
