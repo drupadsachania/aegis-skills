@@ -182,10 +182,43 @@ module.exports = function DocsPage() {
           )
         ),
 
+        // ── Audit API ──
+        React.createElement('section', { className: 'doc-section', id: 'audit' },
+          React.createElement('div', { className: 'doc-section-hd' },
+            React.createElement('span', { className: 'ds-num' }, '05'),
+            React.createElement('h2', null, 'Standards-Based Security Audit')
+          ),
+          React.createElement('p', null,
+            'The Audit API runs a structured compliance audit against one or more security standards. Supported standards: CIS L1/L2, NIST CSF, ISO 27001, SOC 2, PCI-DSS, HIPAA, IEC 62443, NIST 800-53.'
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '16px', marginBottom: '12px', color: 'var(--cream)' } }, 'POST /api/audit'),
+          React.createElement('p', null, 'Submit a configuration, policy document, or architecture description for audit:'),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `curl -X POST https://aegis-skills.vercel.app/api/audit \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "input": "<config or policy text>",
+    "inputType": "config",
+    "standards": ["cis-l1", "nist-csf"]
+  }'`
+            )
+          ),
+          React.createElement('p', null, 'Request fields:'),
+          React.createElement(
+            'ul',
+            { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '8px' } },
+            React.createElement('li', null, React.createElement('code', null, 'input'), ' — the configuration or policy text to audit (required)'),
+            React.createElement('li', null, React.createElement('code', null, 'inputType'), ' — one of: config, policy, architecture, description (optional, defaults to description)'),
+            React.createElement('li', null, React.createElement('code', null, 'standards'), ' — array of standard slugs to apply (optional, auto-detected from input if omitted)')
+          ),
+          React.createElement('p', { style: { marginTop: '12px' } }, 'The response includes executiveSummary, findings (per control), summary (severity counts), standardsApplied, skillTrace, and durationMs.')
+        ),
+
         // ── Troubleshooting ──
         React.createElement('section', { className: 'doc-section', id: 'troubleshooting' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '05'),
+            React.createElement('span', { className: 'ds-num' }, '06'),
             React.createElement('h2', null, 'Troubleshooting')
           ),
 
@@ -223,7 +256,7 @@ module.exports = function DocsPage() {
         // ── Security ──
         React.createElement('section', { className: 'doc-section', id: 'security' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '06'),
+            React.createElement('span', { className: 'ds-num' }, '07'),
             React.createElement('h2', null, 'Security & Privacy')
           ),
           React.createElement('p', null,
@@ -251,7 +284,7 @@ module.exports = function DocsPage() {
         // ── Next Steps ──
         React.createElement('section', { className: 'doc-section' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('span', { className: 'ds-num' }, '08'),
             React.createElement('h2', null, 'Next Steps')
           ),
           React.createElement('p', null,

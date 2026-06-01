@@ -475,6 +475,24 @@ function HomePage({ skills: initialSkills }) {
                 )
               )
             )
+          ),
+
+          // ── Audit API ──
+          React.createElement(
+            'div',
+            { style: { marginTop: '40px' } },
+            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '16px', color: 'var(--cream)' } }, 'Audit API'),
+            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '16px', fontSize: '14px' } },
+              'POST to /api/audit to run a standards-based security audit against CIS, NIST CSF, ISO 27001, SOC 2, PCI-DSS, HIPAA, IEC 62443, or NIST 800-53.'
+            ),
+            React.createElement(
+              'div',
+              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
+              React.createElement('div', null, 'POST /api/audit'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '{ "input": "<config or policy text>",'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "inputType": "config",'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "standards": ["cis-l1", "nist-csf"] }')
+            )
           )
         )
       )
