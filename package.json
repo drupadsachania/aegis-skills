@@ -19,7 +19,7 @@
     "url": "https://github.com/kairo-foundation/aegis-skills/issues"
   },
   "scripts": {
-    "test": "node bin/aegis.js --version && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
+    "test": "node bin/aegis.js --version && node bin/aegis.js compile && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
     "test:watch": "jest --watch",
     "dev": "next dev",
     "build": "next build",

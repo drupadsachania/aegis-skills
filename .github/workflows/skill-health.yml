@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Compile all skills
+        run: node bin/aegis.js compile
+
       - name: Run skill-health script
         id: health
         run: |
