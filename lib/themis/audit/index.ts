@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { AuditRequest, AuditReport } from './types'
 import { ingest } from './ingest'
-import { selectStandards } from './standards'
+import { selectStandards, skillsForStandards } from './standards'
 import { assess } from './assessor'
 import { score } from './scorer'
 import { report } from './reporter'
@@ -20,9 +20,11 @@ export async function audit(req: AuditRequest): Promise<AuditReport> {
 
   const { sanitisedInput, detectedSystemType, applicableSkills } = await ingest(req)
   const standards = selectStandards(req, detectedSystemType)
-  const findings = await assess(sanitisedInput, standards, applicableSkills, req.context)
+  const standardSkills = skillsForStandards(standards)
+  const mergedSkills = [...new Set([...applicableSkills, ...standardSkills])].slice(0, 6)
+  const findings = await assess(sanitisedInput, standards, mergedSkills, req.context)
   const summary = score(findings)
-  const executiveSummary = await report(req, findings, standards, applicableSkills)
+  const executiveSummary = await report(req, findings, standards, mergedSkills)
 
   // Write Supabase audit log — wrap in try/catch, never throw
   try {
@@ -33,7 +35,7 @@ export async function audit(req: AuditRequest): Promise<AuditReport> {
         input_hash: inputHash,
         standards_applied: standards,
         severity_counts: summary,
-        skill_slugs: applicableSkills,
+        skill_slugs: mergedSkills,
         duration_ms: Date.now() - start,
       })
     }
@@ -46,7 +48,7 @@ export async function audit(req: AuditRequest): Promise<AuditReport> {
     standardsApplied: standards,
     findings,
     summary,
-    skillTrace: applicableSkills,
+    skillTrace: mergedSkills,
     durationMs: Date.now() - start,
   }
 }

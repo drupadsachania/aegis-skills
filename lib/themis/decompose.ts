@@ -2,7 +2,18 @@ import { OrchestrateRequest, SubTask, Tier, ValidationError } from './types'
 import { sanitiseTask } from './sanitise'
 import { llm } from './provider'
 
-function assignTier(phases: number): Tier {
+// Domain-specific tier overrides — some high-phase skills need power tier for analysis quality
+const POWER_TIER_SKILLS = new Set([
+  'malware-analysis', 'reverse-engineering', 'digital-forensics',
+  'identity-access-management', 'threat-modeling'
+])
+const FAST_TIER_SKILLS = new Set([
+  'compliance', 'governance'  // structured query skills — fast tier sufficient
+])
+
+function assignTier(phases: number, skill?: string): Tier {
+  if (skill && POWER_TIER_SKILLS.has(skill)) return 'power'
+  if (skill && FAST_TIER_SKILLS.has(skill)) return 'fast'
   if (phases <= 2) return 'fast'
   if (phases <= 5) return 'standard'
   return 'power'
@@ -71,7 +82,7 @@ async function callDecompose(sanitisedTask: string, skillSlugs: string[], provid
       description: String(t.description ?? ''),
       skill: String(t.skill ?? ''),
       phase: typeof t.phase === 'number' ? t.phase : 0,
-      tier: assignTier(phases),
+      tier: assignTier(phases, String(t.skill ?? '')),
       dependsOn: Array.isArray(t.dependsOn) ? (t.dependsOn as unknown[]).map(String) : [],
     } satisfies SubTask
   })
