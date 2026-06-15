@@ -18,7 +18,10 @@
             "description": "Phase ID to load",
             "enum": [
               "atlas-tactics-overview",
-              "ml-attack-surface-guide"
+              "ml-attack-surface-guide",
+              "ml-threat-model",
+              "ml-defense-controls",
+              "ml-incident-response"
             ]
           }
         }
@@ -36,6 +39,24 @@
       "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/ml-attack-surface-guide",
       "name": "ml-attack-surface-guide",
       "description": "Reference content for mitre-atlas — ml-attack-surface-guide",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/ml-threat-model",
+      "name": "ml-threat-model",
+      "description": "Reference content for mitre-atlas — ml-threat-model",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/ml-defense-controls",
+      "name": "ml-defense-controls",
+      "description": "Reference content for mitre-atlas — ml-defense-controls",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/ml-incident-response",
+      "name": "ml-incident-response",
+      "description": "Reference content for mitre-atlas — ml-incident-response",
       "mimeType": "text/markdown"
     }
   ]

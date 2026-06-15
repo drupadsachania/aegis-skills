@@ -20,6 +20,9 @@ phases:
   - id: hardening-checklist
     ref: references/hardening-checklist.md
     lazy: false
+  - id: cve-patch-management
+    ref: references/cve-patch-management.md
+    lazy: true
 tools: [read, search, analyze]
 platforms:
   openai:    { model: gpt-4o, tools: true }

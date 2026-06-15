@@ -20,7 +20,8 @@
               "external-discovery",
               "internal-enumeration",
               "cloud-exposure",
-              "risk-prioritization"
+              "risk-prioritization",
+              "cve-exposure-management"
             ]
           }
         }
@@ -50,6 +51,12 @@
       "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/risk-prioritization",
       "name": "risk-prioritization",
       "description": "Reference content for attack-surface-mapping — risk-prioritization",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/attack-surface-mapping/phase/cve-exposure-management",
+      "name": "cve-exposure-management",
+      "description": "Reference content for attack-surface-mapping — cve-exposure-management",
       "mimeType": "text/markdown"
     }
   ]

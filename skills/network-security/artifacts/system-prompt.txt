@@ -231,3 +231,167 @@ Use during Phase 4 to prioritise and implement network hardening controls. Tier 
 | Tier 1 | Protect (PR.AC) | CIS 12, 13 | Req 1, 2 |
 | Tier 2 | Protect + Detect (DE.CM) | CIS 12, 13, 14 | Req 1, 10 |
 | Tier 3 | Detect + Respond (RS.AN) | CIS 14, 16 | Req 10, 11 |
+
+
+
+## cve-patch-management
+
+# Network Device CVE Patch Management — Reference
+
+Use during Phase 5 to track CVE exposure across network infrastructure, prioritise
+patching using CISA KEV, and validate remediation for Cisco, Fortinet, Juniper,
+Palo Alto, VMware, Citrix, and other common network platforms.
+
+## Network Device Vulnerability Scanning
+
+```bash
+# Nessus — scan network infrastructure with credential set
+nessuscli scan new --name "Network Infra CVE Scan" \
+  --policy "Network Devices Credentialed" --targets network-devices.txt
+
+# OpenVAS / Greenbone scan (open source)
+gvm-cli --gmp-username admin socket --socketpath /run/gvmd/gvmd.sock \
+  --xml "<create_target><name>Network Devices</name><hosts>10.0.0.0/24</hosts></create_target>"
+
+# Rapid7 InsightVM — automated patch prioritization for cisco, fortinet, juniper assets
+nexpose-cli scan -t 10.0.0.0/24 --tag "network-infrastructure"
+
+# Trivy — container/VM vulnerability scan (for vmware-hosted virtual network appliances)
+trivy image --severity CRITICAL,HIGH fortinet/fortigate:latest
+
+# Check Cisco IOS version against known CVE list
+ssh admin@cisco-router 'show version' | grep -E 'Version|uptime'
+```
+
+## Critical CVE Reference by Vendor
+
+### Cisco (IOS / IOS XE / NX-OS / ASA / FTD)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2023-20198 | Cisco IOS XE Web UI | 10.0 | Yes | T1190 | Unauthenticated RCE → admin account creation |
+| CVE-2023-20273 | Cisco IOS XE | 7.2 | Yes | T1190 | Privilege escalation post-CVE-2023-20198 |
+| CVE-2016-6366 | Cisco ASA SNMP | 8.5 | Yes | T1190 | Remote code execution via SNMP buffer overflow |
+| CVE-2018-0101 | Cisco ASA VPN | 10.0 | Yes | T1133 | Double-free in SSL/TLS subsystem → RCE |
+
+### Fortinet (FortiOS / FortiGate / FortiProxy)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2024-21762 | Fortinet FortiOS | 9.8 | Yes | T1133 | Out-of-bounds write → remote code execution |
+| CVE-2023-27997 | FortiOS / FortiProxy SSL-VPN | 9.8 | Yes | T1133 | Heap buffer overflow → RCE pre-authentication |
+| CVE-2022-40684 | FortiOS / FortiProxy / FortiSwitch | 9.8 | Yes | T1190 | Authentication bypass → admin operation via API |
+| CVE-2018-13379 | Fortinet FortiGate SSL VPN | 9.8 | Yes | T1552 | Path traversal → credential file disclosure |
+
+### Juniper Networks (Junos OS / Junos OS Evolved)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2023-36844 | Juniper Junos OS EX Series | 9.8 | Yes | T1190 | RCE via J-Web without authentication |
+| CVE-2023-36845 | Juniper Junos OS / Evolved | 9.8 | Yes | T1190 | PHP environment variable manipulation → RCE |
+| CVE-2024-21591 | Juniper Networks SRX / EX | 9.8 | No | T1190 | Out-of-bounds write in J-Web → DoS or RCE |
+
+### Palo Alto Networks (PAN-OS)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2024-3400 | Palo Alto Networks PAN-OS | 10.0 | Yes | T1190 | OS command injection via GlobalProtect Gateway |
+| CVE-2021-3064 | PAN-OS GlobalProtect | 9.8 | Yes | T1190 | Buffer overflow → RCE without authentication |
+| CVE-2020-2021 | Palo Alto Networks PAN-OS | 10.0 | Yes | T1190 | Authentication bypass when SAML enabled |
+
+### VMware (ESXi / vSphere / NSX)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2024-22252 | VMware ESXi / vSphere | 9.3 | Yes | T1210 | Use-after-free in XHCI USB controller → VM escape |
+| CVE-2021-21985 | VMware vCenter | 9.8 | Yes | T1210 | RCE via vSAN plugin without authentication |
+| CVE-2021-22005 | VMware vCenter | 9.8 | Yes | T1190 | Arbitrary file upload → code execution |
+
+### Citrix (NetScaler ADC / Gateway)
+| CVE | Product | CVSS | CISA KEV | ATT&CK | Impact |
+|-----|---------|------|----------|--------|--------|
+| CVE-2023-3519 | Citrix NetScaler ADC / Gateway | 9.8 | Yes | T1190 | Unauthenticated RCE in management interface |
+| CVE-2023-4966 | Citrix NetScaler (Bleed) | 9.4 | Yes | T1552 | Sensitive information disclosure from memory |
+| CVE-2019-19781 | Citrix ADC / Gateway | 9.8 | Yes | T1190 | Path traversal → code execution without auth |
+
+### OpenSSL / TLS Libraries
+| CVE | Library | CVSS | ATT&CK | Impact |
+|-----|---------|------|--------|--------|
+| CVE-2014-0160 (Heartbleed) | OpenSSL 1.0.1–1.0.1f | 7.5 | T1040 | Memory disclosure → private key theft |
+| CVE-2022-0778 | OpenSSL 1.0.2 / 1.1.1 / 3.x | 7.5 | T1499 | Infinite loop in BN_mod_sqrt → DoS |
+| CVE-2023-0286 | OpenSSL 3.x | 7.4 | T1203 | Read/write beyond bounds via X.400 name |
+| CVE-2024-5535 | OpenSSL 3.x | 9.1 | T1203 | SSL_select_next_proto buffer overread |
+
+## Patch Prioritisation Decision Matrix
+
+```
+Step 1: Is CVE in CISA KEV?
+├── Yes → Mandatory patch within due date (usually 2 weeks)
+└── No → Continue to Step 2
+
+Step 2: Is asset internet-facing?
+├── Yes + CVSS ≥ 9.0 → Critical (24h SLA)
+├── Yes + CVSS ≥ 7.0 → High (72h SLA)
+└── No → Continue to Step 3
+
+Step 3: Is asset a crown jewel or segmentation device (cisco router, fortinet firewall, juniper core switch)?
+├── Yes + CVSS ≥ 7.0 → High (72h SLA)
+├── Yes + CVSS ≥ 4.0 → Medium (14 days)
+└── No → Standard patch cycle (30 days)
+```
+
+## Patch Verification Commands
+
+```bash
+# Cisco IOS XE — verify post-patch version
+ssh admin@cisco-xe 'show version | include Cisco IOS XE Software'
+# Expected: version without CVE-2023-20198 affected range (pre-17.3.8a/17.9.3a)
+
+# Fortinet FortiOS — verify patched build
+ssh admin@fortigate 'get system status | grep Version'
+# Expected: 7.4.4+ or 7.2.8+ for CVE-2024-21762
+
+# Juniper Junos OS — verify via CLI
+ssh admin@juniper-srx 'show version | match Junos'
+# Expected: 20.4R3-S9 or 21.4R3-S8 or later for CVE-2023-36844
+
+# Palo Alto PAN-OS — verify via CLI
+ssh admin@panos 'show system info | match sw-version'
+# Expected: 10.2.9-h1 or 11.0.4-h1 for CVE-2024-3400
+
+# VMware ESXi — verify version
+esxcli system version get
+# Compare against VMware VMSA advisory affected version list
+
+# Citrix NetScaler — verify build
+ssh nsroot@netscaler 'show ns version'
+# Expected: 13.1-49.15 or 14.1-12.35 for CVE-2023-3519
+
+# OpenSSL — verify version on linux hosts
+openssl version
+# Expected: 3.3.x for systems running openssl 3.x branch
+
+# nginx version check
+nginx -v 2>&1
+```
+
+## Vendor PSIRT Monitoring Sources
+
+| Vendor | Advisory Feed | SLA | Critical Channel |
+|--------|--------------|-----|-----------------|
+| Cisco | https://sec.cloudapps.cisco.com/security/center/rss/advisories.xml | 24h for CISA KEV | Cisco PSIRT email |
+| Fortinet | https://www.fortiguard.com/rss/advisory.xml | 24h for CISA KEV | FortiGuard PSIRT |
+| Juniper | https://kb.juniper.net/InfoCenter/index?rss | 24h for CISA KEV | Juniper SIRT |
+| Palo Alto | https://security.paloaltonetworks.com/rss.xml | 24h for CISA KEV | Palo Alto PSIRT |
+| VMware | https://www.vmware.com/security/advisories.html | 24h for CISA KEV | Broadcom Security |
+| Citrix | https://support.citrix.com/feed/securitybulletins.rss | 24h for CISA KEV | Citrix Security |
+| OpenSSL | https://www.openssl.org/news/vulnerabilities.xml | Immediate | openssl-announce |
+| nginx | https://nginx.org/en/security_advisories.html | As published | nginx-announce |
+
+## ATT&CK Technique Coverage — Network CVE Exploitation
+
+| ATT&CK ID | Technique | Typical Vendor Affected | Detection |
+|-----------|-----------|------------------------|-----------|
+| T1190 | Exploit Public-Facing Application | Cisco, Fortinet, Palo Alto, Citrix, Apache, nginx | WAF / IDS / VPN logs |
+| T1133 | External Remote Services | Fortinet FortiGate, Cisco AnyConnect, Juniper | VPN auth log anomaly |
+| T1210 | Exploitation of Remote Services | VMware ESXi, Citrix, Juniper | Network scan + exploit attempt signatures |
+| T1068 | Exploitation for Privilege Escalation | Cisco IOS, Linux kernel, OpenSSL | Process anomaly, priv audit |
+| T1203 | Exploitation for Client Execution | OpenSSL library users, Citrix clients | Endpoint telemetry |
+| T1600 | Weaken Encryption | OpenSSL, network device TLS stacks | TLS version / cipher audit |
+| T1499 | Endpoint Denial of Service | nginx, Apache HTTP, OpenSSL | Traffic baseline + alert |
+| T1552 | Unsecured Credentials | FortiGate CVE-2018-13379, Citrix Bleed | File access audit, memory inspection |

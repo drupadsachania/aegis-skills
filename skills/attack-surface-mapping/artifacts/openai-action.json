@@ -32,7 +32,8 @@
                       "external-discovery",
                       "internal-enumeration",
                       "cloud-exposure",
-                      "risk-prioritization"
+                      "risk-prioritization",
+                      "cve-exposure-management"
                     ]
                   }
                 }

@@ -16,6 +16,15 @@ phases:
   - id: ml-attack-surface-guide
     ref: references/ml-attack-surface-guide.md
     lazy: true
+  - id: ml-threat-model
+    ref: references/ml-threat-model.md
+    lazy: true
+  - id: ml-defense-controls
+    ref: references/ml-defense-controls.md
+    lazy: true
+  - id: ml-incident-response
+    ref: references/ml-incident-response.md
+    lazy: true
 tools: [read, search]
 platforms:
   openai:    { model: gpt-4o, tools: true }

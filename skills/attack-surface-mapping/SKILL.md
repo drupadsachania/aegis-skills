@@ -20,6 +20,9 @@ phases:
   - id: risk-prioritization
     ref: references/risk-prioritization.md
     lazy: true
+  - id: cve-exposure-management
+    ref: references/cve-exposure-management.md
+    lazy: true
 tools: [read, search, analyze]
 platforms:
   openai:    { model: gpt-4o, tools: true }

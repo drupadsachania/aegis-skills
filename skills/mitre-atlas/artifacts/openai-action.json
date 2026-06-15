@@ -30,7 +30,10 @@
                     "description": "Which phase to load",
                     "enum": [
                       "atlas-tactics-overview",
-                      "ml-attack-surface-guide"
+                      "ml-attack-surface-guide",
+                      "ml-threat-model",
+                      "ml-defense-controls",
+                      "ml-incident-response"
                     ]
                   }
                 }

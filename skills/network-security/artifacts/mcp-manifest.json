@@ -20,7 +20,8 @@
               "network-inventory",
               "segmentation-review",
               "traffic-analysis",
-              "hardening-checklist"
+              "hardening-checklist",
+              "cve-patch-management"
             ]
           }
         }
@@ -50,6 +51,12 @@
       "uri": "https://aegis-skills.vercel.app/network-security/phase/hardening-checklist",
       "name": "hardening-checklist",
       "description": "Reference content for network-security — hardening-checklist",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/network-security/phase/cve-patch-management",
+      "name": "cve-patch-management",
+      "description": "Reference content for network-security — cve-patch-management",
       "mimeType": "text/markdown"
     }
   ]

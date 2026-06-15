@@ -32,7 +32,8 @@
                       "network-inventory",
                       "segmentation-review",
                       "traffic-analysis",
-                      "hardening-checklist"
+                      "hardening-checklist",
+                      "cve-patch-management"
                     ]
                   }
                 }

@@ -25,6 +25,21 @@
       "id": "ml-attack-surface-guide",
       "lazy": true,
       "tokens": 543
+    },
+    {
+      "id": "ml-threat-model",
+      "lazy": true,
+      "tokens": 1427
+    },
+    {
+      "id": "ml-defense-controls",
+      "lazy": true,
+      "tokens": 1478
+    },
+    {
+      "id": "ml-incident-response",
+      "lazy": true,
+      "tokens": 1651
     }
   ],
   "endpoints": {

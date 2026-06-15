@@ -35,6 +35,11 @@
       "id": "risk-prioritization",
       "lazy": true,
       "tokens": 706
+    },
+    {
+      "id": "cve-exposure-management",
+      "lazy": true,
+      "tokens": 1242
     }
   ],
   "endpoints": {

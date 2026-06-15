@@ -34,6 +34,11 @@
       "id": "hardening-checklist",
       "lazy": false,
       "tokens": 859
+    },
+    {
+      "id": "cve-patch-management",
+      "lazy": true,
+      "tokens": 2093
     }
   ],
   "endpoints": {
