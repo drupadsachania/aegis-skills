@@ -61,7 +61,9 @@ jobs:
           git add health.json
           # Always commit — the generated timestamp changes every run so there's always a diff
           git diff --staged --quiet || git commit -m "chore(health): update skill health scores [skip ci]"
-          git push origin main || echo "Nothing to push"
+          # Pull latest main before pushing to avoid non-fast-forward rejection
+          git pull --rebase origin main
+          git push origin main
 
       - name: Check for skills below threshold
         id: threshold
@@ -103,4 +105,6 @@ jobs:
             --base main \
             --head "$BRANCH" \
             --label "skill-health" \
-            --label "automated" || echo "PR already exists or unable to create"
+            --label "automated" \
+          && echo "PR created successfully" \
+          || echo "PR already exists or branch has no changes vs main — skipping"
