@@ -65,14 +65,18 @@ jobs:
           git pull --rebase origin main
           git push origin main
 
-      - name: Check for skills below threshold
+      - name: Check for skills persistently below threshold
         id: threshold
         run: |
+          # Only flag skills that have been below threshold for >= hysteresis-runs
+          # consecutive runs (below-streak). A single noisy dip does not open a PR.
           FAILING=$(node -e "
             const h=require('./health.json');
+            const t=h['health-threshold']||0.80;
+            const hyst=h['hysteresis-runs']||2;
             const failing=Object.entries(h.skills)
-              .filter(([,v])=>v['health-score']<0.80)
-              .map(([k,v])=>k+' ('+v['health-score']+')');
+              .filter(([,v])=>v['health-score']<t && (v['below-streak']||0)>=hyst)
+              .map(([k,v])=>k+' ('+v['health-score']+', '+v['below-streak']+' runs)');
             console.log(failing.join(', '));
           ")
           if [ -n "$FAILING" ]; then
