@@ -1,0 +1,566 @@
+# Data Loss Prevention (Cross-Layer) Skill
+
+Stop sensitive data leaving the organisation across **every** channel — not just email
+and endpoints. DLP fails when it is bolted onto one layer while data walks out of another.
+This skill drives a defence-in-depth programme: classify data once, then enforce and
+monitor consistently at the network, endpoint, email/SaaS, and cloud/storage layers,
+with unified exfiltration detection and response.
+
+## Core Principle
+
+You cannot protect what you have not classified, and you cannot stop what you cannot see.
+Classification (Phase 1) is the foundation; every enforcement layer references the same
+labels. A control on one layer is only as good as the weakest unmonitored egress path.
+
+## Phase Map
+
+```
+Phase 1 → Data Classification & Discovery   [read: references/data-classification.md]
+Phase 2 → Network DLP (egress / DNS / TLS)  [read: references/network-dlp.md]
+Phase 3 → Endpoint DLP (USB/clipboard/print)[read: references/endpoint-dlp.md]
+Phase 4 → Email & SaaS / CASB               [read: references/email-and-saas-dlp.md]
+Phase 5 → Cloud & Object Storage / DSPM     [read: references/cloud-and-storage-dlp.md]
+Phase 6 → Exfiltration Detection & Response [read: references/exfiltration-detection-and-response.md]
+```
+
+## Exfiltration Kill Chain (ATT&CK Collection → Exfiltration)
+
+| Stage | ATT&CK | Layer that catches it |
+|-------|--------|-----------------------|
+| Data staged locally | T1074 Data Staged | Endpoint DLP |
+| Compressed / encrypted for exfil | T1560 Archive Collected Data | Endpoint + Network |
+| Exfil over C2 channel | T1041 Exfiltration Over C2 | Network DLP |
+| Exfil over web service | T1567 Exfiltration to Cloud/Web | Network + CASB |
+| Exfil over alternative protocol (DNS) | T1048 / T1071.004 | Network DLP (DNS) |
+| Exfil to physical medium (USB) | T1052 Exfiltration Over Physical Medium | Endpoint DLP |
+| Transfer to attacker cloud account | T1537 Transfer Data to Cloud Account | Cloud/Storage DLP |
+
+## Output Format
+
+Produce a layered DLP control map: for each data class, list the enforcement control and
+detection at every layer (network, endpoint, email/SaaS, cloud), the ATT&CK exfiltration
+technique it addresses, the policy mode (monitor / block), and the owner.
+
+
+## data-classification
+
+# Data Classification & Discovery — Reference
+
+Use during Phase 1 to build the classification scheme and discover where sensitive data
+actually lives. Every downstream enforcement layer references these labels — get this wrong
+and the whole programme mislabels or over-blocks.
+
+## 1. Classification Scheme
+
+| Label | Definition | Examples | Default Handling |
+|-------|-----------|----------|------------------|
+| Public | Cleared for public release | Marketing, published docs | No controls |
+| Internal | Default for business data | Internal wikis, non-sensitive email | No external share without review |
+| Confidential | Harm if disclosed | Contracts, source code, roadmaps | Encrypt in transit; block unmanaged share |
+| Restricted | Severe/regulatory harm | PII, PHI, PCI (PAN), secrets, credentials | Encrypt at rest+transit; block egress by default |
+
+Keep it to 3–4 tiers. More tiers = users misclassify and controls become inconsistent.
+
+## 2. Sensitive Data Types & Detection Patterns
+
+| Data Type | Detection Method | Example Pattern |
+|-----------|-----------------|-----------------|
+| Credit card (PAN) | Regex + Luhn checksum | `\b(?:\d[ -]*?){13,19}\b` + Luhn validation |
+| SSN (US) | Regex + context | `\b\d{3}-\d{2}-\d{4}\b` near "SSN"/"social" |
+| API keys / secrets | Entropy + prefix match | `AKIA[0-9A-Z]{16}`, `sk-`, `ghp_`, high-entropy strings |
+| PHI (health) | Dictionary + ICD codes | Diagnosis terms, ICD-10 codes near patient identifiers |
+| Source code | File type + keyword | Proprietary module names, copyright headers |
+| Bank account / IBAN | Regex + country checksum | `[A-Z]{2}\d{2}[A-Z0-9]{11,30}` + mod-97 |
+
+Prefer **exact data match (EDM)** and **document fingerprinting** over pure regex for
+structured databases and known documents — regex alone produces high false-positive rates.
+
+## 3. Discovery — Find the Data First
+
+```
+Discovery order (data at rest → in motion → in use):
+  1. Structured stores  — databases, data warehouses (scan schemas + sample rows via EDM)
+  2. Unstructured stores— file shares, SharePoint, object storage (fingerprint + pattern)
+  3. Endpoints          — local copies staged by users (agent scan)
+  4. SaaS               — Google Drive, M365, Box, Salesforce (API-based DSPM scan)
+  5. Shadow data        — forgotten buckets, dev copies of prod data, backups
+
+Tooling:
+  Microsoft Purview / Google DLP API / AWS Macie   — cloud + SaaS discovery
+  Open-source: Nightfall patterns, gitleaks/trufflehog for secrets in repos
+  DSPM platforms (Cyera, Sentra, Varonis)          — map data + access + risk
+```
+
+## 4. Labelling & Governance
+
+```
+Labelling approaches:
+  Automatic  — classifier applies label on match (best coverage; tune for FPs)
+  User-driven— author selects sensitivity label (Purview MIP / Google labels)
+  Inherited  — child inherits parent container's label
+
+Persist labels as metadata that travels with the file (MIP labels, x-amz-tagging)
+so downstream layers (network, endpoint, cloud) can enforce on the label, not re-scan.
+
+Governance:
+  - Data owner assigned per data domain (accountable for classification accuracy)
+  - Quarterly re-scan; measure % of estate classified and label accuracy (sample audit)
+  - Retention + minimisation: the cheapest DLP is deleting data you don't need
+```
+
+## 5. Regulatory Mapping
+
+| Regulation | Data In Scope | Classification Driver |
+|-----------|--------------|----------------------|
+| GDPR | EU personal data | Restricted; supports data-subject rights |
+| HIPAA | PHI | Restricted; encryption + access logging |
+| PCI DSS | Cardholder data (PAN) | Restricted; tokenise/mask; never store CVV |
+| SOX | Financial reporting data | Confidential; integrity + audit trail |
+| CCPA/CPRA | California personal info | Restricted; sale/share opt-out |
+
+## Output of Phase 1
+
+A data catalogue: for each sensitive data type — where it lives (stores), volume, owner,
+label, and regulation. This feeds the enforcement policies in Phases 2–5.
+
+## ATT&CK Mapping
+T1213 Data from Information Repositories · T1530 Data from Cloud Storage · T1005 Data from Local System · T1039 Data from Network Shared Drive
+
+
+
+## network-dlp
+
+# Network DLP (Egress / DNS / TLS) — Reference
+
+Use during Phase 2 to control data leaving over the network — the layer most email/endpoint
+DLP products ignore. Covers egress filtering, TLS inspection, DNS exfiltration, and
+protocol-level controls.
+
+## 1. Egress Architecture
+
+```
+Principle: all outbound traffic through a controlled, inspected chokepoint.
+No direct internet from servers or user subnets — force through proxy/SWG.
+
+                [ User / Server subnets ]
+                          │
+                 [ Forward proxy / SWG ]  ← TLS inspection + DLP engine
+                          │
+                 [ Egress firewall ]      ← default-deny; allowlist destinations
+                          │
+                     [ Internet ]
+
+Controls:
+  [ ] Default-deny egress firewall; allowlist required destinations/ports
+  [ ] All web traffic via SWG (Zscaler / Netskope / Palo Alto / Cisco Umbrella)
+  [ ] Block direct-to-IP HTTPS that bypasses proxy
+  [ ] Restrict outbound to known-bad categories + newly-registered domains
+```
+
+## 2. TLS Inspection (Break-and-Inspect)
+
+```
+Most exfil is inside TLS — without inspection, network DLP is blind.
+
+  [ ] Deploy TLS inspection at the SWG with an internal CA trusted by managed endpoints
+  [ ] Bypass (do not decrypt) privacy/regulated categories: banking, health, legal
+  [ ] Enforce certificate pinning exceptions via managed allowlist
+  [ ] Alert on TLS to destinations with self-signed / mismatched certs (C2 indicator)
+
+Deep content inspection on decrypted flows:
+  - Match classified-data patterns (PAN, PII, secrets, fingerprints) in HTTP bodies
+  - Block uploads of Restricted-labelled content to unsanctioned destinations
+  - Cap/inspect large POST/PUT bodies to file-sharing and paste sites
+```
+
+## 3. DNS Exfiltration Control
+
+DNS is a favourite covert channel because it is often unfiltered (T1048.003, T1071.004).
+
+| Signal | Detection | Response |
+|--------|-----------|----------|
+| High-entropy subdomains | Shannon entropy > 3.5 on labels | Block domain; alert |
+| Excessive TXT / NULL queries | Rate + record-type baseline | Rate-limit; sinkhole |
+| Long query names / high volume to one domain | Bytes-per-domain over time | Block; investigate host |
+| DNS-over-HTTPS to non-approved resolvers | Block 1.1.1.1:443 / 8.8.8.8:443 unless sanctioned | Force internal resolver |
+
+```
+Controls:
+  [ ] Force all DNS through internal resolvers; block external DNS egress
+  [ ] Enable DNS RPZ + threat-intel feed (block known exfil/C2 domains)
+  [ ] Log all DNS; run entropy + volume analytics (Zeek dns.log, Splunk)
+  [ ] Block or tightly control DoH; only approved DoH resolvers
+```
+
+## 4. Protocol & Channel Controls
+
+| Channel | Risk | Control |
+|---------|------|---------|
+| FTP/SFTP to external | Bulk exfil | Block external FTP; SFTP only to allowlisted partners |
+| Personal webmail | Attachment exfil | Block via SWG category; or read-only |
+| Cloud file-sharing (Dropbox, WeTransfer, personal Drive) | Upload exfil | Block unsanctioned; allow corporate tenants only (tenant restrictions) |
+| Paste sites (pastebin) | Secret/code leak | Block category; inspect POST bodies |
+| ICMP / non-standard ports | Tunnelling | Egress firewall: block; alert on payload anomalies |
+| Messaging (Telegram, Discord) | Covert exfil | SWG category control; inspect where policy allows |
+
+## 5. Network Exfiltration Analytics
+
+```
+Baseline then alert on deviation (per host, per data class):
+  - Outbound bytes per host far above baseline (low-and-slow and bulk)
+  - New external destinations from a host that never talks externally
+  - Data volume to cloud-storage domains after a large internal read
+  - After-hours large transfers from privileged accounts
+
+SIEM correlation:
+  index=proxy OR index=netflow
+  | stats sum(bytes_out) as out by src_ip, dest_domain
+  | where out > baseline*3
+```
+
+## ATT&CK Mapping
+T1041 Exfiltration Over C2 · T1048 Exfiltration Over Alternative Protocol · T1048.003 Unencrypted Non-C2 · T1071.004 DNS · T1567 Exfiltration Over Web Service · T1567.002 Exfil to Cloud Storage · T1572 Protocol Tunneling · T1090 Proxy
+
+
+
+## endpoint-dlp
+
+# Endpoint DLP (USB / Clipboard / Print / Screenshot) — Reference
+
+Use during Phase 3 to control data leaving through the endpoint — the "data in use" layer.
+Endpoint DLP sees content before it hits the network and covers offline channels the
+network never sees (USB, print, local sync).
+
+## 1. Endpoint Channel Control Matrix
+
+| Channel | Risk | Control | ATT&CK |
+|---------|------|---------|--------|
+| USB / removable media | Bulk offline exfil | Block write to unencrypted USB; allowlist by device ID; force encryption | T1052 Exfil over Physical Medium |
+| Clipboard | Copy Restricted → personal app | Block clipboard from managed→unmanaged app; log large copies | T1115 Clipboard Data |
+| Print | Print sensitive docs | Block/limit printing of Restricted labels; watermark; log | T1074 Data Staged |
+| Screenshot / screen capture | Screen-scrape data | Block capture on Restricted windows; watermark screen | T1113 Screen Capture |
+| Local sync clients | Personal Dropbox/Drive on device | Block install / egress of unsanctioned sync agents | T1567.002 |
+| Local staging + archive | Zip before exfil | Alert on mass file access + archive creation | T1560 Archive Collected Data |
+| Bluetooth / AirDrop | Peer exfil | Disable or restrict on managed devices | T1052 |
+
+## 2. Agent Policy Design
+
+```
+Modes (roll out in this order to avoid business disruption):
+  1. Monitor (audit)   — log only; establish baseline + tune false positives (4–6 weeks)
+  2. Warn (soft)       — user prompt + justification on Restricted action; log override
+  3. Block (hard)      — deny the action for Restricted data / unmanaged destinations
+
+Policy anchored on the Phase-1 label (MIP/Purview, Google label) travelling with the file,
+so the agent enforces on classification — not by re-scanning every file each time.
+
+Common agents: Microsoft Purview Endpoint DLP, Forcepoint, Symantec DLP,
+CrowdStrike/Zscaler endpoint DLP, Trellix.
+```
+
+## 3. Content-Aware Rules
+
+| Rule | Trigger | Action |
+|------|---------|--------|
+| Restricted → USB | Copy file labelled Restricted to removable media | Block + alert |
+| >N PII records to any egress | Structured data threshold (e.g., 100 PANs) | Block + escalate |
+| Secrets/keys in clipboard or file | API key / high-entropy pattern | Block + alert SecOps |
+| Source code → personal repo/USB | Proprietary fingerprint match | Block + alert |
+| Mass file access anomaly | 100s of files opened in minutes | Alert (insider/ransomware precursor) |
+
+## 4. Insider Threat & Departing Employees
+
+```
+Elevated monitoring triggers (risk-based, with HR/legal approval):
+  - Resignation submitted / performance plan / access-revocation pending
+  - Access to Restricted data outside normal role pattern
+  - Off-hours bulk downloads, archive creation, USB attempts
+
+Departing-employee DLP protocol:
+  [ ] Increase monitoring sensitivity for the notice period
+  [ ] Review 90-day file access + egress history
+  [ ] Block USB write + personal cloud sync
+  [ ] Disable access promptly on last day; preserve endpoint forensic image
+```
+
+## 5. Coverage & Hardening Gaps
+
+```
+[ ] Agent tamper protection on (users can't kill the DLP service)
+[ ] Coverage report: % of managed endpoints with a healthy agent (target >98%)
+[ ] BYOD / unmanaged devices: no Restricted access, or via VDI/MAM only
+[ ] Offline policy cache so controls apply without network connectivity
+[ ] macOS + Linux coverage, not just Windows (common blind spot)
+```
+
+## ATT&CK Mapping
+T1052 Exfiltration Over Physical Medium · T1052.001 USB · T1115 Clipboard Data · T1113 Screen Capture · T1074 Data Staged · T1560 Archive Collected Data · T1005 Data from Local System · T1119 Automated Collection
+
+
+
+## email-and-saas-dlp
+
+# Email & SaaS / CASB — Reference
+
+Use during Phase 4 to control data leaving through email and SaaS applications — the most
+common exfil path and the one users touch daily. Covers email DLP, collaboration platforms,
+and CASB for sanctioned and shadow SaaS.
+
+## 1. Email DLP
+
+| Control | Purpose | Action |
+|---------|---------|--------|
+| Content inspection (body + attachments) | Detect Restricted data in outbound mail | Block / encrypt / quarantine |
+| Recipient controls | Prevent wrong-recipient leaks | Warn on external; block Restricted to personal domains |
+| Attachment inspection | Catch sensitive files | Scan archives; block encrypted zips that evade inspection |
+| Automatic encryption | Protect legitimate external sends | Force encryption (OME/S-MIME) when Restricted + external |
+| Misdirected-email prevention | #1 accidental breach cause | ML anomaly on recipient/content mismatch (e.g., Tessian-style) |
+
+```
+Email DLP policy ladder:
+  Internal → any                : monitor
+  Confidential → external       : warn + justification, auto-encrypt
+  Restricted → external         : block unless approved + encrypted
+  Restricted → personal webmail : block always
+  Bulk PII/PAN attachment       : block + escalate to SecOps
+
+Watch the evasion paths:
+  - Password-protected archives (inspection-blind) → block or require inspectable format
+  - Data pasted into body to dodge attachment scan → inspect body content
+  - Auto-forward rules to external addresses → alert on rule creation (T1114.003)
+```
+
+## 2. Collaboration & File-Sharing (M365 / Google Workspace / Slack / Box)
+
+```
+Sharing controls:
+  [ ] Default sharing = internal only; external share requires justification/approval
+  [ ] Block "anyone with the link" for Confidential/Restricted labels
+  [ ] Expiry on external share links; periodic access recertification
+  [ ] Label-aware policy: Restricted docs cannot be shared externally at all
+  [ ] Disable/limit external guest access; review guest accounts quarterly
+
+Chat/collab exfil:
+  - DLP on Slack/Teams messages + file uploads (secrets, PII in channels/DMs)
+  - Block connectors/webhooks posting internal data to external services
+```
+
+## 3. CASB — Sanctioned & Shadow SaaS
+
+| CASB Mode | What It Does | Use For |
+|-----------|-------------|---------|
+| API-based (out-of-band) | Scans data at rest in sanctioned SaaS via API | M365, Google, Salesforce, Box, ServiceNow |
+| Inline (proxy) | Real-time control on traffic to SaaS | Block uploads to unsanctioned tenants |
+| Log-based discovery | Finds shadow SaaS from proxy/firewall logs | Shadow IT inventory + risk scoring |
+
+```
+CASB programme:
+  1. Discover — inventory all SaaS in use (shadow IT) from egress logs
+  2. Risk-rank — score each app (compliance, data residency, breach history)
+  3. Sanction / block — allowlist approved tenants; block or coach risky ones
+  4. Tenant restrictions — allow corporate M365/Google tenant, block personal
+     (HTTP header injection: Restrict-Access-To-Tenants / X-GoogApps-Allowed-Domains)
+  5. Enforce DLP — same classification labels applied inside sanctioned SaaS
+  6. Monitor — anomalous downloads, mass sharing, impossible-travel access
+
+CASB platforms: Netskope, Microsoft Defender for Cloud Apps, Zscaler, Palo Alto.
+```
+
+## 4. Generative-AI / LLM Egress (Emerging Channel)
+
+```
+Employees pasting Restricted data into public AI tools is a fast-growing leak path:
+  [ ] Discover AI-tool usage via CASB/SWG (ChatGPT, Claude, Gemini, Copilot, etc.)
+  [ ] Policy: block Restricted/source-code paste into consumer AI; route to enterprise tenant
+  [ ] Inspect prompts at the SWG where policy allows; coach users on approved tools
+  [ ] Provide a sanctioned enterprise AI with no-training + data-residency guarantees
+```
+
+## 5. Metrics
+
+| Metric | Target |
+|--------|--------|
+| Outbound Restricted emails blocked/encrypted | 100% of policy hits |
+| External "anyone" links on Restricted content | 0 |
+| Shadow SaaS apps with Restricted data | Trend → 0 (sanction or block) |
+| Mean time to revoke risky external share | < 24h |
+
+## ATT&CK Mapping
+T1567 Exfiltration Over Web Service · T1114 Email Collection · T1114.003 Email Forwarding Rule · T1530 Data from Cloud Storage · T1213 Data from Information Repositories · T1537 Transfer Data to Cloud Account
+
+
+
+## cloud-and-storage-dlp
+
+# Cloud & Object Storage / DSPM — Reference
+
+Use during Phase 5 to control data leaving through cloud infrastructure and object storage —
+where the largest breaches happen (public buckets, over-permissive access, snapshot sharing).
+Covers AWS/Azure/GCP storage, DSPM, and cloud-native exfiltration paths.
+
+## 1. Object Storage Exposure Controls
+
+| Cloud | Exposure Risk | Control |
+|-------|--------------|---------|
+| AWS S3 | Public bucket / ACL | Enable Block Public Access (account + bucket); SCP to deny public ACLs |
+| Azure Blob | Anonymous public access | Disable `allowBlobPublicAccess`; private endpoints |
+| GCP Cloud Storage | `allUsers` / `allAuthenticatedUsers` IAM | Enforce uniform bucket-level access; org policy deny public |
+
+```
+Baseline hardening:
+  [ ] Default-deny public access at the org/account level (not per-bucket)
+  [ ] Encrypt at rest with CMK; deny unencrypted PutObject via bucket policy
+  [ ] Enforce TLS-only access (aws:SecureTransport / supportsHttpsTrafficOnly)
+  [ ] Enable object-level logging (S3 access logs / CloudTrail data events)
+  [ ] Versioning + Object Lock on Restricted buckets (anti-tamper/ransomware)
+```
+
+## 2. Cloud-Native Exfiltration Paths (Often Missed)
+
+| Path | Technique | Control |
+|------|-----------|---------|
+| Copy data to attacker-controlled account | T1537 Transfer Data to Cloud Account | Deny cross-account share; SCP allowlist trusted accounts; alert on external share |
+| Public snapshot / AMI sharing | T1537 | Deny public EBS/RDS snapshot sharing; scan for public snapshots |
+| Presigned URL abuse | T1567.002 | Short expiry; log generation; alert on bulk presign |
+| Cross-region replication to rogue bucket | T1537 | Restrict replication destinations to approved accounts |
+| Data via compute (exfil from EC2/function) | T1041 / T1048 | Egress controls on VPC; VPC endpoints; no public IPs on data-tier |
+| Credential-based bulk download | T1530 | Anomaly detection on GetObject volume; IMDSv2 to limit cred theft |
+
+## 3. DSPM — Data Security Posture Management
+
+```
+DSPM continuously answers: where is sensitive data, who can access it, how is it exposed?
+
+  1. Discover  — scan all cloud stores + SaaS for sensitive data (agentless, API-based)
+  2. Classify  — apply the same Phase-1 labels to cloud data at rest
+  3. Map access— resolve effective permissions (who/what can reach each data store)
+  4. Find risk — public exposure, over-privileged roles, unencrypted, stale sensitive data
+  5. Prioritise— rank by (sensitivity × exposure × access breadth)
+  6. Remediate — auto-ticket / auto-remediate public + over-permissive findings
+
+Platforms: AWS Macie, Microsoft Purview, Google DLP/SDP, Cyera, Sentra, Wiz DSPM, Varonis.
+```
+
+## 4. Access & Identity Controls for Data
+
+```
+Data exfil is usually an access problem:
+  [ ] Least-privilege on data stores; no wildcard s3:* / storage.admin on Restricted
+  [ ] Just-in-time + approval for bulk-export / admin data roles
+  [ ] Separate roles for read vs. bulk-export; alert on bulk-export role use
+  [ ] Service accounts scoped to specific buckets; rotate keys; prefer workload identity
+  [ ] IAM Access Analyzer / equivalent to surface external + public data access
+```
+
+## 5. Monitoring & Detection Queries
+
+```
+CloudTrail / cloud audit signals to alert on:
+  - PutBucketAcl / PutBucketPolicy making a bucket public
+  - ModifySnapshotAttribute / ModifyImageAttribute adding "all" (public share)
+  - Cross-account GetObject or replication to an unrecognised account
+  - Spike in GetObject volume vs. baseline for a principal (bulk download)
+  - New presigned-URL generation at scale
+  - Sensitive bucket accessed from a new region / new IP / new principal
+
+Example (bulk download):
+  source=cloudtrail eventName=GetObject
+  | stats sum(bytesTransferred) as vol by userIdentity.arn, bucket
+  | where vol > baseline*3
+```
+
+## ATT&CK Mapping
+T1530 Data from Cloud Storage · T1537 Transfer Data to Cloud Account · T1567.002 Exfil to Cloud Storage · T1580 Cloud Infrastructure Discovery · T1552.005 Cloud Instance Metadata · T1078.004 Cloud Accounts · T1619 Cloud Storage Object Discovery
+
+
+
+## exfiltration-detection-and-response
+
+# Exfiltration Detection & Response — Reference
+
+Use during Phase 6 to unify the signals from every layer into detection analytics and a
+response playbook. DLP that only blocks at each layer independently misses the slow,
+multi-channel exfil that spans network, endpoint, and cloud. Correlate, then respond.
+
+## 1. Unified Detection Model
+
+```
+Feed every layer's telemetry into one correlation plane (SIEM/XDR):
+  Network DLP  → proxy/SWG logs, DNS logs, netflow, CASB alerts
+  Endpoint DLP → agent events (USB, clipboard, print, archive, mass-access)
+  Email/SaaS   → mail DLP hits, external-share events, forwarding-rule creation
+  Cloud/DSPM   → CloudTrail data events, bucket-policy changes, bulk GetObject
+
+Correlate on the actor (user/host/principal) across layers — not per-alert silos.
+```
+
+## 2. High-Value Detection Analytics
+
+| Detection | Signal | ATT&CK | Priority |
+|-----------|--------|--------|----------|
+| Mass internal read → external transfer | Large repo/share access then outbound spike | T1213 → T1567 | Critical |
+| Archive-then-exfil | Zip/rar creation followed by upload/USB | T1560 → T1041/T1052 | High |
+| Low-and-slow exfil | Small consistent outbound over days to one dest | T1030 | High |
+| DNS tunnelling | High-entropy/high-volume DNS to one domain | T1071.004 | High |
+| Departing-employee bulk activity | Off-hours downloads during notice period | T1074 | High |
+| Cloud bulk download / public share | GetObject spike or bucket made public | T1530/T1537 | Critical |
+| Personal-cloud / AI-tool upload of Restricted | CASB/SWG upload of labelled data | T1567.002 | High |
+| New-recipient large email | External send well above sender baseline | T1567 | Medium |
+
+## 3. Behavioural Baselining (UEBA)
+
+```
+Static thresholds miss insiders and over-alert on normal spikes. Baseline per entity:
+  - Per-user: typical data volume, destinations, hours, apps, cloud access
+  - Per-host: normal egress destinations and volume
+  - Per-principal (cloud): normal API + data-access pattern
+
+Alert on deviation (e.g., >3σ) weighted by data sensitivity and account privilege.
+Risk-score the entity; escalate when multiple weak signals stack on one actor.
+```
+
+## 4. Response Playbook — Suspected Exfiltration
+
+```
+TRIAGE (minutes):
+  1. Confirm the alert: what data class, what volume, which channel, which actor
+  2. Pull the actor's cross-layer activity (network + endpoint + email + cloud)
+  3. Classify: accidental (misdirected email) vs. malicious (staged + archived + exfil)
+
+CONTAIN:
+  4. Malicious/insider: with HR+legal, suspend account, block egress, isolate endpoint
+  5. Accidental: recall/expire the share, encrypt/quarantine the message, coach user
+  6. Cloud: revoke keys, remove public/cross-account share, rotate credentials
+
+INVESTIGATE:
+  7. Scope: what data actually left, to where, over what window (preserve evidence)
+  8. Endpoint forensic image if malicious; export DLP + proxy + CloudTrail evidence
+  9. Determine breach-notification obligations (GDPR 72h, HIPAA, state laws)
+
+RECOVER & IMPROVE:
+  10. Close the exploited egress path (the gap that let data leave)
+  11. Add/tune a detection so the same pattern is caught earlier next time
+  12. Post-incident review; update policy mode (monitor→block) where warranted
+```
+
+## 5. Programme Metrics & Maturity
+
+| Metric | What It Shows | Target |
+|--------|--------------|--------|
+| % estate classified | Foundation coverage | > 90% |
+| DLP coverage per layer | No blind egress layer | All 4 layers enforced |
+| False-positive rate | Policy tuning health | < 5% of alerts |
+| Mean time to detect exfil | Detection efficacy | Trending down |
+| Mean time to contain | Response efficacy | < 4h for Critical |
+| Repeat-incident rate | Learning loop working | Trending to 0 |
+
+```
+Maturity ladder:
+  L1 Reactive  — email/endpoint DLP only, monitor mode, no correlation
+  L2 Defined   — classification done, all layers in monitor, basic alerts
+  L3 Managed   — block mode on Restricted, cross-layer correlation, UEBA
+  L4 Optimised — risk-adaptive policy, automated response, closed learning loop
+```
+
+## ATT&CK Mapping
+T1074 Data Staged · T1560 Archive Collected Data · T1030 Data Transfer Size Limits · T1041 Exfiltration Over C2 · T1048 Exfil Over Alternative Protocol · T1567 Exfil Over Web Service · T1052 Exfil Over Physical Medium · T1530 Data from Cloud Storage · T1537 Transfer Data to Cloud Account · T1213 Data from Information Repositories

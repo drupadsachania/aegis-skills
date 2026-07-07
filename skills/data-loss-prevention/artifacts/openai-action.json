@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "operational-technology skill",
-    "description": "OT/ICS security programme covering asset discovery, risk assessment, network security (ISA/IEC 62443 zone and conduit model), incident detection and response, and compliance with NERC CIP and ISA/IEC 62443. Triggers for: OT asset inventory, ICS security assessment, OT network segmentation, NERC CIP compliance, ICS incident response, or Purdue model zone design.\n",
+    "title": "data-loss-prevention skill",
+    "description": "Cross-layer data loss prevention (DLP) programme covering data classification and discovery, network egress and DNS exfiltration control, endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP, this treats every layer where data can leave. Triggers for: DLP programme design, data classification, exfiltration detection, insider threat data controls, CASB/DSPM rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.\n",
     "version": "1.0.0"
   },
   "servers": [
@@ -11,10 +11,10 @@
     }
   ],
   "paths": {
-    "/operational-technology/invoke": {
+    "/data-loss-prevention/invoke": {
       "post": {
-        "operationId": "invoke_operational_technology",
-        "summary": "Load a phase of the operational-technology skill",
+        "operationId": "invoke_data_loss_prevention",
+        "summary": "Load a phase of the data-loss-prevention skill",
         "requestBody": {
           "required": true,
           "content": {
@@ -29,13 +29,12 @@
                     "type": "string",
                     "description": "Which phase to load",
                     "enum": [
-                      "ot-asset-discovery",
-                      "risk-and-vulnerability-assessment",
-                      "network-security",
-                      "incident-detection-and-response",
-                      "resilience-and-compliance",
-                      "ics-protocol-security",
-                      "safety-instrumented-systems"
+                      "data-classification",
+                      "network-dlp",
+                      "endpoint-dlp",
+                      "email-and-saas-dlp",
+                      "cloud-and-storage-dlp",
+                      "exfiltration-detection-and-response"
                     ]
                   }
                 }

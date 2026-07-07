@@ -1,0 +1,70 @@
+{
+  "schema": "mcp/1.0",
+  "name": "data-loss-prevention",
+  "version": "1.0.0",
+  "description": "Cross-layer data loss prevention (DLP) programme covering data classification and discovery, network egress and DNS exfiltration control, endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP, this treats every layer where data can leave. Triggers for: DLP programme design, data classification, exfiltration detection, insider threat data controls, CASB/DSPM rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the data-loss-prevention skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "data-classification",
+              "network-dlp",
+              "endpoint-dlp",
+              "email-and-saas-dlp",
+              "cloud-and-storage-dlp",
+              "exfiltration-detection-and-response"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/data-classification",
+      "name": "data-classification",
+      "description": "Reference content for data-loss-prevention — data-classification",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/network-dlp",
+      "name": "network-dlp",
+      "description": "Reference content for data-loss-prevention — network-dlp",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/endpoint-dlp",
+      "name": "endpoint-dlp",
+      "description": "Reference content for data-loss-prevention — endpoint-dlp",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/email-and-saas-dlp",
+      "name": "email-and-saas-dlp",
+      "description": "Reference content for data-loss-prevention — email-and-saas-dlp",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/cloud-and-storage-dlp",
+      "name": "cloud-and-storage-dlp",
+      "description": "Reference content for data-loss-prevention — cloud-and-storage-dlp",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/exfiltration-detection-and-response",
+      "name": "exfiltration-detection-and-response",
+      "description": "Reference content for data-loss-prevention — exfiltration-detection-and-response",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

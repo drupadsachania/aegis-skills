@@ -21,7 +21,9 @@
               "risk-and-vulnerability-assessment",
               "network-security",
               "incident-detection-and-response",
-              "resilience-and-compliance"
+              "resilience-and-compliance",
+              "ics-protocol-security",
+              "safety-instrumented-systems"
             ]
           }
         }
@@ -57,6 +59,18 @@
       "uri": "https://aegis-skills.vercel.app/operational-technology/phase/resilience-and-compliance",
       "name": "resilience-and-compliance",
       "description": "Reference content for operational-technology — resilience-and-compliance",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/ics-protocol-security",
+      "name": "ics-protocol-security",
+      "description": "Reference content for operational-technology — ics-protocol-security",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/safety-instrumented-systems",
+      "name": "safety-instrumented-systems",
+      "description": "Reference content for operational-technology — safety-instrumented-systems",
       "mimeType": "text/markdown"
     }
   ]

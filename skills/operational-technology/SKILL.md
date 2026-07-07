@@ -25,6 +25,12 @@ phases:
   - id: resilience-and-compliance
     ref: references/resilience-and-compliance.md
     lazy: true
+  - id: ics-protocol-security
+    ref: references/ics-protocol-security.md
+    lazy: true
+  - id: safety-instrumented-systems
+    ref: references/safety-instrumented-systems.md
+    lazy: true
 tools: [read, search, analyze]
 platforms:
   openai:    { model: gpt-4o, tools: true }

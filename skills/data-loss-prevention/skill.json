@@ -1,0 +1,101 @@
+{
+  "osk": "1.0",
+  "name": "data-loss-prevention",
+  "version": "1.0.0",
+  "description": "Cross-layer data loss prevention (DLP) programme covering data classification and discovery, network egress and DNS exfiltration control, endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP, this treats every layer where data can leave. Triggers for: DLP programme design, data classification, exfiltration detection, insider threat data controls, CASB/DSPM rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.\n",
+  "frameworks": [
+    "mitre-attack",
+    "nist-800-53",
+    "iso27001"
+  ],
+  "tags": [
+    "security",
+    "dlp",
+    "data-protection",
+    "exfiltration",
+    "casb",
+    "dspm",
+    "insider-threat",
+    "egress",
+    "classification"
+  ],
+  "phases": [
+    {
+      "id": "data-classification",
+      "lazy": false,
+      "tokens": 1031
+    },
+    {
+      "id": "network-dlp",
+      "lazy": true,
+      "tokens": 1028
+    },
+    {
+      "id": "endpoint-dlp",
+      "lazy": true,
+      "tokens": 920
+    },
+    {
+      "id": "email-and-saas-dlp",
+      "lazy": true,
+      "tokens": 1072
+    },
+    {
+      "id": "cloud-and-storage-dlp",
+      "lazy": true,
+      "tokens": 1029
+    },
+    {
+      "id": "exfiltration-detection-and-response",
+      "lazy": true,
+      "tokens": 1110
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/data-loss-prevention",
+    "action": "https://aegis-skills.vercel.app/data-loss-prevention/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/data-loss-prevention/download"
+  },
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed",
+      "cisa-advisories"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "cisa-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 90,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "hybrid",
+      "endpoint"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "technology",
+      "government",
+      "legal"
+    ],
+    "attack-surface-tags": [
+      "data-exfiltration",
+      "insider-threat",
+      "egress",
+      "saas",
+      "cloud-storage",
+      "email"
+    ]
+  }
+}

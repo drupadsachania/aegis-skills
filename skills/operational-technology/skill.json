@@ -45,6 +45,16 @@
       "id": "resilience-and-compliance",
       "lazy": true,
       "tokens": 1976
+    },
+    {
+      "id": "ics-protocol-security",
+      "lazy": true,
+      "tokens": 1382
+    },
+    {
+      "id": "safety-instrumented-systems",
+      "lazy": true,
+      "tokens": 1346
     }
   ],
   "endpoints": {
