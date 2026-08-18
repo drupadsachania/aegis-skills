@@ -1,7 +1,7 @@
 {
   "name": "@aegis-skills/core",
-  "version": "0.1.3",
-  "description": "Universal skill library for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
+  "version": "0.2.0",
+  "description": "Universal security skill library (23 skills) for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
   "type": "commonjs",
   "main": "src/compiler.js",
   "bin": {
