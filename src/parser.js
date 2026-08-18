@@ -47,11 +47,20 @@ async function parseSkill(skillDir) {
     })
   )
 
+  // Machine-maintained intel state (written by scripts/intel-sync.js) lives in its
+  // own file so recompiling from SKILL.md never clobbers it, and so intel-sync
+  // never has to edit curated frontmatter. Merged into self-learning at manifest time.
+  let intelState = null
+  try {
+    intelState = JSON.parse(await fs.readFile(path.join(skillDir, 'intel-state.json'), 'utf8'))
+  } catch { /* no intel synced yet */ }
+
   return {
     ...frontmatter,
     body: body.trim(),
     bodyTokens: estimateTokens(body),
     phases,
+    intelState,
     skillDir
   }
 }

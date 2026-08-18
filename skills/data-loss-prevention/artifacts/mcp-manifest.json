@@ -22,7 +22,8 @@
               "endpoint-dlp",
               "email-and-saas-dlp",
               "cloud-and-storage-dlp",
-              "exfiltration-detection-and-response"
+              "exfiltration-detection-and-response",
+              "live-threat-intel"
             ]
           }
         }
@@ -64,6 +65,12 @@
       "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/exfiltration-detection-and-response",
       "name": "exfiltration-detection-and-response",
       "description": "Reference content for data-loss-prevention — exfiltration-detection-and-response",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/data-loss-prevention/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for data-loss-prevention — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

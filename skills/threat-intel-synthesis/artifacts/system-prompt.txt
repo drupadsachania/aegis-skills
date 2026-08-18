@@ -1,0 +1,810 @@
+# Threat Intelligence Synthesis Skill
+
+Raw threat intelligence is not knowledge. A feed of headlines, CVEs, and actor names
+becomes useful only when it is converted into **repeatable attack patterns**, a
+**reconstruction of what actually happened**, and an honest **map of what you do and do
+not cover**. This skill performs that conversion, and feeds the result back into the
+rest of the skill library.
+
+## Core Principle
+
+Intelligence is only actionable when it changes a decision. Every synthesis run must end
+with one of: a new detection, a closed coverage gap, a revised control priority, or an
+explicit "no change — already covered." An intel summary that changes nothing is noise
+with citations.
+
+## Phase Map
+
+```
+Phase 1 → Intel Ingestion & Normalisation  [read: references/intel-ingestion.md]
+Phase 2 → Attack Pattern Extraction        [read: references/attack-pattern-extraction.md]
+Phase 3 → Incident Reconstruction          [read: references/incident-reconstruction.md]
+Phase 4 → Attack Surface Coverage Mapping  [read: references/attack-surface-coverage.md]
+Phase 5 → Intel → Detection Engineering    [read: references/intel-to-detection.md]
+Phase 6 → Continuous Learning Loop         [read: references/continuous-learning-loop.md]
+```
+
+## Analytic Discipline (applies to every phase)
+
+- **Separate observation from inference.** State what a source reported, then what you
+  concluded. Never let a conclusion inherit the confidence of a fact.
+- **Attribution is context, not conclusion.** Naming an actor explains *how* they
+  operate; it rarely changes what you must defend. Prefer TTP-driven action over
+  actor-driven action, and mark attribution confidence explicitly.
+- **Use estimative language with confidence levels.** High / Moderate / Low, and say
+  what would change your mind.
+- **Preserve provenance.** Every claim carries its source and date. Intel decays; an
+  undated assertion cannot be aged out.
+- **Never editorialise the victim.** Most breaches exploit design traps, not stupidity.
+
+## Output Format
+
+Produce a synthesis record:
+
+| Field | Content |
+|-------|---------|
+| Pattern | The reusable attack pattern (not the one-off incident) |
+| ATT&CK | Technique IDs across the chain |
+| Surface | Which attack-surface area it lands in |
+| Coverage | Covered / partial / gap — against existing controls and skills |
+| Action | Detection to build, control to change, or "already covered" |
+| Confidence | High / Moderate / Low + what would change it |
+| Provenance | Source + date |
+
+## Live Intel Integration
+
+Skills in this library carry an auto-maintained `references/live-threat-intel.md`
+section, refreshed weekly by `scripts/intel-sync.js` from the operator's threat-intel
+corpus. That block is machine-generated between markers — treat it as current
+observations to reason over, and treat the surrounding curated references as the
+durable, human-authored tradecraft.
+
+
+## intel-ingestion
+
+# Intel Ingestion & Normalisation — Reference
+
+Use during Phase 1 to pull heterogeneous intel into one observation model. Everything
+downstream depends on this normalisation; skip it and you end up comparing a headline to
+a forensic teardown as if they carried equal weight.
+
+## 1. Source Tiers (weight by evidentiary strength)
+
+| Tier | Source Type | Evidentiary Weight | Typical Use |
+|------|------------|-------------------|-------------|
+| A | First-party IR / forensic report, vendor teardown with telemetry | Highest — observed artefacts | Detection logic, TTP truth |
+| B | Vendor threat research, CISA/NCSC advisory, KEV entry | High — analysed, sourced | Pattern extraction, prioritisation |
+| C | Reputable security journalism (The Hacker News, BleepingComputer, SecurityWeek) | Moderate — reported, often derivative | Trend signal, early warning |
+| D | Vendor marketing, unattributed blog, social chatter | Low — treat as lead only | Corroborate before use |
+
+**Rule:** never build a detection on Tier C/D alone. Use it to *find* the Tier A/B source.
+
+## 2. Normalised Observation Model
+
+Every ingested item collapses to this shape:
+
+```json
+{
+  "id": "sha256(title+date)",
+  "date": "2026-08-18",
+  "title": "...",
+  "summary": "...",
+  "source": "The Hacker News",
+  "source_tier": "C",
+  "category": "threat_intel | breaches | ai_redteam | tools | vuln",
+  "cves": ["CVE-2026-19478"],
+  "actors": ["Mustang Panda"],
+  "orgs": ["GitLab"],
+  "tags": ["vulnerability", "supply-chain", "devops"],
+  "techniques": ["T1190", "T1195.002"],
+  "surfaces": ["application-security", "attack-surface-mapping"],
+  "confidence": "moderate",
+  "provenance": {"url": "...", "retrieved": "2026-08-18"}
+}
+```
+
+`techniques` and `surfaces` are *derived* in Phase 2/4 — ingestion leaves them empty.
+
+## 3. Corpus Types and How to Read Them
+
+| Corpus | Shape | What It Is Good For | What It Is Not |
+|--------|-------|--------------------|----------------|
+| Daily article feed (`*_articles.json`) | Array of items with `cves/actors/orgs/tags/category` | Breadth, timeliness, trend detection | Depth — summaries lack technique detail |
+| Knowledge graph (`knowledge_graph.json`) | Typed nodes (`cve/org/actor/tool/concept`) + weighted links (`exploits/targets/affects`) with `first_seen/last_seen/count` | Relationships, recurrence, campaign shape | Causality — co-occurrence is not linkage |
+| Attack breakdowns (`attack-breakdown-*.md`) | Long-form teardown with ATT&CK IDs, detection pseudocode, blind-spot analysis | Tier-A depth, detection logic, durable tradecraft | Coverage — one technique at a time |
+| Weekly recaps (`this-week-in-security-*.md`) | Curated 5–7 items with named sources | Editorial signal — what mattered most | Completeness |
+
+## 4. Deduplication
+
+The same story arrives repeatedly across sources and days. Deduplicate on, in order:
+
+```
+1. CVE identity      — same CVE set = same underlying issue (strongest key)
+2. Title similarity  — normalised token Jaccard > 0.6
+3. Org + actor + week— same victim + same actor within 7 days
+```
+
+Keep the **highest-tier** version as canonical; retain the others as corroboration count.
+Corroboration across independent Tier B/C sources raises confidence; the same wire story
+republished five times does not.
+
+## 5. Quality Gates Before Anything Downstream
+
+```
+[ ] Dated — undated intel cannot be aged or trended; reject or infer conservatively
+[ ] Sourced — a claim without a retrievable source is a rumour
+[ ] Tiered — evidentiary weight assigned
+[ ] De-duplicated against the existing corpus
+[ ] Soft numbers flagged — "~7 million", "at least 12 states", "investigating, not
+    confirmed" stay soft downstream; never harden an estimate by restating it
+[ ] Attribution marked with confidence, never asserted as fact from a single source
+```
+
+## 6. Handling Uncertainty and Correction
+
+Intel is provisional. Record `superseded_by` when a later report corrects an earlier one,
+and never silently delete the original — the correction history is itself signal about
+source reliability. Track per-source accuracy over time; a source that repeatedly
+over-claims should have its tier lowered.
+
+## ATT&CK Mapping
+This phase produces no techniques directly; it prepares the corpus that Phase 2 maps to
+ATT&CK Enterprise, ATT&CK for ICS, and ATLAS.
+
+
+
+## attack-pattern-extraction
+
+# Attack Pattern Extraction — Reference
+
+Use during Phase 2 to convert individual incidents into **reusable patterns**. One breach
+is an anecdote; the pattern behind twenty breaches is what you actually defend against.
+
+## 1. Incident → Pattern
+
+An incident is specific (this victim, this CVE, this week). A pattern is the transferable
+abstraction. Extract by stripping the particulars and keeping the mechanism.
+
+| Incident (specific) | Pattern (reusable) |
+|--------------------|--------------------|
+| CVE-2026-19478 GraphQL flaw deletes GitLab projects | Unauthenticated API mutation on a self-managed dev platform → destructive data loss (T1190 → T1485) |
+| Crafted GitHub issue title injects into CI shell block, leaks Jira creds | Untrusted input reaching a CI `run:` block → secret disclosure (T1195.002 → T1552.004) |
+| SOHO router DNS hijack → AiTM theft of M365 tokens | Edge-device compromise → DNS control → session-token theft bypassing MFA (T1584.005 → T1557 → T1550.004) |
+| Internet-facing PLCs at water utilities | Unauthenticated ICS protocol reachable from internet → process manipulation (T0886 → T0855) |
+
+**Test for a real pattern:** could it recur with a different vendor, CVE, and victim?
+If no, it is still an incident.
+
+## 2. Technique Mapping Discipline
+
+Map to the **whole chain**, not a single technique. A finding with one technique ID is
+almost always under-mapped.
+
+```
+For each pattern, fill the chain that applies:
+  Initial Access    → how they got in
+  Execution         → what ran
+  Persistence       → how they stayed
+  Priv Escalation   → how they gained rights
+  Defense Evasion   → what they hid from
+  Credential Access → what they stole
+  Discovery/Lateral → how they moved
+  Collection        → what they gathered
+  C2 / Exfiltration → how it left
+  Impact            → the damage
+```
+
+Choose the framework by system type: **ATT&CK Enterprise** (IT), **ATT&CK for ICS**
+(T0xxx, OT/process), **ATLAS** (AML.Txxxx, ML/AI systems). A converged incident may need
+two — an IT foothold (T1190) leading to ICS impact (T0855).
+
+### Mapping Rules
+- Map to the **most specific** sub-technique the evidence supports, and no further.
+  `T1059` when the reporting says "ran a script"; `T1059.001` only if it names PowerShell.
+- Do not infer techniques the source never described. Under-mapping is recoverable;
+  fabricated mappings poison every downstream coverage calculation.
+- Record mapping confidence alongside the ID.
+
+## 3. Pattern Clustering
+
+Group patterns to find the structural themes worth investing in:
+
+```
+Cluster by:
+  Entry vector     — edge device / phishing / supply chain / valid accounts / exposed service
+  Target surface   — identity / network / endpoint / cloud / OT / ML / data
+  Objective        — ransomware / espionage / data theft / fraud / disruption / hacktivism
+  Novelty          — new technique | new application of old technique | pure repetition
+
+The highest-value cluster is almost always:
+  "old technique, still working, because the detection debt was never paid"
+That is where your effort converts to risk reduction — not the novel zero-day.
+```
+
+## 4. Recurrence and Trend Signals
+
+Knowledge-graph node/link metadata (`count`, `first_seen`, `last_seen`) is the trend
+engine. Read it as follows:
+
+| Signal | Meaning | Response |
+|--------|---------|----------|
+| Node `count` rising week-over-week | Technique/actor/org gaining prominence | Prioritise coverage review |
+| New node appearing, high initial count | Emergent threat or newly disclosed class | Rapid assessment — is it in scope? |
+| Rising edge weight `actor → cve` | Active exploitation campaign | Check exposure to that CVE now |
+| Rising edge weight `cve → org` | Vendor under sustained pressure | Review all products from that vendor |
+| `last_seen` going stale | Threat receding or reporting fatigue | Age out; do not delete history |
+| Same pattern, new victims, no new technique | Detection debt, not adversary innovation | Fix the control gap |
+
+## 5. Novelty Assessment (avoid hype-driven prioritisation)
+
+```
+Is the technique genuinely new?
+├── New primitive never seen before                     → rare; deep analysis warranted
+├── New application of a known technique                → update existing detection
+├── New tooling that commoditizes a known technique     → HIGH priority: skill floor
+│   dropped, expect volume increase (e.g. Certipy, ForgeCert for AD CS abuse)
+└── Pure repetition of a documented technique           → coverage question, not research
+
+Commoditization is the most under-rated signal. When a technique becomes one command in
+a public tool, "advanced" stops being a useful label and prevalence jumps.
+```
+
+## 6. Pattern Record Template
+
+| Field | Example |
+|-------|---------|
+| Pattern name | CI workflow injection via untrusted issue metadata |
+| Chain | T1195.002 → T1059 → T1552.004 → T1567 |
+| Entry vector | Supply chain / CI |
+| Target surface | Application security, DevOps |
+| Objective | Credential theft |
+| Novelty | Known technique, recurring — detection debt |
+| Prevalence | Rising (3 incidents in 6 weeks) |
+| Confidence | High (Tier B vendor research with PoC detail) |
+| Provenance | Wiz research, 2026-08-18 |
+
+## ATT&CK Coverage
+T1190 T1195 T1195.002 T1199 T1078 T1133 T1566 T1059 T1552 T1552.004 T1557 T1550
+T1550.004 T1584 T1584.005 T1485 T1486 T1567 T1041 · ICS: T0855 T0886 T0843 · ATLAS: AML.T0020 AML.T0040
+
+
+
+## incident-reconstruction
+
+# Incident Reconstruction — "Map Out What Happened" — Reference
+
+Use during Phase 3 to rebuild an incident end-to-end from fragmentary public reporting.
+The goal is a defensible narrative: what happened, in what order, with what evidence, and
+where the reporting is silent.
+
+## 1. Reconstruction Method
+
+```
+1. Anchor the timeline    — fix every dated fact to a timeline first
+2. Place the entry point  — how did they get in? (if unknown, say so explicitly)
+3. Walk the chain forward — each step must be evidenced or explicitly marked inferred
+4. Identify the pivot     — the moment containment became hard (see §4)
+5. Locate the detection   — how were they found, and how late?
+6. Mark the silences      — what the reporting does NOT say is analytically important
+```
+
+**Never smooth over a gap.** A reconstruction that reads as a seamless story is usually
+part fiction. Mark every inference.
+
+## 2. Timeline Template
+
+| Time | Event | Evidence | Confidence | Source |
+|------|-------|----------|-----------|--------|
+| T-90d | Initial access via edge device | Vendor IR report | High | Microsoft, 2026-08-11 |
+| T-89d | Credential harvesting | Inferred from later access | **Moderate — inferred** | — |
+| T-14d | Lateral movement to file server | Log excerpt in report | High | Vendor |
+| T-0 | Ransomware deployed | Public confirmation | High | Victim statement |
+| T+3d | Detection & disclosure | Press release | High | Victim |
+
+**Dwell time** (entry → detection) is the single most instructive metric to extract. It
+tells you which control layer failed, not merely that one did.
+
+## 3. Diamond Model Framing
+
+For each incident, populate all four vertices — gaps are as informative as content:
+
+```
+        Adversary  (who — with confidence; often unknown)
+            │
+Infrastructure ─── Capability   (C2, tooling, malware, exploit)
+            │
+         Victim    (sector, geography, why them — target of choice or of opportunity?)
+
+Key question: was this victim SELECTED or merely REACHABLE?
+Target-of-opportunity incidents (mass exploitation of an edge CVE) demand different
+defence than target-of-choice (a determined actor after your specific data).
+```
+
+## 4. Finding the Pivot Point
+
+Every serious incident has a moment where the adversary's position became durable and
+your standard response stopped working. Name it explicitly.
+
+| Pivot Type | What Changed | Why Containment Broke |
+|-----------|--------------|----------------------|
+| Credential → certificate | Persistence no longer password-based | Password resets are inert; only revocation kills it (T1649) |
+| User → domain admin | Blast radius became total | Per-host containment insufficient |
+| Endpoint → identity provider | Trust anchor itself compromised | Token/session theft bypasses MFA (T1550.004) |
+| IT → OT crossing | Impact became physical/safety | Standard IR may create a safety hazard |
+| Single tenant → supply chain | One victim became many | Containment now needs downstream notification |
+
+The pivot is where your containment model's assumptions were violated. That is the most
+transferable lesson in the entire reconstruction.
+
+## 5. Reading the Silences
+
+What reporting omits, and what each omission usually means:
+
+| Silence | Usual Meaning | How to Treat |
+|---------|--------------|--------------|
+| Initial access unstated | Genuinely unknown, or legally sensitive | Do NOT assume phishing by default |
+| Dwell time unstated | Often embarrassingly long | Note as unknown; do not estimate |
+| "Sophisticated actor" with no TTPs | Frequently a routine technique | Discount the adjective; wait for detail |
+| No mention of MFA | May have been absent or bypassed | Distinguish these — very different lessons |
+| Victim count "approximately" | Still being scoped | Keep the number soft |
+
+## 6. Counterfactual Analysis — the part that changes decisions
+
+For each step, ask which control would have broken the chain. This converts a story into
+a control priority list.
+
+| Chain Step | Control That Breaks It | Do We Have It? | Layer |
+|-----------|----------------------|----------------|-------|
+| Edge device exploited (T1190) | KEV-driven emergency patching SLA | Partial | Attack surface mgmt |
+| DNS hijack (T1557) | DNSSEC validation + resolver pinning | No | Network |
+| Token theft (T1550.004) | Token binding / conditional access | Partial | Identity |
+| Lateral movement (T1021) | Segmentation + PAM jump host | Yes | Network |
+| Exfiltration (T1567) | Egress DLP + volume anomaly | Partial | Data |
+
+**Earliest breakable link wins.** Prioritise the control furthest left in the chain that
+you can realistically deploy — it prevents everything downstream.
+
+## 7. Reconstruction Output
+
+```
+## What happened (plain language, 3-5 sentences, no jargon)
+## Timeline (table, with confidence per row)
+## The chain (ATT&CK IDs, in order)
+## The pivot (the moment containment assumptions broke)
+## What the reporting does not say (explicit silences)
+## Counterfactuals (which control breaks which link — ranked)
+## What this changes for us (detections, controls, or "already covered")
+```
+
+Write the plain-language section so a non-specialist understands it. If you cannot
+explain the incident without jargon, you have not finished understanding it.
+
+## ATT&CK Coverage
+T1190 T1133 T1566 T1078 T1021 T1550 T1550.004 T1557 T1649 T1556 T1486 T1490 T1567
+T1041 T1074 T1560 T1485 T1584 T1195 · ICS: T0855 T0858 T0880 · ATLAS: AML.T0018
+
+
+
+## attack-surface-coverage
+
+# Attack Surface Coverage Mapping — Reference
+
+Use during Phase 4 to convert extracted patterns into an honest map of **where you are
+covered, partially covered, and blind**. This is the phase that makes intel actionable —
+and the one most programmes skip, which is why they accumulate intel without reducing risk.
+
+## 1. Coverage Area Model
+
+An **attack surface coverage area** is a defensible slice of the estate with an owner, a
+control set, and a detection set. Every extracted pattern must land in at least one.
+
+| # | Coverage Area | Scope | Aegis Skill(s) |
+|---|--------------|-------|----------------|
+| 1 | External exposure | Internet-facing assets, edge devices, shadow IT | attack-surface-mapping |
+| 2 | Application & API | Web apps, APIs, CI/CD, source, dependencies | application-security |
+| 3 | Identity & access | Accounts, tokens, certificates, MFA, privilege | identity-access-management |
+| 4 | Endpoint | Workstations, servers, EDR, execution control | endpoint-security |
+| 5 | Network | Segmentation, egress, lateral movement, DNS | network-security |
+| 6 | Cloud & infrastructure | IaaS/PaaS, IaC, containers, control plane | infrastructure-security |
+| 7 | Data | Classification, DLP, exfiltration, storage | data-loss-prevention |
+| 8 | OT / ICS | Purdue levels, protocols, safety systems | operational-technology |
+| 9 | AI / ML | Models, training data, inference, ML supply chain | mitre-atlas |
+| 10 | Supply chain | Vendors, packages, updates, third-party access | application-security, risk-management |
+| 11 | Detection & response | Telemetry, rules, triage, IR readiness | security-operations, threat-hunting |
+| 12 | Human & process | Phishing resistance, governance, training | governance, compliance |
+
+## 2. Coverage Determination
+
+For each pattern × coverage area, assign a state — and be ruthless about the difference
+between "we have the product" and "we would actually catch it."
+
+| State | Definition | Evidence Required |
+|-------|-----------|-------------------|
+| **Covered** | Control prevents it AND detection would catch it | Named control + named rule + validated |
+| **Partial** | Control OR detection exists, not both; or exists but unvalidated | Named control, no test evidence |
+| **Gap** | Neither prevention nor detection | — |
+| **Blind** | Gap *and* the telemetry to detect it is not collected | Missing data source |
+
+**Blind is the worst state and the easiest to miss** — a rule that was never fed is a
+rule nobody notices is missing. Always check data availability before rule logic:
+
+```
+Before writing any detection, verify:
+  1. Is the telemetry generated?     (e.g. CA issuance auditing is OFF by default)
+  2. Is it collected and shipped?
+  3. Is it retained long enough?     (dwell times exceed many retention windows)
+  4. Is it parsed into usable fields?
+If any answer is no, the gap is a DATA gap, not a rule gap — fix that first.
+```
+
+## 3. Coverage Matrix Template
+
+| Pattern | Area | Prevention | Detection | State | Owner | Priority |
+|---------|------|-----------|-----------|-------|-------|----------|
+| Edge device RCE (T1190) | External exposure | KEV patch SLA 24h | Vuln scan + WAF alert | Partial | Infra | High |
+| CI workflow injection (T1195.002) | Application | PR review, pinned actions | None | **Gap** | AppSec | High |
+| Cert-based persistence (T1649) | Identity | Template hardening | CA audit 4886/4887 | **Blind** (auditing off) | IAM | Critical |
+| Token theft via AiTM (T1550.004) | Identity | Conditional access | Impossible travel | Partial | IAM | High |
+| Internet-facing PLC (T0886) | OT | Segmentation | Passive protocol monitor | Gap | OT | Critical |
+
+## 4. Gap Prioritisation
+
+Score each gap; do not work them in discovery order.
+
+```
+Gap Priority = (Prevalence × Impact × Exposure) / Effort
+
+Prevalence — how often the pattern appears in current intel (KG count / trend)
+Impact     — worst credible outcome (safety > data loss > disruption > nuisance)
+Exposure   — do we actually have this surface? (a gap in tech you don't run is not a gap)
+Effort     — cost to close (data gaps cost more than rule gaps but unblock many rules)
+
+Bias toward:
+  • gaps where TELEMETRY is missing (unblocks many future detections at once)
+  • gaps on the EARLIEST chain step you can break
+  • gaps in COMMODITIZED techniques (public tooling ⇒ volume is coming)
+Bias against:
+  • novel techniques with no tooling and no observed use against your sector
+```
+
+## 5. Honest Coverage Scoring
+
+Per coverage area, report as a fraction with the denominator visible:
+
+```
+Area coverage = covered / (covered + partial + gap + blind)
+
+Rules that keep the number honest:
+  - Partial counts as 0.5, never 1
+  - Blind counts as 0 AND is flagged separately (data debt)
+  - Untested detections count as partial — a rule that has never fired on a
+    known-true positive is a hypothesis, not a control
+  - Validate by emulation (Atomic Red Team / purple team), not by inventory
+```
+
+Report coverage as a range with an explicit assumption, not a false-precision percentage.
+"Identity ~60%, assuming CA auditing gets enabled; ~40% if it does not" is more useful
+than "58.3%".
+
+## 6. Feeding Coverage Back Into the Skill Library
+
+Gaps identified here write into each skill's `self-learning.coverage-gaps` field in
+`skill.json`, and the supporting observations land in that skill's auto-maintained
+`references/live-threat-intel.md`. That closes the loop: intel → pattern → gap → the
+skill that will be invoked next time someone works that surface.
+
+## ATT&CK Coverage
+Coverage mapping spans the full matrix; the areas above collectively address
+Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion,
+Credential Access, Discovery, Lateral Movement, Collection, C2, Exfiltration, Impact —
+across Enterprise, ICS (T0xxx), and ATLAS (AML.Txxxx).
+
+
+
+## intel-to-detection
+
+# Intel → Detection Engineering — Reference
+
+Use during Phase 5 to convert a pattern and its coverage gap into a detection that
+actually holds in production. Most intel dies here: the report is read, nobody writes the
+rule, and the same technique lands again next quarter.
+
+## 1. Detection Altitude — pick the durable layer
+
+Rank candidate signals by how expensive they are for an adversary to change. Build at the
+highest altitude the telemetry supports.
+
+| Altitude | Signal | Adversary Cost to Evade | Durability |
+|----------|--------|------------------------|-----------|
+| 1 (worst) | File hash, IP, domain | Trivial — rebuild/rotate | Days |
+| 2 | Tool artefact (named binary, default UA) | Low — rename, recompile | Weeks |
+| 3 | Command-line / parameter pattern | Moderate — obfuscate | Months |
+| 4 | **Behavioural relationship between fields** | High — requires new tradecraft | Years |
+| 5 (best) | **Required-by-technique invariant** | Very high — technique must change | Durable |
+
+**The invariant is the prize.** For AD CS abuse (T1649), the invariant is
+`requester_identity ≠ certificate_subject` — the attack does not work without that
+mismatch. Hashes and tool names are disposable; the mismatch is structural.
+
+## 2. From Pattern to Rule
+
+```
+For the extracted pattern, ask in order:
+  1. What MUST be true for this technique to work?        → the invariant
+  2. What telemetry records that invariant?               → the data source
+  3. Is that telemetry on, shipped, parsed, retained?     → the data gap check
+  4. What legitimate activity also produces it?           → the FP population
+  5. What context separates malicious from legitimate?    → the discriminator
+  6. What does the analyst do when it fires?              → the response
+A detection without step 6 is an alert, not a detection.
+```
+
+## 3. Detection Record Template
+
+```yaml
+name: Certificate issued with requester/subject mismatch
+technique: T1649
+pattern: Certificate-based persistence via AD CS misconfiguration (ESC1)
+altitude: 5 (technique invariant)
+
+data_source:
+  channel: Security (CA servers)
+  events: [4886, 4887]
+  prerequisite: "certutil -setreg CA\\AuditFilter 127 + audit policy — OFF BY DEFAULT"
+  retention_required: 400d   # certs are valid for years; dwell exceeds 90d retention
+
+logic: |
+  event_id in (4886, 4887)
+  AND requester_account != certificate_subject_or_SAN
+
+false_positives:
+  - Enrollment agents legitimately requesting on behalf of others (allowlist by account)
+  - Auto-enrollment service accounts (baseline and exclude explicitly)
+
+discriminator: subject names a privileged principal AND requester is not an approved agent
+
+validation:
+  method: purple-team emulation (Certipy in a lab), not inventory
+  last_tested: null        # untested = partial coverage, not covered
+
+response:
+  - Identify the certificate (serial, thumbprint, template)
+  - REVOKE the certificate and publish CRL — password reset will NOT work
+  - Hunt 4768 PreAuthType=16 for use of that thumbprint
+  - Fix the template flag (CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT)
+
+coverage_area: identity-access-management
+```
+
+## 4. Detection-in-Depth per Chain
+
+One rule per incident is fragile. Place detections at multiple chain stages so evasion of
+one still trips another.
+
+| Chain Stage | Example Detection | If Evaded |
+|------------|-------------------|-----------|
+| Recon | LDAP reads of certificate-template objects | Next stage catches it |
+| Issuance | 4886/4887 requester≠subject | Golden cert bypasses (no CA event) |
+| Use | 4768 PreAuthType 16, baseline violation | Hardest to evade — technique requires it |
+| Impact | Privileged logon from anomalous host | Last resort |
+
+**Assume the primary rule will be evaded.** Ask which detection still fires, and if the
+answer is "none," the coverage is thinner than the matrix claims.
+
+## 5. Validation Before Claiming Coverage
+
+```
+A detection is COVERED only when:
+  [ ] It fired on a known-true positive (emulation or historical replay)
+  [ ] Its FP rate is measured over ≥ 2 weeks of production data
+  [ ] The response procedure was walked at least once
+  [ ] Data-source health is monitored (alert if the feed goes silent)
+
+Until then it is PARTIAL. Inventory-based coverage claims are how programmes discover
+during an incident that the rule never worked.
+```
+
+Add a **detection heartbeat**: alert when a critical data source stops producing events.
+Silent failure of a log pipeline is indistinguishable from "no attacks" on a dashboard.
+
+## 6. Detection Backlog Prioritisation
+
+| Rank | Build This First | Why |
+|------|-----------------|-----|
+| 1 | Enable missing telemetry for a Blind area | Unblocks a whole family of rules |
+| 2 | Invariant-level rule for a commoditized technique | High volume incoming, durable rule |
+| 3 | Behavioural rule at the earliest breakable chain step | Prevents everything downstream |
+| 4 | Baseline-violation rule for identity anomalies | Catches the "looks legitimate" class |
+| 5 | IOC feeds (hashes/IPs/domains) | Cheap, but expires fast — never the foundation |
+
+## ATT&CK Coverage
+T1649 T1550 T1550.004 T1078 T1190 T1195 T1021 T1059 T1552 T1557 T1567 T1041 T1486
+T1562 T1070 T1036 T1027 T1071 T1074 T1560 T1119 T1213 T1530 T1537
+
+
+
+## continuous-learning-loop
+
+# Continuous Learning Loop — Reference
+
+Use during Phase 6 to run the recurring cadence that keeps the skill library aligned with
+the live threat landscape. This is the operational phase — it turns one-off analysis into
+a compounding knowledge base.
+
+## 1. The Weekly Cycle
+
+```
+INGEST     → pull the week's corpus (articles, knowledge graph, attack breakdowns)
+NORMALISE  → dedupe against prior weeks; assign source tiers            [Phase 1]
+EXTRACT    → incidents → reusable patterns → ATT&CK chains              [Phase 2]
+RECONSTRUCT→ deep-dive the 1-2 most instructive incidents               [Phase 3]
+MAP        → patterns → coverage areas; mark covered/partial/gap/blind  [Phase 4]
+ROUTE      → write findings into the relevant skills by tech + domain
+DETECT     → convert top gaps into detection backlog items              [Phase 5]
+DECAY      → age out stale intel; retain history                        [this phase]
+REPORT     → what changed, what to do, what is still open
+```
+
+Run it on a fixed cadence. An irregular loop degrades into a backlog nobody processes.
+
+## 2. Routing — Getting Intel to the Right Skill
+
+Each pattern routes to skills by **technology** and **domain** signal. Route on the
+mechanism, not the headline.
+
+| Intel Signal | Routes To |
+|-------------|-----------|
+| CVE in edge/network device, exposed service | attack-surface-mapping, network-security, infrastructure-security |
+| Web/API flaw, CI/CD, dependency, source leak | application-security |
+| Credential theft, MFA bypass, token/certificate abuse | identity-access-management |
+| Malware family, loader, RAT, packer | malware-analysis, reverse-engineering |
+| Ransomware, extortion, leak site | security-operations, threat-hunting, digital-forensics |
+| Data breach, exfiltration, third-party data loss | data-loss-prevention |
+| ICS/SCADA/PLC, utilities, safety systems | operational-technology |
+| Model attacks, prompt injection, AI agents | mitre-atlas |
+| Deception, honeypot, canary opportunity | deception-engineering, mitre-engage |
+| Regulation, fine, disclosure rule | compliance, governance, risk-management |
+| Novel TTP requiring threat model revision | threat-modeling, mitre-attack |
+
+**A pattern may route to several skills** — an ICS breach entered via a VPN CVE belongs
+to `operational-technology`, `network-security`, and `identity-access-management`.
+
+## 3. What Gets Written Back
+
+For each routed skill, two artefacts are updated:
+
+```
+1. references/live-threat-intel.md  (auto-generated between markers)
+   • Current observed patterns relevant to that skill's surface
+   • ATT&CK techniques seen in the wild this period, with counts
+   • Named CVEs/actors/orgs, with dates and provenance
+   • Explicit coverage gaps surfaced by the period's intel
+
+2. skill.json → self-learning
+   • coverage-gaps: [...]     the open gaps this skill should address
+   • last-intel-sync: date    freshness marker for health scoring
+```
+
+**Never overwrite human-authored references.** Machine-generated content lives strictly
+between markers in its own file; curated tradecraft is durable and stays untouched. The
+machine block is regenerable — if it is ever wrong, regenerate it; nothing is lost.
+
+## 4. Intel Decay
+
+Intel is perishable and unbounded accumulation degrades signal. Age it deliberately:
+
+| Age | State | Treatment |
+|-----|-------|-----------|
+| 0–30 days | Current | Full weight in the live block |
+| 30–90 days | Recent | Retained if the pattern is still recurring (KG `last_seen`) |
+| 90–180 days | Historical | Collapse to the pattern; drop individual incidents |
+| > 180 days | Archived | Keep only if it became a durable pattern or an open gap |
+
+Exceptions that never decay: **unresolved coverage gaps**, and techniques whose
+`last_seen` keeps refreshing. A four-year-old technique still landing today
+(e.g. AD CS abuse since 2021) is not stale intel — it is unpaid detection debt.
+
+## 5. Feedback Quality Controls
+
+```
+Guard against the failure modes of an automated loop:
+  [ ] Volume ≠ value — 40 articles may contain 3 patterns; report the 3
+  [ ] No duplicate gaps — reconcile against existing coverage-gaps before writing
+  [ ] No hallucinated ATT&CK IDs — every technique must trace to source text
+  [ ] Recency bias — this week's story is not automatically more important than a
+      recurring pattern with higher cumulative count
+  [ ] Novelty bias — commoditized old techniques usually outrank exotic new ones
+  [ ] Closed gaps get REMOVED, not accumulated — a gap list that only grows is ignored
+```
+
+## 6. Measuring Whether the Loop Works
+
+| Metric | What It Shows | Healthy Direction |
+|--------|--------------|-------------------|
+| Patterns extracted / incidents ingested | Synthesis working, not just relaying | Stable ratio (~1:10) |
+| Gaps opened vs. gaps closed | Loop converts intel to action | Closed ≥ opened over a quarter |
+| Time from intel → detection deployed | Operational responsiveness | Trending down |
+| Repeat patterns still uncovered | Detection debt | Trending to zero |
+| Blind areas (missing telemetry) | Data debt | Trending to zero |
+| Skills refreshed in the period | Library staying current | All relevant skills touched |
+
+The loop is failing if gaps only accumulate, or if every week's output is a summary that
+changes no decision. Both are signs the analysis stopped at Phase 1.
+
+## 7. Human-in-the-Loop Boundaries
+
+Automate ingestion, deduplication, routing, and drafting. Keep a human on:
+
+- **Attribution claims** — never auto-assert an actor
+- **Severity for your specific estate** — context the pipeline lacks
+- **Closing a gap** — only a human confirms a control actually works
+- **Anything published externally** — accuracy and tone are reputational
+
+## ATT&CK Coverage
+This phase operates across the full matrix; it maintains the mapping produced in Phases
+2–5 for Enterprise, ICS (T0xxx), and ATLAS (AML.Txxxx) technique sets.
+
+
+
+## live-threat-intel
+
+# Live Threat Intel — threat-intel-synthesis
+
+<!-- BEGIN AEGIS-INTEL-SYNC — auto-generated, do not edit by hand -->
+
+_Auto-generated by `scripts/intel-sync.js` on 2026-08-18 from the operator's threat-intel corpus (window: last 7 days). Regenerable — do not hand-edit inside these markers. Human-authored tradecraft lives in the other reference files and is never modified by this process._
+
+## Current Observations (2026-08-18)
+
+**Routed to this skill:** 77 feed item(s), 2 teardown(s).
+
+| Date | Observation | CVEs | Actors | Source |
+|------|-------------|------|--------|--------|
+| 2026-08-10 | Kimsuky Builds Offline AI Stack to Boost Phishing and Automate Malware Development | — | Kimsuky | The Hacker News |
+| 2026-08-10 | New Passkey Attacks Can Recover Synced Private Keys or Bypass Phishing-Resistant MFA | — | — | The Hacker News |
+| 2026-08-10 | Solidity Pro VS Code Extensions Steal Crypto Wallets, API Keys, and Credentials | — | — | The Hacker News |
+| 2026-08-10 | StormEncryptor Ransomware Deployed by China-Linked Storm-1175, Likely via N-central Flaw | CVE-2026-18577 | Storm-1175 | The Hacker News |
+| 2026-08-10 | INC Ransomware Emerges as Dominant Actor Exploiting SonicWall SMA1000 Zero-Days | CVE-2026-15409, CVE-2026-15410 | INC Ransomware | The Hacker News |
+| 2026-08-10 | Progress Kemp LoadMaster Command Injection Flaw Now Actively Exploited | CVE-2026-8037 | — | BleepingComputer |
+| 2026-08-10 | FBI, South Korea Warn of Gunra Ransomware Gang Targeting Critical Infrastructure | — | Gunra | The Record |
+| 2026-08-10 | Russian Military Hackers Pose as Recruiters to Target Ukrainian IT Workers | — | Russian military intelligence | The Record |
+| 2026-08-10 | New Zealand Sanctions Russian Hackers, Propaganda Groups Over Ukraine War | — | — | The Record |
+| 2026-08-10 | Poland Uncovers Second Heat Plant Cyberattack That Went Hidden for Months | — | — | The Record |
+| 2026-08-10 | BdThemes Plugins Supply-Chain Hack Creates Rogue WordPress Admins | — | — | BleepingComputer |
+| 2026-08-06 | Voice-Phishing Crews Target Wall Street Investment Giants | — | Falcon, Helix, Pink, Redact | Cryptonomist / Bloomberg |
+
+### In-depth teardowns (Tier A)
+
+- **Attack Breakdown — WMI Event Subscription Persistence (MITRE ATT&CK T1546.003)** (2026-08-11) — ATT&CK: T1546.003, T1546, T1047, T1059.001, T1059.005
+- **Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)** (2026-08-18) — ATT&CK: T1649, T1550, T1556, T1207
+
+### Techniques observed in this window
+
+`T1546.003`×1 · `T1649`×1
+
+### CVEs referenced
+
+CVE-2026-68820 (x2), CVE-2026-55040 (x2), CVE-2026-63520 (x2), CVE-2026-18577, CVE-2026-15409, CVE-2026-15410, CVE-2026-8037, CVE-2026-9198, CVE-2026-34486, CVE-2026-66403, CVE-2026-66405, CVE-2026-66407, CVE-2026-63077, CVE-2026-11645, CVE-2025-68686, CVE-2026-60137, CVE-2026-63030, CVE-2026-62832, CVE-2026-72971, CVE-2026-50656
+
+### Actors named
+
+North Korea (x2), Kimsuky, Storm-1175, INC Ransomware, Gunra, Russian military intelligence, Falcon, Helix, Pink, Redact, Kimwolf, AISURU, Iran, DeadLock, Forest Blizzard
+
+_Attribution is context, not conclusion — treat named actors as reported by the source, with the source's confidence, and prefer TTP-driven action over actor-driven action._
+
+### Trending in the knowledge graph (relevant to this surface)
+
+Qilin (seen 66x, last 2026-08-13) · Akira (seen 21x, last 2026-08-11) · Lazarus Group (seen 10x, last 2026-08-13) · Unc6671 (seen 4x, last 2026-08-13) · Microsoft (seen 207x, last 2026-08-13) · Google (seen 149x, last 2026-08-13) · Chrome (seen 60x, last 2026-08-11) · Cisco (seen 54x, last 2026-08-13)
+
+### Coverage questions raised by this period
+
+- Recurring CVE exposure: CVE-2026-68820 (x2), CVE-2026-55040 (x2), CVE-2026-63520 (x2) — confirm patch status and detection coverage
+- Techniques observed: T1546.003 (x1), T1649 (x1) — verify a validated detection exists for each
+- Dominant themes: zero-day (x12), rce (x10), supply-chain (x8), kev (x8), nation-state (x7), ics (x7) — confirm controls address the recurring mechanism, not just individual incidents
+- Vendors/products named repeatedly: Fortinet (x3), Cisco (x3), SpecterOps (x2), Broadcom (x2), VMware (x2), Apple (x2) — review exposure to these in the estate
+- Teardown "Attack Breakdown — WMI Event Subscription Persistence (MITRE ATT&CK T1546.003)" (2026-08-11) — techniques T1546.003, T1546, T1047, T1059.001, T1059.005; check telemetry availability before assuming coverage
+- Teardown "Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)" (2026-08-18) — techniques T1649, T1550, T1556, T1207; check telemetry availability before assuming coverage
+
+_These are prompts for verification, not confirmed gaps. Confirm against actual controls before treating any as covered or open — an unvalidated detection is partial coverage, not coverage._
+
+<!-- END AEGIS-INTEL-SYNC -->

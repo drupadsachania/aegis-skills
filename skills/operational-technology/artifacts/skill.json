@@ -49,12 +49,18 @@
     {
       "id": "ics-protocol-security",
       "lazy": true,
-      "tokens": 1382
+      "tokens": 1409
     },
     {
       "id": "safety-instrumented-systems",
       "lazy": true,
-      "tokens": 1346
+      "tokens": 1371
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 733,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -78,7 +84,14 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "Dominant themes: ics (x7), ot (x6), ransomware (x5), critical-infrastructure (x5), manufacturing (x5), advisory (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: General Electric (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 16,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

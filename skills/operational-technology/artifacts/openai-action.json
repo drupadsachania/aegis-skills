@@ -35,7 +35,8 @@
                       "incident-detection-and-response",
                       "resilience-and-compliance",
                       "ics-protocol-security",
-                      "safety-instrumented-systems"
+                      "safety-instrumented-systems",
+                      "live-threat-intel"
                     ]
                   }
                 }

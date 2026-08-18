@@ -19,7 +19,8 @@
             "enum": [
               "policy-writing",
               "runbook-authoring",
-              "incident-templates"
+              "incident-templates",
+              "live-threat-intel"
             ]
           }
         }
@@ -43,6 +44,12 @@
       "uri": "https://aegis-skills.vercel.app/security-documentation/phase/incident-templates",
       "name": "incident-templates",
       "description": "Reference content for security-documentation — incident-templates",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/security-documentation/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for security-documentation — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

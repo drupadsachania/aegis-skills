@@ -1,0 +1,10 @@
+{
+  "coverage-gaps": [
+    "Recurring CVE exposure: CVE-2026-68820 (x2) — confirm patch status and detection coverage",
+    "Dominant themes: zero-day (x14), kev (x3), privilege-escalation (x3), rce (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+  ],
+  "last-intel-sync": "2026-08-18",
+  "intel-window-days": 7,
+  "items-routed": 16,
+  "teardowns-routed": 0
+}

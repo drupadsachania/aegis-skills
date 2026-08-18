@@ -36,7 +36,8 @@
                       "incident-response",
                       "post-incident-review",
                       "security-metrics",
-                      "compliance-reporting"
+                      "compliance-reporting",
+                      "live-threat-intel"
                     ]
                   }
                 }

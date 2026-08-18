@@ -1,0 +1,12 @@
+{
+  "coverage-gaps": [
+    "CVEs referenced this period: CVE-2026-18125, CVE-2026-18129, CVE-2026-59309 — verify whether this estate is exposed",
+    "Techniques observed: T1649 (x1) — verify a validated detection exists for each",
+    "Vendors/products named repeatedly: Microsoft 365 (x2) — review exposure to these in the estate",
+    "Teardown \"Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)\" (2026-08-18) — techniques T1649, T1550, T1556, T1207; check telemetry availability before assuming coverage"
+  ],
+  "last-intel-sync": "2026-08-18",
+  "intel-window-days": 7,
+  "items-routed": 11,
+  "teardowns-routed": 1
+}

@@ -133,7 +133,11 @@ function scoreSkill(skill, phaseContents, attackTechniques, cveKeywords, content
   )
   // Ramp on the STABLE KEV corpus: 0.7 base, +0.05 per KEV vendor/product/CVE hit up to 1.0.
   const cveScore = Math.min(1.0, 0.7 + Math.min(0.3, cveMentioned.length * 0.05))
-  const phaseScore = Math.min(1.0, (skill.phases || []).length / 5)
+  // Count only human-authored phases. Machine-generated phases (intel-sync's
+  // live-threat-intel feed) must not inflate this metric — otherwise every skill
+  // scores 1.0 here for free and the axis stops discriminating.
+  const authoredPhases = (skill.phases || []).filter(p => !p.auto)
+  const phaseScore = Math.min(1.0, authoredPhases.length / 5)
 
   const staleThreshold = (skill['self-learning'] && skill['self-learning']['stale-threshold-days']) || 90
   const recency = recencyScore(contentAgeDays, staleThreshold)

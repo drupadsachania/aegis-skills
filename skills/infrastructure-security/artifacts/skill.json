@@ -41,6 +41,12 @@
       "id": "compliance-validation",
       "lazy": true,
       "tokens": 610
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 521,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -65,7 +71,14 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-62832, CVE-2026-72971, CVE-2026-72898, CVE-2026-59310 — verify whether this estate is exposed",
+      "Dominant themes: cloud (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 6,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

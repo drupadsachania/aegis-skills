@@ -42,6 +42,12 @@
       "id": "security-testing",
       "lazy": true,
       "tokens": 712
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 913,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -66,7 +72,15 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-15409, CVE-2026-15410, CVE-2026-8037, CVE-2026-9198, CVE-2026-63077, CVE-2026-11645 — verify whether this estate is exposed",
+      "Dominant themes: supply-chain (x16), open-source (x12), rce (x10), kev (x4), mcp (x4), zero-day (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 40,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

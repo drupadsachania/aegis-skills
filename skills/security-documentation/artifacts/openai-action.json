@@ -31,7 +31,8 @@
                     "enum": [
                       "policy-writing",
                       "runbook-authoring",
-                      "incident-templates"
+                      "incident-templates",
+                      "live-threat-intel"
                     ]
                   }
                 }

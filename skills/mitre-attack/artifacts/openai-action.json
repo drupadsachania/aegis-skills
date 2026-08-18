@@ -31,7 +31,8 @@
                     "enum": [
                       "enterprise-matrix-overview",
                       "ics-matrix-overview",
-                      "ttp-profiling-guide"
+                      "ttp-profiling-guide",
+                      "live-threat-intel"
                     ]
                   }
                 }

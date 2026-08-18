@@ -45,6 +45,12 @@
       "id": "remediation-roadmap",
       "lazy": true,
       "tokens": 1239
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 184,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -69,7 +75,11 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 1,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

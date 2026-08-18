@@ -24,7 +24,8 @@
               "incident-response",
               "post-incident-review",
               "security-metrics",
-              "compliance-reporting"
+              "compliance-reporting",
+              "live-threat-intel"
             ]
           }
         }
@@ -78,6 +79,12 @@
       "uri": "https://aegis-skills.vercel.app/security-operations/phase/compliance-reporting",
       "name": "compliance-reporting",
       "description": "Reference content for security-operations — compliance-reporting",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for security-operations — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

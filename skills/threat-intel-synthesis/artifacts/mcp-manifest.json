@@ -1,0 +1,77 @@
+{
+  "schema": "mcp/1.0",
+  "name": "threat-intel-synthesis",
+  "version": "1.0.0",
+  "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the threat-intel-synthesis skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "intel-ingestion",
+              "attack-pattern-extraction",
+              "incident-reconstruction",
+              "attack-surface-coverage",
+              "intel-to-detection",
+              "continuous-learning-loop",
+              "live-threat-intel"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/intel-ingestion",
+      "name": "intel-ingestion",
+      "description": "Reference content for threat-intel-synthesis — intel-ingestion",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/attack-pattern-extraction",
+      "name": "attack-pattern-extraction",
+      "description": "Reference content for threat-intel-synthesis — attack-pattern-extraction",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/incident-reconstruction",
+      "name": "incident-reconstruction",
+      "description": "Reference content for threat-intel-synthesis — incident-reconstruction",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/attack-surface-coverage",
+      "name": "attack-surface-coverage",
+      "description": "Reference content for threat-intel-synthesis — attack-surface-coverage",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/intel-to-detection",
+      "name": "intel-to-detection",
+      "description": "Reference content for threat-intel-synthesis — intel-to-detection",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/continuous-learning-loop",
+      "name": "continuous-learning-loop",
+      "description": "Reference content for threat-intel-synthesis — continuous-learning-loop",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/threat-intel-synthesis/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for threat-intel-synthesis — live-threat-intel",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

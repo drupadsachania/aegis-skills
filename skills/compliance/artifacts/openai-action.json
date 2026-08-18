@@ -33,7 +33,8 @@
                       "standard-mapping",
                       "control-assessment",
                       "evidence-collection",
-                      "remediation-roadmap"
+                      "remediation-roadmap",
+                      "live-threat-intel"
                     ]
                   }
                 }

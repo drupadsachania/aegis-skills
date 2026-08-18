@@ -34,6 +34,10 @@ phases:
   - id: compliance-reporting
     ref: references/compliance-reporting.md
     lazy: true
+  - id: live-threat-intel
+    ref: references/live-threat-intel.md
+    lazy: true
+    auto: true
 tools: [read, search, analyze, write]
 platforms:
   openai:    { model: gpt-4o, tools: true }

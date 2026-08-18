@@ -33,7 +33,8 @@
                       "configuration-baseline",
                       "patch-management",
                       "hardening-controls",
-                      "compliance-validation"
+                      "compliance-validation",
+                      "live-threat-intel"
                     ]
                   }
                 }

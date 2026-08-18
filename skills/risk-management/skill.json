@@ -42,6 +42,12 @@
       "id": "risk-reporting",
       "lazy": true,
       "tokens": 1191
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 762,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -65,7 +71,15 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2025-15630 — verify whether this estate is exposed",
+      "Dominant themes: supply-chain (x16) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 16,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

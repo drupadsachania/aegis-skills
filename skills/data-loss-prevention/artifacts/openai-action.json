@@ -34,7 +34,8 @@
                       "endpoint-dlp",
                       "email-and-saas-dlp",
                       "cloud-and-storage-dlp",
-                      "exfiltration-detection-and-response"
+                      "exfiltration-detection-and-response",
+                      "live-threat-intel"
                     ]
                   }
                 }

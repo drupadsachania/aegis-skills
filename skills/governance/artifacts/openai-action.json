@@ -32,7 +32,8 @@
                       "policy-framework",
                       "program-maturity",
                       "metrics-and-reporting",
-                      "third-party-governance"
+                      "third-party-governance",
+                      "live-threat-intel"
                     ]
                   }
                 }

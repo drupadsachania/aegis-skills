@@ -33,7 +33,8 @@
                       "sast-review",
                       "dependency-audit",
                       "api-security",
-                      "security-testing"
+                      "security-testing",
+                      "live-threat-intel"
                     ]
                   }
                 }

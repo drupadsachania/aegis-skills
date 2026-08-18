@@ -18,6 +18,10 @@ phases:
   - id: ttp-profiling-guide
     ref: references/ttp-profiling-guide.md
     lazy: true
+  - id: live-threat-intel
+    ref: references/live-threat-intel.md
+    lazy: true
+    auto: true
 tools: [read, search]
 platforms:
   openai:    { model: gpt-4o, tools: true }

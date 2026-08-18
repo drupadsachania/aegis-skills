@@ -20,7 +20,8 @@
               "edr-deployment",
               "baseline-hardening",
               "malware-analysis",
-              "incident-response"
+              "incident-response",
+              "live-threat-intel"
             ]
           }
         }
@@ -50,6 +51,12 @@
       "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/incident-response",
       "name": "incident-response",
       "description": "Reference content for endpoint-security — incident-response",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for endpoint-security — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

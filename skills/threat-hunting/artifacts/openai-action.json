@@ -33,7 +33,8 @@
                       "data-collection",
                       "detection-logic",
                       "investigation",
-                      "reporting"
+                      "reporting",
+                      "live-threat-intel"
                     ]
                   }
                 }

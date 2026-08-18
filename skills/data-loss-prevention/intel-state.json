@@ -1,0 +1,10 @@
+{
+  "coverage-gaps": [
+    "Dominant themes: ransomware (x10), leak-site (x6), data-breach (x3), supply-chain (x3), extortion (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+    "Vendors/products named repeatedly: CEVA Logistics (x2) — review exposure to these in the estate"
+  ],
+  "last-intel-sync": "2026-08-18",
+  "intel-window-days": 7,
+  "items-routed": 20,
+  "teardowns-routed": 0
+}

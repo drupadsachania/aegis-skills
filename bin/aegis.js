@@ -36,6 +36,16 @@ program
   .description('Compile skill artifacts (all skills, or a named skill)')
   .action(compileCmd)
 
+program
+  .command('intel-sync')
+  .description('Sync threat intel into skills from the local corpus, then compile')
+  .option('-d, --days <n>', 'lookback window in days', '7')
+  .option('--dry-run', 'show routing without writing anything')
+  .option('--news <dir>', 'daily article feed directory')
+  .option('--breakdowns <dir>', 'attack-breakdown directory')
+  .option('--no-compile', 'skip recompiling artifacts afterwards')
+  .action(require('../lib/cli/intel-sync'))
+
 program.parse(process.argv)
 
 if (!process.argv.slice(2).length) {

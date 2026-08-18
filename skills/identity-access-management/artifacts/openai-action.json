@@ -34,7 +34,8 @@
                       "privileged-access-management",
                       "non-human-identities",
                       "agent-and-ai-identities",
-                      "access-review-and-audit"
+                      "access-review-and-audit",
+                      "live-threat-intel"
                     ]
                   }
                 }

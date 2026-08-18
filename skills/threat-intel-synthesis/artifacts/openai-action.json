@@ -1,0 +1,69 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "threat-intel-synthesis skill",
+    "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://aegis-skills.vercel.app"
+    }
+  ],
+  "paths": {
+    "/threat-intel-synthesis/invoke": {
+      "post": {
+        "operationId": "invoke_threat_intel_synthesis",
+        "summary": "Load a phase of the threat-intel-synthesis skill",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "phase"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "description": "Which phase to load",
+                    "enum": [
+                      "intel-ingestion",
+                      "attack-pattern-extraction",
+                      "incident-reconstruction",
+                      "attack-surface-coverage",
+                      "intel-to-detection",
+                      "continuous-learning-loop",
+                      "live-threat-intel"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phase content returned as markdown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "phase": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -33,7 +33,8 @@
                       "risk-assessment",
                       "risk-treatment",
                       "risk-register",
-                      "risk-reporting"
+                      "risk-reporting",
+                      "live-threat-intel"
                     ]
                   }
                 }

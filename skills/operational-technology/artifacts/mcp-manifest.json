@@ -23,7 +23,8 @@
               "incident-detection-and-response",
               "resilience-and-compliance",
               "ics-protocol-security",
-              "safety-instrumented-systems"
+              "safety-instrumented-systems",
+              "live-threat-intel"
             ]
           }
         }
@@ -71,6 +72,12 @@
       "uri": "https://aegis-skills.vercel.app/operational-technology/phase/safety-instrumented-systems",
       "name": "safety-instrumented-systems",
       "description": "Reference content for operational-technology — safety-instrumented-systems",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/operational-technology/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for operational-technology — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

@@ -33,7 +33,8 @@
                       "internal-enumeration",
                       "cloud-exposure",
                       "risk-prioritization",
-                      "cve-exposure-management"
+                      "cve-exposure-management",
+                      "live-threat-intel"
                     ]
                   }
                 }

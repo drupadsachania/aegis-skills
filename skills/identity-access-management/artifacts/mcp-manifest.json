@@ -22,7 +22,8 @@
               "privileged-access-management",
               "non-human-identities",
               "agent-and-ai-identities",
-              "access-review-and-audit"
+              "access-review-and-audit",
+              "live-threat-intel"
             ]
           }
         }
@@ -64,6 +65,12 @@
       "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/access-review-and-audit",
       "name": "access-review-and-audit",
       "description": "Reference content for identity-access-management — access-review-and-audit",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/identity-access-management/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for identity-access-management — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

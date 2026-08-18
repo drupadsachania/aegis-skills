@@ -33,7 +33,8 @@
                       "segmentation-review",
                       "traffic-analysis",
                       "hardening-checklist",
-                      "cve-patch-management"
+                      "cve-patch-management",
+                      "live-threat-intel"
                     ]
                   }
                 }

@@ -32,7 +32,8 @@
                       "edr-deployment",
                       "baseline-hardening",
                       "malware-analysis",
-                      "incident-response"
+                      "incident-response",
+                      "live-threat-intel"
                     ]
                   }
                 }

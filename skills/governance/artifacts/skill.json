@@ -38,6 +38,12 @@
       "id": "third-party-governance",
       "lazy": true,
       "tokens": 1286
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 326,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -61,7 +67,13 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 60,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "Dominant themes: policy (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 3,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

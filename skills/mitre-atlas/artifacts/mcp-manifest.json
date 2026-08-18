@@ -21,7 +21,8 @@
               "ml-attack-surface-guide",
               "ml-threat-model",
               "ml-defense-controls",
-              "ml-incident-response"
+              "ml-incident-response",
+              "live-threat-intel"
             ]
           }
         }
@@ -57,6 +58,12 @@
       "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/ml-incident-response",
       "name": "ml-incident-response",
       "description": "Reference content for mitre-atlas — ml-incident-response",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/mitre-atlas/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for mitre-atlas — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

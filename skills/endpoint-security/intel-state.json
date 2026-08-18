@@ -1,0 +1,9 @@
+{
+  "coverage-gaps": [
+    "CVEs referenced this period: CVE-2026-68820, CVE-2026-62832, CVE-2026-72971, CVE-2026-65400 — verify whether this estate is exposed"
+  ],
+  "last-intel-sync": "2026-08-18",
+  "intel-window-days": 7,
+  "items-routed": 4,
+  "teardowns-routed": 0
+}

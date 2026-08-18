@@ -33,7 +33,8 @@
                       "ml-attack-surface-guide",
                       "ml-threat-model",
                       "ml-defense-controls",
-                      "ml-incident-response"
+                      "ml-incident-response",
+                      "live-threat-intel"
                     ]
                   }
                 }

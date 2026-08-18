@@ -28,6 +28,10 @@ phases:
   - id: access-review-and-audit
     ref: references/access-review-and-audit.md
     lazy: true
+  - id: live-threat-intel
+    ref: references/live-threat-intel.md
+    lazy: true
+    auto: true
 tools: [read, search, analyze]
 platforms:
   openai:    { model: gpt-4o, tools: true }

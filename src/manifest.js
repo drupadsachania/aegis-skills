@@ -17,7 +17,11 @@ function generateManifest(skill, baseUrl = 'https://aegis-skills.vercel.app') {
     description: skill.description,
     frameworks: skill.frameworks || [],
     tags: skill.tags || [],
-    phases: (skill.phases || []).map(({ id, lazy, tokens }) => ({ id, lazy, tokens })),
+    // `auto` marks machine-generated phases (e.g. the intel-sync live feed) so
+    // downstream scoring can exclude them from authored-content metrics.
+    phases: (skill.phases || []).map(({ id, lazy, tokens, auto }) =>
+      auto ? { id, lazy, tokens, auto: true } : { id, lazy, tokens }
+    ),
     endpoints: {
       mcp:       `mcp://${mcpHost}/${skill.name}`,
       action:    `${host}/${skill.name}/invoke`,
@@ -26,8 +30,14 @@ function generateManifest(skill, baseUrl = 'https://aegis-skills.vercel.app') {
     research: skill['research-agent'] || skill.research || {}
   }
 
-  if (skill['self-learning']) {
-    manifest['self-learning'] = skill['self-learning']
+  if (skill['self-learning'] || skill.intelState) {
+    // Curated frontmatter is the base; machine-maintained intel state overlays it.
+    // Keeping them in separate files means a recompile can never wipe synced intel,
+    // and intel-sync never has to rewrite hand-authored YAML.
+    manifest['self-learning'] = {
+      ...(skill['self-learning'] || {}),
+      ...(skill.intelState || {})
+    }
   }
 
   if (skill.context) {

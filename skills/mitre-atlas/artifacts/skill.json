@@ -40,6 +40,12 @@
       "id": "ml-incident-response",
       "lazy": true,
       "tokens": 1651
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 794,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -52,5 +58,16 @@
       "mitre-atlas"
     ],
     "red-team": true
+  },
+  "self-learning": {
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2025-32711 — verify whether this estate is exposed",
+      "Dominant themes: paper (x22), prompt-injection (x9), rag (x5), agent-hijacking (x4), small-model (x4), agent-safety (x4) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: OpenAI (x5), Anthropic (x5), Irregular (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 48,
+    "teardowns-routed": 0
   }
 }

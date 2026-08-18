@@ -59,6 +59,12 @@
       "id": "compliance-reporting",
       "lazy": true,
       "tokens": 846
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 878,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -86,7 +92,15 @@
     ],
     "health-score": 1,
     "stale-threshold-days": 30,
-    "coverage-gaps": []
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-18577, CVE-2026-15409, CVE-2026-15410 — verify whether this estate is exposed",
+      "Dominant themes: ransomware (x31), extortion (x12), leak-site (x6), manufacturing (x4), healthcare (x3), canada (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: General Electric (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 33,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [
