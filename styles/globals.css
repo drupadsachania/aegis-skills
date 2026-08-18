@@ -944,3 +944,161 @@ code {
   border: 1px solid var(--border-dim);
   font-weight: 400;
 }
+
+/* ─────────────────────────────────────────────
+   Skill library — search, families, rows
+   Replaces the tag sidebar + table. Uses existing
+   tokens only; no new colours or typefaces.
+───────────────────────────────────────────── */
+
+/* Search */
+.skill-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  padding: 0 13px;
+  margin-bottom: 14px;
+  color: var(--muted);
+}
+.skill-search:focus-within { border-color: var(--gold); }
+.skill-search input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--cream);
+  font-family: var(--f-sans);
+  font-size: 14.5px;
+  padding: 12px 0;
+}
+.skill-search input::placeholder { color: var(--faint); }
+.skill-search input::-webkit-search-cancel-button { filter: invert(0.6); }
+
+/* Family selector */
+.family-bar {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--border-dim);
+}
+.family-btn {
+  flex: 1 1 auto;
+  min-width: 108px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--border-dim);
+  color: var(--muted);
+  cursor: pointer;
+  text-align: left;
+  padding: 11px 13px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.15s, background 0.15s;
+}
+.family-btn:last-child { border-right: 0; }
+.family-btn:hover { color: var(--cream); background: var(--bg-soft); }
+.family-btn.selected {
+  color: var(--cream);
+  background: var(--bg-soft);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+.family-btn:focus-visible { outline: 1px solid var(--gold); outline-offset: -1px; }
+.family-n {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 17px;
+  letter-spacing: 0;
+  color: var(--faint);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.family-btn.selected .family-n { color: var(--gold); }
+
+/* Rows */
+.skill-rows { border-top: 1px solid var(--border-dim); }
+.skill-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--border-dim);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: background 0.13s;
+}
+.skill-row::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: transparent;
+  transition: background 0.13s;
+}
+.skill-row:hover, .skill-row:focus-visible { background: var(--bg-soft); outline: none; }
+.skill-row:hover::before, .skill-row:focus-visible::before { background: var(--gold); }
+
+.sr-main { min-width: 0; }
+.sr-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cream);
+}
+.sr-desc {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sr-live {
+  font-family: var(--f-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  border: 1px solid var(--gold-deep);
+  padding: 1px 5px;
+  flex: none;
+}
+.sr-family {
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sub);
+  white-space: nowrap;
+}
+.sr-phases {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--sub);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sr-health { display: flex; align-items: center; }
+.skill-rows-empty {
+  border-top: 1px solid var(--border-dim);
+  padding: 32px 12px;
+  color: var(--faint);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .skill-row { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .sr-family, .sr-phases { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill-row, .family-btn { transition: none; }
+}

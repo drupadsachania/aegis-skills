@@ -3,9 +3,9 @@
 const React = require('react')
 const { useState } = React
 const Layout = require('../components/Layout')
-const SkillCard = require('../components/SkillCard')
 const PlatformBadge = require('../components/PlatformBadge')
 const { listSkills } = require('../lib/skill-reader')
+const { FAMILIES, familyOf, labelOf } = require('../lib/skill-families')
 
 const PLATFORMS = ['chatgpt', 'claude', 'cursor', 'gemini']
 
@@ -74,87 +74,26 @@ const COMMON_TAGS = ['network', 'endpoint', 'web-application', 'api', 'lateral-m
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-function getFilterOptions(skills) {
-  const tags = new Set()
-  const envs = new Set()
-  for (const skill of skills) {
-    for (const t of (skill.tags || [])) tags.add(t)
-    for (const e of (((skill.context) || {}).environments || [])) envs.add(e)
-  }
-  return { tags: [...tags].sort(), environments: [...envs].sort() }
+// Free-text match across everything a searcher might reasonably type: the skill
+// name, its description, tags, frameworks and the environments it applies to.
+function matchesQuery(skill, query) {
+  if (!query) return true
+  const ctx = skill.context || {}
+  const haystack = [
+    skill.name,
+    skill.description,
+    (skill.tags || []).join(' '),
+    (skill.frameworks || []).join(' '),
+    (ctx.environments || []).join(' '),
+    (ctx['attack-surface-tags'] || []).join(' ')
+  ].join(' ').toLowerCase()
+  return haystack.includes(query)
 }
 
-function applyTagFilter(skills, selectedTags) {
-  if (selectedTags.size === 0) return skills
-  return skills.filter(skill =>
-    [...selectedTags].every(t =>
-      (skill.tags || []).includes(t) ||
-      (((skill.context) || {}).environments || []).includes(t)
-    )
-  )
-}
-
-// ─── Filter sidebar ───────────────────────────────────────────────────────────
-
-function FilterSidebar({ options, selectedTags, onToggle }) {
-  if (options.tags.length === 0 && options.environments.length === 0) return null
-
-  function ConceptItem({ value }) {
-    const checked = selectedTags.has(value)
-    return React.createElement(
-      'label',
-      { className: 'concept-row', onClick: () => onToggle(value) },
-      React.createElement('input', {
-        type: 'checkbox',
-        checked,
-        onChange: () => onToggle(value),
-        className: 'concept-check',
-        onClick: e => e.stopPropagation()
-      }),
-      React.createElement(
-        'span',
-        { className: ['concept-label', checked ? 'checked' : ''].join(' ').trim() },
-        value
-      )
-    )
-  }
-
-  return React.createElement(
-    'aside',
-    { className: 'filter-sidebar' },
-    React.createElement('span', { className: 'filter-head' }, 'Filter'),
-    options.environments.length > 0
-      ? React.createElement(
-          'div',
-          null,
-          React.createElement('span', { className: 'filter-section-label' }, 'Environments'),
-          React.createElement(
-            'div',
-            { className: 'concept-list' },
-            ...options.environments.map(e => React.createElement(ConceptItem, { key: e, value: e }))
-          )
-        )
-      : null,
-    options.tags.length > 0
-      ? React.createElement(
-          'div',
-          { style: { marginTop: '16px' } },
-          React.createElement('span', { className: 'filter-section-label' }, 'Tags'),
-          React.createElement(
-            'div',
-            { className: 'concept-list' },
-            ...options.tags.map(t => React.createElement(ConceptItem, { key: t, value: t }))
-          )
-        )
-      : null,
-    selectedTags.size > 0
-      ? React.createElement(
-          'button',
-          { className: 'filter-clear', onClick: () => [...selectedTags].forEach(t => onToggle(t)) },
-          'Clear filters'
-        )
-      : null
-  )
+function firstSentence(desc) {
+  const text = String(desc || '').replace(/\s+/g, ' ').trim()
+  const cut = text.split(/\.\s|\. Triggers|Triggers for:/)[0]
+  return cut.length > 132 ? cut.slice(0, 132).trimEnd() + '…' : cut
 }
 
 // ─── Recommend form ───────────────────────────────────────────────────────────
@@ -252,84 +191,154 @@ function RecommendForm({ onResults, onClear, loading }) {
 
 // ─── Skills section ───────────────────────────────────────────────────────────
 
-function SkillsSection({ skills, recommendedSkills }) {
+function SkillsSection({ skills }) {
+  if (skills.length === 0) {
+    return React.createElement('div', { className: 'skill-rows-empty' }, 'No skills match the current filter.')
+  }
+
   return React.createElement(
     'div',
-    { style: { overflowX: 'auto' } },
-    React.createElement(
-      'table',
-      { className: 'skills-table' },
-      React.createElement(
-        'thead',
-        null,
+    { className: 'skill-rows' },
+    ...skills.map(skill => {
+      const pct = skill.healthScore != null ? Math.round(skill.healthScore * 100) : null
+      // Scores cluster between 0.85 and 1.00, so map that band across the bar's full
+      // width — a raw 0-100 fill renders every skill as a near-identical stripe.
+      const fill = pct != null
+        ? Math.max(6, Math.min(100, Math.round(((skill.healthScore - 0.85) / 0.15) * 100)))
+        : 0
+      const phaseCount = skill.authoredPhases != null ? skill.authoredPhases : skill.phases
+
+      return React.createElement(
+        'a',
+        { key: skill.name, className: 'skill-row', href: `/skills/${skill.name}` },
         React.createElement(
-          'tr',
-          null,
-          React.createElement('th', null, 'Name'),
-          React.createElement('th', null, 'Description'),
-          React.createElement('th', null, 'Tags'),
-          React.createElement('th', null, 'Phases'),
-          React.createElement('th', null, recommendedSkills != null ? 'Relevance' : 'Health')
-        )
-      ),
-      React.createElement(
-        'tbody',
-        null,
-        skills.length === 0
-          ? React.createElement(
-              'tr',
-              null,
+          'span',
+          { className: 'sr-main' },
+          React.createElement(
+            'span',
+            { className: 'sr-name' },
+            skill.name,
+            skill.live ? React.createElement('span', { className: 'sr-live' }, 'LIVE') : null
+          ),
+          React.createElement('span', { className: 'sr-desc' }, firstSentence(skill.description))
+        ),
+        React.createElement('span', { className: 'sr-family' }, labelOf(familyOf(skill.name))),
+        React.createElement('span', { className: 'sr-phases' }, `${phaseCount} phase${phaseCount === 1 ? '' : 's'}`),
+        React.createElement(
+          'span',
+          { className: 'sr-health' },
+          pct != null
+            ? React.createElement(
+              'span',
+              { className: 'pct-bar' },
               React.createElement(
-                'td',
-                { colSpan: 5, style: { color: 'var(--faint)', fontFamily: 'var(--f-mono)', fontSize: '12px', textAlign: 'center', padding: '32px' } },
-                'No skills match the current filter.'
-              )
+                'span',
+                { className: 'pct-track' },
+                React.createElement('span', { className: 'pct-fill', style: { width: `${fill}%` } })
+              ),
+              React.createElement('span', { className: 'pct-num' }, String(pct))
             )
-          : skills.map(skill =>
-              React.createElement(SkillCard, {
-                key: skill.name,
-                skill,
-                healthScore: skill.healthScore != null ? skill.healthScore : null
-              })
-            )
+            : React.createElement('span', { className: 'pct-num', style: { color: 'var(--faint)' } }, '—')
+        )
+      )
+    })
+  )
+}
+
+// ─── Family selector ──────────────────────────────────────────────────────────
+
+function FamilyBar({ counts, active, onSelect }) {
+  const items = [{ key: 'all', label: 'All' }].concat(FAMILIES)
+  return React.createElement(
+    'div',
+    { className: 'family-bar', role: 'group', 'aria-label': 'Skill families' },
+    ...items.map(f =>
+      React.createElement(
+        'button',
+        {
+          key: f.key,
+          type: 'button',
+          className: 'family-btn' + (active === f.key ? ' selected' : ''),
+          'aria-pressed': active === f.key,
+          onClick: () => onSelect(f.key)
+        },
+        f.label,
+        React.createElement('span', { className: 'family-n' }, String(counts[f.key] || 0))
       )
     )
+  )
+}
+
+// ─── Search field ─────────────────────────────────────────────────────────────
+
+function SkillSearch({ value, onChange }) {
+  return React.createElement(
+    'div',
+    { className: 'skill-search' },
+    React.createElement(
+      'svg',
+      { width: '13', height: '13', viewBox: '0 0 16 16', fill: 'none', 'aria-hidden': 'true' },
+      React.createElement('circle', { cx: '7', cy: '7', r: '5', stroke: 'currentColor', strokeWidth: '1.4' }),
+      React.createElement('path', { d: 'M11 11l4 4', stroke: 'currentColor', strokeWidth: '1.4', strokeLinecap: 'round' })
+    ),
+    React.createElement('input', {
+      type: 'search',
+      value,
+      placeholder: 'Search skills, frameworks, techniques, environments…',
+      'aria-label': 'Search skills',
+      onChange: e => onChange(e.target.value),
+      onKeyDown: e => { if (e.key === 'Escape') onChange('') }
+    })
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 function HomePage({ skills: initialSkills }) {
-  const [selectedTags, setSelectedTags] = useState(new Set())
+  const [query, setQuery] = useState('')
+  const [family, setFamily] = useState('all')
   const [recommendedSkills, setRecommendedSkills] = useState(null)
   const [recommendLoading, setRecommendLoading] = useState(false)
 
-  const filterOptions = getFilterOptions(initialSkills)
+  // Family tallies come from the full library, not the filtered view, so the
+  // numbers stay stable as a reference rather than shifting on every keystroke.
+  const familyCounts = { all: initialSkills.length }
+  for (const f of FAMILIES) familyCounts[f.key] = 0
+  for (const s of initialSkills) {
+    const k = familyOf(s.name)
+    familyCounts[k] = (familyCounts[k] || 0) + 1
+  }
 
-  function toggleTag(tag) {
-    setSelectedTags(prev => {
-      const next = new Set(prev)
-      next.has(tag) ? next.delete(tag) : next.add(tag)
-      return next
-    })
+  function handleSelectFamily(key) {
+    setFamily(key)
+    setRecommendedSkills(null)
+  }
+
+  function handleQuery(value) {
+    setQuery(value)
     setRecommendedSkills(null)
   }
 
   async function handleRecommend(skills) {
     setRecommendLoading(true)
-    setSelectedTags(new Set())
+    setQuery('')
+    setFamily('all')
     setRecommendedSkills(skills)
     setRecommendLoading(false)
   }
 
   function handleClearRecommend() {
     setRecommendedSkills(null)
-    setSelectedTags(new Set())
+    setQuery('')
+    setFamily('all')
   }
 
+  const q = query.trim().toLowerCase()
   const displaySkills = recommendedSkills != null
     ? recommendedSkills
-    : applyTagFilter(initialSkills, selectedTags)
+    : initialSkills.filter(s =>
+      (family === 'all' || familyOf(s.name) === family) && matchesQuery(s, q)
+    )
 
   return React.createElement(
     Layout,
@@ -585,34 +594,34 @@ function HomePage({ skills: initialSkills }) {
             onClear: handleClearRecommend,
             loading: recommendLoading
           }),
+          // Search
+          recommendedSkills == null
+            ? React.createElement(SkillSearch, { value: query, onChange: handleQuery })
+            : null,
+          // Families
+          recommendedSkills == null
+            ? React.createElement(FamilyBar, {
+              counts: familyCounts,
+              active: family,
+              onSelect: handleSelectFamily
+            })
+            : null,
           // Count + relevance note
           React.createElement(
             'div',
-            { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' } },
+            { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 0 4px' } },
             React.createElement(
               'span',
               { style: { fontFamily: 'var(--f-mono)', fontSize: '11px', color: 'var(--faint)', letterSpacing: '0.08em' } },
-              `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}${selectedTags.size > 0 ? ' · filtered' : ''}`
+              `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}` +
+              `${displaySkills.filter(s => s.live).length > 0 ? ` · ${displaySkills.filter(s => s.live).length} live` : ''}`
             ),
             recommendedSkills != null
               ? React.createElement('span', { style: { fontFamily: 'var(--f-mono)', fontSize: '10px', color: 'var(--gold)', letterSpacing: '0.1em' } }, '↑ RANKED BY RELEVANCE')
               : null
           ),
-          // Table + sidebar layout
-          React.createElement(
-            'div',
-            { style: { display: 'flex', gap: '40px', alignItems: 'flex-start' } },
-            React.createElement(FilterSidebar, {
-              options: filterOptions,
-              selectedTags,
-              onToggle: toggleTag
-            }),
-            React.createElement(
-              'div',
-              { style: { flex: 1, minWidth: 0 } },
-              React.createElement(SkillsSection, { skills: displaySkills, recommendedSkills })
-            )
-          )
+          // Rows
+          React.createElement(SkillsSection, { skills: displaySkills })
         )
       )
     ),
