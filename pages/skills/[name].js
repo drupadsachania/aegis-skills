@@ -129,7 +129,12 @@ function SkillDetailPage({ manifest, systemPrompt, openaiAction }) {
         React.createElement(
           'p',
           { style: { fontSize: '14px', color: 'var(--muted)', marginBottom: '20px', maxWidth: '560px', lineHeight: 1.7 } },
-          `This skill has ${(manifest.phases || []).length} phase${(manifest.phases || []).length === 1 ? '' : 's'}. Each phase represents a distinct analysis step with its own context window.`
+          (() => {
+            const all = manifest.phases || []
+            const authored = all.filter(p => !p.auto).length
+            const live = all.length - authored
+            return `This skill has ${authored} authored phase${authored === 1 ? '' : 's'}${live > 0 ? ` plus ${live} live intel feed${live === 1 ? '' : 's'} refreshed by aegis intel-sync` : ''}. Each phase represents a distinct analysis step with its own context window.`
+          })()
         ),
         React.createElement(
           'div',
@@ -139,7 +144,27 @@ function SkillDetailPage({ manifest, systemPrompt, openaiAction }) {
               'div',
               { key: phase.id, className: 'lifecycle-step' },
               React.createElement('span', { className: 'lifecycle-num' }, String(i + 1).padStart(2, '0')),
-              React.createElement('span', { className: 'lifecycle-name' }, phase.id),
+              React.createElement(
+                'span',
+                { className: 'lifecycle-name' },
+                phase.id,
+                // Auto-generated phases are a live feed, not authored tradecraft —
+                // label them so the distinction is visible to anyone reading the skill.
+                phase.auto
+                  ? React.createElement(
+                    'span',
+                    {
+                      style: {
+                        marginLeft: '8px', padding: '1px 6px', borderRadius: '3px',
+                        border: '1px solid var(--border)', color: 'var(--gold)',
+                        fontFamily: 'var(--f-mono)', fontSize: '9px', letterSpacing: '0.1em',
+                        verticalAlign: 'middle'
+                      }
+                    },
+                    'LIVE'
+                  )
+                  : null
+              ),
               React.createElement('span', { className: 'lifecycle-tokens' }, `${phase.tokens != null ? phase.tokens.toLocaleString() : '—'} tokens`)
             )
           )

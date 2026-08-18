@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kairo-foundation/aegis-skills"
+    "url": "https://github.com/drupadsachania/aegis-skills"
   },
   "homepage": "https://aegis-skills.vercel.app/",
   "bugs": {
-    "url": "https://github.com/kairo-foundation/aegis-skills/issues"
+    "url": "https://github.com/drupadsachania/aegis-skills/issues"
   },
   "scripts": {
     "test": "node bin/aegis.js --version && node bin/aegis.js compile && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
@@ -35,7 +35,10 @@
     "vscode",
     "security",
     "mitre",
-    "threat-analysis"
+    "threat-analysis",
+    "threat-intelligence",
+    "dlp",
+    "ics-security"
   ],
   "license": "MIT",
   "dependencies": {

@@ -253,10 +253,59 @@ module.exports = function DocsPage() {
           )
         ),
 
+        // ── Intel sync ──
+        React.createElement('section', { className: 'doc-section', id: 'intel-sync' },
+          React.createElement('div', { className: 'doc-section-hd' },
+            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('h2', null, 'Keeping Skills Current')
+          ),
+          React.createElement('p', null,
+            'Security skills decay as the threat landscape shifts. ',
+            React.createElement('code', null, 'aegis intel-sync'),
+            ' ingests a threat-intelligence corpus, extracts reusable attack patterns, and routes each one into the skills whose attack surface it affects.'
+          ),
+          React.createElement('pre', { style: { marginTop: '12px', marginBottom: '16px' } },
+            React.createElement('code', null,
+              'aegis intel-sync --days 7          # sync the last week, then recompile\n' +
+              'aegis intel-sync --dry-run         # show routing without writing\n' +
+              'aegis intel-sync --news <dir> --breakdowns <dir>'
+            )
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'What it writes'),
+          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('code', null, 'references/live-threat-intel.md'),
+              ' — current observations, techniques seen in the window, and coverage prompts, written strictly between BEGIN/END markers.'
+            ),
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              React.createElement('code', null, 'intel-state.json'),
+              ' — derived coverage gaps and the last sync date, merged into ',
+              React.createElement('code', null, 'self-learning'),
+              ' at compile time.'
+            )
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Safety properties'),
+          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              'Hand-authored reference files are never read, modified, or overwritten. Generated content lives only inside its own marked block and is fully regenerable.'
+            ),
+            React.createElement('li', { style: { marginBottom: '8px' } },
+              'Generated phases are flagged ',
+              React.createElement('code', null, 'auto: true'),
+              ' and excluded from phase-coverage scoring, so a live feed cannot inflate a skill\'s health score.'
+            ),
+            React.createElement('li', null,
+              'Intel state is stored separately from ',
+              React.createElement('code', null, 'skill.json'),
+              ', which is a build artifact regenerated on every compile.'
+            )
+          )
+        ),
+
         // ── Security ──
         React.createElement('section', { className: 'doc-section', id: 'security' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('span', { className: 'ds-num' }, '08'),
             React.createElement('h2', null, 'Security & Privacy')
           ),
           React.createElement('p', null,
@@ -284,7 +333,7 @@ module.exports = function DocsPage() {
         // ── Next Steps ──
         React.createElement('section', { className: 'doc-section' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '08'),
+            React.createElement('span', { className: 'ds-num' }, '09'),
             React.createElement('h2', null, 'Next Steps')
           ),
           React.createElement('p', null,

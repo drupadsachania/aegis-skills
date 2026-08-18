@@ -75,13 +75,13 @@ function Layout({ children }) {
           React.createElement(
             'a',
             {
-              href: 'https://github.com/drupadsachania/deception-skills',
+              href: 'https://github.com/drupadsachania/aegis-skills',
               target: '_blank',
               rel: 'noopener noreferrer'
             },
             'GitHub'
           ),
-          React.createElement('span', { className: 'footer-copy' }, 'v0.1.0 · MIT')
+          React.createElement('span', { className: 'footer-copy' }, 'v0.2.0 · MIT')
         )
       )
     )

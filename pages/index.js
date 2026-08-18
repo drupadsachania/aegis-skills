@@ -27,6 +27,48 @@ const STEPS = [
   }
 ]
 
+const INTEL_STEPS = [
+  {
+    n: '01',
+    label: 'Ingest',
+    desc: 'Pull the window\'s feeds, knowledge graph, and teardowns. Tier each source and deduplicate against prior runs.'
+  },
+  {
+    n: '02',
+    label: 'Extract',
+    desc: 'Turn individual incidents into reusable attack patterns and map them across the full ATT&CK chain.'
+  },
+  {
+    n: '03',
+    label: 'Route',
+    desc: 'Send each pattern to the skills whose attack surface it lands on — by technology and domain, not headline.'
+  },
+  {
+    n: '04',
+    label: 'Map coverage',
+    desc: 'Derive coverage prompts: recurring CVEs, dominant techniques, and where telemetry may not even exist.'
+  }
+]
+
+const COMMANDS = [
+  {
+    cmd: 'aegis list',
+    desc: 'Show installed skills and their status for each tool.'
+  },
+  {
+    cmd: 'aegis configure --for <tool>',
+    desc: 'Reconfigure a specific tool (claude, chatgpt, cursor, gemini, vscode, antigravity-cli).'
+  },
+  {
+    cmd: 'aegis compile [skill]',
+    desc: 'Rebuild artifacts from SKILL.md — system prompt, MCP manifest, and OpenAI action schema.'
+  },
+  {
+    cmd: 'aegis intel-sync',
+    desc: 'Ingest a threat-intel corpus, route findings into the skills they affect, and recompile.'
+  }
+]
+
 const COMMON_ENVIRONMENTS = ['enterprise', 'cloud', 'hybrid', 'ot', 'remote-workforce', 'saas']
 const COMMON_TAGS = ['network', 'endpoint', 'web-application', 'api', 'lateral-movement', 'credential-theft', 'supply-chain', 'detection', 'compliance']
 
@@ -455,23 +497,13 @@ function HomePage({ skills: initialSkills }) {
             React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Available Commands'),
             React.createElement(
               'div',
-              { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' } },
-              // List command
-              React.createElement(
-                'div',
-                { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
-                React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px' } }, 'aegis list'),
-                React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
-                  'Show installed skills and their status for each tool.'
-                )
-              ),
-              // Configure command
-              React.createElement(
-                'div',
-                { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
-                React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px' } }, 'aegis configure --for <tool>'),
-                React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
-                  'Reconfigure a specific tool (claude, chatgpt, cursor, gemini, vscode, antigravity-cli).'
+              { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' } },
+              ...COMMANDS.map(cmd =>
+                React.createElement(
+                  'div',
+                  { key: cmd.cmd, style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
+                  React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px', fontSize: '13px' } }, cmd.cmd),
+                  React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px', margin: 0 } }, cmd.desc)
                 )
               )
             )
@@ -580,6 +612,59 @@ function HomePage({ skills: initialSkills }) {
               { style: { flex: 1, minWidth: 0 } },
               React.createElement(SkillsSection, { skills: displaySkills, recommendedSkills })
             )
+          )
+        )
+      )
+    ),
+
+    // ── Self-updating intel loop ──────────────────────────────────────────────
+    React.createElement(
+      'div',
+      { id: 'intel', style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
+      React.createElement(
+        'div',
+        { className: 'container' },
+        React.createElement(
+          'div',
+          { className: 'section' },
+          React.createElement(
+            'div',
+            { className: 'sec-head' },
+            React.createElement('span', { className: 'sec-num' }, '05'),
+            React.createElement('span', { className: 'sec-kicker' }, 'Self-Updating Intel')
+          ),
+          React.createElement(
+            'p',
+            { style: { color: 'var(--cream-dim)', maxWidth: '760px', marginBottom: '32px' } },
+            'Skills go stale as the threat landscape moves. ',
+            React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px', fontFamily: 'var(--f-mono)', fontSize: '13px' } }, 'aegis intel-sync'),
+            ' ingests a threat-intelligence corpus — news feeds, knowledge graphs, and incident teardowns — extracts the reusable attack patterns, and routes each one into the skills whose attack surface it actually lands on.'
+          ),
+          React.createElement(
+            'div',
+            { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' } },
+            ...INTEL_STEPS.map(step =>
+              React.createElement(
+                'div',
+                { key: step.n, className: 'step-cell' },
+                React.createElement('span', { className: 'step-num' }, step.n),
+                React.createElement('h3', null, step.label),
+                React.createElement('p', null, step.desc)
+              )
+            )
+          ),
+          React.createElement(
+            'div',
+            { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
+            React.createElement('div', null, '$ aegis intel-sync --days 7'),
+            React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '  corpus: 199 article(s) · 2 teardown(s) · graph 323 nodes'),
+            React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  routed to 19 skill(s) · coverage prompts written'),
+            React.createElement('div', { style: { color: 'var(--gold)', marginTop: '8px' } }, '  ✓ intel blocks written · artifacts recompiled')
+          ),
+          React.createElement(
+            'p',
+            { style: { color: 'var(--faint)', fontSize: '12px', marginTop: '16px', maxWidth: '760px' } },
+            'Generated intel is confined to its own reference file between explicit markers — hand-authored tradecraft is never modified, and every block is fully regenerable. Auto-generated phases are excluded from health scoring so a live feed can never inflate a skill\'s score.'
           )
         )
       )
