@@ -33,7 +33,8 @@
                       "signal-source-validity",
                       "deception-placement-matrix",
                       "signal-writing-guide",
-                      "documentation-templates"
+                      "documentation-templates",
+                      "live-threat-intel"
                     ]
                   }
                 }

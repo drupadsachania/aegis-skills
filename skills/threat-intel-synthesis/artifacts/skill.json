@@ -23,37 +23,37 @@
     {
       "id": "intel-ingestion",
       "lazy": false,
-      "tokens": 1076
+      "tokens": 1098
     },
     {
       "id": "attack-pattern-extraction",
       "lazy": true,
-      "tokens": 1352
+      "tokens": 1380
     },
     {
       "id": "incident-reconstruction",
       "lazy": true,
-      "tokens": 1358
+      "tokens": 1385
     },
     {
       "id": "attack-surface-coverage",
       "lazy": true,
-      "tokens": 1459
+      "tokens": 1486
     },
     {
       "id": "intel-to-detection",
       "lazy": true,
-      "tokens": 1305
+      "tokens": 1334
     },
     {
       "id": "continuous-learning-loop",
       "lazy": true,
-      "tokens": 1476
+      "tokens": 1506
     },
     {
       "id": "live-threat-intel",
       "lazy": true,
-      "tokens": 1224,
+      "tokens": 1137,
       "auto": true
     }
   ],
@@ -82,17 +82,16 @@
     "health-score": 1,
     "stale-threshold-days": 30,
     "coverage-gaps": [
-      "Recurring CVE exposure: CVE-2026-68820 (x2), CVE-2026-55040 (x2), CVE-2026-63520 (x2) — confirm patch status and detection coverage",
-      "Techniques observed: T1546.003 (x1), T1649 (x1) — verify a validated detection exists for each",
-      "Dominant themes: zero-day (x12), rce (x10), supply-chain (x8), kev (x8), nation-state (x7), ics (x7) — confirm controls address the recurring mechanism, not just individual incidents",
-      "Vendors/products named repeatedly: Fortinet (x3), Cisco (x3), SpecterOps (x2), Broadcom (x2), VMware (x2), Apple (x2) — review exposure to these in the estate",
-      "Teardown \"Attack Breakdown — WMI Event Subscription Persistence (MITRE ATT&CK T1546.003)\" (2026-08-11) — techniques T1546.003, T1546, T1047, T1059.001, T1059.005; check telemetry availability before assuming coverage",
+      "Recurring CVE exposure: CVE-2026-65400 (x2) — confirm patch status and detection coverage",
+      "Techniques observed: T1649 (x1) — verify a validated detection exists for each",
+      "Dominant themes: supply-chain (x8), zero-day (x7), ransomware (x7), nation-state (x6), rce (x6), privilege-escalation (x6) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: Apple (x4), Broadcom (x2), VMware (x2), npm (x2), Microsoft 365 (x2), Kaspersky (x2) — review exposure to these in the estate",
       "Teardown \"Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)\" (2026-08-18) — techniques T1649, T1550, T1556, T1207; check telemetry availability before assuming coverage"
     ],
-    "last-intel-sync": "2026-08-18",
+    "last-intel-sync": "2026-08-22",
     "intel-window-days": 7,
-    "items-routed": 77,
-    "teardowns-routed": 2
+    "items-routed": 75,
+    "teardowns-routed": 1
   },
   "context": {
     "environments": [

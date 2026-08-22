@@ -1,11 +1,9 @@
 {
   "coverage-gaps": [
-    "CVEs referenced this period: CVE-2025-68686, CVE-2026-20349, CVE-2026-62878, CVE-2026-62815, CVE-2026-0293, CVE-2026-0294 — verify whether this estate is exposed",
-    "Dominant themes: vpn (x3), dns (x3) — confirm controls address the recurring mechanism, not just individual incidents",
-    "Vendors/products named repeatedly: Fortinet (x3) — review exposure to these in the estate"
+    "CVEs referenced this period: CVE-2026-62878, CVE-2026-62815, CVE-2026-0293, CVE-2026-0294, CVE-2025-15630, CVE-2007-3010 — verify whether this estate is exposed"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
-  "items-routed": 12,
+  "items-routed": 7,
   "teardowns-routed": 0
 }

@@ -34,7 +34,8 @@
                       "memory-forensics",
                       "network-forensics",
                       "cloud-and-mobile",
-                      "timeline-reconstruction"
+                      "timeline-reconstruction",
+                      "live-threat-intel"
                     ]
                   }
                 }

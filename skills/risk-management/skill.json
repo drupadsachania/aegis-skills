@@ -46,7 +46,7 @@
     {
       "id": "live-threat-intel",
       "lazy": true,
-      "tokens": 762,
+      "tokens": 769,
       "auto": true
     }
   ],
@@ -73,12 +73,12 @@
     "stale-threshold-days": 60,
     "coverage-gaps": [
       "CVEs referenced this period: CVE-2025-15630 — verify whether this estate is exposed",
-      "Dominant themes: supply-chain (x16) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Dominant themes: supply-chain (x15) — confirm controls address the recurring mechanism, not just individual incidents",
       "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
     ],
-    "last-intel-sync": "2026-08-18",
+    "last-intel-sync": "2026-08-22",
     "intel-window-days": 7,
-    "items-routed": 16,
+    "items-routed": 15,
     "teardowns-routed": 0
   },
   "context": {

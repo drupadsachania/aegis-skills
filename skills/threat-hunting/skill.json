@@ -44,7 +44,7 @@
     {
       "id": "live-threat-intel",
       "lazy": true,
-      "tokens": 823,
+      "tokens": 643,
       "auto": true
     }
   ],
@@ -70,15 +70,12 @@
     "health-score": 1,
     "stale-threshold-days": 60,
     "coverage-gaps": [
-      "CVEs referenced this period: CVE-2026-68820 — verify whether this estate is exposed",
-      "Techniques observed: T1546.003 (x1) — verify a validated detection exists for each",
-      "Dominant themes: apt (x4) — confirm controls address the recurring mechanism, not just individual incidents",
-      "Teardown \"Attack Breakdown — WMI Event Subscription Persistence (MITRE ATT&CK T1546.003)\" (2026-08-11) — techniques T1546.003, T1546, T1047, T1059.001, T1059.005; check telemetry availability before assuming coverage"
+      "Dominant themes: apt (x5), china (x4), nation-state (x3) — confirm controls address the recurring mechanism, not just individual incidents"
     ],
-    "last-intel-sync": "2026-08-18",
+    "last-intel-sync": "2026-08-22",
     "intel-window-days": 7,
-    "items-routed": 7,
-    "teardowns-routed": 1
+    "items-routed": 8,
+    "teardowns-routed": 0
   },
   "context": {
     "environments": [

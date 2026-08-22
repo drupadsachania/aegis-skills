@@ -1,11 +1,11 @@
 {
   "coverage-gaps": [
-    "CVEs referenced this period: CVE-2026-15409, CVE-2026-15410, CVE-2026-8037, CVE-2026-9198, CVE-2026-63077, CVE-2026-11645 — verify whether this estate is exposed",
-    "Dominant themes: supply-chain (x16), open-source (x12), rce (x10), kev (x4), mcp (x4), zero-day (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+    "CVEs referenced this period: CVE-2026-62878, CVE-2026-62815, CVE-2025-15630, CVE-2026-19478, CVE-2026-15748, CVE-2026-35273 — verify whether this estate is exposed",
+    "Dominant themes: supply-chain (x15), open-source (x11), rce (x7), mcp (x3), agent-security (x3) — confirm controls address the recurring mechanism, not just individual incidents",
     "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
-  "items-routed": 40,
+  "items-routed": 34,
   "teardowns-routed": 0
 }

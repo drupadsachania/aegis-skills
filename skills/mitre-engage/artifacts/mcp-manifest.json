@@ -18,7 +18,8 @@
             "description": "Phase ID to load",
             "enum": [
               "engage-matrix-overview",
-              "activity-planning-guide"
+              "activity-planning-guide",
+              "live-threat-intel"
             ]
           }
         }
@@ -36,6 +37,12 @@
       "uri": "https://aegis-skills.vercel.app/mitre-engage/phase/activity-planning-guide",
       "name": "activity-planning-guide",
       "description": "Reference content for mitre-engage — activity-planning-guide",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/mitre-engage/phase/live-threat-intel",
+      "name": "live-threat-intel",
+      "description": "Reference content for mitre-engage — live-threat-intel",
       "mimeType": "text/markdown"
     }
   ]

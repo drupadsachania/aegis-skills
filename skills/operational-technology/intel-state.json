@@ -1,10 +1,10 @@
 {
   "coverage-gaps": [
-    "Dominant themes: ics (x7), ot (x6), ransomware (x5), critical-infrastructure (x5), manufacturing (x5), advisory (x3) — confirm controls address the recurring mechanism, not just individual incidents",
-    "Vendors/products named repeatedly: General Electric (x2) — review exposure to these in the estate"
+    "CVEs referenced this period: CVE-2026-25895 — verify whether this estate is exposed",
+    "Dominant themes: ics (x5), critical-infrastructure (x5), ransomware (x4), ot (x3) — confirm controls address the recurring mechanism, not just individual incidents"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
-  "items-routed": 16,
+  "items-routed": 12,
   "teardowns-routed": 0
 }

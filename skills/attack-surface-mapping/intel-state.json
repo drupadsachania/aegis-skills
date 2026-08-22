@@ -1,10 +1,10 @@
 {
   "coverage-gaps": [
-    "Recurring CVE exposure: CVE-2026-68820 (x2) — confirm patch status and detection coverage",
-    "Dominant themes: zero-day (x14), kev (x3), privilege-escalation (x3), rce (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+    "CVEs referenced this period: CVE-2026-59310, CVE-2026-62878, CVE-2026-62815, CVE-2026-58231, CVE-2007-3010, CVE-2016-6277 — verify whether this estate is exposed",
+    "Dominant themes: zero-day (x7) — confirm controls address the recurring mechanism, not just individual incidents"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
-  "items-routed": 16,
+  "items-routed": 9,
   "teardowns-routed": 0
 }

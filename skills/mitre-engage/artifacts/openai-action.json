@@ -30,7 +30,8 @@
                     "description": "Which phase to load",
                     "enum": [
                       "engage-matrix-overview",
-                      "activity-planning-guide"
+                      "activity-planning-guide",
+                      "live-threat-intel"
                     ]
                   }
                 }

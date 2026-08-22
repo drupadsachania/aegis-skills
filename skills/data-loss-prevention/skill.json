@@ -53,7 +53,7 @@
     {
       "id": "live-threat-intel",
       "lazy": true,
-      "tokens": 756,
+      "tokens": 718,
       "auto": true
     }
   ],
@@ -79,10 +79,9 @@
     "health-score": 1,
     "stale-threshold-days": 90,
     "coverage-gaps": [
-      "Dominant themes: ransomware (x10), leak-site (x6), data-breach (x3), supply-chain (x3), extortion (x3) — confirm controls address the recurring mechanism, not just individual incidents",
-      "Vendors/products named repeatedly: CEVA Logistics (x2) — review exposure to these in the estate"
+      "Dominant themes: ransomware (x10), leak-site (x9), data-breach (x4), third-party-breach (x3) — confirm controls address the recurring mechanism, not just individual incidents"
     ],
-    "last-intel-sync": "2026-08-18",
+    "last-intel-sync": "2026-08-22",
     "intel-window-days": 7,
     "items-routed": 20,
     "teardowns-routed": 0

@@ -24,6 +24,12 @@
       "id": "activity-planning-guide",
       "lazy": true,
       "tokens": 360
+    },
+    {
+      "id": "live-threat-intel",
+      "lazy": true,
+      "tokens": 209,
+      "auto": true
     }
   ],
   "endpoints": {
@@ -37,5 +43,12 @@
       "mitre-engage"
     ],
     "red-team": true
+  },
+  "self-learning": {
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 2,
+    "teardowns-routed": 0
   }
 }

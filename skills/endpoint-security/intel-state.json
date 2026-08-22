@@ -1,8 +1,9 @@
 {
   "coverage-gaps": [
-    "CVEs referenced this period: CVE-2026-68820, CVE-2026-62832, CVE-2026-72971, CVE-2026-65400 — verify whether this estate is exposed"
+    "CVEs referenced this period: CVE-2026-65400, CVE-2026-65775 — verify whether this estate is exposed",
+    "Dominant themes: macos (x3) — confirm controls address the recurring mechanism, not just individual incidents"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
   "items-routed": 4,
   "teardowns-routed": 0

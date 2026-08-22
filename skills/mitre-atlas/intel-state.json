@@ -1,11 +1,11 @@
 {
   "coverage-gaps": [
-    "CVEs referenced this period: CVE-2025-32711 — verify whether this estate is exposed",
-    "Dominant themes: paper (x22), prompt-injection (x9), rag (x5), agent-hijacking (x4), small-model (x4), agent-safety (x4) — confirm controls address the recurring mechanism, not just individual incidents",
-    "Vendors/products named repeatedly: OpenAI (x5), Anthropic (x5), Irregular (x2) — review exposure to these in the estate"
+    "CVEs referenced this period: CVE-2026-25536, CVE-2026-33032, CVE-2025-32711, CVE-2026-50548, CVE-2026-50549, CVE-2026-21520 — verify whether this estate is exposed",
+    "Dominant themes: paper (x8), prompt-injection (x8), model (x5), sandbox-escape (x5), agent-security (x4), open-weight (x4) — confirm controls address the recurring mechanism, not just individual incidents",
+    "Vendors/products named repeatedly: OpenAI (x5), Anthropic (x5), Irregular (x3), kontext-security (x2) — review exposure to these in the estate"
   ],
-  "last-intel-sync": "2026-08-18",
+  "last-intel-sync": "2026-08-22",
   "intel-window-days": 7,
-  "items-routed": 48,
+  "items-routed": 41,
   "teardowns-routed": 0
 }
