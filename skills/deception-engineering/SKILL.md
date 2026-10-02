@@ -25,6 +25,9 @@ phases:
   - id: documentation-templates
     ref: references/documentation-templates.md
     lazy: true
+  - id: validation-campaign-tripwires
+    ref: references/validation-campaign-tripwires.md
+    lazy: true
   - id: live-threat-intel
     ref: references/live-threat-intel.md
     lazy: true
@@ -67,6 +70,7 @@ Phase 5 → Placement & Deployment
 Phase 6 → Testing & Validation
 Phase 7 → Signal Writing                  [read: references/signal-writing-guide.md]
 Phase 8 → Formalization & Documentation   [read: references/documentation-templates.md]
+Phase 9 → Validation Campaign Tripwires   [read: references/validation-campaign-tripwires.md]
 ```
 
 Read a reference file only when you reach that phase. Do not front-load all references.

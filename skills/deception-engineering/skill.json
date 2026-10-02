@@ -42,6 +42,11 @@
       "tokens": 3020
     },
     {
+      "id": "validation-campaign-tripwires",
+      "lazy": true,
+      "tokens": 1190
+    },
+    {
       "id": "live-threat-intel",
       "lazy": true,
       "tokens": 211,

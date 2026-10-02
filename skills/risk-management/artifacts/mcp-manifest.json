@@ -22,6 +22,7 @@
               "risk-treatment",
               "risk-register",
               "risk-reporting",
+              "exposure-risk-model",
               "live-threat-intel"
             ]
           }
@@ -58,6 +59,12 @@
       "uri": "https://aegis-skills.vercel.app/risk-management/phase/risk-reporting",
       "name": "risk-reporting",
       "description": "Reference content for risk-management — risk-reporting",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/risk-management/phase/exposure-risk-model",
+      "name": "exposure-risk-model",
+      "description": "Reference content for risk-management — exposure-risk-model",
       "mimeType": "text/markdown"
     },
     {

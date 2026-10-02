@@ -20,6 +20,9 @@ phases:
   - id: incident-response
     ref: references/incident-response.md
     lazy: true
+  - id: control-effectiveness-validation
+    ref: references/control-effectiveness-validation.md
+    lazy: true
   - id: live-threat-intel
     ref: references/live-threat-intel.md
     lazy: true
@@ -58,7 +61,12 @@ Phase 1 → EDR Deployment            [read: references/edr-deployment.md]
 Phase 2 → Baseline Hardening        [read: references/baseline-hardening.md]
 Phase 3 → Malware Analysis          [read: references/malware-analysis.md]
 Phase 4 → Incident Response         [read: references/incident-response.md]
+Phase 5 → Control Effectiveness Validation  [read: references/control-effectiveness-validation.md]
 ```
+
+Phase 5 validates that deployed controls actually prevent or detect the techniques they
+are meant to — producing the detection dimension consumed by the `exposure-validation`
+skill. Deployment status (Phase 1) and tested effectiveness (Phase 5) are different facts.
 
 ## Output Format
 

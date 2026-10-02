@@ -25,6 +25,9 @@ phases:
   - id: risk-reporting
     ref: references/risk-reporting.md
     lazy: true
+  - id: exposure-risk-model
+    ref: references/exposure-risk-model.md
+    lazy: true
   - id: live-threat-intel
     ref: references/live-threat-intel.md
     lazy: true
@@ -56,3 +59,8 @@ Threat-informed risk management methodology. Begin with risk identification
 using asset inventory and threat intelligence, then assess likelihood and
 impact quantitatively, select treatment options, maintain a governed risk
 register, and report risk posture to leadership.
+
+The exposure-risk-model phase adds deterministic, evidence-backed scoring for the
+`exposure-validation` lifecycle: risk assigned by explicit logic (reasoning explains it,
+never overrides it), a business-context chain to crown jewels, and risk reduction
+expressed as a proven before/after delta rather than an assertion.

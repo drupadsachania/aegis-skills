@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "risk-management skill",
-    "description": "End-to-end information security risk management programme covering risk identification, qualitative and quantitative assessment (FAIR model), treatment selection, risk register governance, and executive risk reporting. Triggers for: risk assessment, risk register design, risk appetite definition, threat modelling integration, FAIR quantification, or risk reporting.\n",
+    "title": "exposure-validation skill",
+    "description": "Continuous exposure validation (CTEM) — prove which vulnerabilities are actually exposed, exploitable and impactful in an authorized environment, then prove the exploit window is closed after remediation. Treats vulnerability, exposure, exploitability, impact, detection, remediation and verification as independent evidence-backed states. Triggers for: exposure management programme design, CTEM, breach and attack simulation planning, validating scanner findings, KEV rapid response, attack-path impact analysis, remediation verification, retesting, or proving risk reduction to leadership.\n",
     "version": "1.0.0"
   },
   "servers": [
@@ -11,10 +11,10 @@
     }
   ],
   "paths": {
-    "/risk-management/invoke": {
+    "/exposure-validation/invoke": {
       "post": {
-        "operationId": "invoke_risk_management",
-        "summary": "Load a phase of the risk-management skill",
+        "operationId": "invoke_exposure_validation",
+        "summary": "Load a phase of the exposure-validation skill",
         "requestBody": {
           "required": true,
           "content": {
@@ -29,13 +29,12 @@
                     "type": "string",
                     "description": "Which phase to load",
                     "enum": [
-                      "risk-identification",
-                      "risk-assessment",
-                      "risk-treatment",
-                      "risk-register",
-                      "risk-reporting",
-                      "exposure-risk-model",
-                      "live-threat-intel"
+                      "exposure-state-model",
+                      "validation-authorization-and-scope",
+                      "impact-and-attack-paths",
+                      "evidence-and-confidence",
+                      "remediation-verification",
+                      "rapid-exposure-response"
                     ]
                   }
                 }

@@ -34,6 +34,9 @@ phases:
   - id: compliance-reporting
     ref: references/compliance-reporting.md
     lazy: true
+  - id: detection-validation
+    ref: references/detection-validation.md
+    lazy: true
   - id: live-threat-intel
     ref: references/live-threat-intel.md
     lazy: true
@@ -75,6 +78,7 @@ Phase 5 → Incident Response         [read: references/incident-response.md]
 Phase 6 → Post-Incident Review      [read: references/post-incident-review.md]
 Phase 7 → Security Metrics          [read: references/security-metrics.md]
 Phase 8 → Compliance Reporting      [read: references/compliance-reporting.md]
+Phase 9 → Detection Validation      [read: references/detection-validation.md]
 ```
 
 ## Output Format

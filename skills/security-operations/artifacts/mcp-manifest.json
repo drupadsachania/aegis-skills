@@ -25,6 +25,7 @@
               "post-incident-review",
               "security-metrics",
               "compliance-reporting",
+              "detection-validation",
               "live-threat-intel"
             ]
           }
@@ -79,6 +80,12 @@
       "uri": "https://aegis-skills.vercel.app/security-operations/phase/compliance-reporting",
       "name": "compliance-reporting",
       "description": "Reference content for security-operations — compliance-reporting",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/security-operations/phase/detection-validation",
+      "name": "detection-validation",
+      "description": "Reference content for security-operations — detection-validation",
       "mimeType": "text/markdown"
     },
     {

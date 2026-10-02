@@ -33,7 +33,7 @@
     {
       "id": "vulnerability-management",
       "lazy": true,
-      "tokens": 530
+      "tokens": 921
     },
     {
       "id": "incident-detection",
@@ -59,6 +59,11 @@
       "id": "compliance-reporting",
       "lazy": true,
       "tokens": 846
+    },
+    {
+      "id": "detection-validation",
+      "lazy": true,
+      "tokens": 1303
     },
     {
       "id": "live-threat-intel",

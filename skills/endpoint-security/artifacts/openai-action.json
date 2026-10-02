@@ -33,6 +33,7 @@
                       "baseline-hardening",
                       "malware-analysis",
                       "incident-response",
+                      "control-effectiveness-validation",
                       "live-threat-intel"
                     ]
                   }

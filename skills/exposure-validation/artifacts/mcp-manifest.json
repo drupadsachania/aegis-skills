@@ -1,0 +1,70 @@
+{
+  "schema": "mcp/1.0",
+  "name": "exposure-validation",
+  "version": "1.0.0",
+  "description": "Continuous exposure validation (CTEM) — prove which vulnerabilities are actually exposed, exploitable and impactful in an authorized environment, then prove the exploit window is closed after remediation. Treats vulnerability, exposure, exploitability, impact, detection, remediation and verification as independent evidence-backed states. Triggers for: exposure management programme design, CTEM, breach and attack simulation planning, validating scanner findings, KEV rapid response, attack-path impact analysis, remediation verification, retesting, or proving risk reduction to leadership.\n",
+  "tools": [
+    {
+      "name": "invoke",
+      "description": "Run a phase of the exposure-validation skill workflow",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "phase"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "description": "Phase ID to load",
+            "enum": [
+              "exposure-state-model",
+              "validation-authorization-and-scope",
+              "impact-and-attack-paths",
+              "evidence-and-confidence",
+              "remediation-verification",
+              "rapid-exposure-response"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/exposure-state-model",
+      "name": "exposure-state-model",
+      "description": "Reference content for exposure-validation — exposure-state-model",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/validation-authorization-and-scope",
+      "name": "validation-authorization-and-scope",
+      "description": "Reference content for exposure-validation — validation-authorization-and-scope",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/impact-and-attack-paths",
+      "name": "impact-and-attack-paths",
+      "description": "Reference content for exposure-validation — impact-and-attack-paths",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/evidence-and-confidence",
+      "name": "evidence-and-confidence",
+      "description": "Reference content for exposure-validation — evidence-and-confidence",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/remediation-verification",
+      "name": "remediation-verification",
+      "description": "Reference content for exposure-validation — remediation-verification",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/exposure-validation/phase/rapid-exposure-response",
+      "name": "rapid-exposure-response",
+      "description": "Reference content for exposure-validation — rapid-exposure-response",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

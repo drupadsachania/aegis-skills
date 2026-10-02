@@ -21,6 +21,7 @@
               "baseline-hardening",
               "malware-analysis",
               "incident-response",
+              "control-effectiveness-validation",
               "live-threat-intel"
             ]
           }
@@ -51,6 +52,12 @@
       "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/incident-response",
       "name": "incident-response",
       "description": "Reference content for endpoint-security — incident-response",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "https://aegis-skills.vercel.app/endpoint-security/phase/control-effectiveness-validation",
+      "name": "control-effectiveness-validation",
+      "description": "Reference content for endpoint-security — control-effectiveness-validation",
       "mimeType": "text/markdown"
     },
     {

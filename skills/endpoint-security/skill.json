@@ -37,6 +37,11 @@
       "tokens": 697
     },
     {
+      "id": "control-effectiveness-validation",
+      "lazy": true,
+      "tokens": 1419
+    },
+    {
       "id": "live-threat-intel",
       "lazy": true,
       "tokens": 447,

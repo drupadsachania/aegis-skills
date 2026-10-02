@@ -1,0 +1,107 @@
+{
+  "osk": "1.0",
+  "name": "exposure-validation",
+  "version": "1.0.0",
+  "description": "Continuous exposure validation (CTEM) — prove which vulnerabilities are actually exposed, exploitable and impactful in an authorized environment, then prove the exploit window is closed after remediation. Treats vulnerability, exposure, exploitability, impact, detection, remediation and verification as independent evidence-backed states. Triggers for: exposure management programme design, CTEM, breach and attack simulation planning, validating scanner findings, KEV rapid response, attack-path impact analysis, remediation verification, retesting, or proving risk reduction to leadership.\n",
+  "frameworks": [
+    "mitre-attack",
+    "ssvc",
+    "nist-800-115",
+    "ctem"
+  ],
+  "tags": [
+    "security",
+    "exposure-management",
+    "ctem",
+    "validation",
+    "retest",
+    "remediation-verification",
+    "attack-paths",
+    "kev",
+    "bas"
+  ],
+  "phases": [
+    {
+      "id": "exposure-state-model",
+      "lazy": false,
+      "tokens": 1799
+    },
+    {
+      "id": "validation-authorization-and-scope",
+      "lazy": false,
+      "tokens": 1581
+    },
+    {
+      "id": "impact-and-attack-paths",
+      "lazy": true,
+      "tokens": 1309
+    },
+    {
+      "id": "evidence-and-confidence",
+      "lazy": true,
+      "tokens": 1390
+    },
+    {
+      "id": "remediation-verification",
+      "lazy": true,
+      "tokens": 1403
+    },
+    {
+      "id": "rapid-exposure-response",
+      "lazy": true,
+      "tokens": 1389
+    }
+  ],
+  "endpoints": {
+    "mcp": "mcp://aegis-skills.vercel.app/exposure-validation",
+    "action": "https://aegis-skills.vercel.app/exposure-validation/invoke",
+    "artifacts": "https://aegis-skills.vercel.app/exposure-validation/download"
+  },
+  "research": {
+    "feeds": [
+      "cisa-kev",
+      "nvd-cve-feed",
+      "epss",
+      "cybersec-news-digest"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "cisa-kev",
+      "nvd-cve-feed",
+      "epss",
+      "attack-breakdowns"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 45,
+    "coverage-gaps": []
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "saas",
+      "ot",
+      "endpoint"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "technology",
+      "government",
+      "critical-infrastructure",
+      "retail"
+    ],
+    "attack-surface-tags": [
+      "exposure-management",
+      "vulnerability-validation",
+      "attack-paths",
+      "remediation",
+      "kev",
+      "external-exposure"
+    ]
+  }
+}

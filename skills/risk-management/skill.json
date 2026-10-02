@@ -44,6 +44,11 @@
       "tokens": 1191
     },
     {
+      "id": "exposure-risk-model",
+      "lazy": true,
+      "tokens": 1393
+    },
+    {
       "id": "live-threat-intel",
       "lazy": true,
       "tokens": 769,
