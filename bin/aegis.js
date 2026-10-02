@@ -46,6 +46,11 @@ program
   .option('--no-compile', 'skip recompiling artifacts afterwards')
   .action(require('../lib/cli/intel-sync'))
 
+program
+  .command('mcp')
+  .description('Serve the Aegis skill library over MCP (stdio) for Claude, Cursor and other MCP clients')
+  .action(require('../lib/cli/mcp'))
+
 program.parse(process.argv)
 
 if (!process.argv.slice(2).length) {

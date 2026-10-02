@@ -203,7 +203,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const wantsStream = req.headers.get('accept') === 'text/event-stream'
 
   if (wantsStream) {
-    const { getThemisGraph } = await import('@/lib/themis/graph/index')
+    const { getThemisGraph, THEMIS_RECURSION_LIMIT } = await import('@/lib/themis/graph/index')
     const streamThreadId = orchestrateReq.threadId ?? randomUUID()
     const graph = await getThemisGraph()
 
@@ -217,7 +217,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
               context: orchestrateReq.context,
               provider: orchestrateReq.provider,
             },
-            { configurable: { thread_id: streamThreadId }, streamMode: 'updates' }
+            { configurable: { thread_id: streamThreadId }, streamMode: 'updates', recursionLimit: THEMIS_RECURSION_LIMIT }
           )) {
             // Emit node name only — never emit chunk content (may contain findings)
             const nodeName = Object.keys(chunk)[0] ?? 'unknown'

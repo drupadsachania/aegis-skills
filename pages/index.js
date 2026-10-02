@@ -66,6 +66,10 @@ const COMMANDS = [
   {
     cmd: 'aegis intel-sync',
     desc: 'Ingest a threat-intel corpus, route findings into the skills they affect, and recompile.'
+  },
+  {
+    cmd: 'aegis mcp',
+    desc: 'Serve the skill library over MCP (stdio) to Claude, Cursor and other MCP clients.'
   }
 ]
 

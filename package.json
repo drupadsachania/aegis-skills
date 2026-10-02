@@ -1,6 +1,6 @@
 {
   "name": "@aegis-skills/core",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Universal security skill library (24 skills) for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
   "type": "commonjs",
   "main": "src/compiler.js",
@@ -40,7 +40,9 @@
     "dlp",
     "ics-security",
     "exposure-management",
-    "ctem"
+    "ctem",
+    "mcp",
+    "model-context-protocol"
   ],
   "license": "MIT",
   "dependencies": {
@@ -51,6 +53,7 @@
     "@langchain/google-genai": "^0.1.4",
     "@langchain/langgraph": "^0.2.19",
     "@langchain/openai": "^0.3.14",
+    "@modelcontextprotocol/sdk": "1.31.0",
     "@supabase/supabase-js": "^2.43.0",
     "ajv": "^8.17.1",
     "better-sqlite3": "^12.10.0",

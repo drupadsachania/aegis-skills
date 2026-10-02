@@ -4,6 +4,7 @@ import { SystemMessage } from '@langchain/core/messages'
 import type { ThemisState } from './state'
 import { modelForTier } from '../llm-factory'
 import { fetchSkillPhaseTool, makeReadFindingsTool } from './tools'
+import { buildMcpToolset } from '../mcp/agent-tools'
 import { decompose } from '../decompose'
 import { applyGuardrail } from '../guardrail'
 import { synthesise } from '../synthesise'
@@ -44,10 +45,31 @@ export async function decomposeNode(state: ThemisState): Promise<Partial<ThemisS
   return { subTasks }
 }
 
-// ── Node: fanOut (returns Send[] for parallel dispatch) ─────────────────────
+// ── Node: schedule (join point between stages) ──────────────────────────────
+// A plain node so that, however many parallel skill-agents finish in a step,
+// the routing below runs exactly once per stage (a conditional edge attached
+// to skill-agent itself would fire once per completed agent and re-dispatch).
 
-export function fanOutNode(state: ThemisState): Send[] {
-  return state.subTasks.map(
+export function scheduleNode(): Partial<ThemisState> {
+  return {}
+}
+
+// ── Router: fanOut (dependency-aware staged dispatch) ───────────────────────
+// Dispatches every sub-task whose dependencies have all completed, in parallel.
+// Later stages therefore see earlier findings via read_findings. When nothing
+// is pending, routes on to the guardrail.
+
+export function fanOutNode(state: ThemisState): Send[] | 'guardrail' {
+  const done = new Set(state.subTaskResults.map(r => r.subTaskId))
+  const pending = state.subTasks.filter(t => !done.has(t.id))
+  if (pending.length === 0) return 'guardrail'
+
+  let ready = pending.filter(t => t.dependsOn.every(d => done.has(d)))
+  // normaliseSubTasks guarantees an acyclic plan; this release only exists so a
+  // malformed plan can never stall the graph.
+  if (ready.length === 0) ready = pending
+
+  return ready.map(
     task =>
       new Send('skill-agent', {
         ...state,
@@ -78,7 +100,17 @@ export async function skillAgentNode(state: ThemisState): Promise<Partial<Themis
 
   try {
     const llm = modelForTier(subTask.tier, provider)
-    const tools = [fetchSkillPhaseTool, makeReadFindingsTool(state)]
+    // Governed external tools: default-deny; read-only unless a server opted in
+    // to write (then write/execute are propose-only, never auto-run). Failure to
+    // build the toolset must not break analysis.
+    let mcp: Awaited<ReturnType<typeof buildMcpToolset>> = {
+      tools: [], getApprovals: () => [], getCallCount: () => 0,
+    }
+    try {
+      mcp = await buildMcpToolset(subTask.skill)
+    } catch { /* external tools unavailable — continue with built-in tools only */ }
+
+    const tools = [fetchSkillPhaseTool, makeReadFindingsTool(state), ...mcp.tools]
 
     const agent = createReactAgent({
       llm,
@@ -126,6 +158,8 @@ export async function skillAgentNode(state: ThemisState): Promise<Partial<Themis
       skillTrace: [subTask.skill],
       totalInputTokens: inputTokens,
       totalOutputTokens: outputTokens,
+      mcpApprovals: mcp.getApprovals(),
+      mcpCallCount: mcp.getCallCount(),
     }
   } catch {
     // FLAG (not PASS) so guardrailSummary reflects the failure; the run

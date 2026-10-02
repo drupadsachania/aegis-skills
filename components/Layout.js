@@ -81,7 +81,7 @@ function Layout({ children }) {
             },
             'GitHub'
           ),
-          React.createElement('span', { className: 'footer-copy' }, 'v0.3.0 · MIT')
+          React.createElement('span', { className: 'footer-copy' }, 'v1.0.0 · MIT')
         )
       )
     )

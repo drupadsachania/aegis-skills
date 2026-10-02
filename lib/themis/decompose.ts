@@ -19,6 +19,62 @@ function assignTier(phases: number, skill?: string): Tier {
   return 'power'
 }
 
+// Upper bound on sub-agents per run. Each sub-agent is a ReAct loop that can
+// also spend MCP tool calls, so an unbounded plan is a cost/DoS vector — a
+// crafted task must not be able to fan out to dozens of agents.
+export const MAX_SUBTASKS = 8
+
+/**
+ * Normalise the planner's raw output into a safe, executable plan:
+ *  - drop sub-tasks whose skill is not a real skill slug
+ *  - de-duplicate ids, cap at MAX_SUBTASKS
+ *  - keep only dependencies on ids that exist in the plan
+ *  - break dependency cycles so staged execution always makes progress
+ * Pure function — no I/O — so it can be tested directly.
+ */
+export function normaliseSubTasks(raw: SubTask[], skillSlugs: string[]): SubTask[] {
+  const valid = new Set(skillSlugs)
+  const seen = new Set<string>()
+  const kept: SubTask[] = []
+
+  for (const t of raw) {
+    if (!valid.has(t.skill)) continue
+    let id = t.id.trim() || `st-${kept.length + 1}`
+    while (seen.has(id)) id = `${id}-dup`
+    seen.add(id)
+    kept.push({ ...t, id })
+    if (kept.length >= MAX_SUBTASKS) break
+  }
+
+  const ids = new Set(kept.map(t => t.id))
+  for (const t of kept) {
+    t.dependsOn = [...new Set(t.dependsOn.filter(d => d !== t.id && ids.has(d)))]
+  }
+
+  // Break cycles: walk in plan order and drop any dependency on a task that is
+  // not yet guaranteed to be schedulable (i.e. would close a cycle).
+  const placed = new Set<string>()
+  let progress = true
+  const remaining = new Map(kept.map(t => [t.id, t]))
+  while (remaining.size > 0 && progress) {
+    progress = false
+    for (const [id, t] of remaining) {
+      if (t.dependsOn.every(d => placed.has(d))) {
+        placed.add(id)
+        remaining.delete(id)
+        progress = true
+      }
+    }
+  }
+  // Anything left is in a cycle — release it by keeping only already-placed deps.
+  for (const t of remaining.values()) {
+    t.dependsOn = t.dependsOn.filter(d => placed.has(d))
+    placed.add(t.id)
+  }
+
+  return kept
+}
+
 function getBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.VERCEL_URL ?? 'http://localhost:3000'
   if (raw.startsWith('http')) return raw.replace(/\/$/, '')
@@ -95,11 +151,11 @@ export async function decompose(req: OrchestrateRequest): Promise<SubTask[]> {
   const skillSlugs = await fetchSkillSlugs()
 
   try {
-    return await callDecompose(sanitisedTask, skillSlugs, req.provider)
+    return normaliseSubTasks(await callDecompose(sanitisedTask, skillSlugs, req.provider), skillSlugs)
   } catch {
     // Retry once on parse failure
     try {
-      return await callDecompose(sanitisedTask, skillSlugs, req.provider)
+      return normaliseSubTasks(await callDecompose(sanitisedTask, skillSlugs, req.provider), skillSlugs)
     } catch (retryErr) {
       throw new Error('Decompose failed after retry: ' + (retryErr instanceof Error ? retryErr.message : 'Unknown error'))
     }

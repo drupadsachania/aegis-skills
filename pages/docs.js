@@ -149,10 +149,57 @@ module.exports = function DocsPage() {
           )
         ),
 
+        // ── MCP ──
+        React.createElement('section', { className: 'doc-section', id: 'mcp' },
+          React.createElement('div', { className: 'doc-section-hd' },
+            React.createElement('span', { className: 'ds-num' }, '04'),
+            React.createElement('h2', null, 'Model Context Protocol (MCP)')
+          ),
+          React.createElement('p', null,
+            'Aegis speaks MCP in both directions: it serves the skill library to MCP clients, and Themis can call tools on external MCP servers during analysis.'
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '16px', marginBottom: '12px', color: 'var(--cream)' } }, 'Serve Aegis skills to a client'),
+          React.createElement('p', null,
+            'Expose the library to Claude Desktop, Claude Code, Cursor or any MCP client. Three read-only tools are offered: ',
+            React.createElement('code', null, 'list_skills'), ', ',
+            React.createElement('code', null, 'get_skill'), ' and ',
+            React.createElement('code', null, 'get_skill_phase'), '.'
+          ),
+          React.createElement('p', { style: { marginTop: '12px', marginBottom: '6px', color: 'var(--cream-dim)', fontSize: '13px' } }, 'Local, over stdio \u2014 add to your client config:'),
+          React.createElement('div', { className: 'code-block', style: { marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              '{\n  "mcpServers": {\n    "aegis": { "command": "aegis", "args": ["mcp"] }\n  }\n}'
+            )
+          ),
+          React.createElement('p', { style: { marginTop: '12px', marginBottom: '6px', color: 'var(--cream-dim)', fontSize: '13px' } }, 'Remote, over Streamable HTTP \u2014 a deployed instance serves MCP at POST /api/mcp:'),
+          React.createElement('div', { className: 'code-block', style: { marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              '{\n  "mcpServers": {\n    "aegis": { "url": "https://aegis-skills.vercel.app/api/mcp" }\n  }\n}'
+            )
+          ),
+          React.createElement('p', null, 'Both transports serve the same read-only tools and only public skill content \u2014 no writes, no execution, no network calls.'),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Let Themis use external MCP tools'),
+          React.createElement('p', null,
+            'Themis sub-agents can call tools on external MCP servers during analysis, under a governance boundary enforced in code \u2014 opt-in and default-deny. Configure servers in the ',
+            React.createElement('code', null, 'THEMIS_MCP_SERVERS'), ' environment variable (a JSON array):'
+          ),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              '[\n  {\n    "id": "osint",\n    "transport": "http",\n    "url": "https://mcp.internal.example/osint",\n    "allowedSkills": ["attack-surface-mapping"],\n    "allowWrite": false\n  }\n]'
+            )
+          ),
+          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
+            React.createElement('li', { style: { marginBottom: '8px' } }, 'Default-deny: with no config, agents get no external tools. A server is only reachable by the skills in its allowedSkills.'),
+            React.createElement('li', { style: { marginBottom: '8px' } }, 'Autonomous agents auto-invoke only read-classified tools. Write and execute tools are never run by the model \u2014 they are recorded as approval requests for a human, and only when allowWrite is true.'),
+            React.createElement('li', null, 'External output is redacted, size-capped and wrapped so it is treated as data, not instructions; each run has a call budget and timeouts.')
+          ),
+          React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } }, 'On serverless deployments only http servers are reachable; stdio is for local development.')
+        ),
+
         // ── Using Themis ──
         React.createElement('section', { className: 'doc-section', id: 'themis' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '04'),
+            React.createElement('span', { className: 'ds-num' }, '05'),
             React.createElement('h2', null, 'Multi-Agent Analysis with Themis')
           ),
           React.createElement('p', null,
@@ -185,7 +232,7 @@ module.exports = function DocsPage() {
         // ── Audit API ──
         React.createElement('section', { className: 'doc-section', id: 'audit' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '05'),
+            React.createElement('span', { className: 'ds-num' }, '06'),
             React.createElement('h2', null, 'Standards-Based Security Audit')
           ),
           React.createElement('p', null,
@@ -218,7 +265,7 @@ module.exports = function DocsPage() {
         // ── Exposure Validation ──
         React.createElement('section', { className: 'doc-section', id: 'exposure' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '06'),
+            React.createElement('span', { className: 'ds-num' }, '07'),
             React.createElement('h2', null, 'Exposure Validation')
           ),
           React.createElement('p', null,
@@ -267,7 +314,7 @@ module.exports = function DocsPage() {
         // ── Troubleshooting ──
         React.createElement('section', { className: 'doc-section', id: 'troubleshooting' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('span', { className: 'ds-num' }, '08'),
             React.createElement('h2', null, 'Troubleshooting')
           ),
 
@@ -305,7 +352,7 @@ module.exports = function DocsPage() {
         // ── Intel sync ──
         React.createElement('section', { className: 'doc-section', id: 'intel-sync' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '08'),
+            React.createElement('span', { className: 'ds-num' }, '09'),
             React.createElement('h2', null, 'Keeping Skills Current')
           ),
           React.createElement('p', null,
@@ -354,7 +401,7 @@ module.exports = function DocsPage() {
         // ── Security ──
         React.createElement('section', { className: 'doc-section', id: 'security' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '09'),
+            React.createElement('span', { className: 'ds-num' }, '10'),
             React.createElement('h2', null, 'Security & Privacy')
           ),
           React.createElement('p', null,
@@ -382,7 +429,7 @@ module.exports = function DocsPage() {
         // ── Next Steps ──
         React.createElement('section', { className: 'doc-section' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '10'),
+            React.createElement('span', { className: 'ds-num' }, '11'),
             React.createElement('h2', null, 'Next Steps')
           ),
           React.createElement('p', null,

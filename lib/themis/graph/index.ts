@@ -3,6 +3,7 @@ import { ThemisAnnotation } from './state'
 import {
   validateNode,
   decomposeNode,
+  scheduleNode,
   fanOutNode,
   skillAgentNode,
   guardrailNode,
@@ -12,26 +13,27 @@ import {
 import { getCheckpointer } from '../checkpointer'
 
 /**
+ * Upper bound on graph supersteps for one run. Staged execution costs two
+ * steps per stage (skill-agent + schedule); with at most MAX_SUBTASKS stages
+ * plus the fixed nodes this stays well under the limit, which only exists to
+ * guarantee termination.
+ */
+export const THEMIS_RECURSION_LIMIT = 50
+
+/**
  * buildThemisGraph
- *
- * Constructs and compiles the Themis LangGraph StateGraph.
  *
  * Graph topology:
  *
- *   START → validate → decompose → [fan-out via Send API]
- *                                       ↓ (parallel)
- *                               skill-agent (×N, one per SubTask)
- *                                       ↓ (all complete before next step)
- *                               guardrail → synthesise → audit → END
+ *   START → validate → decompose → schedule ─┬─► [Send] skill-agent (×ready, parallel)
+ *                                     ▲      │              │
+ *                                     └──────┼──────────────┘   (next stage)
+ *                                            └─► guardrail → synthesise → audit → END
  *
- * Fan-out uses LangGraph's Send API: fanOutNode returns Send[] wired as
- * a conditional edge from decompose. LangGraph dispatches all Sends in
- * parallel and waits for them all before proceeding to guardrail.
- *
- * State persistence: getCheckpointer() returns MemorySaver (in-RAM only).
- * Graph state never leaves the process.
- *
- * LangSmith tracing is automatic when LANGCHAIN_TRACING_V2=true.
+ * schedule routes via fanOutNode: it dispatches every sub-task whose
+ * dependencies have completed, loops back after each stage, and moves on to
+ * guardrail once nothing is pending. Dependent sub-tasks therefore run after
+ * the work they depend on and can read it via read_findings.
  */
 export async function buildThemisGraph() {
   const checkpointer = await getCheckpointer()
@@ -39,6 +41,7 @@ export async function buildThemisGraph() {
   const graph = new StateGraph(ThemisAnnotation)
     .addNode('validate', validateNode)
     .addNode('decompose', decomposeNode)
+    .addNode('schedule', scheduleNode)
     .addNode('skill-agent', skillAgentNode)
     .addNode('guardrail', guardrailNode)
     .addNode('synthesise', synthesiseNode)
@@ -46,9 +49,9 @@ export async function buildThemisGraph() {
 
     .addEdge(START, 'validate')
     .addEdge('validate', 'decompose')
-    // Fan-out: fanOutNode returns Send[] — LangGraph runs them in parallel
-    .addConditionalEdges('decompose', fanOutNode, ['skill-agent'])
-    .addEdge('skill-agent', 'guardrail')
+    .addEdge('decompose', 'schedule')
+    .addConditionalEdges('schedule', fanOutNode, ['skill-agent', 'guardrail'])
+    .addEdge('skill-agent', 'schedule')
     .addEdge('guardrail', 'synthesise')
     .addEdge('synthesise', 'audit')
     .addEdge('audit', END)
@@ -56,16 +59,15 @@ export async function buildThemisGraph() {
   return graph.compile({ checkpointer })
 }
 
-// Singleton — built once per server process, reused across requests.
-// On rejection the promise is cleared so the next caller can retry.
-let _graphPromise: ReturnType<typeof buildThemisGraph> | null = null
-
+/**
+ * Returns a freshly compiled graph — deliberately NOT a process-wide singleton.
+ *
+ * Each request gets its own graph and therefore its own MemorySaver, so run
+ * state can never be read or resumed by another request (previously a shared
+ * saver plus a client-supplied threadId let two callers collide on the same
+ * thread, and checkpoints accumulated for the life of the process). Compiling
+ * is cheap: no network, no model calls.
+ */
 export function getThemisGraph() {
-  if (!_graphPromise) {
-    _graphPromise = buildThemisGraph().catch(err => {
-      _graphPromise = null  // allow retry on next call after transient startup failure
-      return Promise.reject(err)
-    })
-  }
-  return _graphPromise
+  return buildThemisGraph()
 }

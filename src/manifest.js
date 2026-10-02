@@ -17,8 +17,11 @@ function generateManifest(skill, baseUrl = 'https://aegis-skills.vercel.app') {
     description: skill.description,
     frameworks: skill.frameworks || [],
     tags: skill.tags || [],
-    // `auto` marks machine-generated phases (e.g. the intel-sync live feed) so
-    // downstream scoring can exclude them from authored-content metrics.
+    // `ref` is intentionally NOT emitted here: the published manifest stays
+    // free of filesystem paths (see tests/manifest.test.js). Phase content is
+    // resolved from the source SKILL.md frontmatter by skill-reader, not from
+    // this manifest. `auto` marks machine-generated phases (e.g. the intel-sync
+    // live feed) so scoring can exclude them from authored metrics.
     phases: (skill.phases || []).map(({ id, lazy, tokens, auto }) =>
       auto ? { id, lazy, tokens, auto: true } : { id, lazy, tokens }
     ),

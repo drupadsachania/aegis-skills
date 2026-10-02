@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { OrchestrateRequest, OrchestrateResponse } from './types'
 import { ProviderUnavailableError } from './types'
 import { availableProviders } from './provider'
-import { getThemisGraph } from './graph/index'
+import { getThemisGraph, THEMIS_RECURSION_LIMIT } from './graph/index'
 
 /**
  * orchestrate()
@@ -13,13 +13,14 @@ import { getThemisGraph } from './graph/index'
  * The graph handles: validate → decompose → skill-agents (parallel) →
  * guardrail → synthesise → audit.
  *
- * State lives only for the duration of one graph.invoke() call (MemorySaver,
- * in-process only). The only persistent artefact is the metadata-only debrief
+ * State lives only for the duration of one graph.invoke() call: every request
+ * compiles its own graph with its own MemorySaver, so no run state is shared
+ * between requests. The only persistent artefact is the metadata-only debrief
  * record written to local SQLite by auditNode — no findings, no task content.
  *
- * If req.threadId is provided, the graph resumes from the last in-memory
- * checkpoint for that thread (same process, same MemorySaver instance).
- * Otherwise a new UUID is generated.
+ * threadId is a run correlation id. It is echoed back to the caller but does
+ * not resume earlier state (cross-request resume would require durable,
+ * caller-bound checkpointing, which this deployment does not provide).
  *
  * SECURITY: No task content, findings text, or user-derived strings are
  * ever logged. Redaction is applied in the graph nodes.
@@ -40,6 +41,7 @@ export async function orchestrate(req: OrchestrateRequest): Promise<OrchestrateR
     },
     {
       configurable: { thread_id: threadId },
+      recursionLimit: THEMIS_RECURSION_LIMIT,
     }
   )
 
@@ -52,5 +54,7 @@ export async function orchestrate(req: OrchestrateRequest): Promise<OrchestrateR
     totalOutputTokens: finalState.totalOutputTokens ?? 0,
     durationMs: finalState.durationMs ?? 0,
     threadId,
+    mcpApprovals: finalState.mcpApprovals ?? [],
+    mcpCallCount: finalState.mcpCallCount ?? 0,
   }
 }

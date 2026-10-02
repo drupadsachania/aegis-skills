@@ -4,8 +4,36 @@ import type { ThemisState } from './state'
 
 // Import skill-reader via the @/ alias so Jest module mocks intercept it correctly
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { getPhaseContent } = require('@/lib/skill-reader') as {
+const { getPhaseContent, getSkillManifest } = require('@/lib/skill-reader') as {
   getPhaseContent: (skillName: string, phaseId: string) => Promise<string | null>
+  getSkillManifest: (skillName: string) => Promise<{ phases?: Array<{ id: string; auto?: boolean }> } | null>
+}
+
+/**
+ * The decomposer plans phases as 0-based indices, but phases are stored under
+ * string ids (e.g. "edr-deployment"). Resolve a numeric index against the
+ * skill's authored phases; pass a real id through unchanged.
+ */
+export async function resolvePhaseId(skillName: string, phaseId: string): Promise<string> {
+  if (!/^\d+$/.test(phaseId)) return phaseId
+  try {
+    const manifest = await getSkillManifest(skillName)
+    const authored = (manifest?.phases ?? []).filter(p => !p.auto)
+    const idx = Number(phaseId)
+    return authored[idx]?.id ?? phaseId
+  } catch {
+    return phaseId
+  }
+}
+
+/** Authored phase ids for a skill, in order — shown to agents so they can fetch more. */
+export async function listPhaseIds(skillName: string): Promise<string[]> {
+  try {
+    const manifest = await getSkillManifest(skillName)
+    return (manifest?.phases ?? []).filter(p => !p.auto).map(p => p.id)
+  } catch {
+    return []
+  }
 }
 
 // `data:` is narrowed to URI scheme context to avoid false-positives on prose text
@@ -33,11 +61,12 @@ export const fetchSkillPhaseTool = new DynamicStructuredTool({
     'Use this to get structured analysis guidance before producing findings.',
   schema: z.object({
     skillName: z.string().describe('The skill slug (e.g. "mitre-attack", "threat-modeling")'),
-    phaseId: z.string().describe('The phase identifier (e.g. "0", "recon", "phase-1")'),
+    phaseId: z.string().describe('The phase id (e.g. "edr-deployment") or its 0-based index (e.g. "0")'),
   }),
   func: async ({ skillName, phaseId }: { skillName: string; phaseId: string }): Promise<string> => {
     try {
-      const content: string | null = await getPhaseContent(skillName, phaseId)
+      const resolved = await resolvePhaseId(skillName, phaseId)
+      const content: string | null = await getPhaseContent(skillName, resolved)
       if (content === null || content === '') {
         return `Skill phase "${skillName}/${phaseId}" not found or not accessible.`
       }

@@ -100,10 +100,24 @@ describe('getSkillManifest', () => {
 describe('getPhaseContent', () => {
   beforeEach(() => jest.clearAllMocks())
 
+  // The compiled manifest is path-free; the phase ref lives in the source
+  // SKILL.md frontmatter, which getPhaseContent reads to resolve content.
+  const MOCK_SKILL_MD = [
+    '---',
+    'name: test-skill',
+    'phases:',
+    '  - id: phase-one',
+    '    ref: references/phase-one.md',
+    '---',
+    '',
+    '# Test Skill'
+  ].join('\n')
+
   test('returns phase markdown for a valid skill and phase', async () => {
     fs.readFile
-      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST))
-      .mockResolvedValueOnce('# Phase One\n\nContent here.')
+      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST)) // skill.json (manifest)
+      .mockResolvedValueOnce(MOCK_SKILL_MD)                  // SKILL.md (ref source)
+      .mockResolvedValueOnce('# Phase One\n\nContent here.') // the ref file
     // realpath resolves to the same path (no symlinks)
     fs.realpath.mockImplementation(p => Promise.resolve(p))
 
@@ -125,8 +139,9 @@ describe('getPhaseContent', () => {
 
   test('returns null if the reference file is missing', async () => {
     fs.readFile
-      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST))
-      .mockRejectedValueOnce(new Error('ENOENT'))
+      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST)) // skill.json
+      .mockResolvedValueOnce(MOCK_SKILL_MD)                  // SKILL.md (ref source)
+      .mockRejectedValueOnce(new Error('ENOENT'))            // ref file missing
     // realpath resolves to same path so we reach readFile
     fs.realpath.mockImplementation(p => Promise.resolve(p))
     const content = await getPhaseContent('test-skill', 'phase-one')

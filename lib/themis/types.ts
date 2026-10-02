@@ -50,6 +50,13 @@ export interface OrchestrateRequest {
   threadId?: string   // optional: if provided, resumes an existing session
 }
 
+export interface McpApprovalRequest {
+  serverId: string
+  tool: string
+  toolClass: 'write' | 'execute'
+  reason: string
+}
+
 export interface OrchestrateResponse {
   report: string
   subTaskResults: SubTaskResult[]
@@ -59,6 +66,11 @@ export interface OrchestrateResponse {
   totalOutputTokens: number
   durationMs: number
   threadId: string    // always returned — use to resume this session
+  // State-changing external tool actions agents proposed but did NOT run.
+  // A human reviews and executes these out-of-band. Empty when none proposed.
+  mcpApprovals: McpApprovalRequest[]
+  // Number of external read-tool calls agents made during the run.
+  mcpCallCount: number
 }
 
 export class ValidationError extends Error {

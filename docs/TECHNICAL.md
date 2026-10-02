@@ -158,56 +158,93 @@ Response:
 { "skills": [ /* ranked manifest list */ ] }
 ```
 
+### Additional endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/mcp` | Serves the skill library over MCP (Streamable HTTP). Read-only tools: `list_skills`, `get_skill`, `get_skill_phase`. Same tools as the `aegis mcp` stdio server (`lib/mcp/aegis-server.js`). |
+| `POST /api/audit` | Standards-based compliance audit (`lib/themis/audit/`). |
+| `POST /api/exposure` | Exposure validation / CTEM (`lib/themis/exposure/`). |
+
 ---
 
 ## 4. Themis — LangGraph Orchestrator
 
 ### 4.1 Architecture
 
-Themis is a **LangGraph StateGraph** with six nodes wired as a directed acyclic graph:
+Themis is a **LangGraph StateGraph** whose `skill-agent` stage runs in
+dependency-ordered waves:
 
 ```
-specNode
+validate
    │
-fanOutNode  ── Send() ──▶ skillAgentNode (×N, parallel)
-                              │
-                         guardrailNode
-                              │
-                         synthesisNode
-                              │
-                          auditNode
+decompose
+   │
+schedule ──────────────┐   dependency-aware router (fanOutNode)
+   │                   │
+skill-agent (×ready, parallel)   one ReAct agent per ready sub-task
+   │                   │
+   └───────────────────┘   loop back after each wave
+   │  (once nothing is pending)
+guardrail
+   │
+synthesise
+   │
+audit
 ```
 
-**Fan-out** uses the LangGraph `Send` API — `fanOutNode` returns one `Send` per sub-task, LangGraph executes them in parallel on separate graph branches.
+**Scheduling.** `schedule` routes via `fanOutNode`, which dispatches (as
+LangGraph `Send`s, run in parallel) every sub-task whose `dependsOn` are all
+complete, loops back after each wave, and moves to `guardrail` once nothing is
+pending. Dependent sub-tasks therefore run after the work they depend on and can
+read it via `read_findings`. The plan is capped, skill-validated and made acyclic
+in `normaliseSubTasks` (`lib/themis/decompose.ts`), so the loop always terminates;
+a `recursionLimit` backstops it.
 
-**State** is held in `ThemisAnnotation` (14 channels, `lib/themis/graph/state.ts`) using typed reducers:
-- `append` — accumulates sub-task results, guardrail outputs
-- `sum` — token counters
-- `last-write-wins` — final report, thread metadata
-- `dedup-union` — skill slug sets
-- `first-write-wins` — task/context (set once, never mutated)
+**State** is held in `ThemisAnnotation` (`lib/themis/graph/state.ts`) using typed
+reducers: `append` (sub-task results, guardrail outputs, MCP approvals), `sum`
+(token counters, MCP call count), `last-write-wins` (final report, metadata),
+`dedup-union` (skill slug sets), `first-write-wins` (task/context).
 
-**Checkpointing** uses `MemorySaver` — state is in-RAM only, scoped to a `thread_id`. No external database, no network calls for checkpointing.
+**Checkpointing.** Every request compiles its own graph with its own in-RAM
+`MemorySaver` (`getThemisGraph` is not a process-wide singleton), so no run state
+is shared between requests. No external database, no network calls for checkpointing.
 
 ### 4.2 Nodes
 
 | Node | File | Responsibility |
 |---|---|---|
-| `specNode` | `graph/nodes.ts` | Parse task + context, emit sub-tasks |
-| `fanOutNode` | `graph/nodes.ts` | Return `Send[]` for parallel dispatch |
-| `skillAgentNode` | `graph/nodes.ts` | Run `createReactAgent` for one sub-task; call skill phase fetch tool |
+| `validateNode` | `graph/nodes.ts` | Sanitise task + validate context |
+| `decomposeNode` | `graph/nodes.ts` | Plan sub-tasks (capped, skill-validated, acyclic) |
+| `scheduleNode` + `fanOutNode` | `graph/nodes.ts` | Dependency-aware staged dispatch; route to `guardrail` when done |
+| `skillAgentNode` | `graph/nodes.ts` | Run `createReactAgent` for one sub-task; load skill phase, read peers, call governed external MCP read tools |
 | `guardrailNode` | `graph/nodes.ts` | Score each output; block/flag/pass |
-| `synthesisNode` | `graph/nodes.ts` | Reduce guardrailed results into structured report |
+| `synthesiseNode` | `graph/nodes.ts` | Reduce guardrailed results into a structured report |
 | `auditNode` | `graph/nodes.ts` | Write metadata-only debrief to SQLite; strip findings from DB row |
 
 ### 4.3 Tools available to skill agents
 
 | Tool | Source | Description |
 |---|---|---|
-| `fetchSkillPhase` | `graph/tools.ts` | Fetches phase content from `/api/:skill/phase/:id`; validates against content integrity patterns |
-| `readFindings` | `graph/tools.ts` | Provides read access to findings accumulated in graph state |
+| `fetch_skill_phase` | `graph/tools.ts` | Loads phase content; resolves a phase index→id, enforces a blocked-content pattern list |
+| `read_findings` | `graph/tools.ts` | Read access to findings produced by earlier waves of agents |
+| `mcp__<server>__<tool>` | `mcp/agent-tools.ts` | Governed external MCP tools (see §4.7). Present only when `THEMIS_MCP_SERVERS` lists a server for the skill; read-only auto, write/execute propose-only |
 
-Both tools sanitise inputs and validate outputs before returning. `fetchSkillPhase` enforces a blocked-content pattern list and validates phase content before returning to the agent.
+Both built-in tools sanitise inputs and validate outputs. `fetch_skill_phase`
+resolves phase refs from the source `SKILL.md` (the compiled manifest is
+path-free) with symlink-safe containment checks.
+
+### 4.7 External MCP tools (governance)
+
+Sub-agents may call tools on external MCP servers, under a deterministic,
+default-deny boundary (`lib/themis/mcp/`):
+
+- `config.ts` parses and validates `THEMIS_MCP_SERVERS` (per-skill allowlist, limits).
+- `tool-policy.ts` classifies each tool `read` | `write` | `execute` (conservative — anything without a positive read-only signal is `write`; snake/kebab/camelCase verbs are tokenised before matching).
+- `agent-tools.ts` exposes `read` tools as budgeted, redacted, wrapped LangChain tools; `write`/`execute` are **propose-only** — calling one records an `mcpApprovals` entry and runs nothing, and only when the server set `allowWrite: true`.
+
+The LLM never decides what is permitted. On serverless only `http` servers are
+reachable; `stdio` is local-dev only.
 
 ### 4.4 Providers
 
@@ -262,7 +299,7 @@ LLM provider selection is determined at runtime based on available API keys (`li
 
 The endpoint emits node-name events as the graph executes:
 ```
-data: {"event":"node","node":"specNode"}
+data: {"event":"node","node":"validate"}
 
 data: {"event":"node","node":"skillAgentNode"}
 
@@ -347,15 +384,17 @@ getThemisGraph() — lazy singleton, MemorySaver checkpointer
     ▼
 graph.invoke(initialState, { configurable: { thread_id } })
     │
-    ├── specNode         (decompose task → sub-tasks)
+    ├── validateNode     (sanitise task + context)
     │
-    ├── fanOutNode       (emit Send[] for each sub-task)
-    │     │
-    │     ├── skillAgentNode + guardrailNode  (×N parallel)
-    │     ├── skillAgentNode + guardrailNode
-    │     └── skillAgentNode + guardrailNode
+    ├── decomposeNode    (plan sub-tasks → capped, validated, acyclic)
     │
-    ├── synthesisNode    (reduce → report)
+    ├── scheduleNode ◀──┐ (dependency-aware waves)
+    │     │             │
+    │     ├── skillAgentNode  (×ready, parallel) ─┘
+    │
+    ├── guardrailNode    (block/flag/pass per finding)
+    │
+    ├── synthesiseNode   (reduce → report)
     │
     └── auditNode        (write metadata to SQLite, strip findings)
     │
@@ -377,15 +416,17 @@ See `.env.local.example` for the full template. Key variables:
 
 | Variable | Required | Description |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | One of three | Anthropic Claude API key |
-| `OPENAI_API_KEY` | One of three | OpenAI API key |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | One of three | Google Gemini API key |
+| `ANTHROPIC_API_KEY` | One provider | Anthropic Claude API key (preferred) |
+| `OPENAI_API_KEY` | One provider | OpenAI API key |
+| `GOOGLE_API_KEY` | One provider | Google Gemini API key |
+| `MISTRAL_API_KEY` / `DEEPSEEK_API_KEY` / `QWEN_API_KEY` / `NVIDIA_API_KEY` | One provider | Additional supported providers |
+| `THEMIS_MCP_SERVERS` | Optional | JSON array of external MCP servers for Themis agents (default: none → no external tools). See §4.7 |
 | `LANGCHAIN_TRACING_V2` | Optional | Enable LangSmith tracing (`true`/`false`) |
 | `LANGCHAIN_API_KEY` | If tracing | LangSmith API key |
 | `LANGCHAIN_PROJECT` | If tracing | LangSmith project name |
 | `DEBRIEF_DB_PATH` | Optional | SQLite path (default: `debrief.sqlite`) |
 
-At least one LLM provider key is required. If multiple are set, Themis uses the first available in the order: Anthropic → OpenAI → Google.
+At least one LLM provider key is required. If multiple are set, Themis uses the first available in the order: Anthropic → OpenAI → Google → Mistral → DeepSeek → Qwen → NVIDIA.
 
 ---
 

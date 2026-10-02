@@ -1,5 +1,6 @@
 import { Annotation } from '@langchain/langgraph'
 import type { SubTask, SubTaskResult, OrchestrateRequest, Provider } from '../types'
+import type { ApprovalRequest } from '../mcp/agent-tools'
 
 /**
  * ThemisAnnotation — shared state that flows through every node in the graph.
@@ -60,6 +61,19 @@ export const ThemisAnnotation = Annotation.Root({
   skillTrace: Annotation<string[]>({
     reducer: (prev: string[], next: string[]) => [...new Set([...prev, ...next])],
     default: () => [],
+  }),
+
+  // ── External MCP tool use ───────────────────────────────────────────────────
+  // Approval requests recorded when an agent proposed a write/execute tool
+  // (never auto-run). Appended across parallel agents.
+  mcpApprovals: Annotation<ApprovalRequest[]>({
+    reducer: (prev: ApprovalRequest[], next: ApprovalRequest[]) => [...prev, ...next],
+    default: () => [],
+  }),
+  // Count of external read-tool calls made across all agents.
+  mcpCallCount: Annotation<number>({
+    reducer: (prev: number, next: number) => prev + next,
+    default: () => 0,
   }),
 
   // ── Metrics ───────────────────────────────────────────────────────────────
