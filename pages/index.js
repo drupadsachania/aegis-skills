@@ -534,6 +534,26 @@ function HomePage({ skills: initialSkills }) {
               React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "inputType": "config",'),
               React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "standards": ["cis-l1", "nist-csf"] }')
             )
+          ),
+
+          // ── Exposure Validation API ──
+          React.createElement(
+            'div',
+            { style: { marginTop: '40px' } },
+            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '16px', color: 'var(--cream)' } }, 'Exposure Validation API'),
+            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '16px', fontSize: '14px' } },
+              'POST to /api/exposure to assess a CVE against an asset: exposure, impact, control outcome and risk, each tracked as a separate state. Authorization gates and risk scores are deterministic. The workflow plans validation but never executes it, so exploitability stays unvalidated until you supply evidence.'
+            ),
+            React.createElement(
+              'div',
+              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
+              React.createElement('div', null, 'POST /api/exposure'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '{ "input": "<advisory or asset description>",'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "cve": "CVE-2026-12345", "kevListed": true,'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "authorization": { "authorized": true, "scopeConfirmed": true,'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '                    "targetIdentityVerified": true },'),
+              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "context": { "businessCriticality": "high", "environments": ["cloud"] } }')
+            )
           )
         )
       )

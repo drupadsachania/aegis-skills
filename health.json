@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-02T11:12:07.345Z",
+  "generated": "2026-10-02T11:44:26.896Z",
   "cve-source": "kev",
   "health-threshold": 0.8,
   "hysteresis-runs": 2,
@@ -13,7 +13,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "attack-surface-mapping": {
@@ -25,7 +25,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "compliance": {
@@ -37,7 +37,7 @@
       "content-age-days": 45,
       "relevant-techniques-count": 14,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "data-loss-prevention": {
@@ -49,7 +49,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "deception-engineering": {
@@ -58,10 +58,10 @@
       "cve-freshness": 1,
       "phase-coverage": 1,
       "recency": 1,
-      "content-age-days": 41,
+      "content-age-days": 0,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "2.0.0"
     },
     "digital-forensics": {
@@ -73,7 +73,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "endpoint-security": {
@@ -82,10 +82,10 @@
       "cve-freshness": 1,
       "phase-coverage": 1,
       "recency": 1,
-      "content-age-days": 41,
+      "content-age-days": 0,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "exposure-validation": {
@@ -97,7 +97,7 @@
       "content-age-days": 0,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "governance": {
@@ -109,7 +109,7 @@
       "content-age-days": 45,
       "relevant-techniques-count": 62,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "identity-access-management": {
@@ -121,7 +121,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 23,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "infrastructure-security": {
@@ -133,7 +133,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "malware-analysis": {
@@ -145,7 +145,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "mitre-atlas": {
@@ -157,7 +157,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "mitre-attack": {
@@ -169,7 +169,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "mitre-engage": {
@@ -181,7 +181,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "network-security": {
@@ -193,7 +193,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "operational-technology": {
@@ -205,7 +205,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "reverse-engineering": {
@@ -217,7 +217,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "risk-management": {
@@ -226,10 +226,10 @@
       "cve-freshness": 1,
       "phase-coverage": 1,
       "recency": 1,
-      "content-age-days": 41,
+      "content-age-days": 0,
       "relevant-techniques-count": 25,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "security-documentation": {
@@ -241,19 +241,19 @@
       "content-age-days": 41,
       "relevant-techniques-count": 27,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "security-operations": {
-      "health-score": 0.96,
+      "health-score": 0.98,
       "attack-coverage": 0.96,
       "cve-freshness": 1,
       "phase-coverage": 1,
-      "recency": 0.89,
-      "content-age-days": 41,
+      "recency": 1,
+      "content-age-days": 0,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "threat-hunting": {
@@ -265,7 +265,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "threat-intel-synthesis": {
@@ -277,7 +277,7 @@
       "content-age-days": 41,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     },
     "threat-modeling": {
@@ -289,7 +289,7 @@
       "content-age-days": 131,
       "relevant-techniques-count": 858,
       "below-streak": 0,
-      "last-updated": "2026-10-02T11:12:07.345Z",
+      "last-updated": "2026-10-02T11:44:26.896Z",
       "version": "1.0.0"
     }
   }

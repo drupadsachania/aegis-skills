@@ -215,10 +215,59 @@ module.exports = function DocsPage() {
           React.createElement('p', { style: { marginTop: '12px' } }, 'The response includes executiveSummary, findings (per control), summary (severity counts), standardsApplied, skillTrace, and durationMs.')
         ),
 
+        // ── Exposure Validation ──
+        React.createElement('section', { className: 'doc-section', id: 'exposure' },
+          React.createElement('div', { className: 'doc-section-hd' },
+            React.createElement('span', { className: 'ds-num' }, '06'),
+            React.createElement('h2', null, 'Exposure Validation')
+          ),
+          React.createElement('p', null,
+            'The Exposure API runs the exposure-validation workflow for one vulnerability on one asset. A scanner finding is treated as a hypothesis. The workflow tracks exposure, exploitability, impact, detection, remediation and verification as separate states, so a report cannot blur "the CVE exists" into "the asset is exploitable".'
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '16px', marginBottom: '12px', color: 'var(--cream)' } }, 'POST /api/exposure'),
+          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
+            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
+              `curl -X POST https://aegis-skills.vercel.app/api/exposure \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "<advisory, scanner finding or asset description>",
+    "cve": "CVE-2026-12345",
+    "kevListed": true,
+    "authorization": {
+      "authorized": true,
+      "scopeConfirmed": true,
+      "targetIdentityVerified": true
+    },
+    "context": { "businessCriticality": "high", "environments": ["cloud"] }
+  }'`
+            )
+          ),
+          React.createElement('p', null, 'Request fields:'),
+          React.createElement(
+            'ul',
+            { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '8px' } },
+            React.createElement('li', null, React.createElement('code', null, 'input'), ' — advisory, finding or asset description (required, max 12,000 characters)'),
+            React.createElement('li', null, React.createElement('code', null, 'cve'), ', ', React.createElement('code', null, 'kevListed'), ', ', React.createElement('code', null, 'epss'), ' — threat signals (optional; KEV outranks CVSS)'),
+            React.createElement('li', null, React.createElement('code', null, 'authorization'), ' — mandate, scope and target-identity flags. Any missing field counts as false, and the policy engine denies the request.'),
+            React.createElement('li', null, React.createElement('code', null, 'context'), ' — asset ID, system type, business criticality, environments, and whether the asset is a crown jewel'),
+            React.createElement('li', null, React.createElement('code', null, 'providedEvidence'), ' — evidence you already hold (exploitation, telemetry, EDR, SIEM, remediation, verification)')
+          ),
+          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'What decides what'),
+          React.createElement(
+            'ul',
+            { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '8px' } },
+            React.createElement('li', { style: { marginBottom: '6px' } }, 'Deterministic rules handle authorization, the capability registry, risk scores and state transitions. The model never decides these.'),
+            React.createElement('li', { style: { marginBottom: '6px' } }, 'The model classifies the input, correlates exposure, picks validation steps from the fixed registry, maps attack paths and writes the summary.'),
+            React.createElement('li', { style: { marginBottom: '6px' } }, 'The workflow never executes a test. It returns a validation plan gated by policy. Without exploitation evidence, exploitability stays NOT_VALIDATED rather than being guessed.'),
+            React.createElement('li', null, 'A case only closes when a retest of the original proof is supplied. A patch record on its own is not enough.')
+          ),
+          React.createElement('p', { style: { marginTop: '12px' } }, 'The response includes the case states, the validation plan, impact with attack-path edges, risk before and after (plus the delta once a retest is verified), the policy decision, plain-language answers to the seven explainability questions, skillTrace and durationMs.')
+        ),
+
         // ── Troubleshooting ──
         React.createElement('section', { className: 'doc-section', id: 'troubleshooting' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '06'),
+            React.createElement('span', { className: 'ds-num' }, '07'),
             React.createElement('h2', null, 'Troubleshooting')
           ),
 
@@ -256,7 +305,7 @@ module.exports = function DocsPage() {
         // ── Intel sync ──
         React.createElement('section', { className: 'doc-section', id: 'intel-sync' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
+            React.createElement('span', { className: 'ds-num' }, '08'),
             React.createElement('h2', null, 'Keeping Skills Current')
           ),
           React.createElement('p', null,
@@ -305,7 +354,7 @@ module.exports = function DocsPage() {
         // ── Security ──
         React.createElement('section', { className: 'doc-section', id: 'security' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '08'),
+            React.createElement('span', { className: 'ds-num' }, '09'),
             React.createElement('h2', null, 'Security & Privacy')
           ),
           React.createElement('p', null,
@@ -333,7 +382,7 @@ module.exports = function DocsPage() {
         // ── Next Steps ──
         React.createElement('section', { className: 'doc-section' },
           React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '09'),
+            React.createElement('span', { className: 'ds-num' }, '10'),
             React.createElement('h2', null, 'Next Steps')
           ),
           React.createElement('p', null,

@@ -41,14 +41,14 @@ describe('modelForTier', () => {
     const { modelForTier } = await import('@/lib/themis/llm-factory')
     const model = modelForTier('standard', 'anthropic')
     expect((model as Record<string, unknown>)._type).toBe('chat-anthropic')
-    expect((model as Record<string, unknown>).model).toBe('claude-sonnet-4-6')
+    expect((model as Record<string, unknown>).model).toBe('claude-sonnet-5-5')
   })
 
   it('returns ChatAnthropic with claude-opus for anthropic/power', async () => {
     process.env.ANTHROPIC_API_KEY = 'sk-ant-test'
     const { modelForTier } = await import('@/lib/themis/llm-factory')
     const model = modelForTier('power', 'anthropic')
-    expect((model as Record<string, unknown>).model).toBe('claude-opus-4-6')
+    expect((model as Record<string, unknown>).model).toBe('claude-opus-5-5')
   })
 
   it('returns ChatOpenAI for openai/fast', async () => {

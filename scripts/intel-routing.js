@@ -148,6 +148,13 @@ const ROUTES = [
          'documentation', 'runbook']
   },
   {
+    skill: 'exposure-validation',
+    tags: ['kev', 'zero-day', 'exploited', 'patch'],
+    kw: ['actively exploited', 'exploited in the wild', 'known exploited', 'cisa kev',
+         'added to kev', 'proof of concept', 'poc released', 'exploit released',
+         'unauthenticated rce', 'remote code execution', 'patch now', 'emergency patch']
+  },
+  {
     // Every routed item also informs the synthesis skill itself.
     skill: 'threat-intel-synthesis',
     tags: ['threat_intel'],

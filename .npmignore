@@ -57,3 +57,9 @@ docs/TECHNICAL.md
 !styles/
 !app/
 !public/
+
+# Release hygiene — never ship local verification artefacts or prior tarballs
+npmverify/
+*.tgz
+test_output.txt
+tsconfig.tsbuildinfo

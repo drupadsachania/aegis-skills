@@ -2,10 +2,11 @@ import { LLMRequest, LLMResponse, Provider, Tier, ProviderUnavailableError } fro
 import { redactSecrets } from './secrets'
 
 const MODELS: Record<Provider, Record<Tier, string>> = {
+  // Keep in sync with ANTHROPIC_MODELS in llm-factory.ts (the LangGraph path).
   anthropic: {
-    fast: 'claude-haiku-4.5',
-    standard: 'claude-sonnet-4.6',
-    power: 'claude-opus-4.7',
+    fast: 'claude-haiku-4-5-20251001',
+    standard: 'claude-sonnet-5-5',
+    power: 'claude-opus-5-5',
   },
   openai: {
     fast: 'gpt-4o-mini',
@@ -37,6 +38,13 @@ const MODELS: Record<Provider, Record<Tier, string>> = {
     standard: 'nemotron-3-nano-30b-a3b',
     power: 'nemotron-3-super-120b-a12b',
   },
+}
+
+// o1-family reasoning models reject a `system` role message, so the system prompt
+// must be folded into the user turn. Keyed on the model name rather than the tier
+// so the rule keeps holding whichever model sits in each tier slot.
+export function supportsSystemRole(model: string): boolean {
+  return !/^o1(-|$)/.test(model)
 }
 
 export function availableProviders(): Provider[] {
@@ -95,10 +103,12 @@ export async function llm(req: LLMRequest): Promise<LLMResponse> {
     const OpenAI = (await import('openai')).default
     const client = new OpenAI({ apiKey, timeout: 45000 })
 
-    const messages: Array<{ role: 'user' | 'system'; content: string }> = [
-      { role: 'system', content: req.systemPrompt },
-      { role: 'user', content: req.userMessage },
-    ]
+    const messages: Array<{ role: 'user' | 'system'; content: string }> = supportsSystemRole(model)
+      ? [
+          { role: 'system', content: req.systemPrompt },
+          { role: 'user', content: req.userMessage },
+        ]
+      : [{ role: 'user', content: `${req.systemPrompt}\n\n${req.userMessage}` }]
 
     const completion = await client.chat.completions.create({
       model,

@@ -17,8 +17,8 @@ import { ProviderUnavailableError } from './types'
 // Mirror the model map from provider.ts — same models, LangChain wrapper instances
 const ANTHROPIC_MODELS: Record<Tier, string> = {
   fast: 'claude-haiku-4-5-20251001',
-  standard: 'claude-sonnet-4-6',
-  power: 'claude-opus-4-6',
+  standard: 'claude-sonnet-5-5',
+  power: 'claude-opus-5-5',
 }
 
 const OPENAI_MODELS: Record<Tier, string> = {

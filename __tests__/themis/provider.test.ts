@@ -42,7 +42,7 @@ jest.mock('@google/generative-ai', () => {
 // Import the module under test AFTER mocks are registered
 // ──────────────────────────────────────────────────────────────
 
-import { availableProviders, llm } from '@/lib/themis/provider'
+import { availableProviders, llm, supportsSystemRole } from '@/lib/themis/provider'
 
 // ──────────────────────────────────────────────────────────────
 // Retrieve mock refs via jest.requireMock (safe after import)
@@ -164,13 +164,13 @@ describe('llm model selection', () => {
     )
   })
 
-  test('anthropic standard → claude-sonnet-4-6', async () => {
+  test('anthropic standard → claude-sonnet-5-5', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key'
 
     await llm({ ...BASE_REQUEST, tier: 'standard', provider: 'anthropic' })
 
     expect(anthropicCreate).toHaveBeenCalledWith(
-      expect.objectContaining({ model: 'claude-sonnet-4-6' })
+      expect.objectContaining({ model: 'claude-sonnet-5-5' })
     )
   })
 
@@ -229,25 +229,14 @@ describe('llm error handling', () => {
 // ──────────────────────────────────────────────────────────────
 
 describe('llm openai o1 model system prompt handling', () => {
-  test('for o1 model (power tier): system prompt is prepended to user message', async () => {
-    process.env.OPENAI_API_KEY = 'test-key'
-
-    await llm({
-      systemPrompt: 'THE_SYSTEM_PROMPT',
-      userMessage: 'THE_USER_MESSAGE',
-      maxTokens: 100,
-      temperature: 0.5,
-      tier: 'power', // power → 'o1' for openai
-      provider: 'openai',
-    })
-
-    const callArgs = openAICreate.mock.calls[0][0]
-    expect(callArgs.messages).toHaveLength(1)
-    expect(callArgs.messages[0].role).toBe('user')
-    expect(callArgs.messages[0].content).toContain('THE_SYSTEM_PROMPT')
-    expect(callArgs.messages[0].content).toContain('THE_USER_MESSAGE')
-    const systemMsg = callArgs.messages.find((m: { role: string }) => m.role === 'system')
-    expect(systemMsg).toBeUndefined()
+  test('o1-family models do not support a system role; others do', () => {
+    expect(supportsSystemRole('o1')).toBe(false)
+    expect(supportsSystemRole('o1-mini')).toBe(false)
+    expect(supportsSystemRole('o1-preview')).toBe(false)
+    expect(supportsSystemRole('gpt-4o')).toBe(true)
+    expect(supportsSystemRole('gpt-4o-mini')).toBe(true)
+    // Must not match models that merely contain "o1" elsewhere in the name.
+    expect(supportsSystemRole('gpt-o1x')).toBe(true)
   })
 
   test('for non-o1 openai model (fast tier): system prompt is separate system message', async () => {
