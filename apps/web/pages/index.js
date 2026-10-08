@@ -13,17 +13,17 @@ const STEPS = [
   {
     n: '01',
     label: 'Write SKILL.md',
-    desc: 'Author your skill in a single markdown bundle — metadata, phases, and guidance in one file.'
+    desc: 'Author your skill as an open-standard Agent Skill: SKILL.md plus phase references and a skill.json sidecar.'
   },
   {
     n: '02',
-    label: 'Compile artifacts',
-    desc: 'Run aegis compile — generates a system prompt, OpenAI action schema, and MCP manifest.'
+    label: 'Install natively',
+    desc: 'Run npx aegis-skills install --platform <id>: skills land in the tool’s own skills folder and the MCP server is registered.'
   },
   {
     n: '03',
     label: 'Deploy anywhere',
-    desc: 'Push to Vercel. Paste the system prompt or wire the MCP endpoint — done in minutes.'
+    desc: 'Or skip installing: paste the single-file prompt, or connect the hosted read-only MCP server.'
   }
 ]
 
@@ -51,26 +51,11 @@ const INTEL_STEPS = [
 ]
 
 const COMMANDS = [
-  {
-    cmd: 'aegis list',
-    desc: 'Show installed skills and their status for each tool.'
-  },
-  {
-    cmd: 'aegis configure --for <tool>',
-    desc: 'Reconfigure a specific tool (claude, chatgpt, cursor, gemini, vscode, antigravity-cli).'
-  },
-  {
-    cmd: 'aegis compile [skill]',
-    desc: 'Rebuild artifacts from SKILL.md — system prompt, MCP manifest, and OpenAI action schema.'
-  },
-  {
-    cmd: 'aegis intel-sync',
-    desc: 'Ingest a threat-intel corpus, route findings into the skills they affect, and recompile.'
-  },
-  {
-    cmd: 'aegis mcp',
-    desc: 'Serve the skill library over MCP (stdio) to Claude, Cursor and other MCP clients.'
-  }
+  { cmd: 'aegis install --platform <id> [--project]', desc: 'Copy the skills into a tool’s native folder (claude, codex, gemini, cursor, vscode, antigravity) and register the MCP server.' },
+  { cmd: 'aegis uninstall --platform <id>', desc: 'Remove only the files and MCP entry Aegis installed. Your edits are kept as .bak.' },
+  { cmd: 'aegis update', desc: 'Re-sync every recorded install with this version of the pack.' },
+  { cmd: 'aegis list', desc: 'Show the bundled skills and where they are installed.' },
+  { cmd: 'aegis mcp', desc: 'Serve the skill library over MCP (stdio) to any MCP client.' }
 ]
 
 const COMMON_ENVIRONMENTS = ['enterprise', 'cloud', 'hybrid', 'ot', 'remote-workforce', 'saas']
@@ -380,7 +365,7 @@ function HomePage({ skills: initialSkills }) {
           { className: 'hero-desc' },
           'Write once in ',
           React.createElement('strong', null, 'SKILL.md'),
-          ' — Aegis compiles it to every platform format. System prompts, ChatGPT Actions, MCP endpoints. Deploy to ',
+          ' — one open-standard skill, installed natively, served over MCP, or flattened into a single prompt. Use it in ',
           React.createElement('strong', null, 'Claude, Gemini, Cursor'),
           ' and any MCP-compatible tool without changing the source.'
         ),
@@ -423,11 +408,11 @@ function HomePage({ skills: initialSkills }) {
                 'AEGIS'
               ),
               React.createElement('h3', null, 'Aegis'),
-              React.createElement('div', { className: 'role' }, 'Skill compiler · Marketplace · API'),
+              React.createElement('div', { className: 'role' }, 'Skill pack · MCP server · Installer'),
               React.createElement(
                 'p',
                 null,
-                'Author defensive security skills in a portable SKILL.md format. One source compiles to system prompts, ChatGPT Actions, and MCP server manifests — deploy to any AI platform without rewriting.'
+                'Defensive security skills in the open Agent Skills format. One source installs natively into coding assistants, serves over MCP to Claude and ChatGPT, and flattens into a single-file prompt.'
               ),
               React.createElement('a', { href: '#skills', className: 'twin-link' }, 'Browse skills library', '→')
             ),
@@ -478,27 +463,28 @@ function HomePage({ skills: initialSkills }) {
             { style: { marginBottom: '50px' } },
             React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Universal Installation'),
             React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '20px' } },
-              'Install once globally, use with Claude, ChatGPT, Cursor, Gemini, VS Code, or Antigravity CLI.'
+              'One command per tool: Claude Code, Codex, Gemini CLI, Cursor, VS Code Copilot and Antigravity. Claude.ai and ChatGPT connect to the hosted MCP server.'
             ),
             React.createElement(
               'div',
               { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '13px', color: 'var(--cream)', overflowX: 'auto', marginBottom: '20px' } },
-              React.createElement('div', null, 'npm install -g @aegis-skills/core'),
-              React.createElement('div', { style: { marginTop: '10px' } }, 'aegis init')
+              React.createElement('div', null, 'npx aegis-skills install --platform claude'),
+              React.createElement('div', { style: { marginTop: '10px' } }, 'npx aegis-skills install --platform claude --project')
             ),
             React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
-              React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px' } }, 'aegis init'),
+              React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px' } }, 'aegis install'),
               ' will:'
             ),
             React.createElement(
               'ul',
               { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '10px' } },
-              React.createElement('li', null, 'Detect your installed tools (Claude, ChatGPT, Cursor, Gemini, VS Code, Antigravity)'),
-              React.createElement('li', null, 'Interactively select which tools to configure'),
-              React.createElement('li', null, 'Inject skill manifests and system prompts to each tool'),
+              React.createElement('li', null, 'Copy the skills into each tool’s native skills folder (your user folder, or the project with --project)'),
+              React.createElement('li', null, 'Register the read-only Aegis MCP server in the tool’s own config, after backing the file up'),
+              React.createElement('li', null, 'Refresh installed skills after an upgrade, keeping any edits you made as .bak files'),
               React.createElement('li', null,
-                'Save configuration to ',
-                React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 4px' } }, '~/.aegisrc')
+                'Record what it installed in ',
+                React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 4px' } }, '~/.aegis/installed.json'),
+                ' so aegis uninstall removes only its own files'
               )
             )
           ),
@@ -692,7 +678,7 @@ function HomePage({ skills: initialSkills }) {
             React.createElement('div', null, '$ aegis intel-sync --days 7'),
             React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '  corpus: 199 article(s) · 2 teardown(s) · graph 323 nodes'),
             React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  routed to 19 skill(s) · coverage prompts written'),
-            React.createElement('div', { style: { color: 'var(--gold)', marginTop: '8px' } }, '  ✓ intel blocks written · artifacts recompiled')
+            React.createElement('div', { style: { color: 'var(--gold)', marginTop: '8px' } }, '  ✓ intel blocks written · skill.json updated')
           ),
           React.createElement(
             'p',

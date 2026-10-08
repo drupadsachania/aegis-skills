@@ -4,9 +4,9 @@ const React = require('react')
 const { useState } = React
 const CopyButton = require('./CopyButton')
 
-const TABS = ['System Prompt', 'ChatGPT Action', 'MCP']
+const TABS = ['System Prompt', 'MCP']
 
-function CodeBlock({ label, content }) {
+function CodeBlock ({ label, content }) {
   return React.createElement(
     'div',
     { className: 'code-block' },
@@ -20,49 +20,35 @@ function CodeBlock({ label, content }) {
   )
 }
 
-function SystemPromptPanel({ systemPrompt }) {
+function SystemPromptPanel ({ systemPrompt }) {
   return React.createElement(
     'div',
     null,
-    React.createElement('p', { className: 'install-note' }, 'Paste into Claude Projects, Gemini Gems, or any chat UI system prompt field.'),
-    React.createElement(CodeBlock, { label: 'system-prompt.txt', content: systemPrompt })
+    React.createElement('p', { className: 'install-note' }, 'Paste into ChatGPT, Claude Projects, Gemini Gems or any chat UI system prompt field.'),
+    React.createElement(CodeBlock, { label: 'single-file prompt', content: systemPrompt })
   )
 }
 
-function ChatGPTPanel({ openaiAction }) {
-  return React.createElement(
-    'div',
-    null,
-    React.createElement('p', { className: 'install-note' }, 'In ChatGPT → Explore GPTs → Create → Configure → Add Action → import schema.'),
-    React.createElement(CodeBlock, { label: 'openai-action.json', content: openaiAction })
-  )
-}
-
-function McpPanel({ mcpUrl, mcpConfig }) {
+function McpPanel ({ mcpUrl, mcpConfig }) {
   return React.createElement(
     'div',
     { style: { display: 'flex', flexDirection: 'column', gap: '0' } },
-    React.createElement('p', { className: 'install-note' }, 'Add the MCP endpoint to your Claude Desktop or Cursor config.'),
+    React.createElement('p', { className: 'install-note' }, 'Connect Claude, ChatGPT, Cursor or any MCP client to the hosted read-only Aegis MCP server, or run it locally with npx aegis-skills mcp.'),
     React.createElement(CodeBlock, { label: 'endpoint URL', content: mcpUrl }),
-    React.createElement(CodeBlock, { label: 'claude_desktop_config.json', content: mcpConfig })
+    React.createElement(CodeBlock, { label: 'MCP config', content: mcpConfig })
   )
 }
 
-function AllPlatformsTable({ systemPrompt, openaiAction, mcpConfig }) {
+function AllPlatformsTable ({ systemPrompt, mcpConfig }) {
   const rows = [
-    { platform: 'Any chat UI', artifact: 'System prompt', where: 'Claude Projects / Gemini Gems / Mistral', text: systemPrompt },
-    { platform: 'ChatGPT', artifact: 'Action JSON', where: 'GPT Builder → Add Action', text: openaiAction },
-    { platform: 'Claude Desktop / Cursor', artifact: 'MCP config', where: 'claude_desktop_config.json', text: mcpConfig }
+    { platform: 'Any chat UI', artifact: 'System prompt', where: 'ChatGPT / Claude Projects / Gemini Gems', text: systemPrompt },
+    { platform: 'MCP clients', artifact: 'MCP config', where: 'Claude, ChatGPT, Cursor, VS Code', text: mcpConfig }
   ]
 
   return React.createElement(
     'div',
     null,
-    React.createElement(
-      'span',
-      { className: 'install-label' },
-      'All platforms'
-    ),
+    React.createElement('span', { className: 'install-label' }, 'All platforms'),
     React.createElement(
       'div',
       { style: { border: '1px solid var(--border-dim)' } },
@@ -100,19 +86,16 @@ function AllPlatformsTable({ systemPrompt, openaiAction, mcpConfig }) {
   )
 }
 
-function InstallTabs({ name, systemPrompt, openaiAction, mcpUrl, mcpConfig }) {
+function InstallTabs ({ name, systemPrompt, mcpUrl, mcpConfig }) {
   const [activeTab, setActiveTab] = useState('System Prompt')
-
   const tabContent = {
     'System Prompt': React.createElement(SystemPromptPanel, { systemPrompt }),
-    'ChatGPT Action': React.createElement(ChatGPTPanel, { openaiAction }),
-    'MCP': React.createElement(McpPanel, { mcpUrl, mcpConfig })
+    MCP: React.createElement(McpPanel, { mcpUrl, mcpConfig })
   }
 
   return React.createElement(
     'div',
     { style: { display: 'flex', flexDirection: 'column', gap: '24px' } },
-    // Tab bar + content
     React.createElement(
       'div',
       { className: 'install-tabs' },
@@ -133,8 +116,7 @@ function InstallTabs({ name, systemPrompt, openaiAction, mcpUrl, mcpConfig }) {
       ),
       React.createElement('div', { className: 'install-tab-content' }, tabContent[activeTab])
     ),
-    // Always-visible all-platforms table
-    React.createElement(AllPlatformsTable, { name, systemPrompt, openaiAction, mcpConfig })
+    React.createElement(AllPlatformsTable, { name, systemPrompt, mcpConfig })
   )
 }
 

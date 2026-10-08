@@ -2,7 +2,7 @@
   "name": "@aegis-skills/web",
   "version": "1.0.0",
   "private": true,
-  "description": "Universal security skill library (24 skills) for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
+  "description": "Aegis + Themis website: skill library, docs hub and hosted read-only Aegis MCP server.",
   "type": "commonjs",
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
     "url": "https://github.com/drupadsachania/aegis-skills/issues"
   },
   "scripts": {
-    "smoke": "node bin/aegis.js --version && node bin/aegis.js compile && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
     "test": "jest",
     "test:watch": "jest --watch",
     "predev": "node ../../scripts/build-flat-prompts.js --out .generated/prompts",
@@ -27,7 +26,6 @@
   "keywords": [
     "skills",
     "claude",
-    "chatgpt",
     "cursor",
     "gemini",
     "vscode",
@@ -43,7 +41,9 @@
     "model-context-protocol"
   ],
   "license": "(Apache-2.0 OR MIT)",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "aegis-skills": "1.1.0",
     "@anthropic-ai/sdk": "0.98.0",

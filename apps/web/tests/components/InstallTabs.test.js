@@ -10,41 +10,36 @@ require('@testing-library/jest-dom')
 
 const InstallTabs = require('../../components/InstallTabs')
 
+const MCP_URL = 'https://aegis-skills.vercel.app/api/mcp'
 const PROPS = {
   name: 'test-skill',
   systemPrompt: 'You are a test assistant.',
-  openaiAction: '{"openapi":"3.0"}',
-  mcpUrl: 'https://aegis-skills.vercel.app/api/test-skill/manifest',
-  mcpConfig: '{"mcpServers":{"test-skill":{"url":"https://aegis-skills.vercel.app/api/test-skill/manifest"}}}'
+  mcpUrl: MCP_URL,
+  mcpConfig: JSON.stringify({ mcpServers: { aegis: { type: 'http', url: MCP_URL } } })
 }
 
 describe('InstallTabs', () => {
-  test('renders System Prompt tab by default', () => {
+  test('renders the System Prompt tab by default', () => {
     render(React.createElement(InstallTabs, PROPS))
-    expect(screen.getByText('System Prompt')).toBeInTheDocument()
-    expect(screen.getByText(/You are a test assistant/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'System Prompt' })).toBeInTheDocument()
+    expect(screen.getAllByText(/You are a test assistant/).length).toBeGreaterThan(0)
   })
 
-  test('switches to ChatGPT Action tab', async () => {
-    render(React.createElement(InstallTabs, PROPS))
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /chatgpt action/i }))
-    expect(screen.getByText(/"openapi":"3.0"/)).toBeInTheDocument()
-  })
-
-  test('switches to MCP tab', async () => {
+  test('switches to the MCP tab', async () => {
     render(React.createElement(InstallTabs, PROPS))
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /^mcp$/i }))
-    const urlElements = screen.getAllByText(/aegis-skills\.vercel\.app/)
-    expect(urlElements.length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/aegis-skills\.vercel\.app\/api\/mcp/).length).toBeGreaterThan(0)
   })
 
-  test('always shows the all-platforms table, whichever tab is active', async () => {
+  test('offers no ChatGPT Action tab', () => {
     render(React.createElement(InstallTabs, PROPS))
-    const user = userEvent.setup()
-    expect(screen.getByText('Platform')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /^mcp$/i }))
-    expect(screen.getByText('Platform')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /chatgpt action/i })).toBeNull()
+  })
+
+  test('lists both platforms in the summary table', () => {
+    render(React.createElement(InstallTabs, PROPS))
+    expect(screen.getByText('Any chat UI')).toBeInTheDocument()
+    expect(screen.getByText('MCP clients')).toBeInTheDocument()
   })
 })

@@ -7,10 +7,10 @@ const Layout = require('../../components/Layout')
 const InstallTabs = require('../../components/InstallTabs')
 const { listSkills, getSkillManifest } = require('../../lib/skill-reader')
 
-function SkillDetailPage({ manifest, systemPrompt, openaiAction }) {
-  const mcpUrl = `https://aegis-skills.vercel.app/api/${manifest.name}/manifest`
+function SkillDetailPage({ manifest, systemPrompt }) {
+  const mcpUrl = 'https://aegis-skills.vercel.app/api/mcp'
   const mcpConfig = JSON.stringify(
-    { mcpServers: { [manifest.name]: { url: mcpUrl } } },
+    { mcpServers: { aegis: { type: 'http', url: mcpUrl } } },
     null,
     2
   )
@@ -203,7 +203,6 @@ function SkillDetailPage({ manifest, systemPrompt, openaiAction }) {
         React.createElement(InstallTabs, {
           name: manifest.name,
           systemPrompt,
-          openaiAction,
           mcpUrl,
           mcpConfig
         })
@@ -225,22 +224,14 @@ async function getStaticProps({ params }) {
   const manifest = await getSkillManifest(name)
   if (!manifest) return { notFound: true }
 
-  const { skillsDir } = require('../../lib/aegis-paths')
-  const skillDir = path.join(skillsDir(), name, 'artifacts')
-
+  // Built by scripts/build-flat-prompts.js in the prebuild step (apps/web/package.json).
   let systemPrompt = ''
-  let openaiAction = ''
-
   try {
-    systemPrompt = await fs.readFile(path.join(skillDir, 'system-prompt.txt'), 'utf8')
+    systemPrompt = await fs.readFile(path.join(process.cwd(), '.generated', 'prompts', `${name}.md`), 'utf8')
   } catch (_) { systemPrompt = '' }
 
-  try {
-    openaiAction = await fs.readFile(path.join(skillDir, 'openai-action.json'), 'utf8')
-  } catch (_) { openaiAction = '' }
-
   return {
-    props: { manifest, systemPrompt, openaiAction }
+    props: { manifest, systemPrompt }
   }
 }
 

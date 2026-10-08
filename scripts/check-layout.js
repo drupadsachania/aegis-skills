@@ -19,15 +19,18 @@ const MUST_EXIST = [
   'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
   'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md', 'README.md',
   '.github/workflows/skill-health.yml',
-  'scripts/intel-sync.js', 'scripts/intel-routing.js', 'scripts/skill-health.js', 'scripts/compile-all.js',
+  'scripts/intel-sync.js', 'scripts/intel-routing.js', 'scripts/skill-health.js',
+  'scripts/lint-skills.js', 'scripts/migrate-skill-frontmatter.js', 'scripts/build-flat-prompts.js', 'scripts/sync-skill-tokens.js',
   'packages/aegis/package.json', 'packages/aegis/health.json', 'packages/aegis/skills',
   'apps/web/package.json', 'apps/web/next.config.js', 'apps/web/jest.config.js', 'apps/web/jest.setup.js',
   'apps/web/tsconfig.json', 'apps/web/next-env.d.ts', 'apps/web/postcss.config.js', 'apps/web/tailwind.config.js',
-  'apps/web/bin/aegis.js', 'apps/web/lib/skill-reader.js', 'apps/web/lib/aegis-paths.js',
-  'apps/web/lib/mcp/aegis-server.js', 'apps/web/lib/themis/index.ts', 'apps/web/src/compiler.js',
+  'apps/web/lib/skill-reader.js', 'apps/web/lib/aegis-paths.js', 'apps/web/lib/themis/index.ts',
+  'packages/aegis/mcp/server.js', 'packages/aegis/mcp/stdio.js', 'packages/aegis/mcp/skill-reader.js',
+  'packages/aegis/mcp/skill-families.js', 'packages/aegis/lib/skill-meta.js', 'packages/aegis/lib/targets.js',
+  'packages/aegis/lib/config-writers.js', 'packages/aegis/lib/ledger.js',
   'apps/web/app/api/mcp/route.ts', 'apps/web/pages/index.js', 'apps/web/components/Layout.js',
-  'apps/web/styles/globals.css', 'apps/web/supabase/migrations', 'apps/web/__tests__/mcp/aegis-server.test.ts',
-  'apps/web/tests/fixtures/test-skill/SKILL.md'
+  'apps/web/styles/globals.css', 'apps/web/supabase/migrations', 'packages/aegis/tests/mcp-server.test.js',
+  'scripts/tests/fixtures/legacy/test-skill/SKILL.md'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
@@ -54,7 +57,7 @@ const skills = fs.existsSync(skillsDir)
   : []
 if (skills.length !== 24) problems.push(`expected 24 skills in packages/aegis/skills, found ${skills.length}`)
 for (const s of skills) {
-  for (const f of ['SKILL.md', 'skill.json', 'artifacts/system-prompt.txt']) {
+  for (const f of ['SKILL.md', 'skill.json']) {
     if (!fs.existsSync(path.join(skillsDir, s, f))) problems.push(`missing: packages/aegis/skills/${s}/${f}`)
   }
 }

@@ -38,20 +38,20 @@ module.exports = function DocsPage() {
             React.createElement('h2', null, 'What is Aegis?')
           ),
           React.createElement('p', null,
-            'Aegis is a skill marketplace and compilation system. Each skill is authored in SKILL.md — a single markdown bundle containing metadata, multiple phases, and guidance text. The compiler generates three artifacts:'
+            'Aegis is a pack of defensive security skills in the open Agent Skills format. Each skill is a SKILL.md with phase references and a skill.json sidecar. It reaches your AI three ways:'
           ),
           React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
             React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'System Prompt'),
-              ' — Ready to paste into ChatGPT, Claude, or your LLM'
+              React.createElement('strong', null, 'Native skills'),
+              ' — installed into Claude Code, Codex, Gemini CLI, Cursor, VS Code Copilot or Antigravity with npx aegis-skills install'
             ),
             React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'OpenAI Action Schema'),
-              ' — For ChatGPT custom actions and function calling'
+              React.createElement('strong', null, 'MCP server'),
+              ' — read-only list_skills, get_skill and get_skill_phase tools, locally (aegis mcp) or hosted for Claude.ai and ChatGPT'
             ),
             React.createElement('li', null,
-              React.createElement('strong', null, 'MCP Manifest'),
-              ' — For Model Context Protocol servers'
+              React.createElement('strong', null, 'Single-file prompt'),
+              ' — every phase flattened into one prompt for any chat UI'
             )
           ),
           React.createElement('p', null,
