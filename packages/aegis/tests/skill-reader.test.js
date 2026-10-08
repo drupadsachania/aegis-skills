@@ -46,6 +46,25 @@ describe('getSkillsDir', () => {
   })
 })
 
+describe('pickSkillsDir', () => {
+  // Regression: when Next.js bundles the reader, __dirname/../skills is Next's own
+  // output folder (.next/server/pages/skills). It exists but holds no skills, and
+  // must not be chosen over the real skills directory.
+  test('skips an existing directory that contains no skills', () => {
+    const decoy = fs.mkdtempSync(path.join(os.tmpdir(), 'aegis-decoy-'))
+    fs.writeFileSync(path.join(decoy, '[name].js'), '// next output')
+    const real = fs.mkdtempSync(path.join(os.tmpdir(), 'aegis-real-'))
+    fs.mkdirSync(path.join(real, 'one'))
+    fs.writeFileSync(path.join(real, 'one', 'skill.json'), '{}')
+    expect(reader.pickSkillsDir([decoy, real])).toBe(real)
+  })
+
+  test('falls back to the first candidate when none has skills', () => {
+    const a = path.join(os.tmpdir(), 'aegis-nope-a')
+    expect(reader.pickSkillsDir([a, path.join(os.tmpdir(), 'aegis-nope-b')])).toBe(a)
+  })
+})
+
 describe('listSkills', () => {
   test('summarises every skill folder and keeps context', async () => {
     const skills = await reader.listSkills()

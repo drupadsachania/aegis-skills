@@ -18,8 +18,21 @@ const { PHASE_FILE } = require('../lib/skill-meta')
 const SAFE_NAME = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/
 let cachedDir = null
 
-function isDir (p) {
-  try { return fs.statSync(p).isDirectory() } catch { return false }
+// A directory only counts as the skills directory if it really holds skills (a
+// subfolder with skill.json). Merely existing is not enough: when Next.js bundles
+// this module, __dirname/../skills is Next's own output folder, which exists but
+// has no skills.
+function hasSkills (p) {
+  try {
+    return fs.readdirSync(p, { withFileTypes: true })
+      .some(e => e.isDirectory() && fs.existsSync(path.join(p, e.name, 'skill.json')))
+  } catch {
+    return false
+  }
+}
+
+function pickSkillsDir (candidates) {
+  return candidates.find(hasSkills) || candidates[0]
 }
 
 function getSkillsDir () {
@@ -35,8 +48,9 @@ function getSkillsDir () {
     if (up === cur) break
     cur = up
   }
-  cachedDir = path.resolve(candidates.find(isDir) || candidates[0])
-  return cachedDir
+  const picked = path.resolve(pickSkillsDir(candidates))
+  if (hasSkills(picked)) cachedDir = picked // never cache a directory that holds no skills
+  return picked
 }
 
 async function readRawManifest (skillName) {
@@ -116,4 +130,4 @@ async function getPhaseContent (skillName, phaseId) {
   try { return await fsp.readFile(real, 'utf8') } catch { return null }
 }
 
-module.exports = { listSkills, getSkillManifest, getPhaseContent, getPhaseRef, getSkillsDir }
+module.exports = { listSkills, getSkillManifest, getPhaseContent, getPhaseRef, getSkillsDir, pickSkillsDir }
