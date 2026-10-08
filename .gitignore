@@ -11,6 +11,8 @@ test_output.txt
 
 # Themis local SQLite debrief database — contains run metadata, never commit
 data/
+# ...except repo data files that live in scripts/data (tracked JSON used by build scripts)
+!scripts/data/
 
 # intel-sync run state (regenerated each run)
 .intel-sync-state.json

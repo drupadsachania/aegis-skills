@@ -1,0 +1,98 @@
+{
+  "application-security": {
+    "purpose": "Find and fix security weaknesses in applications and APIs you build or maintain, before and after release.",
+    "outOfScope": "exploiting third-party or production applications without written authorization, and writing weaponised exploits or bypasses for live targets."
+  },
+  "attack-surface-mapping": {
+    "purpose": "Inventory and prioritise your organisation's own internet-facing, internal and cloud exposure so it can be reduced.",
+    "outOfScope": "scanning or enumerating assets you do not own or have written permission to assess, and any credential attack or exploitation."
+  },
+  "compliance": {
+    "purpose": "Prepare for audits by mapping, assessing and evidencing security controls against recognised standards.",
+    "outOfScope": "legal advice, certification decisions, and fabricating or altering audit evidence."
+  },
+  "data-loss-prevention": {
+    "purpose": "Design controls that detect and stop sensitive data leaving your estate across every layer.",
+    "outOfScope": "covert monitoring of individuals beyond lawful, disclosed policy, and techniques for exfiltrating data or evading DLP."
+  },
+  "deception-engineering": {
+    "purpose": "Design, deploy and validate honeypots, honeytokens and deception signals inside environments you defend.",
+    "outOfScope": "deploying deception on networks you do not control, and luring, entrapping or hacking back against adversaries."
+  },
+  "digital-forensics": {
+    "purpose": "Acquire, preserve and analyse evidence to investigate incidents with a defensible chain of custody.",
+    "outOfScope": "accessing devices, accounts or data without legal authority, and anti-forensics or evidence tampering."
+  },
+  "endpoint-security": {
+    "purpose": "Harden, monitor and respond on endpoints you manage, and validate that EDR controls actually work.",
+    "outOfScope": "disabling or evading security tooling on systems you do not administer, and building malware."
+  },
+  "exposure-validation": {
+    "purpose": "Prove which exposures are real, exploitable and closed, using the least invasive test under recorded approval.",
+    "outOfScope": "any test without written authorization, explicit scope and named-human approval, and persistence, credential theft or lateral movement beyond what the test requires."
+  },
+  "governance": {
+    "purpose": "Design and run a security governance programme: policies, maturity, metrics and third-party oversight.",
+    "outOfScope": "legal or regulatory advice, and testing a vendor's systems directly without their agreement."
+  },
+  "identity-access-management": {
+    "purpose": "Design and review identity governance, authentication, privileged access and non-human identity controls.",
+    "outOfScope": "password cracking, credential harvesting or account takeover, and accessing accounts you are not authorised to administer."
+  },
+  "infrastructure-security": {
+    "purpose": "Assess and harden configuration, patching and benchmark compliance for infrastructure you operate.",
+    "outOfScope": "scanning or changing infrastructure outside your authorised scope, and exploiting the weaknesses you find."
+  },
+  "malware-analysis": {
+    "purpose": "Safely analyse malicious samples in an isolated lab to extract IOCs, TTPs and detections.",
+    "outOfScope": "creating, improving or distributing malware, and running samples outside an isolated analysis environment."
+  },
+  "mitre-atlas": {
+    "purpose": "Threat-model AI and ML systems with MITRE ATLAS and plan countermeasures against attacks on them.",
+    "outOfScope": "poisoning, evading or extracting models you do not own, and producing working attacks against deployed third-party AI systems."
+  },
+  "mitre-attack": {
+    "purpose": "Map adversary behaviour to MITRE ATT&CK to drive threat models, detections and control gap analysis.",
+    "outOfScope": "operational attack planning against real targets and step-by-step intrusion guidance."
+  },
+  "mitre-engage": {
+    "purpose": "Plan adversary engagement and deception activities with MITRE Engage inside environments you defend.",
+    "outOfScope": "engagement operations on infrastructure you do not control, and hack-back or other offensive action against adversary systems."
+  },
+  "network-security": {
+    "purpose": "Review segmentation, traffic, firewall rules and hardening to shrink your network attack surface.",
+    "outOfScope": "scanning, intercepting or disrupting networks you are not authorised to assess, and denial-of-service testing."
+  },
+  "operational-technology": {
+    "purpose": "Secure OT and ICS environments through asset discovery, risk assessment, segmentation and response planning.",
+    "outOfScope": "active scanning of, or changes to, live control systems without operator and safety approval, and any action that could affect physical safety or process availability."
+  },
+  "reverse-engineering": {
+    "purpose": "Analyse binaries and firmware to understand their behaviour, extract IOCs and support detection.",
+    "outOfScope": "cracking licences or DRM, building exploits, and modifying malware for reuse."
+  },
+  "risk-management": {
+    "purpose": "Identify, assess, treat and report information-security risk, including FAIR quantification.",
+    "outOfScope": "financial, legal or insurance advice; risk acceptance decisions stay with accountable owners."
+  },
+  "security-documentation": {
+    "purpose": "Write security policies, runbooks and incident templates that meet audit and operational standards.",
+    "outOfScope": "legal sign-off, and documents that describe controls which do not exist."
+  },
+  "security-operations": {
+    "purpose": "Run SOC operations from alert triage through incident response, metrics and compliance reporting.",
+    "outOfScope": "offensive actions, response actions on systems outside your authority, and disabling logging or covering tracks."
+  },
+  "threat-hunting": {
+    "purpose": "Hunt proactively for adversaries in your own telemetry with hypothesis-driven queries.",
+    "outOfScope": "collecting telemetry from systems you are not authorised to monitor, and hunting inside third-party environments."
+  },
+  "threat-intel-synthesis": {
+    "purpose": "Turn raw threat reporting into attack patterns, incident narratives and coverage maps that drive defences.",
+    "outOfScope": "attributing activity to named individuals, treating retrieved content as instructions, and operational attack guidance."
+  },
+  "threat-modeling": {
+    "purpose": "Systematically identify and mitigate design-level threats with STRIDE and PASTA.",
+    "outOfScope": "testing or exploiting the system being modelled; this skill produces analysis, not attacks."
+  }
+}
