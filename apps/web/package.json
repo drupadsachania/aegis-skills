@@ -4,10 +4,6 @@
   "private": true,
   "description": "Universal security skill library (24 skills) for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
   "type": "commonjs",
-  "main": "src/compiler.js",
-  "bin": {
-    "aegis": "./bin/aegis.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/drupadsachania/aegis-skills",
@@ -47,6 +43,7 @@
   "license": "(Apache-2.0 OR MIT)",
   "engines": { "node": ">=24" },
   "dependencies": {
+    "aegis-skills": "1.1.0",
     "@anthropic-ai/sdk": "0.98.0",
     "@google/generative-ai": "0.24.1",
     "@langchain/anthropic": "^0.3.7",

@@ -22,8 +22,14 @@
     "test": "jest",
     "compile": "node apps/web/bin/aegis.js compile",
     "skill-health": "node scripts/skill-health.js",
-    "intel-sync": "node apps/web/bin/aegis.js intel-sync",
-    "check:layout": "node scripts/check-layout.js"
+    "intel-sync": "node scripts/intel-sync.js",
+    "check:layout": "node scripts/check-layout.js",
+    "lint:skills": "node scripts/lint-skills.js",
+    "skills:tokens": "node scripts/sync-skill-tokens.js",
+    "skills:migrate": "node scripts/migrate-skill-frontmatter.js",
+    "build:prompts": "node scripts/build-flat-prompts.js",
+    "atlas:check": "node scripts/check-atlas-ids.js",
+    "check:deps": "node scripts/check-deps.js"
   },
   "devDependencies": {
     "jest": "^29.7.0"

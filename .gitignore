@@ -17,3 +17,7 @@ data/
 
 # graphify knowledge-graph output (local tooling, never committed)
 graphify-out/
+
+dist/
+apps/web/.generated/
+*.tgz
