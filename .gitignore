@@ -14,3 +14,6 @@ data/
 
 # intel-sync run state (regenerated each run)
 .intel-sync-state.json
+
+# graphify knowledge-graph output (local tooling, never committed)
+graphify-out/

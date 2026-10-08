@@ -713,7 +713,8 @@ async function getStaticProps() {
   // Load health scores and merge into skills
   let healthScores = {}
   try {
-    const healthPath = path.join(process.cwd(), 'health.json')
+    const { healthFile } = require('../lib/aegis-paths')
+    const healthPath = healthFile()
     if (fs.existsSync(healthPath)) {
       const healthContent = fs.readFileSync(healthPath, 'utf8')
       const healthData = JSON.parse(healthContent)

@@ -1,11 +1,11 @@
 'use strict'
 
 const fs = require('fs')
-const path = require('path')
+const { healthFile } = require('../../lib/aegis-paths')
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   try {
-    const healthPath = path.join(process.cwd(), 'health.json')
+    const healthPath = healthFile()
     if (!fs.existsSync(healthPath)) {
       return res.status(404).json({ error: 'health.json not found' })
     }
@@ -20,3 +20,7 @@ module.exports = async function handler(req, res) {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Next.js production builds require a default export; the other API routes set both.
+module.exports = handler
+module.exports.default = handler

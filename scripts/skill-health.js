@@ -6,8 +6,13 @@ const path = require('path')
 const https = require('https')
 const { execFile } = require('child_process')
 
-const SKILLS_DIR = path.join(process.cwd(), 'skills')
-const HEALTH_FILE = path.join(process.cwd(), 'health.json')
+// Repo-level script: paths are anchored to the repo root, not the caller's cwd.
+const REPO_ROOT = path.join(__dirname, '..')
+const SKILLS_DIR = path.join(REPO_ROOT, 'packages', 'aegis', 'skills')
+const HEALTH_FILE = path.join(REPO_ROOT, 'packages', 'aegis', 'health.json')
+// Pre-monorepo skill location, kept in the git pathspec so a skill's content age
+// survives the Phase 0 move (a pure rename is not a content change).
+const LEGACY_SKILLS_DIR = path.join(REPO_ROOT, 'skills')
 
 const ATTACK_STIX_URL = 'https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json'
 // CISA Known Exploited Vulnerabilities — a curated, slow-moving catalogue.
@@ -190,7 +195,11 @@ async function newestContentAgeDays(skillDir) {
 function gitLastCommitAgeDays(skillDir) {
   // Returns whole days since the last commit that touched skillDir, or null on failure.
   return new Promise((resolve) => {
-    execFile('git', ['log', '-1', '--format=%ct', '--', skillDir], { cwd: process.cwd() }, (err, stdout) => {
+    // -M + --diff-filter=ACMT skips commits that only renamed files (status R),
+    // so the monorepo move does not reset every skill's age to "today".
+    const legacyDir = path.join(LEGACY_SKILLS_DIR, path.basename(skillDir))
+    const args = ['log', '-1', '-M', '--diff-filter=ACMT', '--format=%ct', '--', skillDir, legacyDir]
+    execFile('git', args, { cwd: REPO_ROOT }, (err, stdout) => {
       if (err) return resolve(null)
       const epochSec = parseInt(String(stdout).trim(), 10)
       if (!epochSec) return resolve(null)

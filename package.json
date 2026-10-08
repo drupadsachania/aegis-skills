@@ -1,0 +1,31 @@
+{
+  "name": "aegis-skills-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Aegis security skill pack, Themis security-operations agent and the aegis-skills website.",
+  "license": "(Apache-2.0 OR MIT)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drupadsachania/aegis-skills"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "npm run dev -w @aegis-skills/web",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start -w @aegis-skills/web",
+    "test": "jest",
+    "compile": "node apps/web/bin/aegis.js compile",
+    "skill-health": "node scripts/skill-health.js",
+    "intel-sync": "node apps/web/bin/aegis.js intel-sync",
+    "check:layout": "node scripts/check-layout.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

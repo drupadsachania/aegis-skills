@@ -4,7 +4,8 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 
-const SKILLS_DIR = path.join(__dirname, '..', '..', 'skills')
+// apps/web/lib/tools -> repo root is four levels up
+const SKILLS_DIR = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aegis', 'skills')
 
 function ensureDir(dirPath) {
   if (!fs.existsSync(dirPath)) {

@@ -4,7 +4,9 @@ const fs = require('fs').promises
 const path = require('path')
 const matter = require('gray-matter')
 
-const SKILLS_DIR = path.join(process.cwd(), 'skills')
+const { skillsDir, healthFile } = require('./aegis-paths')
+
+const SKILLS_DIR = skillsDir()
 
 // Allow-list: lowercase/uppercase letters, digits, hyphens, underscores, dots. 1-64 chars.
 // Blocks: ..  /  \  null bytes  spaces  and anything path-traversal-shaped
@@ -14,7 +16,7 @@ async function listSkills () {
   // Load health.json once — provides per-skill health scores
   let healthScores = {}
   try {
-    const healthPath = path.join(process.cwd(), 'health.json')
+    const healthPath = healthFile()
     const raw = await fs.readFile(healthPath, 'utf8')
     const health = JSON.parse(raw)
     for (const [name, data] of Object.entries(health.skills || {})) {

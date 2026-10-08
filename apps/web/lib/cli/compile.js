@@ -4,7 +4,8 @@ const { compile } = require('../../src/compiler')
 const fs = require('fs').promises
 
 module.exports = async function compileCmd(skillName) {
-  const skillsDir = path.join(__dirname, '..', '..', 'skills')
+  // apps/web/lib/cli -> repo root is four levels up
+  const skillsDir = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aegis', 'skills')
 
   if (skillName) {
     const skillDir = path.join(skillsDir, skillName)

@@ -1,0 +1,20 @@
+{
+  "name": "aegis-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aegis: a content-only cybersecurity skill pack in the open Agent Skills format.",
+  "license": "(Apache-2.0 OR MIT)",
+  "author": "Kairo Foundation",
+  "homepage": "https://aegis-skills.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drupadsachania/aegis-skills",
+    "directory": "packages/aegis"
+  },
+  "bugs": {
+    "url": "https://github.com/drupadsachania/aegis-skills/issues"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

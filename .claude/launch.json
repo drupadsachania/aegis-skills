@@ -9,8 +9,8 @@
     },
     {
       "name": "aegis-prod",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["next", "start", "-p", "3100"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "-w", "@aegis-skills/web", "--", "-p", "3100"],
       "port": 3100
     }
   ]

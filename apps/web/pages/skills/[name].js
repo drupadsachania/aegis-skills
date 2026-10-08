@@ -225,7 +225,8 @@ async function getStaticProps({ params }) {
   const manifest = await getSkillManifest(name)
   if (!manifest) return { notFound: true }
 
-  const skillDir = path.join(process.cwd(), 'skills', name, 'artifacts')
+  const { skillsDir } = require('../../lib/aegis-paths')
+  const skillDir = path.join(skillsDir(), name, 'artifacts')
 
   let systemPrompt = ''
   let openaiAction = ''

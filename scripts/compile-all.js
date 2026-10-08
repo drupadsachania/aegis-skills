@@ -1,10 +1,10 @@
 'use strict'
 const path = require('path')
-const { compile } = require('../src/compiler')
+const { compile } = require('../apps/web/src/compiler')
 const fs = require('fs').promises
 
 async function main() {
-  const skillsDir = path.join(__dirname, '..', 'skills')
+  const skillsDir = path.join(__dirname, '..', 'packages', 'aegis', 'skills')
   const entries = await fs.readdir(skillsDir, { withFileTypes: true })
   const dirs = entries.filter(e => e.isDirectory()).map(e => e.name)
   let ok = 0, fail = 0

@@ -3,7 +3,8 @@
 const path = require('path')
 const { spawn } = require('child_process')
 
-const ROOT = path.join(__dirname, '..', '..')
+// Repo root (apps/web/lib/cli -> four levels up): scripts/ lives there, not in apps/web.
+const ROOT = path.join(__dirname, '..', '..', '..', '..')
 
 function run(script, args) {
   return new Promise((resolve, reject) => {
@@ -29,7 +30,7 @@ module.exports = async function intelSyncCmd(opts = {}) {
     // commander sets opts.compile === false when --no-compile is passed.
     if (opts.compile !== false && !opts.dryRun) {
       console.log('\nRecompiling skill artifacts...')
-      await run('bin/aegis.js', ['compile'])
+      await run('apps/web/bin/aegis.js', ['compile'])
     }
   } catch (e) {
     console.error(`✗ intel-sync failed: ${e.message}`)

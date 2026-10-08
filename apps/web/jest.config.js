@@ -1,6 +1,7 @@
 const nextJest = require('next/jest')
 
-const createJestConfig = nextJest({ dir: './' })
+// __dirname, not './': the root jest.config.js runs this project with cwd = repo root.
+const createJestConfig = nextJest({ dir: __dirname })
 
 module.exports = createJestConfig({
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

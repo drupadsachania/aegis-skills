@@ -1,5 +1,24 @@
+const path = require('path')
+
+// The skill pack lives outside this app (packages/aegis) and lib/skill-reader.js
+// reads it from disk at runtime, so it must be copied into every server bundle.
+// Globs are relative to this directory (apps/web).
+const AEGIS_RUNTIME_FILES = [
+  '../../packages/aegis/skills/**/SKILL.md',
+  '../../packages/aegis/skills/**/skill.json',
+  '../../packages/aegis/skills/**/references/*.md',
+  '../../packages/aegis/health.json'
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // Next 14 reads these under `experimental` only (top-level from Next 15).
+    outputFileTracingRoot: path.join(__dirname, '..', '..'),
+    outputFileTracingIncludes: {
+      '/**': AEGIS_RUNTIME_FILES
+    }
+  },
   serverExternalPackages: [
     '@anthropic-ai/sdk',
     'openai',

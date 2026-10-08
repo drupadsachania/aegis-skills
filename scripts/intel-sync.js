@@ -21,8 +21,8 @@ const path = require('path')
 const { routeItem } = require('./intel-routing')
 
 const REPO_ROOT = path.join(__dirname, '..')
-const SKILLS_DIR = path.join(REPO_ROOT, 'skills')
-const STATE_FILE = path.join(REPO_ROOT, '.intel-sync-state.json')
+const SKILLS_DIR = path.join(REPO_ROOT, 'packages', 'aegis', 'skills')
+const STATE_FILE = path.join(REPO_ROOT, 'packages', 'aegis', '.intel-sync-state.json')
 
 const BEGIN = '<!-- BEGIN AEGIS-INTEL-SYNC — auto-generated, do not edit by hand -->'
 const END = '<!-- END AEGIS-INTEL-SYNC -->'
@@ -447,7 +447,7 @@ async function main() {
       'skills-routed': perSkill.size,
       'skills-written': updated
     }, null, 2), 'utf8')
-    console.log(`\n✓ ${updated} skill intel block(s) written. Run \`node bin/aegis.js compile\` to rebuild artifacts.`)
+    console.log(`\n✓ ${updated} skill intel block(s) written. Run \`node apps/web/bin/aegis.js compile\` to rebuild artifacts.`)
   } else {
     console.log('\n(dry run — nothing written)')
   }

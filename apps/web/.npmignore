@@ -40,17 +40,12 @@ docs/TECHNICAL.md
 *.md
 !README.md
 !LICENSE
-# Skill content MUST ship: SKILL.md is the compiler input and references/*.md are
-# the phase bodies. Without these, `aegis compile` fails and `aegis init` installs
-# artifacts with no source. The blanket *.md rule above would otherwise strip them.
-!skills/**/SKILL.md
-!skills/**/references/*.md
+# Skill content moved to packages/aegis (restructure Phase 0); this app package is private.
 .claude/
 
 # Include these files/folders
 !lib/
 !bin/
-!skills/
 !src/
 !pages/
 !components/
