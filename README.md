@@ -2,6 +2,8 @@
 
 **Platform-agnostic AI skill compiler and multi-agent threat analysis — built for defenders.**
 
+[![License: Apache-2.0 OR MIT](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg)](#license)
+
 Two subsystems, one deployment:
 
 | | Aegis | Themis |
@@ -268,4 +270,4 @@ npm run build                       # production build
 
 ## License
 
-MIT © Drupad Sachania
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or [MIT license](LICENSE-MIT) at your option (SPDX: `Apache-2.0 OR MIT`). See [LICENSE](LICENSE) and, for reporting vulnerabilities, [SECURITY.md](SECURITY.md).

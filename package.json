@@ -44,7 +44,7 @@
     "mcp",
     "model-context-protocol"
   ],
-  "license": "MIT",
+  "license": "(Apache-2.0 OR MIT)",
   "dependencies": {
     "@anthropic-ai/sdk": "0.98.0",
     "@google/generative-ai": "0.24.1",
