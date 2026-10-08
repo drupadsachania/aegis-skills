@@ -87,6 +87,7 @@ openskill/                              repo root; root package.json is private
 ```
 
 - Name availability (`aegis-skills`, `@aegis-skills/*`) is checked in Phase 1 with `npm view <name>`. The `@aegis-skills` scope already exists (current package). If `aegis-skills` is taken, the fallback is `@aegis-skills/aegis`; record the result in this file.
+- Phase 1 result (2026-10-08): `npm view aegis-skills` → E404 Not Found. Fallback `@aegis-skills/aegis` not needed. (Final availability is only proven at publish in Phase 7; npm can still reject a name as too similar to an existing one.)
 - **Nothing is published to npm before Phase 7.** Earlier phases test with `npm pack` and install the tarball.
 - Every package: `"license": "(Apache-2.0 OR MIT)"`, `"engines": { "node": ">=22.13" }` (first Node 22 line with unflagged `node:sqlite`), `"repository"` with a `"directory"` field.
 
