@@ -55,7 +55,7 @@ aegis mcp
 
 ### Deploying a skill
 
-After compilation, three artifacts are generated in `skills/<name>/artifacts/`:
+After compilation, three artifacts are generated in `packages/aegis/skills/<name>/artifacts/`:
 
 - `system-prompt.txt` — paste into Claude Projects, Gemini Gems, or any chat UI
 - `openai-action.json` — import into ChatGPT GPT Builder → Add Action
@@ -237,9 +237,9 @@ See [`docs/TECHNICAL.md`](docs/TECHNICAL.md) for the full security model and dat
 
 ```bash
 npm install
-cp .env.local.example .env.local   # add at least one LLM key
+cp apps/web/.env.local.example apps/web/.env.local   # add at least one LLM key
 npm run dev                         # http://localhost:3000
-npm test                            # 310 tests
+npm test                            # Jest across all workspaces
 npm run build                       # production build
 ```
 
@@ -248,22 +248,18 @@ npm run build                       # production build
 ## Project structure
 
 ```
-├── app/api/themis/        # Themis streaming route (App Router)
-├── bin/                   # aegis CLI
-├── components/            # React UI components
-├── docs/                  # Technical documentation
-│   └── TECHNICAL.md
-├── lib/
-│   ├── skill-reader.js    # Aegis skill loader with path traversal protection
-│   └── themis/            # Themis engine
-│       ├── graph/         # LangGraph nodes, state, tools
-│       ├── debrief.ts     # SQLite audit writer
-│       ├── llm-factory.ts # Provider selection
-│       ├── provider.ts    # LLM SDK (server-only)
-│       └── index.ts       # orchestrate() entry point
-├── pages/                 # Next.js pages router (Aegis UI + API)
-├── skills/                # Skill source files + compiled artifacts
-└── styles/globals.css     # Design system
+├── apps/web/                  # Next.js site + API, Themis engine (until Phases 2–4), aegis CLI
+│   ├── app/api/               # App Router: themis, audit, exposure, mcp
+│   ├── bin/aegis.js           # aegis CLI
+│   ├── lib/                   # skill-reader, MCP server, Themis engine (lib/themis)
+│   ├── pages/                 # Pages Router (Aegis UI + API)
+│   └── src/                   # skill compiler
+├── packages/aegis/            # Aegis skill pack (content only)
+│   ├── skills/                # 24 skills: SKILL.md, references/, skill.json, artifacts/
+│   └── health.json            # weekly skill-health scores
+├── scripts/                   # repo jobs: skill-health, intel-sync, compile-all, check-layout
+├── docs/                      # technical documentation and plans
+└── .github/workflows/         # weekly skill-health job
 ```
 
 ---
