@@ -1,61 +1,29 @@
 ---
 name: data-loss-prevention
-version: 1.0.0
-description: >
-  Cross-layer data loss prevention (DLP) programme covering data classification and
-  discovery, network egress and DNS exfiltration control, endpoint channels
-  (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage
-  (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP,
-  this treats every layer where data can leave. Triggers for: DLP programme design,
-  data classification, exfiltration detection, insider threat data controls, CASB/DSPM
-  rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.
-frameworks: [mitre-attack, nist-800-53, iso27001]
-tags: [security, dlp, data-protection, exfiltration, casb, dspm, insider-threat, egress, classification]
-phases:
-  - id: data-classification
-    ref: references/data-classification.md
-    lazy: false
-  - id: network-dlp
-    ref: references/network-dlp.md
-    lazy: true
-  - id: endpoint-dlp
-    ref: references/endpoint-dlp.md
-    lazy: true
-  - id: email-and-saas-dlp
-    ref: references/email-and-saas-dlp.md
-    lazy: true
-  - id: cloud-and-storage-dlp
-    ref: references/cloud-and-storage-dlp.md
-    lazy: true
-  - id: exfiltration-detection-and-response
-    ref: references/exfiltration-detection-and-response.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack, nvd-cve-feed, cisa-advisories]
-  red-team: true
-self-learning:
-  update-frequency: weekly
-  sources: [mitre-attack-stix, cisa-advisories]
-  health-score: 1.0
-  stale-threshold-days: 90
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, saas, hybrid, endpoint]
-  industry-verticals: [financial-services, healthcare, technology, government, legal]
-  attack-surface-tags: [data-exfiltration, insider-threat, egress, saas, cloud-storage, email]
+description: >-
+  Cross-layer data loss prevention (DLP) programme covering data
+  classification and discovery, network egress and DNS exfiltration control,
+  endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB,
+  cloud and object storage (DSPM), and exfiltration detection and response.
+  Unlike email/endpoint-only DLP, this treats every layer where data can
+  leave. Triggers for: DLP programme design, data classification, exfiltration
+  detection, insider threat data controls, CASB/DSPM rollout, egress
+  filtering, or any exercise to stop sensitive data leaving the estate.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "domain"
 ---
 
 # Data Loss Prevention (Cross-Layer) Skill
+
+## Scope and authorization
+
+- Purpose: Design controls that detect and stop sensitive data leaving your estate across every layer.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: covert monitoring of individuals beyond lawful, disclosed policy, and techniques for exfiltrating data or evading DLP.
+
 
 Stop sensitive data leaving the organisation across **every** channel — not just email
 and endpoints. DLP fails when it is bolted onto one layer while data walks out of another.
@@ -97,3 +65,15 @@ Phase 6 → Exfiltration Detection & Response [read: references/exfiltration-det
 Produce a layered DLP control map: for each data class, list the enforcement control and
 detection at every layer (network, endpoint, email/SaaS, cloud), the ATT&CK exfiltration
 technique it addresses, the policy mode (monitor / block), and the owner.
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Data classification](references/data-classification.md)
+- [Network dlp](references/network-dlp.md)
+- [Endpoint dlp](references/endpoint-dlp.md)
+- [Email and saas dlp](references/email-and-saas-dlp.md)
+- [Cloud and storage dlp](references/cloud-and-storage-dlp.md)
+- [Exfiltration detection and response](references/exfiltration-detection-and-response.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

@@ -1,55 +1,25 @@
 ---
 name: application-security
-version: 1.0.0
-description: >
-  Application security assessment workflow covering threat modelling, static analysis,
-  dependency auditing, API security, and security testing. Triggers for: pre-release
-  security review, SAST/DAST gap analysis, API security hardening, or OWASP Top 10
-  remediation planning.
-frameworks: [owasp-top10, mitre-attack, nist-ssdf]
-tags: [security, appsec, sast, api, owasp, supply-chain, testing]
-phases:
-  - id: threat-modeling-appsec
-    ref: references/threat-modeling-appsec.md
-    lazy: true
-  - id: sast-review
-    ref: references/sast-review.md
-    lazy: true
-  - id: dependency-audit
-    ref: references/dependency-audit.md
-    lazy: true
-  - id: api-security
-    ref: references/api-security.md
-    lazy: false
-  - id: security-testing
-    ref: references/security-testing.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [nvd-cve-feed, osv-database, owasp-advisories]
-  red-team: true
-self-learning:
-  update-frequency: weekly
-  sources: [nvd-cve-feed, osv-database, github-advisories]
-  health-score: 1.0
-  stale-threshold-days: 60
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, saas, mobile]
-  industry-verticals: [financial-services, healthcare, e-commerce, saas-providers]
-  attack-surface-tags: [web-application, api, supply-chain, authentication, injection]
+description: >-
+  Application security assessment workflow covering threat modelling, static
+  analysis, dependency auditing, API security, and security testing. Triggers
+  for: pre-release security review, SAST/DAST gap analysis, API security
+  hardening, or OWASP Top 10 remediation planning.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "domain"
 ---
 
 # Application Security Skill
+
+## Scope and authorization
+
+- Purpose: Find and fix security weaknesses in applications and APIs you build or maintain, before and after release.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: exploiting third-party or production applications without written authorization, and writing weaponised exploits or bypasses for live targets.
+
 
 Systematically assess web applications and APIs for security weaknesses across the full SDLC.
 
@@ -66,3 +36,14 @@ Phase 5 → Security Testing           [read: references/security-testing.md]
 ## Output Format
 
 Produce a findings table (OWASP category, severity, CVSS score, remediation effort) and a security testing coverage matrix.
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Threat modeling appsec](references/threat-modeling-appsec.md)
+- [Sast review](references/sast-review.md)
+- [Dependency audit](references/dependency-audit.md)
+- [Api security](references/api-security.md)
+- [Security testing](references/security-testing.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "network-security",
-  "version": "1.0.0",
-  "description": "Network security assessment and hardening workflow. Triggers for: network segmentation review, traffic analysis, firewall rule audits, network inventory, perimeter hardening, lateral movement prevention, or any exercise requiring network threat surface reduction.\n",
+  "version": "1.1.0",
+  "description": "Network security assessment and hardening workflow. Triggers for: network segmentation review, traffic analysis, firewall rule audits, network inventory, perimeter hardening, lateral movement prevention, or any exercise requiring network threat surface reduction.",
+  "family": "domain",
   "frameworks": [
     "mitre-attack",
     "nist-csf"
@@ -17,41 +18,36 @@
   "phases": [
     {
       "id": "network-inventory",
-      "lazy": true,
+      "file": "references/network-inventory.md",
       "tokens": 597
     },
     {
       "id": "segmentation-review",
-      "lazy": true,
+      "file": "references/segmentation-review.md",
       "tokens": 685
     },
     {
       "id": "traffic-analysis",
-      "lazy": true,
+      "file": "references/traffic-analysis.md",
       "tokens": 632
     },
     {
       "id": "hardening-checklist",
-      "lazy": false,
+      "file": "references/hardening-checklist.md",
       "tokens": 859
     },
     {
       "id": "cve-patch-management",
-      "lazy": true,
+      "file": "references/cve-patch-management.md",
       "tokens": 2093
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 665,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/network-security",
-    "action": "https://aegis-skills.vercel.app/network-security/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/network-security/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

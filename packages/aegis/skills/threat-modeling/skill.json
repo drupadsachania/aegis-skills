@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "threat-modeling",
-  "version": "1.0.0",
-  "description": "Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers for: new system design review, pre-release threat model, architectural security review, or any exercise requiring a systematic attacker-perspective analysis of a system's design.\n",
+  "version": "1.1.0",
+  "description": "Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers for: new system design review, pre-release threat model, architectural security review, or any exercise requiring a systematic attacker-perspective analysis of a system's design.",
+  "family": "intel",
   "frameworks": [
     "stride",
     "pasta",
@@ -18,30 +19,25 @@
   "phases": [
     {
       "id": "scope-definition",
-      "lazy": false,
+      "file": "references/scope-definition.md",
       "tokens": 733
     },
     {
       "id": "data-flow-diagramming",
-      "lazy": true,
+      "file": "references/data-flow-diagramming.md",
       "tokens": 675
     },
     {
       "id": "threat-enumeration",
-      "lazy": true,
+      "file": "references/threat-enumeration.md",
       "tokens": 749
     },
     {
       "id": "mitigation-mapping",
-      "lazy": true,
+      "file": "references/mitigation-mapping.md",
       "tokens": 671
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/threat-modeling",
-    "action": "https://aegis-skills.vercel.app/threat-modeling/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/threat-modeling/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack"

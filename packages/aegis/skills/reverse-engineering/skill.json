@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "reverse-engineering",
-  "version": "1.0.0",
-  "description": "End-to-end binary reverse engineering workflow for security analysts. Covers safe sample handling, static and dynamic analysis, code analysis, anti-analysis technique detection, MITRE ATT&CK TTP mapping, IOC extraction, and analyst reporting. Triggers for: malware triage, binary analysis, firmware analysis, packed executable analysis, or any reverse engineering task.\n",
+  "version": "1.1.0",
+  "description": "End-to-end binary reverse engineering workflow for security analysts. Covers safe sample handling, static and dynamic analysis, code analysis, anti-analysis technique detection, MITRE ATT&CK TTP mapping, IOC extraction, and analyst reporting. Triggers for: malware triage, binary analysis, firmware analysis, packed executable analysis, or any reverse engineering task.",
+  "family": "response",
   "frameworks": [
     "mitre-attack"
   ],
@@ -19,41 +20,36 @@
   "phases": [
     {
       "id": "triage-and-safe-handling",
-      "lazy": true,
+      "file": "references/triage-and-safe-handling.md",
       "tokens": 1075
     },
     {
       "id": "static-analysis",
-      "lazy": true,
+      "file": "references/static-analysis.md",
       "tokens": 1318
     },
     {
       "id": "dynamic-analysis",
-      "lazy": true,
+      "file": "references/dynamic-analysis.md",
       "tokens": 1242
     },
     {
       "id": "code-analysis",
-      "lazy": true,
+      "file": "references/code-analysis.md",
       "tokens": 1525
     },
     {
       "id": "reporting",
-      "lazy": true,
+      "file": "references/reporting.md",
       "tokens": 1180
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 189,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/reverse-engineering",
-    "action": "https://aegis-skills.vercel.app/reverse-engineering/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/reverse-engineering/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

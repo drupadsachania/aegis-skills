@@ -1,54 +1,25 @@
 ---
 name: attack-surface-mapping
-version: 1.0.0
-description: >
-  Attack surface mapping and exposure analysis workflow. Triggers for: external attack
-  surface assessment, internet-facing asset discovery, cloud misconfiguration audit,
-  or any exercise requiring a comprehensive map of an organisation's exploitable exposure.
-frameworks: [mitre-attack, owasp-asvs]
-tags: [security, attack-surface, reconnaissance, exposure, cloud-security, external-assets]
-phases:
-  - id: external-discovery
-    ref: references/external-discovery.md
-    lazy: false
-  - id: internal-enumeration
-    ref: references/internal-enumeration.md
-    lazy: true
-  - id: cloud-exposure
-    ref: references/cloud-exposure.md
-    lazy: true
-  - id: risk-prioritization
-    ref: references/risk-prioritization.md
-    lazy: true
-  - id: cve-exposure-management
-    ref: references/cve-exposure-management.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [shodan-feed, censys-feed, cisa-advisories]
-  red-team: true
-self-learning:
-  update-frequency: weekly
-  sources: [nvd-cve-feed, shodan-monitored, cisa-advisories]
-  health-score: 1.0
-  stale-threshold-days: 30
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, hybrid, saas]
-  industry-verticals: [financial-services, healthcare, government, retail, technology]
-  attack-surface-tags: [external-exposure, reconnaissance, cloud-misconfiguration, internet-facing, shadow-it]
+description: >-
+  Attack surface mapping and exposure analysis workflow. Triggers for:
+  external attack surface assessment, internet-facing asset discovery, cloud
+  misconfiguration audit, or any exercise requiring a comprehensive map of an
+  organisation's exploitable exposure.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "intel"
 ---
 
 # Attack Surface Mapping Skill
+
+## Scope and authorization
+
+- Purpose: Inventory and prioritise your organisation's own internet-facing, internal and cloud exposure so it can be reduced.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: scanning or enumerating assets you do not own or have written permission to assess, and any credential attack or exploitation.
+
 
 Enumerate and prioritise an organisation's exploitable attack surface.
 
@@ -64,3 +35,14 @@ Phase 4 → Risk Prioritization       [read: references/risk-prioritization.md]
 ## Output Format
 
 Produce an attack surface register (asset, exposure type, risk score, ATT&CK technique, remediation priority, SLA).
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [External discovery](references/external-discovery.md)
+- [Internal enumeration](references/internal-enumeration.md)
+- [Cloud exposure](references/cloud-exposure.md)
+- [Risk prioritization](references/risk-prioritization.md)
+- [Cve exposure management](references/cve-exposure-management.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

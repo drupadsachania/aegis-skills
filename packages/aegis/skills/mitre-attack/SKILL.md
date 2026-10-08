@@ -1,39 +1,26 @@
 ---
 name: mitre-attack
-version: 1.0.0
-description: >
+description: >-
   MITRE ATT&CK threat modelling workflow. Triggers for: adversary TTP mapping,
-  threat actor profiling, kill chain analysis, technique selection for security
-  controls, ATT&CK Navigator usage, ICS/OT threat modelling, ATT&CK-based
-  detection gap analysis, or any exercise requiring adversary behaviour mapping.
-frameworks: [mitre-attack]
-tags: [security, threat-intelligence, ttp, mitre, attack-framework]
-phases:
-  - id: enterprise-matrix-overview
-    ref: references/enterprise-matrix-overview.md
-    lazy: true
-  - id: ics-matrix-overview
-    ref: references/ics-matrix-overview.md
-    lazy: true
-  - id: ttp-profiling-guide
-    ref: references/ttp-profiling-guide.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack]
-  red-team: false
+  threat actor profiling, kill chain analysis, technique selection for
+  security controls, ATT&CK Navigator usage, ICS/OT threat modelling,
+  ATT&CK-based detection gap analysis, or any exercise requiring adversary
+  behaviour mapping.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "framework"
 ---
 
 # MITRE ATT&CK Skill
+
+## Scope and authorization
+
+- Purpose: Map adversary behaviour to MITRE ATT&CK to drive threat models, detections and control gap analysis.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: operational attack planning against real targets and step-by-step intrusion guidance.
+
 
 ## Purpose
 
@@ -160,3 +147,12 @@ T1548.001 T1548.002 T1548.003 T1548.004
 ## Deployment Context
 
 This skill operates against microsoft windows Active Directory environments, linux-based servers, apache httpd and nginx web tiers, and openssl-secured APIs. Threat actor TTPs described above are validated against real-world incidents involving these platforms.
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Enterprise matrix overview](references/enterprise-matrix-overview.md)
+- [Ics matrix overview](references/ics-matrix-overview.md)
+- [Ttp profiling guide](references/ttp-profiling-guide.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

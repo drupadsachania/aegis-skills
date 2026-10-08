@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "digital-forensics",
-  "version": "1.0.0",
-  "description": "End-to-end digital forensics and incident response (DFIR) workflow. Covers evidence acquisition with chain of custody, disk and memory forensics, network forensics, cloud and mobile evidence, and timeline reconstruction. Triggers for: incident investigation, evidence collection, memory forensics, disk imaging, DFIR engagements, or legal/regulatory evidence requirements.\n",
+  "version": "1.1.0",
+  "description": "End-to-end digital forensics and incident response (DFIR) workflow. Covers evidence acquisition with chain of custody, disk and memory forensics, network forensics, cloud and mobile evidence, and timeline reconstruction. Triggers for: incident investigation, evidence collection, memory forensics, disk imaging, DFIR engagements, or legal/regulatory evidence requirements.",
+  "family": "response",
   "frameworks": [
     "mitre-attack"
   ],
@@ -19,46 +20,41 @@
   "phases": [
     {
       "id": "evidence-acquisition",
-      "lazy": true,
+      "file": "references/evidence-acquisition.md",
       "tokens": 1157
     },
     {
       "id": "disk-forensics",
-      "lazy": true,
+      "file": "references/disk-forensics.md",
       "tokens": 1389
     },
     {
       "id": "memory-forensics",
-      "lazy": true,
+      "file": "references/memory-forensics.md",
       "tokens": 1519
     },
     {
       "id": "network-forensics",
-      "lazy": true,
+      "file": "references/network-forensics.md",
       "tokens": 1479
     },
     {
       "id": "cloud-and-mobile",
-      "lazy": true,
+      "file": "references/cloud-and-mobile.md",
       "tokens": 1645
     },
     {
       "id": "timeline-reconstruction",
-      "lazy": true,
+      "file": "references/timeline-reconstruction.md",
       "tokens": 1585
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 214,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/digital-forensics",
-    "action": "https://aegis-skills.vercel.app/digital-forensics/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/digital-forensics/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "data-loss-prevention",
-  "version": "1.0.0",
-  "description": "Cross-layer data loss prevention (DLP) programme covering data classification and discovery, network egress and DNS exfiltration control, endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP, this treats every layer where data can leave. Triggers for: DLP programme design, data classification, exfiltration detection, insider threat data controls, CASB/DSPM rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.\n",
+  "version": "1.1.0",
+  "description": "Cross-layer data loss prevention (DLP) programme covering data classification and discovery, network egress and DNS exfiltration control, endpoint channels (USB/clipboard/print/screenshot), email and SaaS/CASB, cloud and object storage (DSPM), and exfiltration detection and response. Unlike email/endpoint-only DLP, this treats every layer where data can leave. Triggers for: DLP programme design, data classification, exfiltration detection, insider threat data controls, CASB/DSPM rollout, egress filtering, or any exercise to stop sensitive data leaving the estate.",
+  "family": "domain",
   "frameworks": [
     "mitre-attack",
     "nist-800-53",
@@ -22,46 +23,41 @@
   "phases": [
     {
       "id": "data-classification",
-      "lazy": false,
+      "file": "references/data-classification.md",
       "tokens": 1052
     },
     {
       "id": "network-dlp",
-      "lazy": true,
+      "file": "references/network-dlp.md",
       "tokens": 1051
     },
     {
       "id": "endpoint-dlp",
-      "lazy": true,
+      "file": "references/endpoint-dlp.md",
       "tokens": 937
     },
     {
       "id": "email-and-saas-dlp",
-      "lazy": true,
+      "file": "references/email-and-saas-dlp.md",
       "tokens": 1094
     },
     {
       "id": "cloud-and-storage-dlp",
-      "lazy": true,
+      "file": "references/cloud-and-storage-dlp.md",
       "tokens": 1049
     },
     {
       "id": "exfiltration-detection-and-response",
-      "lazy": true,
+      "file": "references/exfiltration-detection-and-response.md",
       "tokens": 1132
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 718,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/data-loss-prevention",
-    "action": "https://aegis-skills.vercel.app/data-loss-prevention/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/data-loss-prevention/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

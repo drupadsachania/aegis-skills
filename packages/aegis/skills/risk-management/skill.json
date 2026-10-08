@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "risk-management",
-  "version": "1.0.0",
-  "description": "End-to-end information security risk management programme covering risk identification, qualitative and quantitative assessment (FAIR model), treatment selection, risk register governance, and executive risk reporting. Triggers for: risk assessment, risk register design, risk appetite definition, threat modelling integration, FAIR quantification, or risk reporting.\n",
+  "version": "1.1.0",
+  "description": "End-to-end information security risk management programme covering risk identification, qualitative and quantitative assessment (FAIR model), treatment selection, risk register governance, and executive risk reporting. Triggers for: risk assessment, risk register design, risk appetite definition, threat modelling integration, FAIR quantification, or risk reporting.",
+  "family": "governance",
   "frameworks": [
     "nist-csf",
     "iso-31000",
@@ -20,46 +21,41 @@
   "phases": [
     {
       "id": "risk-identification",
-      "lazy": true,
+      "file": "references/risk-identification.md",
       "tokens": 1339
     },
     {
       "id": "risk-assessment",
-      "lazy": true,
+      "file": "references/risk-assessment.md",
       "tokens": 1314
     },
     {
       "id": "risk-treatment",
-      "lazy": true,
+      "file": "references/risk-treatment.md",
       "tokens": 1401
     },
     {
       "id": "risk-register",
-      "lazy": true,
+      "file": "references/risk-register.md",
       "tokens": 1204
     },
     {
       "id": "risk-reporting",
-      "lazy": true,
+      "file": "references/risk-reporting.md",
       "tokens": 1191
     },
     {
       "id": "exposure-risk-model",
-      "lazy": true,
+      "file": "references/exposure-risk-model.md",
       "tokens": 1393
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 769,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/risk-management",
-    "action": "https://aegis-skills.vercel.app/risk-management/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/risk-management/download"
-  },
   "research": {
     "feeds": [
       "nist-csf",

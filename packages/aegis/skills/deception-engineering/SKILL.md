@@ -1,49 +1,25 @@
 ---
 name: deception-engineering
-version: 2.0.0
-description: >
+description: >-
   End-to-end deception engineering workflow for defensive security programs.
-  Triggers for: honeypot design, honeytoken placement, attack surface modelling
-  for deception, signal source validation, deception grid proposals, OT/IT
-  deception design, SIEM/XDR integration of deception signals, deception program
-  documentation, or any proactive threat detection exercise.
-frameworks: [mitre-engage, mitre-attack]
-tags: [security, deception, honeypot, honeytoken, defensive, ot-security]
-phases:
-  - id: attack-surface-taxonomy
-    ref: references/attack-surface-taxonomy.md
-    lazy: true
-  - id: signal-source-validity
-    ref: references/signal-source-validity.md
-    lazy: true
-  - id: deception-placement-matrix
-    ref: references/deception-placement-matrix.md
-    lazy: true
-  - id: signal-writing-guide
-    ref: references/signal-writing-guide.md
-    lazy: true
-  - id: documentation-templates
-    ref: references/documentation-templates.md
-    lazy: true
-  - id: validation-campaign-tripwires
-    ref: references/validation-campaign-tripwires.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, write, search]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack, mitre-engage]
-  red-team: true
+  Triggers for: honeypot design, honeytoken placement, attack surface
+  modelling for deception, signal source validation, deception grid proposals,
+  OT/IT deception design, SIEM/XDR integration of deception signals, deception
+  program documentation, or any proactive threat detection exercise.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "2.1.0"
+  osk: "1.1"
+  family: "domain"
 ---
 
 # Deception Engineering Skill
+
+## Scope and authorization
+
+- Purpose: Design, deploy and validate honeypots, honeytokens and deception signals inside environments you defend.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: deploying deception on networks you do not control, and luring, entrapping or hacking back against adversaries.
 
 ## Core Principle: Semantic Decision Model
 
@@ -290,3 +266,15 @@ Produce:
 | IR team blind spot | IR team dismisses deception alert as false positive | Update IR runbook, add deception hit SOP |
 | OT safety violation | Deception asset interferes with OT process | Immediate decommission, passive-only redesign |
 | Deception asset discovered and avoided | Sophisticated attacker identifies and routes around | Increase grid density, add breadcrumbs |
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Attack surface taxonomy](references/attack-surface-taxonomy.md)
+- [Signal source validity](references/signal-source-validity.md)
+- [Deception placement matrix](references/deception-placement-matrix.md)
+- [Signal writing guide](references/signal-writing-guide.md)
+- [Documentation templates](references/documentation-templates.md)
+- [Validation campaign tripwires](references/validation-campaign-tripwires.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "identity-access-management",
-  "version": "1.0.0",
-  "description": "Comprehensive IAM programme covering identity governance (Joiners/Movers/Leavers), human authentication (FIDO2, SSO, passwordless), privileged access management (PAM), non-human identities (service accounts, API keys, secrets), AI/agent identity, and access review and audit. Triggers for: MFA deployment, PAM design, secrets management, identity governance, agent identity, or access review programme.\n",
+  "version": "1.1.0",
+  "description": "Comprehensive IAM programme covering identity governance (Joiners/Movers/Leavers), human authentication (FIDO2, SSO, passwordless), privileged access management (PAM), non-human identities (service accounts, API keys, secrets), AI/agent identity, and access review and audit. Triggers for: MFA deployment, PAM design, secrets management, identity governance, agent identity, or access review programme.",
+  "family": "domain",
   "frameworks": [
     "nist-csf",
     "owasp-asvs",
@@ -24,46 +25,41 @@
   "phases": [
     {
       "id": "identity-governance",
-      "lazy": true,
+      "file": "references/identity-governance.md",
       "tokens": 1295
     },
     {
       "id": "human-authentication",
-      "lazy": true,
+      "file": "references/human-authentication.md",
       "tokens": 1318
     },
     {
       "id": "privileged-access-management",
-      "lazy": true,
+      "file": "references/privileged-access-management.md",
       "tokens": 1439
     },
     {
       "id": "non-human-identities",
-      "lazy": true,
+      "file": "references/non-human-identities.md",
       "tokens": 1488
     },
     {
       "id": "agent-and-ai-identities",
-      "lazy": true,
+      "file": "references/agent-and-ai-identities.md",
       "tokens": 1684
     },
     {
       "id": "access-review-and-audit",
-      "lazy": true,
+      "file": "references/access-review-and-audit.md",
       "tokens": 1219
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 730,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/identity-access-management",
-    "action": "https://aegis-skills.vercel.app/identity-access-management/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/identity-access-management/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

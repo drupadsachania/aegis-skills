@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "endpoint-security",
-  "version": "1.0.0",
-  "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.\n",
+  "version": "1.1.0",
+  "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.",
+  "family": "domain",
   "frameworks": [
     "mitre-attack",
     "cis-benchmarks"
@@ -18,41 +19,36 @@
   "phases": [
     {
       "id": "edr-deployment",
-      "lazy": true,
+      "file": "references/edr-deployment.md",
       "tokens": 668
     },
     {
       "id": "baseline-hardening",
-      "lazy": false,
+      "file": "references/baseline-hardening.md",
       "tokens": 739
     },
     {
       "id": "malware-analysis",
-      "lazy": true,
+      "file": "references/malware-analysis.md",
       "tokens": 692
     },
     {
       "id": "incident-response",
-      "lazy": true,
+      "file": "references/incident-response.md",
       "tokens": 697
     },
     {
       "id": "control-effectiveness-validation",
-      "lazy": true,
+      "file": "references/control-effectiveness-validation.md",
       "tokens": 1419
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 447,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/endpoint-security",
-    "action": "https://aegis-skills.vercel.app/endpoint-security/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/endpoint-security/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

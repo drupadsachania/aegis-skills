@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "threat-hunting",
-  "version": "1.0.0",
-  "description": "Proactive threat hunting workflow. Triggers for: structured hunt campaigns, TTP-based hypothesis generation, SIEM query development, anomaly investigation, or any exercise requiring proactive adversary search in telemetry rather than reactive alert response.\n",
+  "version": "1.1.0",
+  "description": "Proactive threat hunting workflow. Triggers for: structured hunt campaigns, TTP-based hypothesis generation, SIEM query development, anomaly investigation, or any exercise requiring proactive adversary search in telemetry rather than reactive alert response.",
+  "family": "intel",
   "frameworks": [
     "mitre-attack",
     "sqrll-hunting-maturity"
@@ -18,41 +19,36 @@
   "phases": [
     {
       "id": "hypothesis-generation",
-      "lazy": false,
+      "file": "references/hypothesis-generation.md",
       "tokens": 647
     },
     {
       "id": "data-collection",
-      "lazy": true,
+      "file": "references/data-collection.md",
       "tokens": 630
     },
     {
       "id": "detection-logic",
-      "lazy": true,
+      "file": "references/detection-logic.md",
       "tokens": 634
     },
     {
       "id": "investigation",
-      "lazy": true,
+      "file": "references/investigation.md",
       "tokens": 671
     },
     {
       "id": "reporting",
-      "lazy": true,
+      "file": "references/reporting.md",
       "tokens": 761
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 643,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/threat-hunting",
-    "action": "https://aegis-skills.vercel.app/threat-hunting/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/threat-hunting/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

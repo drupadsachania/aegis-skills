@@ -1,46 +1,26 @@
 ---
 name: mitre-atlas
-version: 1.0.0
-description: >
+description: >-
   MITRE ATLAS adversarial ML/AI attack surface assessment and countermeasure
   planning workflow. Triggers for: AI system threat modelling, adversarial ML
   attack analysis, training data poisoning defence, model inversion detection,
   ML credential protection, AI supply chain security, designing deception for
   ML pipelines, or any exercise involving security of AI/ML systems.
-frameworks: [mitre-atlas, mitre-attack]
-tags: [security, ai-security, adversarial-ml, mitre, atlas, ml-ops]
-phases:
-  - id: atlas-tactics-overview
-    ref: references/atlas-tactics-overview.md
-    lazy: true
-  - id: ml-attack-surface-guide
-    ref: references/ml-attack-surface-guide.md
-    lazy: true
-  - id: ml-threat-model
-    ref: references/ml-threat-model.md
-    lazy: true
-  - id: ml-defense-controls
-    ref: references/ml-defense-controls.md
-    lazy: true
-  - id: ml-incident-response
-    ref: references/ml-incident-response.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-atlas]
-  red-team: true
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "framework"
 ---
 
 # MITRE ATLAS Skill
+
+## Scope and authorization
+
+- Purpose: Threat-model AI and ML systems with MITRE ATLAS and plan countermeasures against attacks on them.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: poisoning, evading or extracting models you do not own, and producing working attacks against deployed third-party AI systems.
+
 
 ## Purpose
 
@@ -216,3 +196,14 @@ T1055.014 T1055.015
 T1021.008
 T1059.008 T1059.009
 T1543.005
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Atlas tactics overview](references/atlas-tactics-overview.md)
+- [Ml attack surface guide](references/ml-attack-surface-guide.md)
+- [Ml threat model](references/ml-threat-model.md)
+- [Ml defense controls](references/ml-defense-controls.md)
+- [Ml incident response](references/ml-incident-response.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

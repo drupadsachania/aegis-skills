@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "compliance",
-  "version": "1.0.0",
-  "description": "End-to-end security compliance workflow covering scope definition, regulatory mapping, control assessment, evidence collection, and remediation roadmap. Supports SOC 2, ISO 27001:2022, PCI-DSS v4.0, HIPAA, GDPR, NIST CSF 2.0, and CIS Controls v8. Triggers for: compliance audit preparation, control gap assessment, evidence collection, regulatory mapping, or remediation planning.\n",
+  "version": "1.1.0",
+  "description": "End-to-end security compliance workflow covering scope definition, regulatory mapping, control assessment, evidence collection, and remediation roadmap. Supports SOC 2, ISO 27001:2022, PCI-DSS v4.0, HIPAA, GDPR, NIST CSF 2.0, and CIS Controls v8. Triggers for: compliance audit preparation, control gap assessment, evidence collection, regulatory mapping, or remediation planning.",
+  "family": "governance",
   "frameworks": [
     "nist-csf",
     "cis-controls",
@@ -23,41 +24,36 @@
   "phases": [
     {
       "id": "scope-definition",
-      "lazy": true,
+      "file": "references/scope-definition.md",
       "tokens": 1234
     },
     {
       "id": "standard-mapping",
-      "lazy": true,
+      "file": "references/standard-mapping.md",
       "tokens": 1654
     },
     {
       "id": "control-assessment",
-      "lazy": true,
+      "file": "references/control-assessment.md",
       "tokens": 1494
     },
     {
       "id": "evidence-collection",
-      "lazy": true,
+      "file": "references/evidence-collection.md",
       "tokens": 1319
     },
     {
       "id": "remediation-roadmap",
-      "lazy": true,
+      "file": "references/remediation-roadmap.md",
       "tokens": 1239
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 184,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/compliance",
-    "action": "https://aegis-skills.vercel.app/compliance/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/compliance/download"
-  },
   "research": {
     "feeds": [
       "nist-csf",

@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "infrastructure-security",
-  "version": "1.0.0",
-  "description": "Infrastructure security assessment workflow covering asset discovery, configuration baseline, patch management, hardening controls, and compliance validation. Use for CIS Benchmark assessments, cloud security posture reviews, or infrastructure hardening sprints.\n",
+  "version": "1.1.0",
+  "description": "Infrastructure security assessment workflow covering asset discovery, configuration baseline, patch management, hardening controls, and compliance validation. Use for CIS Benchmark assessments, cloud security posture reviews, or infrastructure hardening sprints.",
+  "family": "domain",
   "frameworks": [
     "cis-benchmarks",
     "nist-csf",
@@ -19,41 +20,36 @@
   "phases": [
     {
       "id": "asset-discovery",
-      "lazy": true,
+      "file": "references/asset-discovery.md",
       "tokens": 556
     },
     {
       "id": "configuration-baseline",
-      "lazy": true,
+      "file": "references/configuration-baseline.md",
       "tokens": 584
     },
     {
       "id": "patch-management",
-      "lazy": true,
+      "file": "references/patch-management.md",
       "tokens": 629
     },
     {
       "id": "hardening-controls",
-      "lazy": false,
+      "file": "references/hardening-controls.md",
       "tokens": 651
     },
     {
       "id": "compliance-validation",
-      "lazy": true,
+      "file": "references/compliance-validation.md",
       "tokens": 610
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 445,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/infrastructure-security",
-    "action": "https://aegis-skills.vercel.app/infrastructure-security/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/infrastructure-security/download"
-  },
   "research": {
     "feeds": [
       "nvd-cve-feed",

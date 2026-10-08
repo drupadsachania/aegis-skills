@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "security-operations",
-  "version": "1.0.0",
-  "description": "Full security operations workflow covering the complete SOC operating model — from alert triage through threat intelligence, vulnerability management, incident detection, incident response, post-incident review, metrics, and compliance reporting. Designed for SOC analysts, security engineers, and security managers running operational security programmes.\n",
+  "version": "1.1.0",
+  "description": "Full security operations workflow covering the complete SOC operating model — from alert triage through threat intelligence, vulnerability management, incident detection, incident response, post-incident review, metrics, and compliance reporting. Designed for SOC analysts, security engineers, and security managers running operational security programmes.",
+  "family": "response",
   "frameworks": [
     "mitre-attack",
     "nist-csf",
@@ -22,61 +23,56 @@
   "phases": [
     {
       "id": "alert-triage",
-      "lazy": false,
+      "file": "references/alert-triage.md",
       "tokens": 568
     },
     {
       "id": "threat-intelligence",
-      "lazy": true,
+      "file": "references/threat-intelligence.md",
       "tokens": 589
     },
     {
       "id": "vulnerability-management",
-      "lazy": true,
+      "file": "references/vulnerability-management.md",
       "tokens": 921
     },
     {
       "id": "incident-detection",
-      "lazy": true,
+      "file": "references/incident-detection.md",
       "tokens": 759
     },
     {
       "id": "incident-response",
-      "lazy": true,
+      "file": "references/incident-response.md",
       "tokens": 750
     },
     {
       "id": "post-incident-review",
-      "lazy": true,
+      "file": "references/post-incident-review.md",
       "tokens": 748
     },
     {
       "id": "security-metrics",
-      "lazy": true,
+      "file": "references/security-metrics.md",
       "tokens": 793
     },
     {
       "id": "compliance-reporting",
-      "lazy": true,
+      "file": "references/compliance-reporting.md",
       "tokens": 846
     },
     {
       "id": "detection-validation",
-      "lazy": true,
+      "file": "references/detection-validation.md",
       "tokens": 1303
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 782,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/security-operations",
-    "action": "https://aegis-skills.vercel.app/security-operations/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/security-operations/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

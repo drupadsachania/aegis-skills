@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "mitre-attack",
-  "version": "1.0.0",
-  "description": "MITRE ATT&CK threat modelling workflow. Triggers for: adversary TTP mapping, threat actor profiling, kill chain analysis, technique selection for security controls, ATT&CK Navigator usage, ICS/OT threat modelling, ATT&CK-based detection gap analysis, or any exercise requiring adversary behaviour mapping.\n",
+  "version": "1.1.0",
+  "description": "MITRE ATT&CK threat modelling workflow. Triggers for: adversary TTP mapping, threat actor profiling, kill chain analysis, technique selection for security controls, ATT&CK Navigator usage, ICS/OT threat modelling, ATT&CK-based detection gap analysis, or any exercise requiring adversary behaviour mapping.",
+  "family": "framework",
   "frameworks": [
     "mitre-attack"
   ],
@@ -16,31 +17,26 @@
   "phases": [
     {
       "id": "enterprise-matrix-overview",
-      "lazy": true,
+      "file": "references/enterprise-matrix-overview.md",
       "tokens": 412
     },
     {
       "id": "ics-matrix-overview",
-      "lazy": true,
+      "file": "references/ics-matrix-overview.md",
       "tokens": 296
     },
     {
       "id": "ttp-profiling-guide",
-      "lazy": true,
+      "file": "references/ttp-profiling-guide.md",
       "tokens": 271
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 340,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/mitre-attack",
-    "action": "https://aegis-skills.vercel.app/mitre-attack/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/mitre-attack/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack"

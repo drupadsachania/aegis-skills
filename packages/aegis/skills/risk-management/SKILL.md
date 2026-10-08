@@ -1,59 +1,27 @@
 ---
 name: risk-management
-version: 1.0.0
-description: >
+description: >-
   End-to-end information security risk management programme covering risk
   identification, qualitative and quantitative assessment (FAIR model),
   treatment selection, risk register governance, and executive risk reporting.
-  Triggers for: risk assessment, risk register design, risk appetite definition,
-  threat modelling integration, FAIR quantification, or risk reporting.
-frameworks: [nist-csf, iso-31000, fair-model]
-tags: [security, risk, grc, risk-register, risk-appetite, threat-modelling, fair]
-phases:
-  - id: risk-identification
-    ref: references/risk-identification.md
-    lazy: true
-  - id: risk-assessment
-    ref: references/risk-assessment.md
-    lazy: true
-  - id: risk-treatment
-    ref: references/risk-treatment.md
-    lazy: true
-  - id: risk-register
-    ref: references/risk-register.md
-    lazy: true
-  - id: risk-reporting
-    ref: references/risk-reporting.md
-    lazy: true
-  - id: exposure-risk-model
-    ref: references/exposure-risk-model.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [nist-csf, nvd-cve-feed]
-  red-team: false
-self-learning:
-  update-frequency: weekly
-  sources: [nist-sp-800-30, iso-31000, fair-model]
-  health-score: 1.0
-  stale-threshold-days: 60
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, hybrid, ot]
-  industry-verticals: [financial-services, healthcare, government, critical-infrastructure, energy]
-  attack-surface-tags: [risk, compliance, third-party, supply-chain, data-protection]
+  Triggers for: risk assessment, risk register design, risk appetite
+  definition, threat modelling integration, FAIR quantification, or risk
+  reporting.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "governance"
 ---
 
 # Risk Management Skill
+
+## Scope and authorization
+
+- Purpose: Identify, assess, treat and report information-security risk, including FAIR quantification.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: financial, legal or insurance advice; risk acceptance decisions stay with accountable owners.
+
 
 Threat-informed risk management methodology. Begin with risk identification
 using asset inventory and threat intelligence, then assess likelihood and
@@ -64,3 +32,15 @@ The exposure-risk-model phase adds deterministic, evidence-backed scoring for th
 `exposure-validation` lifecycle: risk assigned by explicit logic (reasoning explains it,
 never overrides it), a business-context chain to crown jewels, and risk reduction
 expressed as a proven before/after delta rather than an assertion.
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Risk identification](references/risk-identification.md)
+- [Risk assessment](references/risk-assessment.md)
+- [Risk treatment](references/risk-treatment.md)
+- [Risk register](references/risk-register.md)
+- [Risk reporting](references/risk-reporting.md)
+- [Exposure risk model](references/exposure-risk-model.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

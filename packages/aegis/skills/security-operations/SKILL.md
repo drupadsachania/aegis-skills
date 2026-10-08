@@ -1,68 +1,26 @@
 ---
 name: security-operations
-version: 1.0.0
-description: >
-  Full security operations workflow covering the complete SOC operating model — from
-  alert triage through threat intelligence, vulnerability management, incident detection,
-  incident response, post-incident review, metrics, and compliance reporting. Designed
-  for SOC analysts, security engineers, and security managers running operational
-  security programmes.
-frameworks: [mitre-attack, nist-csf, sans-incident-response, iso-27035]
-tags: [security, soc, operations, incident-response, threat-intelligence, vulnerability-management, metrics, compliance]
-phases:
-  - id: alert-triage
-    ref: references/alert-triage.md
-    lazy: false
-  - id: threat-intelligence
-    ref: references/threat-intelligence.md
-    lazy: true
-  - id: vulnerability-management
-    ref: references/vulnerability-management.md
-    lazy: true
-  - id: incident-detection
-    ref: references/incident-detection.md
-    lazy: true
-  - id: incident-response
-    ref: references/incident-response.md
-    lazy: true
-  - id: post-incident-review
-    ref: references/post-incident-review.md
-    lazy: true
-  - id: security-metrics
-    ref: references/security-metrics.md
-    lazy: true
-  - id: compliance-reporting
-    ref: references/compliance-reporting.md
-    lazy: true
-  - id: detection-validation
-    ref: references/detection-validation.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze, write]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack, nvd-cve-feed, cisa-advisories, isac-feeds]
-  red-team: true
-self-learning:
-  update-frequency: daily
-  sources: [mitre-attack-stix, nvd-cve-feed, cisa-kev, cisa-advisories, isac-feeds]
-  health-score: 1.0
-  stale-threshold-days: 30
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, hybrid, ot, remote-workforce]
-  industry-verticals: [financial-services, healthcare, government, critical-infrastructure, technology, manufacturing]
-  attack-surface-tags: [soc, detection, incident-response, threat-intelligence, vulnerability-management, compliance]
+description: >-
+  Full security operations workflow covering the complete SOC operating model
+  — from alert triage through threat intelligence, vulnerability management,
+  incident detection, incident response, post-incident review, metrics, and
+  compliance reporting. Designed for SOC analysts, security engineers, and
+  security managers running operational security programmes.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "response"
 ---
 
 # Security Operations Skill
+
+## Scope and authorization
+
+- Purpose: Run SOC operations from alert triage through incident response, metrics and compliance reporting.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: offensive actions, response actions on systems outside your authority, and disabling logging or covering tracks.
+
 
 Guide a complete SOC operating cycle from daily alert triage to compliance reporting.
 Each phase includes entry criteria, required inputs, and measurable outputs.
@@ -84,3 +42,18 @@ Phase 9 → Detection Validation      [read: references/detection-validation.md]
 ## Output Format
 
 Each phase produces structured outputs: alert disposition (Phase 1), intelligence report (Phase 2), patching plan (Phase 3), incident declaration (Phase 4), IR timeline (Phase 5), PIR action items (Phase 6), metrics dashboard (Phase 7), compliance evidence package (Phase 8).
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Alert triage](references/alert-triage.md)
+- [Threat intelligence](references/threat-intelligence.md)
+- [Vulnerability management](references/vulnerability-management.md)
+- [Incident detection](references/incident-detection.md)
+- [Incident response](references/incident-response.md)
+- [Post incident review](references/post-incident-review.md)
+- [Security metrics](references/security-metrics.md)
+- [Compliance reporting](references/compliance-reporting.md)
+- [Detection validation](references/detection-validation.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

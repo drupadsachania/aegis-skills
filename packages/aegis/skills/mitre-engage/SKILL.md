@@ -1,37 +1,26 @@
 ---
 name: mitre-engage
-version: 1.0.0
-description: >
-  MITRE Engage adversary engagement and deception planning workflow.
-  Triggers for: deception activity selection, adversary engagement planning,
-  deny/disrupt/degrade/deceive/expose strategy, mapping ATT&CK techniques
-  to deception countermeasures, honeypot type selection, or any exercise
-  requiring formal mapping of defensive deception activities to adversary TTPs.
-frameworks: [mitre-engage, mitre-attack]
-tags: [security, deception, adversary-engagement, mitre, engage-framework]
-phases:
-  - id: engage-matrix-overview
-    ref: references/engage-matrix-overview.md
-    lazy: true
-  - id: activity-planning-guide
-    ref: references/activity-planning-guide.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack, mitre-engage]
-  red-team: true
+description: >-
+  MITRE Engage adversary engagement and deception planning workflow. Triggers
+  for: deception activity selection, adversary engagement planning,
+  deny/disrupt/degrade/deceive/expose strategy, mapping ATT&CK techniques to
+  deception countermeasures, honeypot type selection, or any exercise
+  requiring formal mapping of defensive deception activities to adversary
+  TTPs.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "framework"
 ---
 
 # MITRE Engage Skill
+
+## Scope and authorization
+
+- Purpose: Plan adversary engagement and deception activities with MITRE Engage inside environments you defend.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: engagement operations on infrastructure you do not control, and hack-back or other offensive action against adversary systems.
 
 ## Purpose
 
@@ -256,3 +245,11 @@ T1568.001 T1568.002 T1568.003
 T1090.001 T1090.002 T1090.003 T1090.004
 T1036.001 T1036.002 T1036.003 T1036.004 T1036.005 T1036.006 T1036.007 T1036.008 T1036.009 T1036.010
 T1037.001 T1037.002 T1037.003 T1037.004 T1037.005
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Engage matrix overview](references/engage-matrix-overview.md)
+- [Activity planning guide](references/activity-planning-guide.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly

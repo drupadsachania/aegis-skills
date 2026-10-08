@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "threat-intel-synthesis",
-  "version": "1.0.0",
-  "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.\n",
+  "version": "1.1.0",
+  "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.",
+  "family": "intel",
   "frameworks": [
     "mitre-attack",
     "mitre-atlas",
@@ -22,46 +23,41 @@
   "phases": [
     {
       "id": "intel-ingestion",
-      "lazy": false,
+      "file": "references/intel-ingestion.md",
       "tokens": 1098
     },
     {
       "id": "attack-pattern-extraction",
-      "lazy": true,
+      "file": "references/attack-pattern-extraction.md",
       "tokens": 1380
     },
     {
       "id": "incident-reconstruction",
-      "lazy": true,
+      "file": "references/incident-reconstruction.md",
       "tokens": 1385
     },
     {
       "id": "attack-surface-coverage",
-      "lazy": true,
+      "file": "references/attack-surface-coverage.md",
       "tokens": 1486
     },
     {
       "id": "intel-to-detection",
-      "lazy": true,
+      "file": "references/intel-to-detection.md",
       "tokens": 1334
     },
     {
       "id": "continuous-learning-loop",
-      "lazy": true,
+      "file": "references/continuous-learning-loop.md",
       "tokens": 1506
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 1137,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/threat-intel-synthesis",
-    "action": "https://aegis-skills.vercel.app/threat-intel-synthesis/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/threat-intel-synthesis/download"
-  },
   "research": {
     "feeds": [
       "mitre-attack",

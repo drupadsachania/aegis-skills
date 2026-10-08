@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "security-documentation",
-  "version": "1.0.0",
-  "description": "Security documentation authoring workflow for policies, runbooks, and incident response templates. Triggers for: new security policy creation, IR runbook authoring, compliance documentation, or any exercise requiring structured security writing that meets audit and operational standards.\n",
+  "version": "1.1.0",
+  "description": "Security documentation authoring workflow for policies, runbooks, and incident response templates. Triggers for: new security policy creation, IR runbook authoring, compliance documentation, or any exercise requiring structured security writing that meets audit and operational standards.",
+  "family": "governance",
   "frameworks": [
     "iso-27001",
     "nist-csf",
@@ -19,31 +20,26 @@
   "phases": [
     {
       "id": "policy-writing",
-      "lazy": false,
+      "file": "references/policy-writing.md",
       "tokens": 738
     },
     {
       "id": "runbook-authoring",
-      "lazy": true,
+      "file": "references/runbook-authoring.md",
       "tokens": 784
     },
     {
       "id": "incident-templates",
-      "lazy": true,
+      "file": "references/incident-templates.md",
       "tokens": 874
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 209,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/security-documentation",
-    "action": "https://aegis-skills.vercel.app/security-documentation/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/security-documentation/download"
-  },
   "research": {
     "feeds": [
       "sans-policy-templates",

@@ -1,48 +1,24 @@
 ---
 name: threat-modeling
-version: 1.0.0
-description: >
-  Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers
-  for: new system design review, pre-release threat model, architectural security
-  review, or any exercise requiring a systematic attacker-perspective analysis of a
-  system's design.
-frameworks: [stride, pasta, mitre-attack]
-tags: [security, threat-modeling, architecture, stride, risk]
-phases:
-  - id: scope-definition
-    ref: references/scope-definition.md
-    lazy: false
-  - id: data-flow-diagramming
-    ref: references/data-flow-diagramming.md
-    lazy: true
-  - id: threat-enumeration
-    ref: references/threat-enumeration.md
-    lazy: true
-  - id: mitigation-mapping
-    ref: references/mitigation-mapping.md
-    lazy: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack]
-  red-team: true
-self-learning:
-  update-frequency: monthly
-  sources: [mitre-attack-stix, owasp-advisories]
-  health-score: 1.0
-  stale-threshold-days: 120
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, embedded, iot]
-  industry-verticals: [financial-services, healthcare, government, manufacturing, saas-providers]
-  attack-surface-tags: [architecture, design, data-flows, trust-boundaries, authentication]
+description: >-
+  Structured threat modelling workflow using STRIDE and PASTA methodologies.
+  Triggers for: new system design review, pre-release threat model,
+  architectural security review, or any exercise requiring a systematic
+  attacker-perspective analysis of a system's design.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "intel"
 ---
 
 # Threat Modelling Skill
+
+## Scope and authorization
+
+- Purpose: Systematically identify and mitigate design-level threats with STRIDE and PASTA.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: testing or exploiting the system being modelled; this skill produces analysis, not attacks.
 
 Produce a structured threat model for any system using STRIDE enumeration against a data flow diagram.
 
@@ -178,3 +154,12 @@ T1555 T1556 T1557 T1558 T1559 T1560 T1561 T1562 T1563 T1564 T1565 T1566 T1567
 T1568 T1569 T1570 T1571 T1572 T1573 T1574 T1578 T1580 T1583 T1584 T1585 T1586
 T1587 T1588 T1589 T1590 T1591 T1592 T1593 T1594 T1595 T1596 T1597 T1598 T1599
 T1600 T1601 T1602 T1606 T1608 T1609 T1610 T1612 T1613 T1614 T1615 T1619 T1622
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Scope definition](references/scope-definition.md)
+- [Data flow diagramming](references/data-flow-diagramming.md)
+- [Threat enumeration](references/threat-enumeration.md)
+- [Mitigation mapping](references/mitigation-mapping.md)

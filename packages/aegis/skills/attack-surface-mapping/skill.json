@@ -1,8 +1,9 @@
 {
-  "osk": "1.0",
+  "osk": "1.1",
   "name": "attack-surface-mapping",
-  "version": "1.0.0",
-  "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.\n",
+  "version": "1.1.0",
+  "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.",
+  "family": "intel",
   "frameworks": [
     "mitre-attack",
     "owasp-asvs"
@@ -18,41 +19,36 @@
   "phases": [
     {
       "id": "external-discovery",
-      "lazy": false,
+      "file": "references/external-discovery.md",
       "tokens": 676
     },
     {
       "id": "internal-enumeration",
-      "lazy": true,
+      "file": "references/internal-enumeration.md",
       "tokens": 594
     },
     {
       "id": "cloud-exposure",
-      "lazy": true,
+      "file": "references/cloud-exposure.md",
       "tokens": 762
     },
     {
       "id": "risk-prioritization",
-      "lazy": true,
+      "file": "references/risk-prioritization.md",
       "tokens": 706
     },
     {
       "id": "cve-exposure-management",
-      "lazy": true,
+      "file": "references/cve-exposure-management.md",
       "tokens": 1242
     },
     {
       "id": "live-threat-intel",
-      "lazy": true,
+      "file": "references/live-threat-intel.md",
       "tokens": 808,
       "auto": true
     }
   ],
-  "endpoints": {
-    "mcp": "mcp://aegis-skills.vercel.app/attack-surface-mapping",
-    "action": "https://aegis-skills.vercel.app/attack-surface-mapping/invoke",
-    "artifacts": "https://aegis-skills.vercel.app/attack-surface-mapping/download"
-  },
   "research": {
     "feeds": [
       "shodan-feed",

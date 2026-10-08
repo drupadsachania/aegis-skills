@@ -1,58 +1,29 @@
 ---
 name: exposure-validation
-version: 1.0.0
-description: >
-  Continuous exposure validation (CTEM) — prove which vulnerabilities are actually
-  exposed, exploitable and impactful in an authorized environment, then prove the
-  exploit window is closed after remediation. Treats vulnerability, exposure,
-  exploitability, impact, detection, remediation and verification as independent
-  evidence-backed states. Triggers for: exposure management programme design, CTEM,
-  breach and attack simulation planning, validating scanner findings, KEV rapid
-  response, attack-path impact analysis, remediation verification, retesting, or
-  proving risk reduction to leadership.
-frameworks: [mitre-attack, ssvc, nist-800-115, ctem]
-tags: [security, exposure-management, ctem, validation, retest, remediation-verification, attack-paths, kev, bas]
-phases:
-  - id: exposure-state-model
-    ref: references/exposure-state-model.md
-    lazy: false
-  - id: validation-authorization-and-scope
-    ref: references/validation-authorization-and-scope.md
-    lazy: false
-  - id: impact-and-attack-paths
-    ref: references/impact-and-attack-paths.md
-    lazy: true
-  - id: evidence-and-confidence
-    ref: references/evidence-and-confidence.md
-    lazy: true
-  - id: remediation-verification
-    ref: references/remediation-verification.md
-    lazy: true
-  - id: rapid-exposure-response
-    ref: references/rapid-exposure-response.md
-    lazy: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [cisa-kev, nvd-cve-feed, epss, cybersec-news-digest]
-  red-team: false
-self-learning:
-  update-frequency: weekly
-  sources: [cisa-kev, nvd-cve-feed, epss, attack-breakdowns]
-  health-score: 1.0
-  stale-threshold-days: 45
-  coverage-gaps: []
-context:
-  environments: [enterprise, cloud, hybrid, saas, ot, endpoint]
-  industry-verticals: [financial-services, healthcare, technology, government, critical-infrastructure, retail]
-  attack-surface-tags: [exposure-management, vulnerability-validation, attack-paths, remediation, kev, external-exposure]
+description: >-
+  Continuous exposure validation (CTEM) — prove which vulnerabilities are
+  actually exposed, exploitable and impactful in an authorized environment,
+  then prove the exploit window is closed after remediation. Treats
+  vulnerability, exposure, exploitability, impact, detection, remediation and
+  verification as independent evidence-backed states. Triggers for: exposure
+  management programme design, CTEM, breach and attack simulation planning,
+  validating scanner findings, KEV rapid response, attack-path impact
+  analysis, remediation verification, retesting, or proving risk reduction to
+  leadership.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "intel"
 ---
 
 # Exposure Validation Skill
+
+## Scope and authorization
+
+- Purpose: Prove which exposures are real, exploitable and closed, using the least invasive test under recorded approval.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: any test without written authorization, explicit scope and named-human approval, and persistence, credential theft or lateral movement beyond what the test requires.
 
 A scanner finding is a hypothesis. This skill turns hypotheses into evidence: whether
 the vulnerability actually applies, whether it is reachable, whether it can be
@@ -136,3 +107,14 @@ For every exposure case, produce:
 | Remediation & verification | Action taken, retest result, risk before → after |
 | Evidence | References with provenance and confidence |
 | Plain-language answer | Why exposed · why it matters · what proves it · what closed it |
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Exposure state model](references/exposure-state-model.md)
+- [Validation authorization and scope](references/validation-authorization-and-scope.md)
+- [Impact and attack paths](references/impact-and-attack-paths.md)
+- [Evidence and confidence](references/evidence-and-confidence.md)
+- [Remediation verification](references/remediation-verification.md)
+- [Rapid exposure response](references/rapid-exposure-response.md)

@@ -1,54 +1,25 @@
 ---
 name: endpoint-security
-version: 1.0.0
-description: >
-  Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis,
-  and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening
-  review, malware triage, or endpoint-related incident investigation.
-frameworks: [mitre-attack, cis-benchmarks]
-tags: [security, endpoint, edr, hardening, malware, incident-response]
-phases:
-  - id: edr-deployment
-    ref: references/edr-deployment.md
-    lazy: true
-  - id: baseline-hardening
-    ref: references/baseline-hardening.md
-    lazy: false
-  - id: malware-analysis
-    ref: references/malware-analysis.md
-    lazy: true
-  - id: incident-response
-    ref: references/incident-response.md
-    lazy: true
-  - id: control-effectiveness-validation
-    ref: references/control-effectiveness-validation.md
-    lazy: true
-  - id: live-threat-intel
-    ref: references/live-threat-intel.md
-    lazy: true
-    auto: true
-tools: [read, search, analyze]
-platforms:
-  openai:    { model: gpt-4o, tools: true }
-  gemini:    { model: gemini-2.0-pro }
-  anthropic: { model: claude-sonnet-4-6 }
-  mistral:   { model: mistral-large }
-research-agent:
-  feeds: [mitre-attack, nvd-cve-feed]
-  red-team: true
-self-learning:
-  update-frequency: weekly
-  sources: [mitre-attack-stix, nvd-cve-feed, cisa-kev]
-  health-score: 1.0
-  stale-threshold-days: 60
-  coverage-gaps: []
-context:
-  environments: [enterprise, remote-workforce, cloud-workstations]
-  industry-verticals: [financial-services, healthcare, government, professional-services]
-  attack-surface-tags: [endpoint, workstation, malware, credential-theft, execution]
+description: >-
+  Endpoint security workflow covering EDR deployment, baseline hardening,
+  malware analysis, and endpoint incident response. Triggers for: EDR gap
+  assessment, workstation hardening review, malware triage, or
+  endpoint-related incident investigation.
+license: Apache-2.0 OR MIT
+metadata:
+  version: "1.1.0"
+  osk: "1.1"
+  family: "domain"
 ---
 
 # Endpoint Security Skill
+
+## Scope and authorization
+
+- Purpose: Harden, monitor and respond on endpoints you manage, and validate that EDR controls actually work.
+- Use only on systems you own or are explicitly authorized to assess.
+- Out of scope: disabling or evading security tooling on systems you do not administer, and building malware.
+
 
 Secure endpoints against malware, credential theft, and execution-based attacks.
 Covers EDR coverage assessment, OS hardening, malware triage workflow, and
@@ -71,3 +42,14 @@ skill. Deployment status (Phase 1) and tested effectiveness (Phase 5) are differ
 ## Output Format
 
 Produce an EDR coverage heatmap against ATT&CK tactics, a hardening gap table, and an incident timeline.
+
+## Phases
+
+Load each phase only when the workflow reaches it:
+
+- [Edr deployment](references/edr-deployment.md)
+- [Baseline hardening](references/baseline-hardening.md)
+- [Malware analysis](references/malware-analysis.md)
+- [Incident response](references/incident-response.md)
+- [Control effectiveness validation](references/control-effectiveness-validation.md)
+- [Live threat intel](references/live-threat-intel.md) — auto-updated weekly
