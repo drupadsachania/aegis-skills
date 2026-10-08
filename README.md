@@ -8,15 +8,15 @@ Two subsystems, one deployment:
 
 | | Aegis | Themis |
 |---|---|---|
-| **What** | Skill compiler + marketplace + MCP server | LangGraph orchestrator |
-| **Does** | Write once → deploy to any AI platform | Fan-out parallel threat analysis |
-| **Format** | SKILL.md → system prompt / ChatGPT Action / MCP | POST request → structured findings report |
+| **What** | Skill pack + installer + MCP server | LangGraph orchestrator |
+| **Does** | Install natively into your AI tools, or serve over MCP | Fan-out parallel threat analysis |
+| **Format** | Agent Skills (SKILL.md) → native install / MCP / single-file prompt | POST request → structured findings report |
 
 ---
 
 ## Aegis
 
-Author defensive security skills in a single `SKILL.md` file. Aegis compiles it to every platform format — one source, deployed everywhere — and serves the whole library over the Model Context Protocol.
+Defensive security skills in the open Agent Skills format. One source installs natively into coding assistants, is served over the Model Context Protocol, and flattens into a single-file prompt.
 
 ### Skill library — 24 skills across 5 families
 
@@ -33,33 +33,31 @@ Each skill is a workflow of phases (methodology references) plus a weekly auto-r
 ### Quick start
 
 ```bash
-# Install the CLI
-npm install -g @aegis-skills/core
+# Install the skills into your tool's native skills folder and register the MCP server
+npx aegis-skills install --platform claude      # codex | gemini | cursor | vscode | antigravity | all
+npx aegis-skills install --platform claude --project   # this project only
 
-# Detect your tools and wire the skills in
-aegis init
-
-# Serve the whole library to Claude / Cursor over MCP (see MCP section below)
-aegis mcp
+# Serve the whole library over MCP on stdio
+npx aegis-skills mcp
 ```
+
+Claude Code plugin: `/plugin marketplace add drupadsachania/aegis-skills`, then `/plugin install aegis@aegis-skills`.
 
 ### CLI commands
 
 | Command | What it does |
 |---|---|
-| `aegis init` | Detect installed AI tools and inject skill manifests + system prompts |
-| `aegis list` | Show installed skills and their status per tool |
-| `aegis compile [skill]` | Rebuild artifacts from SKILL.md (system prompt, MCP manifest, OpenAI action) |
-| `aegis intel-sync` | Ingest a threat-intel corpus and route it into the skills it affects |
-| `aegis mcp` | Serve the skill library over MCP on stdio for MCP clients |
+| `aegis install [--platform <id>] [--project]` | Copy the skills into each tool's native folder and register the MCP server (config files are backed up first). `init` is an alias |
+| `aegis uninstall [--platform <id>] [--project]` | Remove only what Aegis installed; edited files are kept as `.bak` |
+| `aegis update` | Re-sync every recorded install with the installed version |
+| `aegis list [--json]` | Bundled skills and recorded installs |
+| `aegis mcp` | Serve the skill library over MCP on stdio |
 
-### Deploying a skill
+Installed skills refresh automatically after an upgrade; set `AEGIS_NO_AUTO_REFRESH=1` to turn that off.
 
-After compilation, three artifacts are generated in `packages/aegis/skills/<name>/artifacts/`:
+### Using a skill without installing
 
-- `system-prompt.txt` — paste into Claude Projects, Gemini Gems, or any chat UI
-- `openai-action.json` — import into ChatGPT GPT Builder → Add Action
-- `mcp-manifest.json` — the legacy static descriptor (prefer the live MCP server below for Claude Desktop / Cursor)
+Every skill is also available as a single-file prompt (all phases flattened, stamped "Intel as of <date>") on [aegis-skills.vercel.app](https://aegis-skills.vercel.app/). Build them locally with `npm run build:prompts` (written to `dist/prompts/`, not committed).
 
 ---
 

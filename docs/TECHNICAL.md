@@ -30,61 +30,46 @@ Both subsystems are deployed as a single Next.js application. Aegis pages are st
 
 ---
 
-## 2. Aegis — Skill Compiler
+## 2. Aegis — Skill Pack
 
-### 2.1 Skill format
+### 2.1 Skill format (osk 1.1)
 
-Each skill lives in `skills/<name>/` and follows this structure:
+Each skill lives in `packages/aegis/skills/<name>/`:
 
 ```
-skills/
-  mitre-attack/
-    SKILL.md           # Canonical source — phases + metadata
-    skill.json         # Compiled manifest
-    artifacts/
-      system-prompt.txt    # Compiled system prompt
-      openai-action.json   # ChatGPT Action schema
-      mcp-manifest.json    # MCP server manifest
+packages/aegis/skills/mitre-attack/
+  SKILL.md          # Agent Skills frontmatter + instructions; links every phase
+  skill.json        # sidecar: osk, version, family, frameworks, tags, phases, research, self-learning, context
+  intel-state.json  # machine-written by scripts/intel-sync.js (not installed)
+  references/*.md   # one file per phase, loaded on demand
 ```
 
-### 2.2 SKILL.md schema
+### 2.2 SKILL.md frontmatter
 
-```markdown
+```yaml
 ---
-name: mitre-attack
-version: 1.0.0
-description: "Adversary TTP mapping using MITRE ATT&CK"
-tags: [network, endpoint, lateral-movement]
-frameworks: [mitre-attack]
-context:
-  environments: [enterprise, cloud]
-  attackSurfaceTags: [network, endpoint]
+name: mitre-attack            # == folder; a-z, 0-9, single hyphens; ≤ 64
+description: >-               # ≤ 1024 chars: what it does and when to use it
+  ...
+license: Apache-2.0 OR MIT
+metadata:                     # string → string only
+  version: "1.1.0"
+  osk: "1.1"
+  family: "framework"
 ---
-
-## Phase: reconnaissance
-
-Phase content here — this becomes a context window in the system prompt.
-
-## Phase: mapping
-
-...
 ```
 
-### 2.3 Compilation
+The body starts with a `## Scope and authorization` section and links each phase as `[Title](references/<file>.md)`.
 
-```bash
-# Compile a single skill
-aegis compile skills/mitre-attack --base-url https://your-deployment.vercel.app
+### 2.3 Tooling
 
-# Compile all skills
-aegis compile skills/* --base-url https://your-deployment.vercel.app
-```
-
-The compiler (`bin/aegis.js`) runs three adapters in sequence:
-
-1. **System prompt adapter** (`lib/adapters/system-prompt.js`) — concatenates phase content with role preamble
-2. **OpenAI action adapter** (`lib/adapters/openai-action.js`) — generates ChatGPT Actions JSON schema
-3. **MCP manifest adapter** (`lib/adapters/mcp-manifest.js`) — generates MCP server manifest
+| Command | Purpose |
+|---|---|
+| `npm run lint:skills` | Spec, links, token budgets, scope section |
+| `npm run skills:tokens` | Recompute phase token counts in skill.json |
+| `npm run build:prompts` | Flattened single-file prompts in `dist/prompts/` |
+| `npm run check:deps` | aegis-skills may only depend on the MCP SDK, zod and gray-matter |
+| `npm run atlas:check` | MITRE ATLAS ids and names against the official data |
 
 ### 2.4 Health scoring
 
@@ -434,10 +419,9 @@ At least one LLM provider key is required. If multiple are set, Themis uses the 
 
 ### 8.1 Adding a new skill
 
-1. Create `skills/<name>/SKILL.md` following the format in §2.2
-2. Run `aegis compile skills/<name> --base-url https://...`
-3. Verify `skills/<name>/skill.json` and `artifacts/` were generated
-4. Run `npm run build` — the new skill appears in the marketplace automatically
+1. Create `packages/aegis/skills/<name>/` with `SKILL.md`, `skill.json` and `references/*.md` following the format in §2.1–2.2
+2. Run `npm run skills:tokens` and `npm run lint:skills`
+3. Run `npm run build` — the new skill appears in the marketplace automatically
 
 ### 8.2 Adding a new Themis node
 
