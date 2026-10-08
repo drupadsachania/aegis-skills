@@ -18,7 +18,7 @@ const problems = []
 const MUST_EXIST = [
   'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
   'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md', 'README.md',
-  '.github/workflows/skill-health.yml',
+  '.github/workflows/skill-health.yml', '.claude-plugin/marketplace.json',
   'scripts/intel-sync.js', 'scripts/intel-routing.js', 'scripts/skill-health.js',
   'scripts/lint-skills.js', 'scripts/migrate-skill-frontmatter.js', 'scripts/build-flat-prompts.js', 'scripts/sync-skill-tokens.js',
   'packages/aegis/package.json', 'packages/aegis/health.json', 'packages/aegis/skills',
@@ -39,7 +39,7 @@ const MUST_NOT_EXIST = [
   'tailwind.config.js', 'jest.setup.js', 'next-env.d.ts', 'run-supply-chain-fix.js', '.npmignore', 'tsconfig.tsbuildinfo'
 ]
 const TRACKED_TOP = new Set([
-  '.claude', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
+  '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
   'README.md', 'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
   'apps', 'packages', 'scripts', 'docs'
 ])
