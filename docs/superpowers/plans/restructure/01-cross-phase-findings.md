@@ -1,0 +1,68 @@
+# Cross-phase findings (from plan writers)
+
+Requirements discovered while writing individual phase plans that change OTHER phases. Before the plans go to executors, each item is folded into the affected phase plan or into `00-contracts.md`. Status per item: `open` → `folded` (with the plan and section it landed in).
+
+## From Phase 0
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 0.1 | TypeScript 5.2+ rejects `module: commonjs` + `moduleResolution: node16`. Use `tsconfig.base.json` with `module: node16`, `moduleResolution: node16`, `types: ["node"]` (emits CJS without `"type":"module"`). | contracts §4, Phases 2/3/4 | open (sent to 2 and 4) |
+| 0.2 | "Every commit builds" conflicts with "moves committed separately". Move commits may be non-building; PRs merge with a merge commit (never squash). | contracts §3/§8 | open |
+| 0.3 | Next 14: output-file-tracing keys live under `experimental`. The top-level `serverExternalPackages` is ignored on Next 14. | Phase 5 | open |
+| 0.4 | `scripts/` stays at the repo root. `health.json` and `.intel-sync-state.json` move to `packages/aegis/`. The site resolves skills via `apps/web/lib/aegis-paths.js` (override `AEGIS_PACKAGE_DIR`). `scripts/check-layout.js` is the layout guard each phase updates. | all | open |
+| 0.5 | Intel sync is a local Claude scheduled task (Saturdays), not CI. `.intel-sync-state.json` is gitignored. `exposure-validation` and `threat-modeling` have no `intel-state.json`. | contracts §2, Phase 7 | open |
+| 0.6 | Copyright holder mismatch: LICENSE says "Kairo Foundation", README says "Drupad Sachania". | USER decision | open |
+
+## From Phase 5
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 5.1 | The website consumes these from Phase 1: `aegis-skills/mcp/{server,skill-reader,skill-families}` and `aegis-skills/package.json` subpath exports; `scripts/build-flat-prompts.js` exporting `flattenSkill(absDir)`; marketplace name `aegis-skills`; installer target ids `claude, codex, gemini, cursor, vscode, antigravity`; skill.json `context` preserved for `/api/recommend`. | Phase 1 | open (sent to 1) |
+| 5.2 | Vercel needs Root Directory `apps/web`, include files outside root, and Node ≥ 22 (`zlib.crc32`). | USER ACTION | open |
+
+## From Phase 6 research (Phase 6 plan not yet written)
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 6.1 | The Anthropic plugin directory rejects `npx` packages without an exact version: `npx aegis-skills@^1` is not acceptable. Pin exact versions in submitted manifests (bumped by Phase 7's version script). | Phases 1, 3, 7; contracts §6 | open |
+| 6.2 | Themis's own MCP server must be an exact-pinned `npx` of the published package, so the Themis plugin listing waits for the Phase 7 npm publish. | Phases 3, 6, 7 | open |
+| 6.3 | Aegis's submitted `.mcp.json` should point at the hosted HTTPS MCP (`https://aegis-skills.vercel.app/api/mcp`); the local stdio adapter stays available through `aegis install`. | Phase 1 | open |
+| 6.4 | `mcpName` field required in the Aegis and Themis `package.json` files, plus `server.json` (description ≤ 100 chars) for the MCP Registry. | Phases 1, 3 | open |
+| 6.5 | Hosted MCP: add `annotations.title` to every tool; rate-limit while exempting Anthropic's egress range `160.79.104.0/21`; add a `/.well-known/openai-apps-challenge` route for ChatGPT domain verification. | Phase 5 | open |
+| 6.6 | Gateway untrusted-output wrapper does not escape a closing tag inside tool output (wrapper breakout → prompt injection). Escape or neutralise it, with a test. | Phase 2 | open |
+| 6.7 | ChatGPT app submission is now a ZIP plugin bundle; needs a build script. | Phases 6, 7 | open |
+| 6.8 | The Gemini gallery needs `gemini-extension.json` at the repo root or at the root of the release archive. | Phases 1, 7 | open |
+| 6.9 | `mitre-atlas` skill uses incorrect ATLAS technique IDs and keyword-stuffed text; fix as content work. | Phase 1 | open |
+| 6.10 | Directory name collision risk for "Aegis"/"Themis"; check before submission. | Phase 6 (USER) | open |
+
+## From Phase 7
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 7.1 | Phase 5's zip writer moves to `scripts/lib/zip.js`, with a shim left at the old path, so the release workflow and the website share one implementation. | Phase 5, Phase 7 | open |
+| 7.2 | The version in each skill's `SKILL.md`/`skill.json` is a per-skill version, not synced to the `aegis-skills` package version. The bump script only rewrites package-level manifests. | Phase 1 | open |
+| 7.3 | npm trusted publishing (verified 2026-10-08) needs npm 11.5.1+, Node 22.14+ and a GitHub-hosted runner. A new package name can't have a trusted publisher until it exists, so each package's first version is published with a 7-day token, followed by a validation patch within 48h, then tokens are disallowed. | USER ACTION (B6 gate) | open |
+| 7.4 | Contracts §6's `aegis-skills@^1` pin is replaced by exact pins (see 6.1). Contracts §2's "intel-sync bot" is the maintainer's local scheduled task. | contracts | open |
+| 7.5 | CI landing order: A0–A1 after Phase 0; A2–A5 after Phase 1; A6 after Phase 2; A7 after Phases 3 and 4. | all | open |
+
+## From Phase 1
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 1.1 | The Aegis CLI lives at `packages/aegis/cli/aegis.js`, NOT `bin/aegis.js` (contracts §3). Claude's docs say claude.ai and Cowork won't install a plugin whose root contains `bin/`. The npm `bin` field still maps `aegis` to the new path. | contracts §3, Phase 5 (reads CLI help from this path), Phase 7 (pack allowlist must accept `^cli/` instead of `^bin/`), Phase 0 (`bin/aegis.js` references) | open |
+| 1.2 | Gemini install from a repo subdirectory is not supported. Phase 1 offers no repo-URL install ("not offered"); it works once Phase 7's release archives exist. No repo-root manifest is added. | Phase 5 (`GEMINI_EXTENSION_INSTALL` stays null until then), Phase 7 | open |
+| 1.3 | Exact versions in all manifests are `1.1.0` rather than a placeholder token; Phase 7's bump script rewrites them. A literal placeholder would fail Phase 7's drift check. | Phase 7 | folded (matches) |
+| 1.4 | The marketplace entry carries a `version` field (Phase 7's version table needs it); `claude plugin validate` warns about it. | Phase 7 | open (accept the warning) |
+| 1.5 | Task 18 corrects the wrong MITRE ATLAS IDs against the 2026.09 data and removes keyword stuffing from four skills, so skill-health scores will drop. | USER (expect lower scores) | open |
+| 1.6 | `npm view aegis-skills` returned E404 on 2026-10-07: the name is free. VS Code user scope prints a `code --add-mcp` command instead of writing config. | contracts §3 | folded |
+
+## From Phase 4
+
+| # | Finding | Affects | Status |
+|---|---|---|---|
+| 4.1 | Checkpointer: custom `SqliteCheckpointSaver` on `node:sqlite` in `~/.themis/app.db`. The ready-made `@langchain/langgraph-checkpoint-sqlite` 1.0.4 needs `better-sqlite3`, so it is rejected. LangGraph pinned at lockfile versions (0.2.74, core 0.3.80) to keep one hoisted `@langchain/core`. | Phase 4 | folded |
+| 4.2 | Phase 4 deletes the web Themis routes and all of `apps/web/lib/themis`; site copy still mentions those endpoints until Phase 5. | Phase 5 Task 1 (already allows this) | folded |
+| 4.3 | The app owns a small no-tools prompt wrapper around core's `skillAgentUserMessage`. Moving it to core needs a new `skillAgentNoToolsUserMessage` there. | Phase 2 (optional) | open |
+| 4.4 | Approval expiry can't be implemented: `putApproval` accepts only new requests, so mode 2 never produces `expired`. After a restart, approved actions become `needs_reproposal`. | contracts §6 (`expired` status unused) | open |
+| 4.5 | Phase 2's gateway invariant test scans `apps/web/lib/themis`, which Phase 4 deletes; Phase 4 Task 10 updates that test. | Phase 2/4 | folded |
+| 4.6 | `advance()` is strictly sequential, so parallel sub-agents never call it; the `schedule` join advances each stage once. | Phase 3 (plugin must follow the same rule) | open |
