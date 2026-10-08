@@ -8,6 +8,7 @@ ML/AI systems. Use this reference during Phase 1 to map the AI attack surface.
 | ID | Tactic | What the adversary targets |
 |----|--------|---------------------------|
 | AML.TA0000 | AI Model Access | Obtain query or training access to model |
+| AML.TA0001 | AI Attack Adaptation | Adapt capabilities, methods, knowledge or objectives into attack-ready form for the target or current conditions |
 | AML.TA0002 | Reconnaissance | Gather info about target ML system |
 | AML.TA0003 | Resource Development | Acquire tools, infrastructure, training data |
 | AML.TA0004 | Initial Access | Gain foothold via ML API, supply chain, or data pipeline |
