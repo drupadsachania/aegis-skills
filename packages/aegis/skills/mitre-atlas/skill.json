@@ -1,7 +1,7 @@
 {
   "osk": "1.1",
   "name": "mitre-atlas",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "MITRE ATLAS adversarial ML/AI attack surface assessment and countermeasure planning workflow. Triggers for: AI system threat modelling, adversarial ML attack analysis, training data poisoning defence, model inversion detection, ML credential protection, AI supply chain security, designing deception for ML pipelines, or any exercise involving security of AI/ML systems.",
   "family": "framework",
   "frameworks": [
@@ -20,7 +20,7 @@
     {
       "id": "atlas-tactics-overview",
       "file": "references/atlas-tactics-overview.md",
-      "tokens": 468
+      "tokens": 500
     },
     {
       "id": "ml-attack-surface-guide",
@@ -30,17 +30,17 @@
     {
       "id": "ml-threat-model",
       "file": "references/ml-threat-model.md",
-      "tokens": 1427
+      "tokens": 1585
     },
     {
       "id": "ml-defense-controls",
       "file": "references/ml-defense-controls.md",
-      "tokens": 1478
+      "tokens": 1627
     },
     {
       "id": "ml-incident-response",
       "file": "references/ml-incident-response.md",
-      "tokens": 1651
+      "tokens": 1705
     },
     {
       "id": "live-threat-intel",

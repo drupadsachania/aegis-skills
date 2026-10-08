@@ -1,7 +1,7 @@
 {
   "osk": "1.1",
   "name": "threat-intel-synthesis",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.",
   "family": "intel",
   "frameworks": [
@@ -29,12 +29,12 @@
     {
       "id": "attack-pattern-extraction",
       "file": "references/attack-pattern-extraction.md",
-      "tokens": 1380
+      "tokens": 1366
     },
     {
       "id": "incident-reconstruction",
       "file": "references/incident-reconstruction.md",
-      "tokens": 1385
+      "tokens": 1363
     },
     {
       "id": "attack-surface-coverage",

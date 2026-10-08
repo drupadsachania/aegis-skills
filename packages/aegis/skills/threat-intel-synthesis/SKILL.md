@@ -10,7 +10,7 @@ description: >-
   gap analysis, intel-driven detection engineering, or weekly threat recap.
 license: Apache-2.0 OR MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   osk: "1.1"
   family: "intel"
 ---

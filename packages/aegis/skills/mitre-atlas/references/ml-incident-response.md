@@ -8,12 +8,12 @@ investigation, and recovery for the most common ATLAS attack scenarios.
 | Incident Type | Detection Signal | ATLAS Technique | Severity |
 |---------------|-----------------|-----------------|----------|
 | Training data poisoning confirmed | Canary sample appears in model output; accuracy degradation on clean test set | AML.T0020 | Critical |
-| Model extraction in progress | API rate anomaly; canary inference query triggered | AML.T0035 | High |
-| Model inversion attack | Repeated queries from same source; training data identified in API responses | AML.T0040 | High |
-| ML credential compromise | Honeytoken API key triggered (Vertex AI, SageMaker, Hugging Face, OpenAI) | AML.T0012 | Critical |
-| Model backdoor discovered | Model performance differs on triggered vs. non-triggered inputs | AML.T0018 | Critical |
-| Adversarial example campaign | Production model confidence drops; evasion rate increases | AML.T0031 | Medium |
-| Supply chain compromise | SBOM diff shows unexpected dependency; training pipeline compromised on linux host | AML.T0019 | Critical |
+| Model extraction in progress | API rate anomaly; canary inference query triggered | AML.T0024.002 Extract AI Model | High |
+| Model inversion attack | Repeated queries from same source; training data identified in API responses | AML.T0024.001 Invert AI Model | High |
+| ML credential compromise | Honeytoken API key triggered (Vertex AI, SageMaker, Hugging Face, OpenAI) | AML.T0012 Valid Accounts | Critical |
+| Model backdoor discovered | Model performance differs on triggered vs. non-triggered inputs | AML.T0018 Manipulate AI Model | Critical |
+| Adversarial example campaign | Production model confidence drops; evasion rate increases | AML.T0015 Evade AI Model | Medium |
+| Supply chain compromise | SBOM diff shows unexpected dependency; training pipeline compromised on linux host | AML.T0010.001 AI Supply Chain Compromise: AI Software | Critical |
 
 ## Incident Response Playbooks
 
@@ -40,7 +40,7 @@ RECOVER:
 11. Update incident report with T1565.001 (Data Manipulation) ATT&CK mapping
 ```
 
-### Playbook 2: ML Credential Compromise (AML.T0012)
+### Playbook 2: ML Credential Compromise (AML.T0012 Valid Accounts)
 
 **Trigger:** Honeytoken API key used (Vertex AI, SageMaker, Hugging Face, OpenAI), or legitimate API key appears in SIEM from unexpected IP.
 
@@ -58,7 +58,7 @@ CONTAIN (within 15 minutes):
 INVESTIGATE:
 4. Enumerate all API calls made with compromised credential — CloudTrail / audit log
 5. Check if model weights were downloaded (S3 GetObject on model bucket)
-6. Check if any training jobs were started (check for AML.T0020 follow-on)
+6. Check if any training jobs were started (check for AML.T0020 Training Data Poisoning follow-on)
 7. Determine exfiltration path (T1537 Transfer to Cloud, T1041 Exfiltration over C2)
 8. Identify initial compromise vector — git repo secret exposure, phishing, linux credential theft
 
@@ -68,7 +68,7 @@ RECOVER:
 11. Deploy new honeytoken for same platform to maintain detection coverage
 ```
 
-### Playbook 3: Model Extraction (AML.T0035)
+### Playbook 3: Model Extraction (AML.T0024.002 Extract AI Model)
 
 **Trigger:** API rate anomaly; canary inference query triggered; unusually consistent query patterns from one source.
 
@@ -90,7 +90,7 @@ RECOVER:
 10. If extraction near-complete: consider architectural changes (larger output perturbation, ensemble outputs)
 ```
 
-### Playbook 4: Model Backdoor (AML.T0018)
+### Playbook 4: Model Backdoor (AML.T0018 Manipulate AI Model)
 
 **Trigger:** Model behaves differently when trigger pattern present; abnormal behaviour on specific input categories.
 

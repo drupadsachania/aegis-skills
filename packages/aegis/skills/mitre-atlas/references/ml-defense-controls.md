@@ -9,52 +9,52 @@ system against ATLAS-mapped threats identified in Phase 3.
 
 | Control | Implementation | Threat Mitigated | Detection Mechanism |
 |---------|---------------|-----------------|---------------------|
-| Canary samples | Inject ≥50 uniquely-identifiable data points; hash all training samples | AML.T0020 Poison Training Data | Monitor model output on canary inputs post-training |
-| Data provenance tracking | Hash all training data files (SHA-256); store in apache-style access log | AML.T0019 Publish Poisoned Data | File integrity monitoring on training S3 bucket |
-| Differential privacy | Apply ε-DP (ε ≤ 1.0) via TensorFlow Privacy or PyTorch Opacus | AML.T0040 Model Inversion | Statistical audit of model outputs |
-| SBOM for training deps | Generate CycloneDX SBOM for all Python/conda packages on linux training host | AML.T0019 Supply Chain | Dep diff alert on CI pipeline |
-| Training data checksums | Verify SHA-256 checksums of all training batches before training begins | AML.T0020 | Hash mismatch alert in training orchestrator |
+| Canary samples | Inject ≥50 uniquely-identifiable data points; hash all training samples | AML.T0020 Training Data Poisoning | Monitor model output on canary inputs post-training |
+| Data provenance tracking | Hash all training data files (SHA-256); store in apache-style access log | AML.T0115.000 Publish Poisoned AI Artifacts: Datasets | File integrity monitoring on training S3 bucket |
+| Differential privacy | Apply ε-DP (ε ≤ 1.0) via TensorFlow Privacy or PyTorch Opacus | AML.T0024.001 Invert AI Model | Statistical audit of model outputs |
+| SBOM for training deps | Generate CycloneDX SBOM for all Python/conda packages on linux training host | AML.T0010.001 AI Supply Chain Compromise: AI Software | Dep diff alert on CI pipeline |
+| Training data checksums | Verify SHA-256 checksums of all training batches before training begins | AML.T0020 Training Data Poisoning | Hash mismatch alert in training orchestrator |
 
 ### 2. Model Registry Protection
 
 | Control | Implementation | Threat Mitigated |
 |---------|---------------|-----------------|
-| Signed model artifacts | GPG/openssl sign all model weights before publishing to registry | AML.T0018 Backdoor ML Model |
-| Immutable registry | Versioned, write-once model storage (S3 Object Lock / MLflow artifact locking) | AML.T0018 |
-| Registry access logging | CloudTrail / audit log on all model.download() calls in Hugging Face or MLflow | AML.T0035 Model Extraction |
-| Honeypot model version | Publish deliberately degraded model as a canary — any access to this version fires | AML.T0035 |
-| Model fingerprinting | Embed unique watermark in model outputs to detect unauthorized copies | AML.T0029 Exfiltrate ML Model |
+| Signed model artifacts | GPG/openssl sign all model weights before publishing to registry | AML.T0018 Manipulate AI Model (backdoor ML model) |
+| Immutable registry | Versioned, write-once model storage (S3 Object Lock / MLflow artifact locking) | AML.T0018 Manipulate AI Model |
+| Registry access logging | CloudTrail / audit log on all model.download() calls in Hugging Face or MLflow | AML.T0024.002 Extract AI Model |
+| Honeypot model version | Publish deliberately degraded model as a canary — any access to this version fires | AML.T0024.002 Extract AI Model |
+| Model fingerprinting | Embed unique watermark in model outputs to detect unauthorized copies | AML.T0025 Exfiltration via Cyber Means (exfiltrate ML model) |
 
 ### 3. Inference API Hardening
 
 | Control | Tool / Implementation | Threat Mitigated | ATT&CK Analogue |
 |---------|----------------------|-----------------|----------------|
-| Rate limiting | nginx rate_limit_zone + burst control; or API gateway with per-consumer quotas | AML.T0035 Model Extraction | T1499 |
-| Query logging with anomaly detection | Log all inference requests; baseline per-client query volumes; alert on deviations | AML.T0035, AML.T0040 | T1119 |
-| Output perturbation | Add calibrated noise to high-confidence outputs (reduces inversion accuracy by ≥70%) | AML.T0040 Model Inversion | T1040 |
-| canary inference queries | Register specific input strings; fire alert if received at inference endpoint | AML.T0035, AML.T0031 | T1102 |
-| TLS certificate pinning | Client certificate required for high-privilege inference; openssl client auth | AML.T0013 | T1599 |
-| Input validation | Schema validation + perturbation detection (L-inf norm check) for adversarial inputs | AML.T0043, AML.T0031 | T1203 |
+| Rate limiting | nginx rate_limit_zone + burst control; or API gateway with per-consumer quotas | AML.T0024.002 Extract AI Model | T1499 |
+| Query logging with anomaly detection | Log all inference requests; baseline per-client query volumes; alert on deviations | AML.T0024.002 Extract AI Model, AML.T0040 AI Model Inference API Access | T1119 |
+| Output perturbation | Add calibrated noise to high-confidence outputs (reduces inversion accuracy by ≥70%) | AML.T0024.001 Invert AI Model | T1040 |
+| canary inference queries | Register specific input strings; fire alert if received at inference endpoint | AML.T0024.002 Extract AI Model, AML.T0015 Evade AI Model | T1102 |
+| TLS certificate pinning | Client certificate required for high-privilege inference; openssl client auth | AML.T0040 AI Model Inference API Access | T1599 |
+| Input validation | Schema validation + perturbation detection (L-inf norm check) for adversarial inputs | AML.T0043 Craft Adversarial Data, AML.T0015 Evade AI Model | T1203 |
 
 ### 4. ML Credential Security
 
 | Control | Implementation | Threat Mitigated | ATT&CK Analogue |
 |---------|---------------|-----------------|----------------|
-| Honeytoken API keys | Create fake API keys for Vertex AI, SageMaker, Hugging Face, OpenAI; alert on any use | AML.T0012 | T1078 |
-| Short-lived credentials | Rotate ML platform API keys every 24h; use OIDC federation where possible | AML.T0012 | T1552 |
-| Vault for ML secrets | Store all Vertex AI, SageMaker, Hugging Face tokens in HashiCorp Vault on linux | AML.T0012 | T1552.001 |
-| Credential scanning | Run detect-secrets / trufflehog on all Git repos; block commits containing API keys | AML.T0012 | T1195 |
-| Least-privilege IAM | ML training role: read training bucket only; inference role: invoke model endpoint only | AML.T0012 | T1548 |
+| Honeytoken API keys | Create fake API keys for Vertex AI, SageMaker, Hugging Face, OpenAI; alert on any use | AML.T0012 Valid Accounts | T1078 |
+| Short-lived credentials | Rotate ML platform API keys every 24h; use OIDC federation where possible | AML.T0012 Valid Accounts | T1552 |
+| Vault for ML secrets | Store all Vertex AI, SageMaker, Hugging Face tokens in HashiCorp Vault on linux | AML.T0012 Valid Accounts | T1552.001 |
+| Credential scanning | Run detect-secrets / trufflehog on all Git repos; block commits containing API keys | AML.T0012 Valid Accounts | T1195 |
+| Least-privilege IAM | ML training role: read training bucket only; inference role: invoke model endpoint only | AML.T0012 Valid Accounts | T1548 |
 
 ### 5. Supply Chain Controls
 
 | Control | Implementation | ATLAS Threat | ATT&CK Analogue |
 |---------|---------------|-------------|----------------|
-| Pinned dependencies | requirements.txt with exact hashes (`pip install --require-hashes`) | AML.T0019 | T1195 |
-| Private PyPI mirror | Internal apache-served PyPI mirror; allowlist of approved packages | AML.T0019 | T1195.001 |
-| Pre-trained model verification | Verify SHA-256 hash of downloaded Hugging Face / PyTorch model before use | AML.T0002 | T1588 |
-| CI pipeline isolation | Training jobs run in ephemeral linux containers; no internet egress during training | AML.T0015 | T1562 |
-| SBOM generation + diff | CycloneDX SBOM on every training image build; alert on unexpected dep additions | AML.T0019 | T1195 |
+| Pinned dependencies | requirements.txt with exact hashes (`pip install --require-hashes`) | AML.T0010.001 AI Supply Chain Compromise: AI Software | T1195 |
+| Private PyPI mirror | Internal apache-served PyPI mirror; allowlist of approved packages | AML.T0010.001 AI Supply Chain Compromise: AI Software | T1195.001 |
+| Pre-trained model verification | Verify SHA-256 hash of downloaded Hugging Face / PyTorch model before use | AML.T0002 Acquire Public AI Artifacts | T1588 |
+| CI pipeline isolation | Training jobs run in ephemeral linux containers; no internet egress during training | AML.T0015 Evade AI Model | T1562 |
+| SBOM generation + diff | CycloneDX SBOM on every training image build; alert on unexpected dep additions | AML.T0010.001 AI Supply Chain Compromise: AI Software | T1195 |
 
 ## Control Implementation Priority
 

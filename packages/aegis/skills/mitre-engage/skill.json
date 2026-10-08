@@ -1,7 +1,7 @@
 {
   "osk": "1.1",
   "name": "mitre-engage",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "MITRE Engage adversary engagement and deception planning workflow. Triggers for: deception activity selection, adversary engagement planning, deny/disrupt/degrade/deceive/expose strategy, mapping ATT&CK techniques to deception countermeasures, honeypot type selection, or any exercise requiring formal mapping of defensive deception activities to adversary TTPs.",
   "family": "framework",
   "frameworks": [

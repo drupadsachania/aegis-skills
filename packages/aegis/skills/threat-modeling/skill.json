@@ -1,7 +1,7 @@
 {
   "osk": "1.1",
   "name": "threat-modeling",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Structured threat modelling workflow using STRIDE and PASTA methodologies. Triggers for: new system design review, pre-release threat model, architectural security review, or any exercise requiring a systematic attacker-perspective analysis of a system's design.",
   "family": "intel",
   "frameworks": [
