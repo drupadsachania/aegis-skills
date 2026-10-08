@@ -1,0 +1,15 @@
+{
+  "name": "aegis-skills",
+  "description": "Aegis defensive cybersecurity skills and Themis security-operations tooling.",
+  "owner": { "name": "Drupad Sachania", "url": "https://github.com/drupadsachania" },
+  "plugins": [
+    {
+      "name": "aegis",
+      "source": "./packages/aegis",
+      "version": "1.1.0",
+      "description": "24 defensive cybersecurity Agent Skills and the hosted read-only Aegis MCP server.",
+      "category": "security",
+      "tags": ["cybersecurity", "security", "mitre-attack", "dfir", "threat-hunting"]
+    }
+  ]
+}

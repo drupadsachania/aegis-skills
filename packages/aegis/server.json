@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.drupadsachania/aegis-skills",
+  "title": "Aegis Security Skills",
+  "description": "Read-only library of 24 defensive cybersecurity skills: ATT&CK, ATLAS, DFIR, CTEM and more.",
+  "version": "1.1.0",
+  "websiteUrl": "https://aegis-skills.vercel.app",
+  "repository": { "url": "https://github.com/drupadsachania/aegis-skills", "source": "github", "subfolder": "packages/aegis" },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "aegis-skills",
+      "version": "1.1.0",
+      "transport": { "type": "stdio" },
+      "packageArguments": [{ "type": "positional", "value": "mcp" }]
+    }
+  ],
+  "remotes": [{ "type": "streamable-http", "url": "https://aegis-skills.vercel.app/api/mcp" }]
+}
