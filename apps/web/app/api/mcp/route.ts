@@ -5,7 +5,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { createAegisMcpServer } = require('@/lib/mcp/aegis-server') as {
+const { createAegisMcpServer } = require('aegis-skills/mcp/server') as {
   createAegisMcpServer: () => {
     connect: (t: WebStandardStreamableHTTPServerTransport) => Promise<void>
     close: () => Promise<void>
@@ -30,7 +30,7 @@ function withHeaders(res: Response): Response {
 /**
  * Stateless Streamable HTTP MCP endpoint. A fresh server + transport per
  * request — no sessions, no shared state. Every tool is read-only and serves
- * only public skill content (see lib/mcp/aegis-server.js).
+ * only public skill content (see packages/aegis/mcp/server.js).
  */
 async function handle(req: Request): Promise<Response> {
   const declared = Number(req.headers.get('content-length') ?? '0')

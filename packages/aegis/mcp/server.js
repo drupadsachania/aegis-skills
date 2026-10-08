@@ -6,8 +6,8 @@
  * clients that speak MCP (Claude Desktop, Claude Code, Cursor, …).
  *
  * One factory, two transports:
- *   • `aegis mcp`      → stdio, for local clients            (lib/cli/mcp.js)
- *   • POST /api/mcp    → stateless Streamable HTTP, for remote (app/api/mcp/route.ts)
+ *   • `aegis mcp`      → stdio, for local clients            (mcp/stdio.js)
+ *   • POST /api/mcp    → stateless Streamable HTTP, for remote (apps/web/app/api/mcp/route.ts)
  *
  * Every tool is READ-ONLY and serves only public skill content that is already
  * published on the website. Nothing here writes, executes or reaches the
@@ -17,9 +17,9 @@
 
 const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js')
 const { z } = require('zod')
-const { listSkills, getSkillManifest, getPhaseContent } = require('../skill-reader')
-const { FAMILIES, familyOf, labelOf } = require('../skill-families')
-const pkg = require('../../package.json')
+const { listSkills, getSkillManifest, getPhaseContent } = require('./skill-reader')
+const { FAMILIES, familyOf, labelOf } = require('./skill-families')
+const pkg = require('../package.json')
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/
 const FAMILY_KEYS = FAMILIES.map(f => f.key)

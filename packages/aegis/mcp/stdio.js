@@ -9,9 +9,9 @@
  * stdout carries the JSON-RPC stream, so nothing in this process may write to
  * it. Diagnostics go to stderr only.
  */
-module.exports = async function mcpCmd() {
+async function runStdio () {
   const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js')
-  const { createAegisMcpServer } = require('../mcp/aegis-server')
+  const { createAegisMcpServer } = require('./server')
 
   const server = createAegisMcpServer()
   const transport = new StdioServerTransport()
@@ -31,3 +31,5 @@ module.exports = async function mcpCmd() {
     process.exit(1)
   }
 }
+
+module.exports = { runStdio }

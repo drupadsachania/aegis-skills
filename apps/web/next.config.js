@@ -13,6 +13,8 @@ const AEGIS_RUNTIME_FILES = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
+    // aegis-skills is a workspace package that reads skill files from disk at runtime.
+    serverComponentsExternalPackages: ['aegis-skills'],
     // Next 14 reads these under `experimental` only (top-level from Next 15).
     outputFileTracingRoot: path.join(__dirname, '..', '..'),
     outputFileTracingIncludes: {
