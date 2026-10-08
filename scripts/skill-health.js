@@ -5,6 +5,7 @@ const fs = require('fs').promises
 const path = require('path')
 const https = require('https')
 const { execFile } = require('child_process')
+const { flattenSkill } = require('./build-flat-prompts')
 
 // Repo-level script: paths are anchored to the repo root, not the caller's cwd.
 const REPO_ROOT = path.join(__dirname, '..')
@@ -174,7 +175,7 @@ async function newestContentAgeDays(skillDir) {
 
   const candidates = [
     path.join(skillDir, 'SKILL.md'),
-    path.join(skillDir, 'artifacts', 'system-prompt.txt')
+    path.join(skillDir, 'skill.json')
   ]
   try {
     const refs = await fs.readdir(path.join(skillDir, 'references'))
@@ -226,9 +227,8 @@ async function main() {
     try {
       const manifestPath = path.join(SKILLS_DIR, dir, 'skill.json')
       const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'))
-      const systemPromptPath = path.join(SKILLS_DIR, dir, 'artifacts', 'system-prompt.txt')
       let content = ''
-      try { content = await fs.readFile(systemPromptPath, 'utf8') } catch { /* no artifacts yet */ }
+      try { content = flattenSkill(path.join(SKILLS_DIR, dir)) } catch { /* unreadable skill */ }
       const contentAgeDays = await newestContentAgeDays(path.join(SKILLS_DIR, dir))
       skills.push({ manifest, content, dir, contentAgeDays })
     } catch {

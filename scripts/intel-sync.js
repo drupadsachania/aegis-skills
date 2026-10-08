@@ -19,6 +19,7 @@
 const fs = require('fs').promises
 const path = require('path')
 const { routeItem } = require('./intel-routing')
+const meta = require('aegis-skills/lib/skill-meta')
 
 const REPO_ROOT = path.join(__dirname, '..')
 const SKILLS_DIR = path.join(REPO_ROOT, 'packages', 'aegis', 'skills')
@@ -334,36 +335,22 @@ async function writeIntelFile(skillDir, block) {
   return true
 }
 
-// Register the auto phase in SKILL.md if absent. Marked `auto: true` so health
-// scoring excludes it from authored phase-coverage.
+// Register the auto phase in skill.json and link it from SKILL.md, if absent.
+// Marked `auto: true` so health scoring excludes it from authored phase-coverage.
 async function ensurePhase(skillDir) {
-  const p = path.join(skillDir, 'SKILL.md')
-  let text
-  try { text = await fs.readFile(p, 'utf8') } catch { return false }
-  if (text.includes('id: live-threat-intel')) return false
-
-  const lines = text.split('\n')
-  // Find the phases block and the line where it ends (next top-level key).
-  const start = lines.findIndex(l => /^phases:\s*$/.test(l))
-  if (start === -1) return false
-  let end = start + 1
-  while (end < lines.length && /^\s+/.test(lines[end]) && lines[end].trim() !== '') end++
-
-  const entry = [
-    '  - id: live-threat-intel',
-    '    ref: references/live-threat-intel.md',
-    '    lazy: true',
-    '    auto: true'
-  ]
-  lines.splice(end, 0, ...entry)
-  await fs.writeFile(p, lines.join('\n'), 'utf8')
+  const sj = meta.readSkillJson(skillDir)
+  if ((sj.phases || []).some(p => p.id === 'live-threat-intel')) return false
+  const phase = { id: 'live-threat-intel', file: 'references/live-threat-intel.md', tokens: 0, auto: true }
+  sj.phases = [...(sj.phases || []), phase]
+  meta.writeSkillJson(skillDir, sj)
+  const mdPath = path.join(skillDir, 'SKILL.md')
+  const raw = await fs.readFile(mdPath, 'utf8')
+  const next = meta.appendPhaseLinks(raw, [phase])
+  if (next !== raw) await fs.writeFile(mdPath, next, 'utf8')
   return true
 }
 
-// Write machine intel to intel-state.json — NOT skill.json. skill.json is a build
-// artifact regenerated from SKILL.md on every compile, so writing there would be
-// silently wiped by the next `aegis compile`. The compiler merges this file into
-// self-learning at build time.
+// Write machine intel to intel-state.json (kept for history) and mirror it into skill.json self-learning.
 async function updateIntelState(skillDir, gaps, runDate, stats) {
   const p = path.join(skillDir, 'intel-state.json')
   const state = {
@@ -374,6 +361,9 @@ async function updateIntelState(skillDir, gaps, runDate, stats) {
     'teardowns-routed': stats.teardowns
   }
   await fs.writeFile(p, JSON.stringify(state, null, 2) + '\n', 'utf8')
+  const sj = meta.readSkillJson(skillDir)
+  sj['self-learning'] = { ...(sj['self-learning'] || {}), ...state }
+  meta.writeSkillJson(skillDir, sj)
   return true
 }
 
@@ -431,6 +421,7 @@ async function main() {
     await updateIntelState(skillDir, gaps, runDate, {
       days: args.days, items: bundle.items.length, teardowns: bundle.breakdowns.length
     })
+    meta.syncTokens(skillDir)
     if (wrote) updated++
     summary.push(`  ${slug}: ${bundle.items.length} item(s), ${bundle.breakdowns.length} teardown(s), ${gaps.length} gap prompt(s)${wrote ? '' : ' (unchanged)'}`)
   }
@@ -447,7 +438,7 @@ async function main() {
       'skills-routed': perSkill.size,
       'skills-written': updated
     }, null, 2), 'utf8')
-    console.log(`\n✓ ${updated} skill intel block(s) written. Run \`node apps/web/bin/aegis.js compile\` to rebuild artifacts.`)
+    console.log(`\n✓ ${updated} skill intel block(s) written. Run \`npm run lint:skills\` before committing.`)
   } else {
     console.log('\n(dry run — nothing written)')
   }
