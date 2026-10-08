@@ -40,8 +40,8 @@ describe('SkillCard', () => {
     expect(screen.getByText('3 phases')).toBeInTheDocument()
   })
 
-  test('renders health score number when healthScore provided', () => {
-    renderInTable(React.createElement(SkillCard, { skill, healthScore: 92 }))
+  test('renders health score as a 0-100 number when healthScore (0-1) provided', () => {
+    renderInTable(React.createElement(SkillCard, { skill, healthScore: 0.92 }))
     expect(screen.getByText('92')).toBeInTheDocument()
   })
 

@@ -33,15 +33,16 @@ describe('CopyButton', () => {
     expect(writeSpy).toHaveBeenCalledWith('hello world')
   })
 
-  test('shows tick for 2 seconds after copy, then reverts', async () => {
+  test('shows COPIED for 2 seconds after copy, then reverts', async () => {
     render(React.createElement(CopyButton, { text: 'hello', label: 'Copy' }))
     const user = userEvent.setup({ delay: null })
     jest.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined)
     await user.click(screen.getByRole('button'))
     // Wait for state update after promise resolves
     await waitFor(() => {
-      expect(screen.getByRole('button')).toHaveTextContent('✓')
+      expect(screen.getByRole('button')).toHaveTextContent('COPIED')
     })
+    expect(screen.getByRole('button')).toHaveClass('copied')
     act(() => { jest.advanceTimersByTime(2000) })
     expect(screen.getByRole('button')).toHaveTextContent('Copy')
   })

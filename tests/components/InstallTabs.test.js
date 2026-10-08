@@ -36,17 +36,15 @@ describe('InstallTabs', () => {
     render(React.createElement(InstallTabs, PROPS))
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /^mcp$/i }))
-    const urlElements = screen.getAllByText(/project-iud7o\.vercel\.app/)
+    const urlElements = screen.getAllByText(/aegis-skills\.vercel\.app/)
     expect(urlElements.length).toBeGreaterThan(0)
   })
 
-  test('toggles between table and list view', async () => {
+  test('always shows the all-platforms table, whichever tab is active', async () => {
     render(React.createElement(InstallTabs, PROPS))
     const user = userEvent.setup()
-    // Default is table view — table header visible
     expect(screen.getByText('Platform')).toBeInTheDocument()
-    // Switch to list view
-    await user.click(screen.getByRole('button', { name: /list/i }))
-    expect(screen.queryByText('Platform')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^mcp$/i }))
+    expect(screen.getByText('Platform')).toBeInTheDocument()
   })
 })

@@ -8,25 +8,28 @@ require('@testing-library/jest-dom')
 const HealthBadge = require('../../components/HealthBadge')
 
 describe('HealthBadge', () => {
-  test('renders green badge for score >= 0.90', () => {
+  // The badge shows a status dot (first child) whose colour depends on the score tier.
+  const dotStyle = badge => badge.firstChild.getAttribute('style')
+
+  test('renders a full-strength gold dot for score >= 0.75', () => {
     render(React.createElement(HealthBadge, { score: 0.95 }))
     const badge = screen.getByText('95%')
     expect(badge).toBeInTheDocument()
-    expect(badge.className).toMatch(/green|emerald/)
+    expect(dotStyle(badge)).toMatch(/var\(--gold\)/)
   })
 
-  test('renders amber badge for score >= 0.75 and < 0.90', () => {
-    render(React.createElement(HealthBadge, { score: 0.80 }))
-    const badge = screen.getByText('80%')
-    expect(badge).toBeInTheDocument()
-    expect(badge.className).toMatch(/amber|yellow/)
-  })
-
-  test('renders red badge for score < 0.75', () => {
+  test('renders a dimmed gold dot for score >= 0.50 and < 0.75', () => {
     render(React.createElement(HealthBadge, { score: 0.60 }))
     const badge = screen.getByText('60%')
     expect(badge).toBeInTheDocument()
-    expect(badge.className).toMatch(/red/)
+    expect(dotStyle(badge)).toMatch(/rgba\(227,\s*189,\s*72,\s*0\.4\)/)
+  })
+
+  test('renders a muted dot for score < 0.50', () => {
+    render(React.createElement(HealthBadge, { score: 0.30 }))
+    const badge = screen.getByText('30%')
+    expect(badge).toBeInTheDocument()
+    expect(dotStyle(badge)).toMatch(/var\(--muted\)/)
   })
 
   test('renders nothing when score is undefined', () => {
