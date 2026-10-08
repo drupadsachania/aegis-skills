@@ -15,6 +15,6 @@
     "url": "https://github.com/drupadsachania/aegis-skills/issues"
   },
   "engines": {
-    "node": ">=22.13"
+    "node": ">=24"
   }
 }

@@ -70,7 +70,7 @@ for (const [file, name] of PACKAGES) {
   try { j = JSON.parse(fs.readFileSync(at(file), 'utf8')) } catch (e) { problems.push(`unreadable: ${file}`); continue }
   if (j.name !== name) problems.push(`${file}: name should be ${name}, is ${j.name}`)
   if (j.license !== '(Apache-2.0 OR MIT)') problems.push(`${file}: license should be (Apache-2.0 OR MIT)`)
-  if (!j.engines || j.engines.node !== '>=22.13') problems.push(`${file}: engines.node should be >=22.13`)
+  if (!j.engines || j.engines.node !== '>=24') problems.push(`${file}: engines.node should be >=24`)
   if (file === 'package.json') {
     if (j.private !== true) problems.push('root package.json must be private')
     if (JSON.stringify(j.workspaces) !== JSON.stringify(['packages/*', 'apps/*'])) problems.push('root workspaces must be ["packages/*","apps/*"]')
