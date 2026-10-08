@@ -1,147 +1,119 @@
 'use strict'
 
-const fs = require('fs').promises
+/**
+ * Aegis skill reader (osk 1.1).
+ *
+ * Phases are resolved from skill.json (`file`). Everything returned by
+ * listSkills/getSkillManifest is path-free, because it is served over HTTP and
+ * MCP; only getPhaseRef exposes a ref, for in-process callers. All lookups
+ * validate names and keep file access inside the skill's own folder.
+ */
+
+const fs = require('fs')
+const fsp = fs.promises
 const path = require('path')
-const matter = require('gray-matter')
+const { PHASE_FILE } = require('../lib/skill-meta')
 
-const { skillsDir, healthFile } = require('./aegis-paths')
-
-const SKILLS_DIR = skillsDir()
-
-// Allow-list: lowercase/uppercase letters, digits, hyphens, underscores, dots. 1-64 chars.
-// Blocks: ..  /  \  null bytes  spaces  and anything path-traversal-shaped
+// Letters, digits, dot, underscore, hyphen; 1-64 chars. Blocks traversal shapes.
 const SAFE_NAME = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/
+let cachedDir = null
 
-async function listSkills () {
-  // Load health.json once — provides per-skill health scores
-  let healthScores = {}
-  try {
-    const healthPath = healthFile()
-    const raw = await fs.readFile(healthPath, 'utf8')
-    const health = JSON.parse(raw)
-    for (const [name, data] of Object.entries(health.skills || {})) {
-      healthScores[name] = typeof data['health-score'] === 'number' ? data['health-score'] : undefined
-    }
-  } catch {
-    // health.json absent or invalid — degrade gracefully, no scores shown
+function isDir (p) {
+  try { return fs.statSync(p).isDirectory() } catch { return false }
+}
+
+function getSkillsDir () {
+  if (process.env.AEGIS_SKILLS_DIR) return path.resolve(process.env.AEGIS_SKILLS_DIR)
+  // Same override as apps/web/lib/aegis-paths.js (Phase 0).
+  if (process.env.AEGIS_PACKAGE_DIR) return path.resolve(process.env.AEGIS_PACKAGE_DIR, 'skills')
+  if (cachedDir) return cachedDir
+  const candidates = [path.join(__dirname, '..', 'skills')]
+  let cur = process.cwd()
+  for (let i = 0; i < 6; i++) {
+    candidates.push(path.join(cur, 'packages', 'aegis', 'skills'), path.join(cur, 'node_modules', 'aegis-skills', 'skills'))
+    const up = path.dirname(cur)
+    if (up === cur) break
+    cur = up
   }
+  cachedDir = path.resolve(candidates.find(isDir) || candidates[0])
+  return cachedDir
+}
 
-  let entries
+async function readRawManifest (skillName) {
+  if (typeof skillName !== 'string' || !SAFE_NAME.test(skillName)) return null
+  const root = getSkillsDir()
+  const file = path.resolve(root, skillName, 'skill.json')
+  if (!file.startsWith(root + path.sep)) return null
   try {
-    entries = await fs.readdir(SKILLS_DIR, { withFileTypes: true })
+    const v = JSON.parse(await fsp.readFile(file, 'utf8'))
+    return v && typeof v === 'object' && !Array.isArray(v) ? v : null
   } catch {
-    return []
+    return null
   }
+}
 
-  const results = await Promise.all(
-    entries
-      .filter(e => e.isDirectory())
-      .map(async e => {
-        const manifest = await getSkillManifest(e.name)
-        if (!manifest) return null
-        const allPhases = manifest.phases || []
-        return {
-          name: manifest.name,
-          version: manifest.version,
-          description: manifest.description,
-          frameworks: manifest.frameworks || [],
-          tags: manifest.tags || [],
-          phases: allPhases.length,
-          // Authored phases exclude machine-generated intel feeds (auto: true), so
-          // the count shown to users reflects hand-written depth, not a live feed.
-          authoredPhases: allPhases.filter(p => !p.auto).length,
-          live: allPhases.some(p => p.auto),
-          context: manifest.context || null,
-          healthScore: healthScores[manifest.name] ?? null
-        }
-      })
+function toPublic (raw) {
+  const out = { ...raw }
+  delete out.endpoints
+  out.phases = (Array.isArray(raw.phases) ? raw.phases : []).map(p =>
+    p.auto ? { id: p.id, tokens: p.tokens, auto: true } : { id: p.id, tokens: p.tokens }
   )
-
-  return results.filter(Boolean)
+  return out
 }
 
 async function getSkillManifest (skillName) {
-  // C1 fix: allow-list + containment check
-  if (typeof skillName !== 'string' || !SAFE_NAME.test(skillName)) return null
-
-  const skillsRoot = path.resolve(SKILLS_DIR)
-  const manifestPath = path.resolve(SKILLS_DIR, skillName, 'skill.json')
-
-  // Defense in depth: resolved path must stay inside SKILLS_DIR
-  if (!manifestPath.startsWith(skillsRoot + path.sep)) return null
-
-  try {
-    const raw = await fs.readFile(manifestPath, 'utf8')
-    return JSON.parse(raw)
-  } catch {
-    return null
-  }
+  const raw = await readRawManifest(skillName)
+  return raw ? toPublic(raw) : null
 }
 
-// Resolve a phase's file ref from the source SKILL.md frontmatter.
-// The compiled skill.json is deliberately path-free (see tests/manifest.test.js),
-// so the ref lives only in the source. Returns null on any validation failure.
+async function listSkills () {
+  let entries
+  try { entries = await fsp.readdir(getSkillsDir(), { withFileTypes: true }) } catch { return [] }
+  const rows = await Promise.all(entries.filter(e => e.isDirectory()).map(async e => {
+    const m = await getSkillManifest(e.name)
+    if (!m) return null
+    return {
+      name: m.name,
+      version: m.version,
+      description: m.description,
+      frameworks: m.frameworks || [],
+      tags: m.tags || [],
+      phases: m.phases.length,
+      // Authored phases exclude machine-generated intel feeds (auto: true).
+      authoredPhases: m.phases.filter(p => !p.auto).length,
+      live: m.phases.some(p => p.auto),
+      context: m.context || null,
+      healthScore: null
+    }
+  }))
+  return rows.filter(Boolean).sort((a, b) => a.name.localeCompare(b.name))
+}
+
 async function getPhaseRef (skillName, phaseId) {
-  if (typeof skillName !== 'string' || !SAFE_NAME.test(skillName)) return null
   if (typeof phaseId !== 'string' || phaseId.length === 0 || phaseId.length > 80) return null
-
-  const skillsRoot = path.resolve(SKILLS_DIR)
-  const skillMdPath = path.resolve(SKILLS_DIR, skillName, 'SKILL.md')
-  // Defense in depth: resolved path must stay inside SKILLS_DIR
-  if (!skillMdPath.startsWith(skillsRoot + path.sep)) return null
-
-  let frontmatter
-  try {
-    const raw = await fs.readFile(skillMdPath, 'utf8')
-    // Lock to js-yaml; the eval-based javascript engine stays disabled.
-    frontmatter = matter(raw, {
-      engines: { javascript: () => { throw new Error('javascript front-matter engine is disabled') } }
-    }).data
-  } catch {
-    return null
-  }
-
-  const phases = Array.isArray(frontmatter && frontmatter.phases) ? frontmatter.phases : []
-  const phase = phases.find(p => p && p.id === phaseId)
-  if (!phase || typeof phase.ref !== 'string') return null
-  return phase.ref
+  const raw = await readRawManifest(skillName)
+  if (!raw || !Array.isArray(raw.phases)) return null
+  const phase = raw.phases.find(p => p && p.id === phaseId)
+  if (!phase || typeof phase.file !== 'string' || !PHASE_FILE.test(phase.file)) return null
+  return phase.file
 }
 
 async function getPhaseContent (skillName, phaseId) {
-  // skillName is validated inside getSkillManifest; the manifest confirms the
-  // phase id is real, then the ref is resolved from the source SKILL.md.
-  const manifest = await getSkillManifest(skillName)
-  if (!manifest) return null
-
-  if (typeof phaseId !== 'string') return null
-  const known = Array.isArray(manifest.phases) && manifest.phases.some(p => p.id === phaseId)
-  if (!known) return null
-
   const ref = await getPhaseRef(skillName, phaseId)
-  if (typeof ref !== 'string') return null
-  const phase = { ref }
-
-  // C2 fix: resolve ref relative to the skill's own directory and check containment
-  const skillRoot = path.resolve(SKILLS_DIR, skillName)
-  const refPath = path.resolve(skillRoot, phase.ref)
-
-  // Must stay within the specific skill's directory
+  if (!ref) return null
+  const skillRoot = path.resolve(getSkillsDir(), skillName)
+  const refPath = path.resolve(skillRoot, ref)
   if (!refPath.startsWith(skillRoot + path.sep)) return null
-
-  // Resolve symlinks and re-check containment to block symlink escapes
-  let realRef
+  let real, realRoot
   try {
-    realRef = await fs.realpath(refPath)
+    real = await fsp.realpath(refPath)
+    realRoot = await fsp.realpath(skillRoot)
   } catch {
     return null
   }
-  if (!realRef.startsWith(skillRoot + path.sep)) return null
-
-  try {
-    return await fs.readFile(realRef, 'utf8')
-  } catch {
-    return null
-  }
+  // Re-check after resolving symlinks so a link cannot escape the skill folder.
+  if (!real.startsWith(realRoot + path.sep)) return null
+  try { return await fsp.readFile(real, 'utf8') } catch { return null }
 }
 
-module.exports = { listSkills, getSkillManifest, getPhaseContent }
+module.exports = { listSkills, getSkillManifest, getPhaseContent, getPhaseRef, getSkillsDir }

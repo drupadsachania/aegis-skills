@@ -1,181 +1,110 @@
 'use strict'
 
-jest.mock('fs', () => ({
-  promises: {
-    readdir: jest.fn(),
-    readFile: jest.fn(),
-    realpath: jest.fn()
-  }
-}))
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 
-const fs = require('fs').promises
-const { listSkills, getSkillManifest, getPhaseContent } = require('../lib/skill-reader')
+const ROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'aegis-reader-'))
+process.env.AEGIS_SKILLS_DIR = ROOT
+const reader = require('../mcp/skill-reader')
 
-const MOCK_MANIFEST = {
-  osk: '1.0',
-  name: 'test-skill',
-  version: '1.0.0',
-  description: 'A test skill for unit testing.',
-  frameworks: ['mitre-attack'],
-  tags: ['test'],
-  phases: [
-    { id: 'phase-one', lazy: true, tokens: 100, ref: 'references/phase-one.md' }
-  ],
-  endpoints: {
-    mcp: 'mcp://skills.openskill.ai/test-skill',
-    action: 'https://skills.openskill.ai/test-skill/invoke',
-    artifacts: 'https://skills.openskill.ai/test-skill/download'
-  }
+function addSkill (name, phases, files) {
+  const dir = path.join(ROOT, name)
+  fs.mkdirSync(path.join(dir, 'references'), { recursive: true })
+  for (const [f, c] of Object.entries(files)) fs.writeFileSync(path.join(dir, f), c)
+  fs.writeFileSync(path.join(dir, 'skill.json'), JSON.stringify({
+    osk: '1.1',
+    name,
+    version: '1.1.0',
+    description: 'A test skill.',
+    frameworks: ['mitre-attack'],
+    tags: ['t'],
+    context: { environments: ['cloud'] },
+    endpoints: { action: 'https://example.invalid' },
+    phases
+  }))
 }
 
+beforeAll(() => {
+  addSkill('alpha', [
+    { id: 'one', file: 'references/one.md', tokens: 2 },
+    { id: 'live-threat-intel', file: 'references/live-threat-intel.md', tokens: 2, auto: true }
+  ], { 'references/one.md': '# One', 'references/live-threat-intel.md': 'intel' })
+  addSkill('evil', [
+    { id: 'up', file: '../alpha/references/one.md', tokens: 1 },
+    { id: 'abs', file: '/etc/passwd', tokens: 1 },
+    { id: 'gone', file: 'references/gone.md', tokens: 1 }
+  ], {})
+  fs.writeFileSync(path.join(ROOT, 'README.md'), 'not a skill')
+})
+
+afterAll(() => { delete process.env.AEGIS_SKILLS_DIR })
+
+describe('getSkillsDir', () => {
+  test('honours AEGIS_SKILLS_DIR', () => {
+    expect(reader.getSkillsDir()).toBe(path.resolve(ROOT))
+  })
+})
+
 describe('listSkills', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  test('returns skill summaries for all skill directories', async () => {
-    fs.readdir.mockResolvedValue([
-      { name: 'test-skill', isDirectory: () => true }
-    ])
-    fs.readFile.mockResolvedValue(JSON.stringify(MOCK_MANIFEST))
-
-    const skills = await listSkills()
-    expect(skills).toHaveLength(1)
-    expect(skills[0].name).toBe('test-skill')
-    expect(skills[0].version).toBe('1.0.0')
-    expect(skills[0].phases).toBe(1)
-  })
-
-  test('returns empty array when skills directory does not exist', async () => {
-    fs.readdir.mockRejectedValue(new Error('ENOENT'))
-    const skills = await listSkills()
-    expect(skills).toEqual([])
-  })
-
-  test('skips non-directory entries', async () => {
-    fs.readdir.mockResolvedValue([
-      { name: 'test-skill', isDirectory: () => true },
-      { name: 'README.md', isDirectory: () => false }
-    ])
-    fs.readFile.mockResolvedValue(JSON.stringify(MOCK_MANIFEST))
-    const skills = await listSkills()
-    expect(skills).toHaveLength(1)
-  })
-
-  test('skips directories with no skill.json', async () => {
-    fs.readdir.mockResolvedValue([
-      { name: 'test-skill', isDirectory: () => true }
-    ])
-    fs.readFile.mockRejectedValue(new Error('ENOENT'))
-    const skills = await listSkills()
-    expect(skills).toEqual([])
-  })
-
-  test('healthScore field is present on each skill (null or number)', async () => {
-    const skills = await listSkills()
-    for (const skill of skills) {
-      expect('healthScore' in skill).toBe(true)
-      if (skill.healthScore !== null) {
-        expect(typeof skill.healthScore).toBe('number')
-      }
-    }
+  test('summarises every skill folder and keeps context', async () => {
+    const skills = await reader.listSkills()
+    expect(skills.map(s => s.name)).toEqual(['alpha', 'evil'])
+    const alpha = skills[0]
+    expect(alpha).toMatchObject({ version: '1.1.0', phases: 2, authoredPhases: 1, live: true, healthScore: null })
+    expect(alpha.context).toEqual({ environments: ['cloud'] })
   })
 })
 
 describe('getSkillManifest', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  test('returns parsed manifest for a known skill', async () => {
-    fs.readFile.mockResolvedValue(JSON.stringify(MOCK_MANIFEST))
-    const manifest = await getSkillManifest('test-skill')
-    expect(manifest.name).toBe('test-skill')
-    expect(manifest.phases[0].ref).toBe('references/phase-one.md')
+  test('is path-free', async () => {
+    const m = await reader.getSkillManifest('alpha')
+    const text = JSON.stringify(m)
+    expect(text).not.toContain('references/')
+    expect(m.endpoints).toBeUndefined()
+    for (const p of m.phases) expect(Object.prototype.hasOwnProperty.call(p, 'file')).toBe(false)
+    expect(m.phases[1]).toEqual({ id: 'live-threat-intel', tokens: 2, auto: true })
   })
 
-  test('returns null for an unknown skill', async () => {
-    fs.readFile.mockRejectedValue(new Error('ENOENT'))
-    const manifest = await getSkillManifest('nonexistent')
-    expect(manifest).toBeNull()
+  test('returns null for unknown or unsafe names', async () => {
+    for (const bad of ['nope', '../../etc/passwd', 'foo/bar', 'foo\x00bar', '', ['x'], null]) {
+      expect(await reader.getSkillManifest(bad)).toBeNull()
+    }
+  })
+})
+
+describe('getPhaseRef', () => {
+  test('returns the ref for in-process callers only', async () => {
+    expect(await reader.getPhaseRef('alpha', 'one')).toBe('references/one.md')
+    expect(await reader.getPhaseRef('alpha', 'nope')).toBeNull()
+    expect(await reader.getPhaseRef('evil', 'up')).toBeNull()
   })
 })
 
 describe('getPhaseContent', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  // The compiled manifest is path-free; the phase ref lives in the source
-  // SKILL.md frontmatter, which getPhaseContent reads to resolve content.
-  const MOCK_SKILL_MD = [
-    '---',
-    'name: test-skill',
-    'phases:',
-    '  - id: phase-one',
-    '    ref: references/phase-one.md',
-    '---',
-    '',
-    '# Test Skill'
-  ].join('\n')
-
-  test('returns phase markdown for a valid skill and phase', async () => {
-    fs.readFile
-      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST)) // skill.json (manifest)
-      .mockResolvedValueOnce(MOCK_SKILL_MD)                  // SKILL.md (ref source)
-      .mockResolvedValueOnce('# Phase One\n\nContent here.') // the ref file
-    // realpath resolves to the same path (no symlinks)
-    fs.realpath.mockImplementation(p => Promise.resolve(p))
-
-    const content = await getPhaseContent('test-skill', 'phase-one')
-    expect(content).toBe('# Phase One\n\nContent here.')
+  test('reads a phase', async () => {
+    expect(await reader.getPhaseContent('alpha', 'one')).toBe('# One')
   })
 
-  test('returns null for an unknown skill', async () => {
-    fs.readFile.mockRejectedValue(new Error('ENOENT'))
-    const content = await getPhaseContent('nonexistent', 'phase-one')
-    expect(content).toBeNull()
+  test('returns null for unknown, unsafe or missing phases', async () => {
+    expect(await reader.getPhaseContent('alpha', 'nope')).toBeNull()
+    expect(await reader.getPhaseContent('alpha', null)).toBeNull()
+    expect(await reader.getPhaseContent('alpha', 'x'.repeat(81))).toBeNull()
+    expect(await reader.getPhaseContent('evil', 'up')).toBeNull()
+    expect(await reader.getPhaseContent('evil', 'abs')).toBeNull()
+    expect(await reader.getPhaseContent('evil', 'gone')).toBeNull()
+    expect(await reader.getPhaseContent('../alpha', 'one')).toBeNull()
   })
 
-  test('returns null for an unknown phase id', async () => {
-    fs.readFile.mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST))
-    const content = await getPhaseContent('test-skill', 'nonexistent-phase')
-    expect(content).toBeNull()
-  })
-
-  test('returns null if the reference file is missing', async () => {
-    fs.readFile
-      .mockResolvedValueOnce(JSON.stringify(MOCK_MANIFEST)) // skill.json
-      .mockResolvedValueOnce(MOCK_SKILL_MD)                  // SKILL.md (ref source)
-      .mockRejectedValueOnce(new Error('ENOENT'))            // ref file missing
-    // realpath resolves to same path so we reach readFile
-    fs.realpath.mockImplementation(p => Promise.resolve(p))
-    const content = await getPhaseContent('test-skill', 'phase-one')
-    expect(content).toBeNull()
-  })
-})
-
-describe('getSkillManifest - path traversal prevention', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  test('returns null for path traversal in skillName', async () => {
-    expect(await getSkillManifest('../../etc/passwd')).toBeNull()
-  })
-  test('returns null for skillName with slash', async () => {
-    expect(await getSkillManifest('foo/bar')).toBeNull()
-  })
-  test('returns null for skillName with null byte', async () => {
-    expect(await getSkillManifest('foo\x00bar')).toBeNull()
-  })
-  test('returns null for empty skillName', async () => {
-    expect(await getSkillManifest('')).toBeNull()
-  })
-  test('returns null for non-string skillName', async () => {
-    expect(await getSkillManifest(['../../etc'])).toBeNull()
-  })
-})
-
-describe('getPhaseContent - path traversal prevention', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  test('returns null for non-string phaseId', async () => {
-    // getSkillManifest mock returns null for invalid skillName,
-    // so just verify non-string phaseId is handled
-    const result = await getPhaseContent('deception-engineering', null)
-    expect(result).toBeNull()
+  test('blocks a symlink that escapes the skill folder', async () => {
+    const outside = path.join(os.tmpdir(), `aegis-outside-${process.pid}.md`)
+    fs.writeFileSync(outside, 'secret')
+    addSkill('linky', [{ id: 'out', file: 'references/out.md', tokens: 1 }], {})
+    try {
+      fs.symlinkSync(outside, path.join(ROOT, 'linky', 'references', 'out.md'))
+    } catch {
+      return // symlinks need privileges on Windows; containment is still covered above
+    }
+    expect(await reader.getPhaseContent('linky', 'out')).toBeNull()
   })
 })
