@@ -7,6 +7,7 @@
 //  - Approval invariant (contracts §6): only allowlisted files may call
 //    `.decideApproval(`. Phase 3 added the plugin elicitation handler; Phase 4 adds
 //    the dashboard approval route to APPROVAL_DECIDERS.
+//  - themis-app: only node: built-ins, zod, the LangChain/LangGraph packages, core, gateway and aegis-skills.
 const fs = require('node:fs')
 const path = require('node:path')
 const { builtinModules } = require('node:module')
@@ -16,8 +17,9 @@ const RULES = [
   { name: '@aegis-skills/themis-core', dir: 'packages/themis-core', allowed: ['zod'] },
   { name: '@aegis-skills/themis-gateway', dir: 'packages/themis-gateway', allowed: ['zod', '@aegis-skills/themis-core', '@modelcontextprotocol/sdk'] },
   { name: '@aegis-skills/themis-plugin', dir: 'packages/themis-plugin', allowed: ['zod', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk'], allowOwnPackageJson: true },
+  { name: '@aegis-skills/themis', dir: 'packages/themis-app', allowed: ['zod', '@langchain/core', '@langchain/openai', '@langchain/anthropic', '@langchain/google-genai', '@langchain/langgraph', '@langchain/langgraph-checkpoint', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', 'aegis-skills'], allowOwnPackageJson: true },
 ]
-const APPROVAL_DECIDERS = ['packages/themis-plugin/src/approval.ts'] // repo-relative posix paths
+const APPROVAL_DECIDERS = ['packages/themis-plugin/src/approval.ts', 'packages/themis-app/src/server/routes/approvals.ts'] // repo-relative posix paths
 const INVARIANT_DIRS = ['packages', 'apps/web/lib', 'apps/web/app']
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', 'coverage', 'test', '__tests__'])
 const SPEC_RES = [
