@@ -3,3 +3,5 @@ export * from './skill-agent'
 export * from './guardrail'
 export * from './synthesise'
 export * from './audit'
+
+export * from './exposure'
