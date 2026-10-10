@@ -1,6 +1,5 @@
 import { Annotation } from '@langchain/langgraph'
-import type { SubTask, SubTaskResult, OrchestrateRequest, Provider } from '@aegis-skills/themis-core'
-import type { ApprovalRequest } from '../mcp/agent-tools'
+import type { SubTask, SubTaskResult, OrchestrateRequest, Provider, McpApprovalRequest } from '@aegis-skills/themis-core'
 
 /**
  * ThemisAnnotation — shared state that flows through every node in the graph.
@@ -66,8 +65,8 @@ export const ThemisAnnotation = Annotation.Root({
   // ── External MCP tool use ───────────────────────────────────────────────────
   // Approval requests recorded when an agent proposed a write/execute tool
   // (never auto-run). Appended across parallel agents.
-  mcpApprovals: Annotation<ApprovalRequest[]>({
-    reducer: (prev: ApprovalRequest[], next: ApprovalRequest[]) => [...prev, ...next],
+  mcpApprovals: Annotation<McpApprovalRequest[]>({
+    reducer: (prev: McpApprovalRequest[], next: McpApprovalRequest[]) => [...prev, ...next],
     default: () => [],
   }),
   // Count of external read-tool calls made across all agents.
