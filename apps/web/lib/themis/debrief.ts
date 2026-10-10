@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import type { SubTaskResult } from './types'
+import type { SubTaskResult } from '@aegis-skills/themis-core'
 
 /**
  * debrief.ts — local SQLite-backed execution audit trail.

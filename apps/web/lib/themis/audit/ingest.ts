@@ -1,7 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ValidationError } from '@/lib/themis/types'
-import { AuditRequest } from './types'
+import { redactSecrets, ValidationError, type AuditRequest } from '@aegis-skills/themis-core'
 
 /**
  * Local sanitise function with 12000 char limit (not 4000 like sanitiseTask).

@@ -1,4 +1,4 @@
-import { redactSecrets } from '@/lib/themis/secrets'
+import { redactSecrets } from '../src/secrets'
 
 describe('redactSecrets', () => {
   test('redacts AWS access key (AKIA + 16 uppercase alphanumeric)', () => {

@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateExposure } from '@/lib/themis/exposure/index'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ValidationError, ProviderUnavailableError } from '@/lib/themis/types'
-import {
-  ExposureRequest,
-  EvidenceInput,
-  EvidenceType,
-  BusinessCriticality,
-} from '@/lib/themis/exposure/types'
+import { redactSecrets, ValidationError, ProviderUnavailableError, type ExposureRequest, type EvidenceInput, type EvidenceType, type BusinessCriticality } from '@aegis-skills/themis-core'
 
 const SECURITY_HEADERS: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',

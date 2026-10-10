@@ -6,7 +6,7 @@ jest.mock('@/lib/themis/provider', () => ({ llm: jest.fn() }))
 import { normaliseSubTasks, MAX_SUBTASKS } from '@/lib/themis/decompose'
 import { fanOutNode } from '@/lib/themis/graph/nodes'
 import { Send } from '@langchain/langgraph'
-import type { SubTask, SubTaskResult } from '@/lib/themis/types'
+import type { SubTask, SubTaskResult } from '@aegis-skills/themis-core'
 import type { ThemisState } from '@/lib/themis/graph/state'
 
 const SLUGS = ['mitre-attack', 'threat-modeling', 'network-security', 'exposure-validation']

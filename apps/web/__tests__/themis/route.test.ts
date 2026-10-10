@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { ValidationError, ProviderUnavailableError, OrchestrateResponse } from '@/lib/themis/types'
+import { ValidationError, ProviderUnavailableError, OrchestrateResponse } from '@aegis-skills/themis-core'
 
 // Mock orchestrate
 jest.mock('@/lib/themis/index', () => ({
@@ -12,13 +12,17 @@ jest.mock('@/lib/themis/provider', () => ({
 }))
 
 // Mock sanitiseTask and validateContext so we can control their behaviour
-jest.mock('@/lib/themis/sanitise', () => ({
-  sanitiseTask: jest.fn((s: string) => {
-    if (s.length > 4000) throw new (require('@/lib/themis/types').ValidationError)('Task exceeds maximum length of 4000 characters')
-    return s
-  }),
-  validateContext: jest.fn(),
-}))
+jest.mock('@aegis-skills/themis-core', () => {
+  const actual = jest.requireActual('@aegis-skills/themis-core')
+  return {
+    ...actual,
+    sanitiseTask: jest.fn((s: string) => {
+      if (s.length > 4000) throw new actual.ValidationError('Task exceeds maximum length of 4000 characters')
+      return s
+    }),
+    validateContext: jest.fn(),
+  }
+})
 
 // Mock Supabase — createClient is called via require() at runtime in the route
 jest.mock('@supabase/supabase-js', () => ({

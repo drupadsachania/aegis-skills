@@ -4,7 +4,7 @@ jest.mock('@/lib/skill-reader', () => ({
 
 import { getPhaseContent } from '@/lib/skill-reader'
 import { fetchSkillPhaseTool, makeReadFindingsTool } from '@/lib/themis/graph/tools'
-import type { SubTaskResult } from '@/lib/themis/types'
+import type { SubTaskResult } from '@aegis-skills/themis-core'
 
 const mockGetPhaseContent = getPhaseContent as jest.Mock
 

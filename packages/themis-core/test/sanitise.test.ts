@@ -1,5 +1,5 @@
-import { sanitiseTask, validateContext } from '@/lib/themis/sanitise'
-import { ValidationError } from '@/lib/themis/types'
+import { sanitiseTask, validateContext } from '../src/sanitise'
+import { ValidationError } from '../src/types'
 
 describe('sanitiseTask', () => {
   test('preserves newlines and tabs', () => {

@@ -1,7 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ValidationError } from '@/lib/themis/types'
-import { ExposureRequest } from './types'
+import { redactSecrets, ValidationError, type ExposureRequest } from '@aegis-skills/themis-core'
 
 // Sanitise with a 12000-char limit, matching the audit workflow's input handling.
 function sanitiseExposureInput(raw: string): string {

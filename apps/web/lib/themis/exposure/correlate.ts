@@ -1,6 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ExposureRequest, ExposureState, Confidence } from './types'
+import { redactSecrets, type ExposureRequest, type ExposureState, type Confidence } from '@aegis-skills/themis-core'
 
 export interface CorrelationResult {
   exposure: ExposureState

@@ -1,4 +1,4 @@
-import { ValidationError } from '@/lib/themis/types'
+import { ValidationError } from '@aegis-skills/themis-core'
 
 // Mock the provider module
 jest.mock('@/lib/themis/provider', () => ({

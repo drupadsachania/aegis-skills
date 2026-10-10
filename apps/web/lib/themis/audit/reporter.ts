@@ -1,6 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { AuditRequest, Finding, Standard } from './types'
+import { redactSecrets, type AuditRequest, type Finding, type Standard } from '@aegis-skills/themis-core'
 
 export async function report(
   req: AuditRequest,

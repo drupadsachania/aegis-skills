@@ -1,24 +1,9 @@
 import { createHash } from 'node:crypto'
-import { redactSecrets } from '@/lib/themis/secrets'
-import {
-  ExposureCase,
-  ExposureReport,
-  ExposureRequest,
-  ExploitabilityState,
-  Confidence,
-  ImpactAssessment,
-  RiskDelta,
-  ValidationFailure,
-  WorkflowState,
-} from './types'
+import { redactSecrets, authorize, assessDetection, verify, evaluateRisk, threatLikelihoodFrom, type RiskContext, type ExposureCase, type ExposureReport, type ExposureRequest, type ExploitabilityState, type Confidence, type ImpactAssessment, type RiskDelta, type ValidationFailure, type WorkflowState } from '@aegis-skills/themis-core'
 import { ingest } from './ingest'
 import { correlate } from './correlate'
-import { authorize } from './policy'
 import { plan as buildPlan } from './planner'
 import { assessImpact } from './attackpath'
-import { assessDetection } from './detection'
-import { verify } from './verify'
-import { evaluateRisk, threatLikelihoodFrom, RiskContext } from './risk'
 import { report } from './report'
 
 function getSupabaseClient() {

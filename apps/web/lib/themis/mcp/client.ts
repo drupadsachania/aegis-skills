@@ -3,8 +3,7 @@
 // fails soft (returns null / empty) so a misbehaving external server can never
 // break a Themis run. Only servers that passed config validation reach here.
 
-import type { McpServerConfig } from './config'
-import type { McpToolDescriptor } from './tool-policy'
+import type { McpServerConfig, McpToolDescriptor } from '@aegis-skills/themis-core'
 
 // SDK is CommonJS; import lazily so a missing optional dep never breaks module load.
 /* eslint-disable @typescript-eslint/no-require-imports */

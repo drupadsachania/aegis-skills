@@ -1,7 +1,7 @@
 // We mock the LangChain provider packages to avoid real API calls.
 // Tests verify: correct model name selected per tier, env key guard, provider guard.
 
-import { ProviderUnavailableError } from '@/lib/themis/types'
+import { ProviderUnavailableError } from '@aegis-skills/themis-core'
 
 jest.mock('@langchain/anthropic', () => ({
   ChatAnthropic: jest.fn().mockImplementation((opts: Record<string, unknown>) => ({

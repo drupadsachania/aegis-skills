@@ -1,3 +1,15 @@
 // @aegis-skills/themis-core — deterministic Themis engine. No LLM, no network.
-// Each task in Phase 2 appends its modules here.
-export {}
+export * from './types'
+export * from './secrets'
+export * from './sanitise'
+export * from './mcp/config'
+export * from './mcp/tool-policy'
+export * from './audit/types'
+export * from './audit/scorer'
+export * from './audit/standards'
+export * from './exposure/types'
+export * from './exposure/policy'
+export * from './exposure/risk'
+export * from './exposure/detection'
+export * from './exposure/verify'
+export * from './exposure/capabilities'

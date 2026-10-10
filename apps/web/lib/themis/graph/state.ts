@@ -1,5 +1,5 @@
 import { Annotation } from '@langchain/langgraph'
-import type { SubTask, SubTaskResult, OrchestrateRequest, Provider } from '../types'
+import type { SubTask, SubTaskResult, OrchestrateRequest, Provider } from '@aegis-skills/themis-core'
 import type { ApprovalRequest } from '../mcp/agent-tools'
 
 /**

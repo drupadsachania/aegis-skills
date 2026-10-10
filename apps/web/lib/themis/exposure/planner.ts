@@ -1,12 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import {
-  PolicyResult,
-  TestDepth,
-  ValidationPlan,
-  ValidationStep,
-} from './types'
-import { capabilitiesWithinDepth, getCapability } from './capabilities'
+import { redactSecrets, capabilitiesWithinDepth, getCapability, type PolicyResult, type TestDepth, type ValidationPlan, type ValidationStep } from '@aegis-skills/themis-core'
 
 const DEPTH_ORDER: TestDepth[] = ['PASSIVE', 'LOW_IMPACT', 'CONTROLLED_EXECUTION', 'IMPACT_VALIDATION']
 

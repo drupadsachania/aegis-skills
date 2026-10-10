@@ -1,9 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { orchestrate } from '@/lib/themis/index'
-import { sanitiseTask, validateContext } from '@/lib/themis/sanitise'
+import { sanitiseTask, validateContext, ValidationError, ProviderUnavailableError, type OrchestrateRequest } from '@aegis-skills/themis-core'
 import { availableProviders } from '@/lib/themis/provider'
-import { ValidationError, ProviderUnavailableError, OrchestrateRequest } from '@/lib/themis/types'
 
 // Security headers applied to every response regardless of status
 const SECURITY_HEADERS: Record<string, string> = {

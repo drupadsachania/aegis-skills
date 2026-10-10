@@ -1,9 +1,7 @@
 import { createHash } from 'node:crypto'
-import { AuditRequest, AuditReport } from './types'
+import { selectStandards, skillsForStandards, score, type AuditRequest, type AuditReport } from '@aegis-skills/themis-core'
 import { ingest } from './ingest'
-import { selectStandards, skillsForStandards } from './standards'
 import { assess } from './assessor'
-import { score } from './scorer'
 import { report } from './reporter'
 
 function getSupabaseClient() {

@@ -1,7 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { AuditRequest, Finding, Standard } from './types'
-import { skillsForStandards } from './standards'
+import { redactSecrets, skillsForStandards, type AuditRequest, type Finding, type Standard } from '@aegis-skills/themis-core'
 
 async function assessStandard(
   sanitisedInput: string,

@@ -43,7 +43,7 @@ describe('orchestrate() (graph-backed)', () => {
   it('throws ProviderUnavailableError when no providers configured', async () => {
     const { availableProviders } = await import('@/lib/themis/provider')
     ;(availableProviders as jest.Mock).mockReturnValueOnce([])
-    const { ProviderUnavailableError } = await import('@/lib/themis/types')
+    const { ProviderUnavailableError } = await import('@aegis-skills/themis-core')
     const { orchestrate } = await import('@/lib/themis/index')
     await expect(
       orchestrate({ task: 'test', context: { environments: [], attackSurfaceTags: [] } })

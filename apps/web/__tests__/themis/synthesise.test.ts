@@ -5,7 +5,7 @@ jest.mock('@/lib/themis/provider', () => ({
 
 import { synthesise } from '@/lib/themis/synthesise'
 import { llm } from '@/lib/themis/provider'
-import { SubTaskResult } from '@/lib/themis/types'
+import { SubTaskResult } from '@aegis-skills/themis-core'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>
 

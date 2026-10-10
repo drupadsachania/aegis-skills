@@ -5,7 +5,8 @@ jest.mock('@/lib/themis/provider', () => ({
   llm: jest.fn(),
   availableProviders: jest.fn(() => ['anthropic']),
 }))
-jest.mock('@/lib/themis/secrets', () => ({
+jest.mock('@aegis-skills/themis-core', () => ({
+  ...jest.requireActual('@aegis-skills/themis-core'),
   redactSecrets: jest.fn((s: string) => s),
 }))
 jest.mock('@supabase/supabase-js', () => ({
@@ -14,7 +15,7 @@ jest.mock('@supabase/supabase-js', () => ({
 
 import { llm } from '@/lib/themis/provider'
 import { validateExposure } from '@/lib/themis/exposure/index'
-import { ExposureRequest } from '@/lib/themis/exposure/types'
+import { ExposureRequest } from '@aegis-skills/themis-core'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>
 

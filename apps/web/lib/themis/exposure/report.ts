@@ -1,6 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ExposureCase, ImpactAssessment, RiskDelta, ValidationPlan } from './types'
+import { redactSecrets, type ExposureCase, type ImpactAssessment, type RiskDelta, type ValidationPlan } from '@aegis-skills/themis-core'
 
 export interface ReportInput {
   case: ExposureCase

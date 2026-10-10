@@ -1,4 +1,4 @@
-import type { OrchestrateRequest, OrchestrateResponse } from '@/lib/themis/types'
+import type { OrchestrateRequest, OrchestrateResponse } from '../src/types'
 
 describe('OrchestrateRequest threadId field', () => {
   it('accepts threadId as an optional string', () => {

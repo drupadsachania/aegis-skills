@@ -1,12 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets } from '@/lib/themis/secrets'
-import {
-  AttackPathEdge,
-  Confidence,
-  ExposureRequest,
-  ImpactAssessment,
-  ImpactState,
-} from './types'
+import { redactSecrets, type AttackPathEdge, type Confidence, type ExposureRequest, type ImpactAssessment, type ImpactState } from '@aegis-skills/themis-core'
 
 const VALID_IMPACT: ImpactState[] = ['CROWN_JEWEL_REACHABLE', 'LIMITED', 'CONTAINED', 'UNKNOWN']
 

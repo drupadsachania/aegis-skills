@@ -8,9 +8,7 @@ import { buildMcpToolset } from '../mcp/agent-tools'
 import { decompose } from '../decompose'
 import { applyGuardrail } from '../guardrail'
 import { synthesise } from '../synthesise'
-import { redactSecrets } from '../secrets'
-import { sanitiseTask, validateContext } from '../sanitise'
-import type { SubTaskResult } from '../types'
+import { redactSecrets, sanitiseTask, validateContext, type SubTaskResult } from '@aegis-skills/themis-core'
 
 const SKILL_AGENT_SYSTEM_PROMPT = [
   'You are a security analyst operating in observe-and-recommend mode.',

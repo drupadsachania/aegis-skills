@@ -6,13 +6,13 @@ import {
   serversForSkill,
   _resetMcpConfigCache,
   type McpServerConfig,
-} from '@/lib/themis/mcp/config'
+} from '../../src/mcp/config'
 import {
   classifyTool,
   dispositionFor,
   serverPermitsApproval,
   type McpToolDescriptor,
-} from '@/lib/themis/mcp/tool-policy'
+} from '../../src/mcp/tool-policy'
 
 beforeEach(() => _resetMcpConfigCache())
 

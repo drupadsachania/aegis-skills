@@ -1,5 +1,5 @@
 // Full-graph smoke test with all external calls mocked
-import { ValidationError } from '@/lib/themis/types'
+import { ValidationError } from '@aegis-skills/themis-core'
 
 jest.mock('@/lib/themis/llm-factory', () => ({
   modelForTier: jest.fn().mockReturnValue({ invoke: jest.fn() }),

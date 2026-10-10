@@ -1,6 +1,5 @@
-import { SubTaskResult } from './types'
+import { redactSecrets, type SubTaskResult } from '@aegis-skills/themis-core'
 import { llm } from './provider'
-import { redactSecrets } from './secrets'
 
 export async function synthesise(task: string, results: SubTaskResult[]): Promise<string> {
   // Only receives non-blocked results (caller filters BLOCK before calling)

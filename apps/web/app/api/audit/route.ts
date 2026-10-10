@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { audit } from '@/lib/themis/audit/index'
-import { redactSecrets } from '@/lib/themis/secrets'
-import { ValidationError, ProviderUnavailableError } from '@/lib/themis/types'
-import { AuditRequest, Standard } from '@/lib/themis/audit/types'
+import { redactSecrets, ValidationError, ProviderUnavailableError, type AuditRequest, type Standard } from '@aegis-skills/themis-core'
 
 // Security headers applied to every response regardless of status
 const SECURITY_HEADERS: Record<string, string> = {

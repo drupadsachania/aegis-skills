@@ -2,7 +2,10 @@
 // budgeted, write/execute propose-only (never executed). The network client is
 // mocked so nothing external is contacted.
 
-jest.mock('@/lib/themis/secrets', () => ({ redactSecrets: (s: string) => s }))
+jest.mock('@aegis-skills/themis-core', () => ({
+  ...jest.requireActual('@aegis-skills/themis-core'),
+  redactSecrets: (s: string) => s,
+}))
 
 const mockListServerTools = jest.fn()
 const mockCallServerTool = jest.fn()
@@ -12,7 +15,7 @@ jest.mock('@/lib/themis/mcp/client', () => ({
 }))
 
 import { buildMcpToolset } from '@/lib/themis/mcp/agent-tools'
-import { loadMcpServers, _resetMcpConfigCache } from '@/lib/themis/mcp/config'
+import { loadMcpServers, _resetMcpConfigCache } from '@aegis-skills/themis-core'
 
 const CONFIG = JSON.stringify([{
   id: 'osint', transport: 'http', url: 'https://mcp.example/osint',

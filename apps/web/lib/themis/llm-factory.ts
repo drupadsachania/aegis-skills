@@ -11,8 +11,7 @@ import { ChatAnthropic } from '@langchain/anthropic'
 import { ChatOpenAI } from '@langchain/openai'
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai'
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models'
-import type { Provider, Tier } from './types'
-import { ProviderUnavailableError } from './types'
+import { ProviderUnavailableError, type Provider, type Tier } from '@aegis-skills/themis-core'
 
 // Mirror the model map from provider.ts — same models, LangChain wrapper instances
 const ANTHROPIC_MODELS: Record<Tier, string> = {

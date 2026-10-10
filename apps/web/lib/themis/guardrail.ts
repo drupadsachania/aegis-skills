@@ -1,6 +1,5 @@
-import { SubTaskResult, GuardrailVerdict } from './types'
+import { redactSecrets, type SubTaskResult, type GuardrailVerdict } from '@aegis-skills/themis-core'
 import { llm } from './provider'
-import { redactSecrets } from './secrets'
 
 export async function applyGuardrail(result: SubTaskResult): Promise<SubTaskResult> {
   // Step 1: Run secret redaction on findings before anything else

@@ -12,11 +12,9 @@
 
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { z } from 'zod'
-import { redactSecrets } from '../secrets'
-import { loadMcpServers, serversForSkill, type McpServerConfig } from './config'
+import { redactSecrets, loadMcpServers, serversForSkill, classifyTool, dispositionFor, serverPermitsApproval, type McpServerConfig, type McpToolDescriptor } from '@aegis-skills/themis-core'
 import { listServerTools } from './client'
 import { callServerTool } from './client'
-import { classifyTool, dispositionFor, serverPermitsApproval, type McpToolDescriptor } from './tool-policy'
 
 const MAX_OUTPUT_CHARS = 4000
 

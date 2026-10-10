@@ -1,4 +1,4 @@
-import type { SubTask, SubTaskResult } from '@/lib/themis/types'
+import type { SubTask, SubTaskResult } from '@aegis-skills/themis-core'
 
 // We test reducer behaviour directly — import the annotation and exercise
 // the reducer functions by simulating what LangGraph does when merging state.
