@@ -8,6 +8,12 @@
 
 **Tech Stack:** GitHub Actions (ubuntu/windows/macos runners, actions pinned to commit SHAs), Node 22 (min 22.13.0) and 24, npm 11.21.0 in the publish job, npm trusted publishing (OIDC) with provenance, `gh` CLI, plain CommonJS Node scripts with `node:test`. No new npm dependencies.
 
+> **AMENDMENT 2026-10-10 (binding; overrides anything below that conflicts) — monthly cadence, internal health.**
+> 1. `skill-health.yml` cron becomes monthly (`0 0 1 * *`) instead of weekly; its output (`packages/aegis/health.json`, the below-threshold PR) is internal maintainer tooling and is never published or surfaced on the website.
+> 2. `intel-release.yml` runs monthly (`0 6 2 * *`, the day after health) instead of every Monday; every "weekly" in release notes, commit messages, pin-churn caveats and Dependabot copy means "monthly" except Dependabot's action-pin bumps, which stay weekly.
+> 3. The local intel-sync task cadence is the maintainer's own business and may stay as is; the guard (D13) must still accept its commits whenever they land.
+> 4. Before the health score is ever made public, the scorer's keyword bias must be fixed (tracked finding); until then it stays internal.
+
 ---
 
 ## Decisions (binding for the executor)
@@ -1191,7 +1197,7 @@ Conventions for every task:
 
   on:
     schedule:
-      - cron: '0 0 * * 1'
+      - cron: '0 0 1 * *'
     workflow_dispatch:
 
   # GITHUB_TOKEN gets nothing. Pushes and the PR use SKILL_HEALTH_PAT (needs bypass on main, see USER ACTIONS).
@@ -1995,7 +2001,7 @@ Conventions for every task:
   # aegis-skills patch, but only if nothing else changed (D13). It never runs intel-sync or reads .intel-sync-state.json.
   on:
     schedule:
-      - cron: '0 6 * * 1'
+      - cron: '0 6 2 * *'
     workflow_dispatch:
 
   permissions: {}

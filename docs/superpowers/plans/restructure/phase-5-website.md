@@ -8,6 +8,14 @@
 
 **Tech Stack:** Next.js 14.2 · React 18 · CommonJS + `React.createElement` (the repo's existing style) · `marked@^15` (zero-dependency markdown) · `node:zlib` (`deflateRawSync`, `crc32`) · Jest via `next/jest` + Testing Library · Tailwind/PostCSS (build only, unchanged).
 
+> **AMENDMENT 2026-10-10 (binding; overrides anything below that conflicts) — skill-health is internal only.**
+> Decision (owner): skill content updates monthly, and health scores are tracked internally, never shown to users.
+> 1. `GET /api/health` is **removed** (delete `pages/api/health.js` and its tests; skip Task 3's health steps 3.1–3.2; drop it from the route lists, the exit checklist and the docs/API reference).
+> 2. No health badge, score or "healthScore" field on any page or API response (remove `healthScore` from the skills payload ~line 2190 and from `/api/skills`).
+> 3. `packages/aegis/health.json` stays in the repo and in the Aegis tarball exclusion rules as internal data only; the website must not read it.
+> 4. Replace every user-facing "weekly"/"refreshed weekly" claim about intel or updates with "updated monthly" (D8 ISR note, §02 Phases copy, intel copy, versions copy, docs).
+> 5. Add to the exit checklist: `grep -rn "health" apps/web --include=*.js --include=*.ts --include=*.tsx -l` finds nothing outside tests that assert the route is gone.
+
 ---
 
 ## 0. Decisions made in this plan (summary)
