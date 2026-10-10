@@ -106,3 +106,17 @@ The plan text predated Phase 2's final API. Adaptations (deliberate; the design 
 8. Agents omit a `tools:` allowlist (MCP tool names for plugin-bundled servers are not verifiable offline); they inherit tools and are told in prose to route externals through `themis_external_*`. Revisit in Phase 6 once names are verified against a live Claude Code install.
 9. `scripts/check-deps-themis.js` gained a plugin rule (allowing only its own `package.json` as a relative import outside `src/`).
 10. Task 11.2 (push/PR) skipped. Manual host verification: `packages/themis-plugin/docs/manual-verification.md` (USER ACTION).
+
+## Phase 4 execution results — batch A (tasks 1-5)
+
+1. Node engine is `>=24` (not `>=22.13`) in `packages/themis-app/package.json`, the `bin/themis.js` version check (major < 24) and the scaffold test; `check-layout.js` enforces it.
+2. Skipped P1 (branch) and push/PR steps; work is on the single `restructure` branch.
+3. Added `['packages/themis-app/package.json', '@aegis-skills/themis']` to the PACKAGES table in `scripts/check-layout.js` (data change only).
+4. Workspace ranges set to `^0.1.0` (core, gateway) and `^1.1.0` (`aegis-skills`); `AEGIS_PACKAGE` stays `aegis-skills`.
+5. Root `jest.config.js` already used `projects`; appended `<rootDir>/packages/themis-app`. `--selectProjects themis-app` works (the "project does not have a name" warning comes from other projects lacking a displayName, pre-existing).
+6. `testTimeout` is not a valid per-project Jest option (validation warning), so the 20s timeout is set via `setupFilesAfterEnv` -> `__tests__/helpers/setup.ts` (`jest.setTimeout(20000)`).
+7. Tasks 1-5 core/gateway names verified against `packages/themis-core/src/index.ts`; no renames were needed (`themisHome`, `versionStamp`, `loadMcpServers`, `redactSecrets`, `ProviderUnavailableError`, `LLMRequest/LLMResponse` all exist as the plan uses them). P1-P13 preconditions that are not Task-1-5 relevant (P10 inventory of apps/web, Task 9+ moves) were not exercised in this batch.
+8. `npm ls @langchain/core` shows the single version 0.3.80 (F1 check passes); `npm install` added vite 8.3.3, react 18.3.1 and langchain deps to `package-lock.json` (committed with Task 1).
+9. Task 3 temporary `providers/catalog.ts` stub was created then fully replaced in Task 4, as planned.
+10. `ProviderUnavailableError.message` is the fixed string "AI providers unavailable" (reason in `internalReason`); the plan's tests only use `toThrow(ProviderUnavailableError)`, so no change was required.
+11. Test counts for `themis-app` after Task 5: 7 suites, 33 passed, 2 skipped (POSIX file-mode tests on Windows).
