@@ -16,9 +16,9 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "predev": "node ../../scripts/build-flat-prompts.js --out .generated/prompts",
+    "predev": "node ../../scripts/build-themis-packages.js && node ../../scripts/build-flat-prompts.js --out .generated/prompts",
     "dev": "next dev",
-    "prebuild": "node ../../scripts/build-flat-prompts.js --out .generated/prompts",
+    "prebuild": "node ../../scripts/build-themis-packages.js && node ../../scripts/build-flat-prompts.js --out .generated/prompts",
     "build": "next build",
     "start": "next start"
   },
@@ -45,6 +45,7 @@
     "node": ">=24"
   },
   "dependencies": {
+    "@aegis-skills/themis-core": "^0.1.0",
     "aegis-skills": "1.1.0",
     "@anthropic-ai/sdk": "0.98.0",
     "@google/generative-ai": "0.24.1",
