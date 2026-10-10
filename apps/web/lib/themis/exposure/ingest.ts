@@ -1,20 +1,5 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets, ValidationError, type ExposureRequest } from '@aegis-skills/themis-core'
-
-// Sanitise with a 12000-char limit, matching the audit workflow's input handling.
-function sanitiseExposureInput(raw: string): string {
-  const stripped = raw.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-  if (stripped.length > 12000) {
-    throw new ValidationError('Exposure input exceeds maximum length of 12000 characters')
-  }
-  if (/[A-Za-z0-9+/]{200,}={0,2}/.test(stripped)) {
-    throw new ValidationError('Exposure input contains potentially obfuscated content')
-  }
-  if (/<script/i.test(stripped) || /javascript:/i.test(stripped)) {
-    throw new ValidationError('Exposure input contains disallowed content')
-  }
-  return stripped
-}
+import { redactSecrets, sanitiseUntrustedInput, withRedactionWarning, type ExposureRequest } from '@aegis-skills/themis-core'
 
 export interface IngestResult {
   sanitisedInput: string
@@ -29,11 +14,7 @@ export interface IngestResult {
  */
 export async function ingest(req: ExposureRequest): Promise<IngestResult> {
   const redacted = redactSecrets(req.input)
-  const redactionOccurred = redacted !== req.input
-  let sanitisedInput = redactionOccurred
-    ? `[WARNING: Sensitive data was detected and redacted from the input]\n\n${redacted}`
-    : redacted
-  sanitisedInput = sanitiseExposureInput(sanitisedInput)
+  const sanitisedInput = sanitiseUntrustedInput(withRedactionWarning(req.input, redacted), 'Exposure input')
 
   let detectedSystemType = req.context.systemType ?? 'generic'
   let detectedProduct = ''

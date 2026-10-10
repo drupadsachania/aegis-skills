@@ -1,5 +1,6 @@
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { z } from 'zod'
+import { validatePhaseContent, formatFindings } from '@aegis-skills/themis-core'
 import type { ThemisState } from './state'
 
 // Import skill-reader via the @/ alias so Jest module mocks intercept it correctly
@@ -34,14 +35,6 @@ export async function listPhaseIds(skillName: string): Promise<string[]> {
   } catch {
     return []
   }
-}
-
-// `data:` is narrowed to URI scheme context to avoid false-positives on prose text
-const BLOCKED_CONTENT_PATTERNS = [/<script/i, /javascript:/i, /\bdata:[a-z]/i, /eval\(/i]
-
-function validatePhaseContent(text: string): boolean {
-  if (text.length > 8000) return false
-  return !BLOCKED_CONTENT_PATTERNS.some(p => p.test(text))
 }
 
 /**
@@ -106,18 +99,7 @@ export function makeReadFindingsTool(state: Pick<ThemisState, 'subTaskResults'>)
         .describe('Filter findings by skill slug, or empty string for all skills'),
     }),
     func: async ({ skill }: { skill: string }): Promise<string> => {
-      const results = state.subTaskResults ?? []
-      const filtered = skill
-        ? results.filter(r => r.skill === skill)
-        : results
-
-      if (filtered.length === 0) {
-        return `No findings available${skill ? ` for skill "${skill}"` : ''} yet.`
-      }
-
-      return filtered
-        .map(r => `[${r.skill} / ${r.subTaskId}] (confidence: ${r.confidence})\n${r.findings}`)
-        .join('\n\n---\n\n')
+      return formatFindings(state.subTaskResults ?? [], skill)
     },
   })
 }

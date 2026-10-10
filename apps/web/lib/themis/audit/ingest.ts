@@ -1,48 +1,13 @@
 import { llm } from '@/lib/themis/provider'
-import { redactSecrets, ValidationError, type AuditRequest } from '@aegis-skills/themis-core'
-
-/**
- * Local sanitise function with 12000 char limit (not 4000 like sanitiseTask).
- * Applies the same control char stripping and injection checks as sanitiseTask.
- */
-function sanitiseAuditInput(raw: string): string {
-  // Strip control characters except \n (\x0A) and \t (\x09)
-  const stripped = raw.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-
-  // Reject if exceeds 12000 characters
-  if (stripped.length > 12000) {
-    throw new ValidationError('Audit input exceeds maximum length of 12000 characters')
-  }
-
-  // Reject if contains base64 block longer than 200 characters (obfuscated injection indicator)
-  if (/[A-Za-z0-9+/]{200,}={0,2}/.test(stripped)) {
-    throw new ValidationError('Audit input contains potentially obfuscated content')
-  }
-
-  // Reject if contains <script or javascript: (case-insensitive)
-  if (/<script/i.test(stripped) || /javascript:/i.test(stripped)) {
-    throw new ValidationError('Audit input contains disallowed content')
-  }
-
-  return stripped
-}
+import { redactSecrets, sanitiseUntrustedInput, withRedactionWarning, type AuditRequest } from '@aegis-skills/themis-core'
 
 export async function ingest(req: AuditRequest): Promise<{
   sanitisedInput: string
   detectedSystemType: string
   applicableSkills: string[]
 }> {
-  // Step 1: Apply redactSecrets immediately
   const redacted = redactSecrets(req.input)
-
-  // Step 2: Check if any redaction occurred
-  const redactionOccurred = redacted !== req.input
-  let sanitisedInput = redactionOccurred
-    ? `[WARNING: Sensitive data was detected and redacted from the input]\n\n${redacted}`
-    : redacted
-
-  // Step 3: Apply local sanitise (12000 char limit)
-  sanitisedInput = sanitiseAuditInput(sanitisedInput)
+  const sanitisedInput = sanitiseUntrustedInput(withRedactionWarning(req.input, redacted), 'Audit input')
 
   // Step 4: LLM classification call
   let detectedSystemType: string = req.context.systemType ?? 'generic'
