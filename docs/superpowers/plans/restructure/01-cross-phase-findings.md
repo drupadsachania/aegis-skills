@@ -120,3 +120,17 @@ The plan text predated Phase 2's final API. Adaptations (deliberate; the design 
 9. Task 3 temporary `providers/catalog.ts` stub was created then fully replaced in Task 4, as planned.
 10. `ProviderUnavailableError.message` is the fixed string "AI providers unavailable" (reason in `internalReason`); the plan's tests only use `toThrow(ProviderUnavailableError)`, so no change was required.
 11. Test counts for `themis-app` after Task 5: 7 suites, 33 passed, 2 skipped (POSIX file-mode tests on Windows).
+
+## Phase 4 execution results — batch B (tasks 6-10)
+
+1. Branch/PR/push steps skipped; Node engine is `>=24` (so the `app-db.ts` error message says "Node.js >= 24").
+2. Tasks 6-8 landed exactly as specced (skill reader, `node:sqlite` checkpointer incl. the restart-and-resume test, reports repo). For Task 8 the `Summary` section of the audit markdown is `Critical n · High n · Medium n · Low n · Informational n · Passed n`, and an audit with no findings prints `No findings.`; the explain bullets use fixed labels (Why exposed, Why it matters, ...).
+3. Task 9 (move only, `d83229c`) was a pure rename commit; it is intentionally red. The snapshot moved with similarity 100%.
+4. P10 inventory matched the Move/Delete table (the extra web tests `graph/{deps-smoke,integration,nodes,state,tools}.test.ts` fall under the `graph/*.test.ts` row). `apps/web/app/api/mcp` and `apps/web/lib/mcp` are the hosted Aegis MCP server and were kept.
+5. After `git rm`, empty directory shells remained under `apps/web/lib/themis` and `apps/web/__tests__/themis`; deleted them by hand so the layout guard's `MUST_NOT_EXIST` entries pass.
+6. Prompt parity: `skill agent 1` removed from the snapshot (27 deleted lines, nothing else touched); `Snapshots: 11 passed`, none written, no `-u` used. The `decompose` parity test now mocks `enabledSkillSlugs` instead of `fetch`.
+7. `@supabase/supabase-js` stays in `apps/web/package.json`: `apps/web/lib/telemetry.js` still `require`s it (plan 10.9 only removes it "when 10.8 shows no import"). Also kept: `ajv`, `chalk`, `commander`, `inquirer`, `gray-matter`, `zod` etc. (site/CLI code uses them).
+8. Removed from web: themis-core/gateway, anthropic-sdk, google generative-ai, all `@langchain/*`, langsmith, openai, better-sqlite3 and its types, the whole `serverExternalPackages` list, the two themis jest mappers, and the `build-themis-packages.js` step from `predev`/`prebuild` (the script file stays, it is in `MUST_EXIST`). `npm ls better-sqlite3` is empty; `@langchain/core` resolves to the single 0.3.80.
+9. `check-layout.js` data: dropped `lib/themis/index.ts` and `lib/themis/mcp/agent-tools.ts` from `MUST_EXIST`, added `themis-app` package.json and `bin/themis.js`, and added the five removed web paths to `MUST_NOT_EXIST`. The `themis-app` PACKAGES row already existed from batch A. `check-deps-themis.js` needed no change (`apps/web/lib` and `apps/web/app` still exist).
+10. Gateway invariant test now scans `themis-gateway/src` plus `themis-app/src` (allowing only `server/routes/approvals.ts`, which Task 17 creates).
+11. Final numbers: whole repo `npx jest` = 75 suites, 519 passed, 2 skipped (POSIX mode tests), 0 failed; `check:deps`, `check-layout` pass; `npm run build -w @aegis-skills/web` succeeds.
