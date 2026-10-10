@@ -155,3 +155,28 @@ The plan text predated Phase 2's final API. Adaptations (deliberate; the design 
 7. Models route validates body shape itself (unknown top-level/tier/local keys and a non-provider `defaultProvider` give 400) before handing values to the strict zod config schema, whose `ConfigError` maps to 400.
 8. Real-binary smoke after `npm run build:server`: `--version`, `--help`, `keys list`, `run` without a provider (exit 1, no stack trace) and `dashboard --no-open --port 19123` (302 + cookie swap, `/api/health` 401 without and 200 with cookie, foreign Host 403, `/` answers 503 "UI is not built" until the Vite batch). The headless scripted-model run and the approval pause (exit 3) are covered in `__tests__/cli/cli.test.ts` with the in-memory fake gateway swapped in through `jest.mock`.
 9. Final numbers: whole repo `npx jest` = 91 suites, 632 passed, 2 skipped (POSIX mode tests on Windows), 0 failed; `check-layout`, `check:deps` and `npx tsc -p packages/themis-app/tsconfig.json` pass. Tasks 21-26 (UI, docs, final verification) remain.
+
+## Phase 4 execution results — batch E (tasks 21-26) and exit
+
+1. Tasks 21-26 landed as specced. Branch, push and PR steps skipped ("PR skipped"); work is on the single `restructure` branch. Node engine stays `>=24` everywhere (README, docs, package.json).
+2. The UI has one extra helper, `ui/src/hooks.ts` (`useLoad` polling loader, `errMsg`, `shortId`, `when`), shared by the pages; the plan listed only api/hash/components. Pages still use only `api.ts`, the four components and React state; no `dangerouslySetInnerHTML`, no external URLs (guarded by `static-ui.test.ts`).
+3. `npm pack --dry-run --json` runs `prepack` (the build) and pollutes stdout, so the Task 23.3 content check was run with `--ignore-scripts` after a build. Result: `pack OK 119 files`, no `src/`, `ui/`, `__tests__/`, `.env` or source maps.
+4. `packages/themis-app` had no licence files although `files` listed them; copied `LICENSE`, `LICENSE-APACHE`, `LICENSE-MIT` from the repo root (same as `packages/aegis`). Not done for core/gateway (out of scope; Phase 7 pack assertions should cover them).
+5. Task 24: the `@aegis-skills/themis` rule and `APPROVAL_DECIDERS` entries already existed from batch D and were kept. The `guards.test.ts` rule for `node:sqlite` accepts `import type`, `typeof import('node:sqlite')` type positions and `getBuiltinModule('node:sqlite')` (the real `app-db.ts` uses the latter two). The probe import of `better-sqlite3` is rejected by `check-deps-themis` (exit 1) as expected.
+6. `scripts/check-layout.js` MUST_EXIST now also lists the key themis-app files (tsconfig.build, jest config, README, src index/app/cli/graph build/runner/checkpointer/server http+security+approvals route, ui index/vite config/tsconfig/main) and `docs/themis/mode-2.md`.
+7. Docs (`packages/themis-app/README.md`, `docs/themis/mode-2.md`) were written from the real `HELP` text, `KEY_VARS`, `DEFAULT_MODELS`, `LOCAL_PRESETS` and the CLI exit codes (0/1/2/3). Until publication, the clean-machine steps describe installing the four tarballs in one command.
+8. Live verification on Windows (port 19120, throwaway `THEMIS_HOME`): no cookie -> 401; foreign Host -> 403; health with cookie -> JSON; POST without Origin -> 403; `/` -> 200 with the strict CSP header and an `index.html` whose only script is `/assets/index-*.js` (no inline script/style), assets 200; `ExperimentalWarning` count 0. Also loaded in the in-app browser: the `?t=` link redirected to `/`, all eight pages rendered, console empty, and the Settings Save (a PUT) succeeded through the browser (Origin/cookie accepted). Server processes were stopped afterwards.
+9. Tarballs (`.pack/`, git-ignored): four `.tgz` files; installed together in a fresh folder with no workspace: `npx themis --version` -> `themis 0.1.0 (Aegis 1.1.0, osk 1.1)`; no `node-gyp` or `better-sqlite3` in `npm ls`; no registry 404.
+10. Final numbers: whole repo `npx jest` = 93 suites, 641 passed, 2 skipped (POSIX mode tests on Windows), 0 failed (was 632 passed after batch D); prompt-parity snapshot untouched (11 passed, no `-u`). `npm run build -w @aegis-skills/web`, `npm run build -w @aegis-skills/themis` (server + Vite UI), `check:deps`, `check-layout`, `tsc -p packages/themis-app/tsconfig.json` and `tsc -p packages/themis-app/ui/tsconfig.json` all pass. `npm ls better-sqlite3` is empty.
+
+### Exit checklist (plan section 11)
+
+- [x] `packages/themis-app` exists; pack contents pass (dist incl. dist/ui, bin, README, licences); UI deps are devDependencies only.
+- [x] `apps/web/lib/themis`, `apps/web/__tests__/themis` and `apps/web/app/api/{themis,audit,exposure}` are gone (batch B); `npm ls better-sqlite3` is empty.
+- [x] jest green; `check:deps` OK with `APPROVAL_DECIDERS` = dashboard route + plugin approval; `check-layout` passes.
+- [x] Graph built only from `THEMIS_WORKFLOW` + `LANGGRAPH_NODE_BY_STEP` (`build.test.ts`, batch C).
+- [x] Checkpointer restart test (Task 7) and runner pause/resume incl. `needs_reproposal` (Task 14) pass in the full run.
+- [x] Security tests pass (token/cookie, Host, Origin, no CORS, CSP, 413/415, masked keys, loopback refusal, single `decideApproval` caller).
+- [x] Reports carry the `Themis x · Aegis y (osk z)` stamp (report tests; UI shows it on Reports and in the nav).
+- [x] Live smoke test passed on Windows (item 8).
+- [ ] PR skipped (by instruction). USER clean-machine exit test with a local model and a cloud key remains a USER ACTION (plan section 9); the tarball install on this machine passed, but no model run was made (no keys supplied).
