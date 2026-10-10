@@ -77,3 +77,16 @@ Requirements discovered while writing individual phase plans that change OTHER p
 | 0.10 | `.gitignore` now ignores `graphify-out/`; `scripts/check-layout.js` is the layout guard that later phases extend. The older untracked `docs/superpowers/plans/2026-05-25-unified-aegis-cli.md` was intentionally left uncommitted. | all | done |
 | 0.11 | Pending USER ACTIONS from the Phase 0 plan (none done by the executor): Vercel Root Directory = `apps/web` before any deploy of this branch; pause or retire the local `aegis-weekly-intel-sync` task while this branch is checked out (it runs in this folder); fix or retire the Skill Health workflow; add the `SECURITY.md` contact email; confirm "Kairo Foundation" as licence holder. Nothing has been pushed. | USER | open |
 | 0.12 | **0.9 resolved (2026-10-08).** The stray `node@22.9.0` package came from an accidental `npm install` in `C:\Users\Drupad` (also left `@aegis-skills/core@0.1.0`, `bun`, `dagre`, `reactflow`). Its `node_modules\.bin` was renamed to `.bin.removed-2026-10-08` and `package.json`/`package-lock.json` there were renamed with the same suffix (nothing deleted). The rest of `C:\Users\Drupad\node_modules` could not be renamed because the Context7 MCP server runs from it; rename or delete it after that server is restarted. A fresh `npm ci` then rebuilt `better-sqlite3` for Node 24 (ABI 137). `npm run`/Jest/Next, the shell `node`, and `node:sqlite` all run Node 24.11 now. `node:sqlite` prints an ExperimentalWarning on 24.11 (harmless; Phase 2 may silence it). Note: `npm exec -- node` is not a valid probe (npm treats "node" as a package to fetch); use `npm exec -c "node ..."`. Also unrelated: npm's global prefix still points at Nodist (`C:\Program Files (x86)\Nodist\bin`, Node 20.10 only) and Nodist is also on PATH; harmless now but worth cleaning up. | Phases 2-4 | resolved |
+
+## Phase 2 execution results (2026-10-10)
+
+Executed on branch `restructure` (no push/PR: nothing is deployed until all phases are done).
+
+- Tests: 70 suites / 567 tests green (baseline 447); prompt-parity snapshot (12) unchanged; workflow-parity test passes (LangGraph edges == `THEMIS_WORKFLOW`).
+- `npm run build -w @aegis-skills/web` succeeds with no fallback needed (no `serverComponentsExternalPackages` change); `check:deps`, `check-layout` pass.
+- Deviations from the plan text (all small, all deliberate):
+  1. `themis-core/test/contract-surface.test.ts`: the plan's "no `sqlite` in `require.cache`" assertion matches our own `store/sqlite.ts`. Replaced with a spy on `process.getBuiltinModule` proving `node:sqlite` is only loaded when a store is opened.
+  2. `themis-gateway/package.json` `engines.node` is `>=24` (plan said `>=22.13`; contracts correction 11 says Node 24 everywhere, and `check-layout` enforces it).
+  3. `scripts/check-layout.js` data extended (Phase 2 paths required, moved web paths forbidden, two new package manifests checked).
+  4. Task 19.8 (push + PR) intentionally skipped.
+- Phases 3/4 must adopt the contract additions listed in the plan's Caveats section (RunState `context`/`report`/`error`, `startRun` opts, `Gateway.call` reason opt, `executeApproved` restart rule, `McpApprovalRequest` name).
