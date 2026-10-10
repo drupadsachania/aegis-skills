@@ -1,0 +1,22 @@
+{
+  "osk": "1.1",
+  "name": "themis-orchestrator",
+  "version": "1.1.0",
+  "description": "Coordinates a governed, multi-step security workflow (validate, decompose, schedule, fan-out, guardrail, synthesise, audit) by driving the Themis MCP tools. Use when the user asks for a security assessment, exposure validation, threat hunt, or any task that should run under tool governance and an audit trail rather than ad-hoc tool calls.",
+  "family": "domain",
+  "frameworks": [],
+  "tags": [
+    "security",
+    "orchestration",
+    "governance",
+    "themis",
+    "mcp"
+  ],
+  "phases": [
+    {
+      "id": "loop-and-outputs",
+      "file": "references/loop-and-outputs.md",
+      "tokens": 436
+    }
+  ]
+}

@@ -90,3 +90,19 @@ Executed on branch `restructure` (no push/PR: nothing is deployed until all phas
   3. `scripts/check-layout.js` data extended (Phase 2 paths required, moved web paths forbidden, two new package manifests checked).
   4. Task 19.8 (push + PR) intentionally skipped.
 - Phases 3/4 must adopt the contract additions listed in the plan's Caveats section (RunState `context`/`report`/`error`, `startRun` opts, `Gateway.call` reason opt, `executeApproved` restart rule, `McpApprovalRequest` name).
+
+## Phase 3 execution results (2026-10-10)
+
+`@aegis-skills/themis-plugin` built on `restructure` (no push/PR). 79 suites / 603 tests green; check-layout, check:deps (plugin rule + `approval.ts` as sole decider) and `lint-skills` on the orchestrator skill pass; `dist/index.js` boots and prints the ready line on stderr.
+
+The plan text predated Phase 2's final API. Adaptations (deliberate; the design is unchanged):
+1. `advance()` completes ONE step and does not auto-run the next. The plugin drives a loop: it auto-runs the deterministic steps (validate, schedule, audit) and pauses on reasoning steps. (Plan P5 expected auto-run inside `advance`.)
+2. Prompts come from the real core builders (`decomposeSystemPrompt` etc.), not `core.prompts.*`; the plugin only adds the submit contract and a mapping of `fetch_skill_phase`/`read_findings` to the Aegis `get_skill_phase`/`themis_get_run`.
+3. Step output shapes follow core, not the plan: decompose `{subTasks:[{id,skill,description,phase,dependsOn}]}` (plugin injects `skillSlugs` from the installed Aegis), fanout `{results:[{subTaskId,findings,confidence}]}`, guardrail `{results:[{subTaskId,guardrail:PASS|FLAG|BLOCK,guardrailReason}]}`, synthesise `{report:string}`.
+4. `validateExposure`/`parseFinding` do not exist in core (the orchestrating function needs a model and lives in web). `themis_validate_exposure` composes the deterministic core functions (authorize, assessDetection, determineExploitability, verify, riskDelta) from host-supplied exposure/impact states; `themis_record_finding` validates against core's `Finding` shape with zod.
+5. SDK 1.31 stores the tool callback as `handler` (not `callback`). `elicitInput` and `getClientCapabilities` behave as the plan assumed; tool-handler tests stub them on `server.server`.
+6. Orchestrator skill uses family `domain` with one phase file: the Aegis lint requires a phase and a family from the five-bucket map (the plan's `orchestration` family is not valid). It still satisfies the scope-and-authorization rules.
+7. Package `engines.node` is `>=24`; dependencies on core/gateway are `^0.1.0` (they are 0.1.0; the plan's `1.1.0` was wrong). The plugin itself is `1.1.0` as bound; Phase 7's bump script owns later alignment.
+8. Agents omit a `tools:` allowlist (MCP tool names for plugin-bundled servers are not verifiable offline); they inherit tools and are told in prose to route externals through `themis_external_*`. Revisit in Phase 6 once names are verified against a live Claude Code install.
+9. `scripts/check-deps-themis.js` gained a plugin rule (allowing only its own `package.json` as a relative import outside `src/`).
+10. Task 11.2 (push/PR) skipped. Manual host verification: `packages/themis-plugin/docs/manual-verification.md` (USER ACTION).

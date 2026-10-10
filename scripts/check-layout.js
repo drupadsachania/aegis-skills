@@ -37,7 +37,15 @@ const MUST_EXIST = [
   'packages/themis-gateway/package.json', 'packages/themis-gateway/tsconfig.build.json', 'packages/themis-gateway/jest.config.js',
   'packages/themis-gateway/src/index.ts', 'packages/themis-gateway/src/client.ts', 'packages/themis-gateway/src/gateway.ts',
   'scripts/check-deps-themis.js', 'scripts/build-themis-packages.js',
-  'apps/web/lib/themis/mcp/agent-tools.ts'
+  'apps/web/lib/themis/mcp/agent-tools.ts',
+  // Phase 3: Mode 1 plugin (Themis on the user's own AI)
+  'packages/themis-plugin/package.json', 'packages/themis-plugin/tsconfig.build.json', 'packages/themis-plugin/jest.config.js',
+  'packages/themis-plugin/src/index.ts', 'packages/themis-plugin/src/server.ts', 'packages/themis-plugin/src/approval.ts',
+  'packages/themis-plugin/src/tools/workflow-tools.ts', 'packages/themis-plugin/src/tools/capability-tools.ts', 'packages/themis-plugin/src/tools/gateway-tools.ts',
+  'packages/themis-plugin/skills/themis-orchestrator/SKILL.md', 'packages/themis-plugin/skills/themis-orchestrator/skill.json',
+  'packages/themis-plugin/agents/themis-subtask-runner.md', 'packages/themis-plugin/agents/themis-guardrail-reviewer.md',
+  'packages/themis-plugin/.claude-plugin/plugin.json', 'packages/themis-plugin/.mcp.json', 'packages/themis-plugin/server.json',
+  'packages/themis-plugin/docs/manual-verification.md'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
@@ -62,7 +70,8 @@ const PACKAGES = [
   ['apps/web/package.json', '@aegis-skills/web'],
   ['packages/aegis/package.json', 'aegis-skills'],
   ['packages/themis-core/package.json', '@aegis-skills/themis-core'],
-  ['packages/themis-gateway/package.json', '@aegis-skills/themis-gateway']
+  ['packages/themis-gateway/package.json', '@aegis-skills/themis-gateway'],
+  ['packages/themis-plugin/package.json', '@aegis-skills/themis-plugin']
 ]
 
 for (const p of MUST_EXIST) if (!fs.existsSync(at(p))) problems.push(`missing: ${p}`)

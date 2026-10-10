@@ -5,7 +5,7 @@
 //  - themis-gateway: only node: built-ins, zod, @aegis-skills/themis-core,
 //                    @modelcontextprotocol/sdk and its own src/ files.
 //  - Approval invariant (contracts §6): only allowlisted files may call
-//    `.decideApproval(`. Phase 3 adds the plugin elicitation handler and Phase 4
+//    `.decideApproval(`. Phase 3 added the plugin elicitation handler; Phase 4 adds
 //    the dashboard approval route to APPROVAL_DECIDERS.
 const fs = require('node:fs')
 const path = require('node:path')
@@ -15,8 +15,9 @@ const ROOT = path.resolve(__dirname, '..')
 const RULES = [
   { name: '@aegis-skills/themis-core', dir: 'packages/themis-core', allowed: ['zod'] },
   { name: '@aegis-skills/themis-gateway', dir: 'packages/themis-gateway', allowed: ['zod', '@aegis-skills/themis-core', '@modelcontextprotocol/sdk'] },
+  { name: '@aegis-skills/themis-plugin', dir: 'packages/themis-plugin', allowed: ['zod', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk'], allowOwnPackageJson: true },
 ]
-const APPROVAL_DECIDERS = [] // repo-relative posix paths
+const APPROVAL_DECIDERS = ['packages/themis-plugin/src/approval.ts'] // repo-relative posix paths
 const INVARIANT_DIRS = ['packages', 'apps/web/lib', 'apps/web/app']
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', 'coverage', 'test', '__tests__'])
 const SPEC_RES = [
@@ -50,6 +51,7 @@ function* walk(dir) {
 function checkSpec(rule, file, spec) {
   if (spec.startsWith('.')) {
     const target = path.resolve(path.dirname(file), spec)
+    if (rule.allowOwnPackageJson && target === path.join(ROOT, rule.dir, 'package.json')) return null
     return target.startsWith(path.join(ROOT, rule.dir, 'src')) ? null : 'relative import escapes the package src/'
   }
   if (spec.startsWith('node:')) return null
