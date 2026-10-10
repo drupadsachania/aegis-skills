@@ -38,7 +38,7 @@ const MUST_EXIST = [
   'packages/themis-gateway/src/index.ts', 'packages/themis-gateway/src/client.ts', 'packages/themis-gateway/src/gateway.ts',
   'scripts/check-deps-themis.js', 'scripts/build-themis-packages.js',
   'packages/themis-app/package.json', 'packages/themis-app/bin/themis.js',
-  'packages/themis-app/tsconfig.build.json', 'packages/themis-app/jest.config.js',
+  'packages/themis-app/tsconfig.build.json', 'packages/themis-app/jest.config.js', 'packages/themis-app/README.md', 'docs/themis/mode-2.md',
   'packages/themis-app/src/index.ts', 'packages/themis-app/src/app.ts', 'packages/themis-app/src/cli/index.ts',
   'packages/themis-app/src/graph/build.ts', 'packages/themis-app/src/runner/runner.ts', 'packages/themis-app/src/store/checkpointer.ts',
   'packages/themis-app/src/server/http.ts', 'packages/themis-app/src/server/security.ts', 'packages/themis-app/src/server/routes/approvals.ts',
