@@ -1,51 +1,16 @@
 // Unit tests for the sub-agent spin-up logic added in this pass:
-// normaliseSubTasks (planner limits) and fanOutNode (dependency-aware scheduler).
+// fanOutNode (dependency-aware scheduler). Planner limits are tested in themis-core.
 
 jest.mock('@/lib/themis/provider', () => ({ llm: jest.fn() }))
 
-import { normaliseSubTasks, MAX_SUBTASKS } from '@/lib/themis/decompose'
 import { fanOutNode } from '@/lib/themis/graph/nodes'
 import { Send } from '@langchain/langgraph'
 import type { SubTask, SubTaskResult } from '@aegis-skills/themis-core'
 import type { ThemisState } from '@/lib/themis/graph/state'
 
-const SLUGS = ['mitre-attack', 'threat-modeling', 'network-security', 'exposure-validation']
-
 function st(id: string, skill: string, dependsOn: string[] = []): SubTask {
   return { id, description: `task ${id}`, skill, phase: 0, tier: 'fast', dependsOn }
 }
-
-describe('normaliseSubTasks (planner limits)', () => {
-  it('drops sub-tasks whose skill is not a real slug', () => {
-    const out = normaliseSubTasks([st('a', 'mitre-attack'), st('b', 'made-up-skill')], SLUGS)
-    expect(out.map(t => t.id)).toEqual(['a'])
-  })
-
-  it('caps the plan at MAX_SUBTASKS', () => {
-    const many = Array.from({ length: MAX_SUBTASKS + 5 }, (_, i) => st(`st-${i}`, 'mitre-attack'))
-    expect(normaliseSubTasks(many, SLUGS)).toHaveLength(MAX_SUBTASKS)
-  })
-
-  it('drops dependencies that point at ids not in the plan', () => {
-    const out = normaliseSubTasks([st('a', 'mitre-attack', ['ghost'])], SLUGS)
-    expect(out[0].dependsOn).toEqual([])
-  })
-
-  it('breaks a dependency cycle so the plan can always make progress', () => {
-    const out = normaliseSubTasks(
-      [st('a', 'mitre-attack', ['b']), st('b', 'threat-modeling', ['a'])],
-      SLUGS,
-    )
-    // At least one of the two must end up with no dependency, or the graph stalls.
-    const roots = out.filter(t => t.dependsOn.length === 0)
-    expect(roots.length).toBeGreaterThanOrEqual(1)
-  })
-
-  it('de-duplicates repeated ids', () => {
-    const out = normaliseSubTasks([st('x', 'mitre-attack'), st('x', 'threat-modeling')], SLUGS)
-    expect(new Set(out.map(t => t.id)).size).toBe(out.length)
-  })
-})
 
 describe('fanOutNode (dependency-aware scheduler)', () => {
   function state(subTasks: SubTask[], results: SubTaskResult[] = []): ThemisState {
