@@ -73,11 +73,13 @@ it('refuses approvals that belong to another run', async () => {
   store.decideApproval(id, 'approved')
   expect((await setup(store, 'run-b').gw.executeApproved(id)).kind).toBe('denied')
 })
-it('no gateway or web Themis source calls decideApproval', () => {
-  const roots = [path.join(__dirname, '..', 'src'), path.join(__dirname, '..', '..', '..', 'apps', 'web', 'lib', 'themis')]
+it('no gateway or themis-app source calls decideApproval, except the dashboard approval route', () => {
+  const appSrc = path.join(__dirname, '..', '..', 'themis-app', 'src')
+  const allowed = path.join(appSrc, 'server', 'routes', 'approvals.ts')
+  const roots = [path.join(__dirname, '..', 'src'), appSrc].filter((d) => fs.existsSync(d))
   const files: string[] = []
   const walk = (d: string) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (/\.(ts|js)$/.test(e.name)) files.push(p) } }
   roots.forEach(walk)
   expect(files.length).toBeGreaterThan(5)
-  expect(files.filter((f) => /\.decideApproval\s*\(/.test(fs.readFileSync(f, 'utf8')))).toEqual([])
+  expect(files.filter((f) => f !== allowed && /\.decideApproval\s*\(/.test(fs.readFileSync(f, 'utf8')))).toEqual([])
 })

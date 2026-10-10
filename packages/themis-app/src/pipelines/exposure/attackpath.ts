@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import { redactSecrets, isAssertedCrownJewel, attackPathContext, parseImpact, impactFallback, attackPathSystemPrompt, attackPathUserMessage, type ExposureRequest, type ImpactAssessment } from '@aegis-skills/themis-core'
 
 export async function assessImpact(sanitisedInput: string, req: ExposureRequest): Promise<ImpactAssessment> {

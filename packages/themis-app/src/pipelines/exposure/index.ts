@@ -5,15 +5,6 @@ import { plan as buildPlan } from './planner'
 import { assessImpact } from './attackpath'
 import { report } from './report'
 
-function getSupabaseClient() {
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient(url, key)
-}
-
 export async function validateExposure(req: ExposureRequest): Promise<ExposureReport> {
   const start = Date.now()
 
@@ -94,30 +85,6 @@ export async function validateExposure(req: ExposureRequest): Promise<ExposureRe
   })
 
   const skillTrace = [...new Set([...applicableSkills, 'risk-management', 'security-operations'])].slice(0, 6)
-
-  // Supabase log — only metadata, never content. Never throws.
-  try {
-    const client = getSupabaseClient()
-    if (client) {
-      await client.from('themis_exposure_log').insert({
-        case_id: exposureCase.caseId,
-        cve: req.cve ?? null,
-        workflow_state: workflowState,
-        exposure_state: correlation.exposure,
-        exploitability_state: exposureCase.states.exploitability,
-        impact_state: impact.state,
-        detection_state: detection.state,
-        policy_decision: policy.decision,
-        risk_before: risk.before.score,
-        risk_after: risk.after?.score ?? null,
-        risk_proven: risk.proven,
-        skill_slugs: skillTrace,
-        duration_ms: Date.now() - start,
-      })
-    }
-  } catch {
-    // Logging failure must never propagate.
-  }
 
   return {
     case: exposureCase,

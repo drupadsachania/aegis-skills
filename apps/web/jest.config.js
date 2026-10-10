@@ -8,8 +8,6 @@ module.exports = createJestConfig({
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   moduleNameMapper: {
-    '^@aegis-skills/themis-core$': '<rootDir>/../../packages/themis-core/src/index.ts',
-    '^@aegis-skills/themis-gateway$': '<rootDir>/../../packages/themis-gateway/src/index.ts',
     '^@/(.*)$': '<rootDir>/$1'
   }
 })

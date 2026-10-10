@@ -1,10 +1,10 @@
 // Mock the provider module
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../../src/providers/llm', () => ({
   llm: jest.fn(),
 }))
 
-import { applyGuardrail } from '@/lib/themis/guardrail'
-import { llm } from '@/lib/themis/provider'
+import { applyGuardrail } from '../../src/reasoning/guardrail'
+import { llm } from '../../src/providers/llm'
 import { SubTaskResult } from '@aegis-skills/themis-core'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>

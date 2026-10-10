@@ -21,18 +21,6 @@ const nextConfig = {
       '/**': AEGIS_RUNTIME_FILES
     }
   },
-  serverExternalPackages: [
-    '@anthropic-ai/sdk',
-    'openai',
-    '@google/generative-ai',
-    '@langchain/anthropic',
-    '@langchain/openai',
-    '@langchain/google-genai',
-    '@langchain/core',
-    '@langchain/langgraph',
-    'better-sqlite3',
-    'langsmith',
-  ],
   async headers () {
     return [
       {

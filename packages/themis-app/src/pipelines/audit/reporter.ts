@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import { redactSecrets, auditReportSystemPrompt, auditReportUserMessage, type AuditRequest, type Finding, type Standard } from '@aegis-skills/themis-core'
 
 export async function report(

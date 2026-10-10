@@ -1,7 +1,7 @@
 // Integration test for the exposure orchestrator — real index.ts, mocked LLM.
 // Proves the full lifecycle wires together and the deterministic/LLM boundary holds.
 
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../../src/providers/llm', () => ({
   llm: jest.fn(),
   availableProviders: jest.fn(() => ['anthropic']),
 }))
@@ -9,12 +9,8 @@ jest.mock('@aegis-skills/themis-core', () => ({
   ...jest.requireActual('@aegis-skills/themis-core'),
   redactSecrets: jest.fn((s: string) => s),
 }))
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => null),
-}))
-
-import { llm } from '@/lib/themis/provider'
-import { validateExposure } from '@/lib/themis/exposure/index'
+import { llm } from '../../src/providers/llm'
+import { validateExposure } from '../../src/pipelines/exposure/index'
 import { ExposureRequest } from '@aegis-skills/themis-core'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>

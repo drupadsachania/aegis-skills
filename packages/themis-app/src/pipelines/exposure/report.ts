@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import { redactSecrets, caseFacts, exposureReportSystemPrompt, exposureReportUserMessage, type ReportInput } from '@aegis-skills/themis-core'
 
 export type { ReportInput }

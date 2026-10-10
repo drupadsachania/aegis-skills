@@ -1,17 +1,7 @@
-import { createHash } from 'node:crypto'
 import { selectStandards, skillsForStandards, score, type AuditRequest, type AuditReport } from '@aegis-skills/themis-core'
 import { ingest } from './ingest'
 import { assess } from './assessor'
 import { report } from './reporter'
-
-function getSupabaseClient() {
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient(url, key)
-}
 
 export async function audit(req: AuditRequest): Promise<AuditReport> {
   const start = Date.now()
@@ -23,23 +13,6 @@ export async function audit(req: AuditRequest): Promise<AuditReport> {
   const findings = await assess(sanitisedInput, standards, mergedSkills, req.context)
   const summary = score(findings)
   const executiveSummary = await report(req, findings, standards, mergedSkills)
-
-  // Write Supabase audit log — wrap in try/catch, never throw
-  try {
-    const client = getSupabaseClient()
-    if (client) {
-      const inputHash = createHash('sha256').update(sanitisedInput).digest('hex')
-      await client.from('themis_audit_log').insert({
-        input_hash: inputHash,
-        standards_applied: standards,
-        severity_counts: summary,
-        skill_slugs: mergedSkills,
-        duration_ms: Date.now() - start,
-      })
-    }
-  } catch {
-    // Audit log failure must never propagate to caller
-  }
 
   return {
     executiveSummary,

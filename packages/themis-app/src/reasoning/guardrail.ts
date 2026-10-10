@@ -1,4 +1,4 @@
-import { llm } from './provider'
+import { llm } from '../providers/llm'
 import {
   precheckSecrets, parseGuardrailVerdict, guardrailFailure,
   guardrailSystemPrompt, guardrailUserMessage, type SubTaskResult,

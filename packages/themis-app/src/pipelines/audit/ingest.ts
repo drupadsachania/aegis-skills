@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import {
   redactSecrets, sanitiseUntrustedInput, withRedactionWarning, parseAuditClassification,
   auditClassifySystemPrompt, auditClassifyUserMessage, type AuditRequest,

@@ -2,32 +2,24 @@
 // made by the web Themis modules. Written BEFORE prompts move into themis-core.
 // Never update this snapshot with -u during Phase 2: a diff means a prompt changed.
 
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../src/providers/llm', () => ({
   llm: jest.fn(),
   availableProviders: jest.fn(() => ['anthropic']),
 }))
-jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn(() => null) }))
-jest.mock('@/lib/themis/llm-factory', () => ({ modelForTier: jest.fn(() => ({})) }))
-jest.mock('@langchain/langgraph/prebuilt', () => ({
-  createReactAgent: jest.fn(() => ({
-    invoke: jest.fn().mockResolvedValue({ messages: [{ content: 'agent findings' }] }),
-  })),
-}))
+jest.mock('../src/skills/aegis', () => ({ enabledSkillSlugs: jest.fn(() => ['mitre-attack', 'threat-modeling']) }))
 
-import { llm } from '@/lib/themis/provider'
-import { createReactAgent } from '@langchain/langgraph/prebuilt'
-import { decompose } from '@/lib/themis/decompose'
-import { applyGuardrail } from '@/lib/themis/guardrail'
-import { synthesise } from '@/lib/themis/synthesise'
-import { skillAgentNode } from '@/lib/themis/graph/nodes'
-import { ingest as auditIngest } from '@/lib/themis/audit/ingest'
-import { assess } from '@/lib/themis/audit/assessor'
-import { report as auditReport } from '@/lib/themis/audit/reporter'
-import { ingest as exposureIngest } from '@/lib/themis/exposure/ingest'
-import { correlate } from '@/lib/themis/exposure/correlate'
-import { plan } from '@/lib/themis/exposure/planner'
-import { assessImpact } from '@/lib/themis/exposure/attackpath'
-import { report as exposureReport } from '@/lib/themis/exposure/report'
+import { llm } from '../src/providers/llm'
+import { decompose } from '../src/reasoning/decompose'
+import { applyGuardrail } from '../src/reasoning/guardrail'
+import { synthesise } from '../src/reasoning/synthesise'
+import { ingest as auditIngest } from '../src/pipelines/audit/ingest'
+import { assess } from '../src/pipelines/audit/assessor'
+import { report as auditReport } from '../src/pipelines/audit/reporter'
+import { ingest as exposureIngest } from '../src/pipelines/exposure/ingest'
+import { correlate } from '../src/pipelines/exposure/correlate'
+import { plan } from '../src/pipelines/exposure/planner'
+import { assessImpact } from '../src/pipelines/exposure/attackpath'
+import { report as exposureReport } from '../src/pipelines/exposure/report'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>
 const resp = (content: string) => ({
@@ -51,13 +43,9 @@ const exposureReq: Parameters<typeof correlate>[2] = {
 
 beforeEach(() => {
   mockLlm.mockReset()
-  ;(createReactAgent as jest.Mock).mockClear()
 })
 
 it('decompose', async () => {
-  global.fetch = jest.fn().mockResolvedValue({
-    ok: true, json: async () => ({ skills: [{ name: 'mitre-attack' }, { name: 'threat-modeling' }] }),
-  }) as unknown as typeof fetch
   mockLlm.mockResolvedValue(resp('[]'))
   await decompose({ task: 'Assess the bastion host', context: { environments: [], attackSurfaceTags: [] } })
   expect(calls()).toMatchSnapshot()
@@ -73,18 +61,6 @@ it('synthesise', async () => {
   mockLlm.mockResolvedValue(resp('report'))
   await synthesise('task', [result, { ...result, subTaskId: 'st-2', guardrail: 'FLAG', guardrailReason: 'too detailed' }])
   expect(calls()).toMatchSnapshot()
-})
-
-it('skill agent', async () => {
-  await skillAgentNode({
-    currentSubTask: { id: 'st-1', description: 'Map exposed services', skill: 'mitre-attack', phase: 1, tier: 'fast', dependsOn: [] },
-    subTaskResults: [],
-    provider: 'anthropic',
-  } as never)
-  const mock = createReactAgent as jest.Mock
-  const opts = mock.mock.calls[0][0]
-  const invokeArg = mock.mock.results[0].value.invoke.mock.calls[0][0]
-  expect({ system: opts.stateModifier.content, invoke: invokeArg }).toMatchSnapshot()
 })
 
 it('audit ingest', async () => {

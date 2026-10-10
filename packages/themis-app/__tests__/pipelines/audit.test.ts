@@ -1,11 +1,10 @@
-import { NextRequest } from 'next/server'
 import { ValidationError } from '@aegis-skills/themis-core'
 
 // ─────────────────────────────────────────────
 // Module mocks — must be hoisted before imports
 // ─────────────────────────────────────────────
 
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../../src/providers/llm', () => ({
   llm: jest.fn(),
   availableProviders: jest.fn(() => ['anthropic']),
 }))
@@ -15,42 +14,18 @@ jest.mock('@aegis-skills/themis-core', () => ({
   redactSecrets: jest.fn((s: string) => s),
 }))
 
-jest.mock('@/lib/themis/audit/index', () => ({
-  audit: jest.fn(),
-}))
-
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({ data: null, error: null }),
-        }),
-      }),
-      insert: jest.fn().mockResolvedValue({ error: null }),
-      upsert: jest.fn().mockResolvedValue({ error: null }),
-      update: jest.fn().mockReturnValue({
-        eq: jest.fn().mockResolvedValue({ error: null }),
-      }),
-    }),
-  })),
-}))
-
 // ─────────────────────────────────────────────
 // Imports
 // ─────────────────────────────────────────────
 
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../src/providers/llm'
 import { redactSecrets, type AuditRequest, type Finding } from '@aegis-skills/themis-core'
-import { ingest } from '@/lib/themis/audit/ingest'
-import { assess } from '@/lib/themis/audit/assessor'
-import { report } from '@/lib/themis/audit/reporter'
-import { audit } from '@/lib/themis/audit/index'
-import { POST } from '@/app/api/audit/route'
+import { ingest } from '../../src/pipelines/audit/ingest'
+import { assess } from '../../src/pipelines/audit/assessor'
+import { report } from '../../src/pipelines/audit/reporter'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>
 const mockRedactSecrets = redactSecrets as jest.MockedFunction<typeof redactSecrets>
-const mockAudit = audit as jest.MockedFunction<typeof audit>
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -75,15 +50,6 @@ function makeAuditRequest(overrides: Partial<AuditRequest> = {}): AuditRequest {
     context: { environments: [] },
     ...overrides,
   }
-}
-
-const MOCK_AUDIT_REPORT = {
-  executiveSummary: 'No critical findings.',
-  standardsApplied: ['cis-l1' as const],
-  findings: [],
-  summary: { critical: 0, high: 0, medium: 0, low: 0, informational: 0, passed: 0 },
-  skillTrace: [],
-  durationMs: 100,
 }
 
 // ─────────────────────────────────────────────
@@ -285,120 +251,5 @@ describe('report', () => {
 
     const result = await report(req, [], ['cis-l1'], [])
     expect(result).toBe('Executive summary unavailable.')
-  })
-})
-
-// ─────────────────────────────────────────────
-// route tests
-// ─────────────────────────────────────────────
-
-function makeRouteRequest(body: unknown, headers: Record<string, string> = {}): NextRequest {
-  return new NextRequest('http://localhost/api/audit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify(body),
-  })
-}
-
-describe('POST /api/audit', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    mockAudit.mockResolvedValue(MOCK_AUDIT_REPORT)
-    process.env.SUPABASE_URL = 'https://test.supabase.co'
-    process.env.SUPABASE_ANON_KEY = 'test-anon-key'
-  })
-
-  afterEach(() => {
-    delete process.env.SUPABASE_URL
-    delete process.env.SUPABASE_ANON_KEY
-  })
-
-  test('input over 12000 chars returns 400', async () => {
-    const req = makeRouteRequest({ input: 'a'.repeat(12001) })
-    const res = await POST(req)
-    expect(res.status).toBe(400)
-    const body = await res.json()
-    expect(body.error).toBe('Request invalid')
-  })
-
-  test('missing input field returns 400', async () => {
-    const req = makeRouteRequest({ inputType: 'config' })
-    const res = await POST(req)
-    expect(res.status).toBe(400)
-  })
-
-  test('invalid inputType defaults to description gracefully (does not 400)', async () => {
-    const req = makeRouteRequest({ input: 'some config', inputType: 'unknown-type' })
-    const res = await POST(req)
-    // Should not return 400 — inputType defaults to 'description'
-    expect(res.status).not.toBe(400)
-    expect(mockAudit).toHaveBeenCalledWith(
-      expect.objectContaining({ inputType: 'description' })
-    )
-  })
-
-  test('security headers present on 200 response', async () => {
-    const req = makeRouteRequest({ input: 'some config' })
-    const res = await POST(req)
-    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
-    expect(res.headers.get('X-Frame-Options')).toBe('DENY')
-    expect(res.headers.get('Referrer-Policy')).toBe('no-referrer')
-    expect(res.headers.get('Content-Security-Policy')).toBe("default-src 'none'")
-  })
-
-  test('security headers present on 400 response', async () => {
-    const req = makeRouteRequest({ /* missing input */ })
-    const res = await POST(req)
-    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
-  })
-
-  test('invalid JSON body returns 400', async () => {
-    const req = new NextRequest('http://localhost/api/audit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: 'not valid json {{{',
-    })
-    const res = await POST(req)
-    expect(res.status).toBe(400)
-  })
-
-  test('unknown standards are filtered silently', async () => {
-    const req = makeRouteRequest({ input: 'some config', standards: ['cis-l1', 'fake-standard'] })
-    const res = await POST(req)
-    expect(res.status).not.toBe(400)
-    expect(mockAudit).toHaveBeenCalledWith(
-      expect.objectContaining({ standards: ['cis-l1'] })
-    )
-  })
-
-  test('non-array standards defaults to []', async () => {
-    const req = makeRouteRequest({ input: 'some config', standards: 'cis-l1' })
-    const res = await POST(req)
-    expect(res.status).not.toBe(400)
-    expect(mockAudit).toHaveBeenCalledWith(
-      expect.objectContaining({ standards: [] })
-    )
-  })
-
-  test('invalid systemType slug is dropped silently', async () => {
-    const req = makeRouteRequest({ input: 'config', context: { systemType: 'INVALID SLUG!!', environments: [] } })
-    const res = await POST(req)
-    expect(res.status).not.toBe(400)
-    expect(mockAudit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        context: expect.objectContaining({ systemType: undefined }),
-      })
-    )
-  })
-
-  test('successful request returns 200 with audit report shape', async () => {
-    const req = makeRouteRequest({ input: 'some config', standards: ['cis-l1'] })
-    const res = await POST(req)
-    expect(res.status).toBe(200)
-    const body = await res.json()
-    expect(body).toHaveProperty('executiveSummary')
-    expect(body).toHaveProperty('findings')
-    expect(body).toHaveProperty('summary')
-    expect(body).toHaveProperty('standardsApplied')
   })
 })

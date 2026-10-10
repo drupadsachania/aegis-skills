@@ -1,16 +1,17 @@
 import { ValidationError } from '@aegis-skills/themis-core'
 
 // Mock the provider module
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../../src/providers/llm', () => ({
   llm: jest.fn(),
 }))
 
-// Mock global fetch
-const mockFetch = jest.fn()
-global.fetch = mockFetch as unknown as typeof fetch
+jest.mock('../../src/skills/aegis', () => ({
+  enabledSkillSlugs: jest.fn(() => ['auth-bypass', 'sql-injection', 'xss-detection']),
+}))
 
-import { decompose } from '@/lib/themis/decompose'
-import { llm } from '@/lib/themis/provider'
+import { decompose } from '../../src/reasoning/decompose'
+import { llm } from '../../src/providers/llm'
+import { enabledSkillSlugs } from '../../src/skills/aegis'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>
 
@@ -18,19 +19,6 @@ const VALID_SUBTASK_ARRAY = [
   { id: 'st-1', description: 'Check auth', skill: 'auth-bypass', phase: 0, dependsOn: [] },
   { id: 'st-2', description: 'Check SQL', skill: 'sql-injection', phase: 1, dependsOn: ['st-1'] },
 ]
-
-function makeSkillsResponse() {
-  return {
-    ok: true,
-    json: () => Promise.resolve({
-      skills: [
-        { name: 'auth-bypass' },
-        { name: 'sql-injection' },
-        { name: 'xss-detection' },
-      ],
-    }),
-  }
-}
 
 function makeLlmResponse(content: string) {
   return Promise.resolve({
@@ -45,7 +33,7 @@ function makeLlmResponse(content: string) {
 
 beforeEach(() => {
   jest.clearAllMocks()
-  mockFetch.mockResolvedValue(makeSkillsResponse())
+  ;(enabledSkillSlugs as jest.Mock).mockReturnValue(['auth-bypass', 'sql-injection', 'xss-detection'])
 })
 
 describe('decompose', () => {
@@ -173,26 +161,15 @@ describe('decompose', () => {
     expect(mockLlm).not.toHaveBeenCalled()
   })
 
-  test('throws if skill list fetch fails', async () => {
-    mockFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+  test('throws if no skills are enabled', async () => {
+    ;(enabledSkillSlugs as jest.Mock).mockReturnValue([])
 
     await expect(
       decompose({
         task: 'Analyse login',
         context: { environments: [], attackSurfaceTags: [] },
       })
-    ).rejects.toThrow()
-  })
-
-  test('throws if fetch itself throws', async () => {
-    mockFetch.mockRejectedValue(new Error('network error'))
-
-    await expect(
-      decompose({
-        task: 'Analyse login',
-        context: { environments: [], attackSurfaceTags: [] },
-      })
-    ).rejects.toThrow()
+    ).rejects.toThrow('No Aegis skills are enabled')
   })
 
   test('includes dependsOn array from LLM response', async () => {

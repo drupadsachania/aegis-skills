@@ -1,4 +1,4 @@
-import { llm } from './provider'
+import { llm } from '../providers/llm'
 import { redactSecrets, synthesiseSystemPrompt, synthesiseUserMessage, type SubTaskResult } from '@aegis-skills/themis-core'
 
 export async function synthesise(task: string, results: SubTaskResult[]): Promise<string> {

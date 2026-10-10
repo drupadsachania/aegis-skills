@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import { redactSecrets, correlationContext, parseCorrelation, correlationFallback, correlateSystemPrompt, correlateUserMessage, type CorrelationResult, type ExposureRequest } from '@aegis-skills/themis-core'
 
 export type { CorrelationResult }

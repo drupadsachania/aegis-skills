@@ -1,4 +1,4 @@
-import { llm } from '@/lib/themis/provider'
+import { llm } from '../../providers/llm'
 import { redactSecrets, capabilitiesWithinDepth, deniedPlan, plannerCatalogue, parsePlannerResponse, passiveFallbackSteps, finalisePlan, plannerSystemPrompt, plannerUserMessage, type PolicyResult, type ValidationPlan } from '@aegis-skills/themis-core'
 
 /** Selects only registry capabilities within the policy ceiling; never executes. */

@@ -1,10 +1,10 @@
 // Mock the provider module
-jest.mock('@/lib/themis/provider', () => ({
+jest.mock('../../src/providers/llm', () => ({
   llm: jest.fn(),
 }))
 
-import { synthesise } from '@/lib/themis/synthesise'
-import { llm } from '@/lib/themis/provider'
+import { synthesise } from '../../src/reasoning/synthesise'
+import { llm } from '../../src/providers/llm'
 import { SubTaskResult } from '@aegis-skills/themis-core'
 
 const mockLlm = llm as jest.MockedFunction<typeof llm>

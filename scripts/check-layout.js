@@ -24,7 +24,7 @@ const MUST_EXIST = [
   'packages/aegis/package.json', 'packages/aegis/health.json', 'packages/aegis/skills',
   'apps/web/package.json', 'apps/web/next.config.js', 'apps/web/jest.config.js', 'apps/web/jest.setup.js',
   'apps/web/tsconfig.json', 'apps/web/next-env.d.ts', 'apps/web/postcss.config.js', 'apps/web/tailwind.config.js',
-  'apps/web/lib/skill-reader.js', 'apps/web/lib/aegis-paths.js', 'apps/web/lib/themis/index.ts',
+  'apps/web/lib/skill-reader.js', 'apps/web/lib/aegis-paths.js',
   'packages/aegis/cli/aegis.js', 'packages/aegis/lib/installer.js',
   'packages/aegis/mcp/server.js', 'packages/aegis/mcp/stdio.js', 'packages/aegis/mcp/skill-reader.js',
   'packages/aegis/mcp/skill-families.js', 'packages/aegis/lib/skill-meta.js', 'packages/aegis/lib/targets.js',
@@ -37,7 +37,7 @@ const MUST_EXIST = [
   'packages/themis-gateway/package.json', 'packages/themis-gateway/tsconfig.build.json', 'packages/themis-gateway/jest.config.js',
   'packages/themis-gateway/src/index.ts', 'packages/themis-gateway/src/client.ts', 'packages/themis-gateway/src/gateway.ts',
   'scripts/check-deps-themis.js', 'scripts/build-themis-packages.js',
-  'apps/web/lib/themis/mcp/agent-tools.ts',
+  'packages/themis-app/package.json', 'packages/themis-app/bin/themis.js',
   // Phase 3: Mode 1 plugin (Themis on the user's own AI)
   'packages/themis-plugin/package.json', 'packages/themis-plugin/tsconfig.build.json', 'packages/themis-plugin/jest.config.js',
   'packages/themis-plugin/src/index.ts', 'packages/themis-plugin/src/server.ts', 'packages/themis-plugin/src/approval.ts',
@@ -58,7 +58,9 @@ const MUST_NOT_EXIST = [
   'apps/web/lib/themis/exposure/types.ts', 'apps/web/lib/themis/exposure/policy.ts', 'apps/web/lib/themis/exposure/risk.ts',
   'apps/web/lib/themis/exposure/detection.ts', 'apps/web/lib/themis/exposure/verify.ts', 'apps/web/lib/themis/exposure/capabilities.ts',
   'apps/web/__tests__/themis/secrets.test.ts', 'apps/web/__tests__/themis/sanitise.test.ts', 'apps/web/__tests__/themis/types.test.ts',
-  'apps/web/__tests__/themis/mcp/governance.test.ts'
+  'apps/web/__tests__/themis/mcp/governance.test.ts',
+  // Phase 4: Themis left apps/web entirely
+  'apps/web/lib/themis', 'apps/web/__tests__/themis', 'apps/web/app/api/themis', 'apps/web/app/api/audit', 'apps/web/app/api/exposure'
 ]
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
