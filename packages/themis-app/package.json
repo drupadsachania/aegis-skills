@@ -1,0 +1,48 @@
+{
+  "name": "@aegis-skills/themis",
+  "version": "0.1.0",
+  "description": "Themis standalone: a local security-operations agent with a web dashboard, powered by the Aegis skill pack.",
+  "license": "(Apache-2.0 OR MIT)",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": { "themis": "bin/themis.js" },
+  "files": ["bin/", "dist/", "README.md", "LICENSE", "LICENSE-APACHE", "LICENSE-MIT"],
+  "engines": { "node": ">=24" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drupadsachania/aegis-skills.git",
+    "directory": "packages/themis-app"
+  },
+  "homepage": "https://aegis-skills.vercel.app/",
+  "keywords": ["security", "cybersecurity", "soc", "agent", "langgraph", "mcp", "aegis", "themis"],
+  "scripts": {
+    "prebuild": "npm run build -w @aegis-skills/themis-core -w @aegis-skills/themis-gateway",
+    "build": "npm run build:server && npm run build:ui",
+    "build:server": "tsc -p tsconfig.build.json",
+    "build:ui": "vite build --config ui/vite.config.mts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p ui/tsconfig.json",
+    "prepack": "npm run build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aegis-skills/themis-core": "^0.1.0",
+    "@aegis-skills/themis-gateway": "^0.1.0",
+    "aegis-skills": "^1.1.0",
+    "@langchain/anthropic": "0.3.34",
+    "@langchain/core": "0.3.80",
+    "@langchain/google-genai": "0.1.12",
+    "@langchain/langgraph": "0.2.74",
+    "@langchain/langgraph-checkpoint": "0.0.18",
+    "@langchain/openai": "0.3.17",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "6.1.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "vite": "8.3.3"
+  }
+}

@@ -71,7 +71,8 @@ const PACKAGES = [
   ['packages/aegis/package.json', 'aegis-skills'],
   ['packages/themis-core/package.json', '@aegis-skills/themis-core'],
   ['packages/themis-gateway/package.json', '@aegis-skills/themis-gateway'],
-  ['packages/themis-plugin/package.json', '@aegis-skills/themis-plugin']
+  ['packages/themis-plugin/package.json', '@aegis-skills/themis-plugin'],
+  ['packages/themis-app/package.json', '@aegis-skills/themis']
 ]
 
 for (const p of MUST_EXIST) if (!fs.existsSync(at(p))) problems.push(`missing: ${p}`)
