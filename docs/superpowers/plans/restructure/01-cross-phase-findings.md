@@ -134,3 +134,12 @@ The plan text predated Phase 2's final API. Adaptations (deliberate; the design 
 9. `check-layout.js` data: dropped `lib/themis/index.ts` and `lib/themis/mcp/agent-tools.ts` from `MUST_EXIST`, added `themis-app` package.json and `bin/themis.js`, and added the five removed web paths to `MUST_NOT_EXIST`. The `themis-app` PACKAGES row already existed from batch A. `check-deps-themis.js` needed no change (`apps/web/lib` and `apps/web/app` still exist).
 10. Gateway invariant test now scans `themis-gateway/src` plus `themis-app/src` (allowing only `server/routes/approvals.ts`, which Task 17 creates).
 11. Final numbers: whole repo `npx jest` = 75 suites, 519 passed, 2 skipped (POSIX mode tests), 0 failed; `check:deps`, `check-layout` pass; `npm run build -w @aegis-skills/web` succeeds.
+
+## Phase 4 execution results — batch C (tasks 11-14)
+
+1. Tasks 11-14 landed as specced (graph state/tools/gateway bridge, skill agent, graph built from `THEMIS_WORKFLOW`, runner). Branch/PR steps skipped; work is on `restructure`.
+2. All LangGraph names the plan uses exist in 0.2.74 as expected: `interrupt`, `Command`, `Send`, `isGraphInterrupt` (re-exported from `errors.js`), `Annotation`, `StateGraph`, and `createReactAgent({ prompt })`. No renames were needed; core names (`advance`, `startRun`, `readySubTasks`, `summariseGuardrail`, `synthesisableResults`, `buildDebriefRecord`, `newApprovalRequest`, `canExecuteApproval`) matched the plan's call shapes.
+3. `setConfigValue` takes the raw value as a string, so the disabled-skill test uses `setConfigValue('skills.disabled', '["compliance"]')`.
+4. The runner test registers its DB-closing `afterEach` before `useTempHome()` so SQLite file handles close before the temp dir is removed (Windows otherwise throws EPERM on `rmSync`). All 9 runner cases passed first time, including the restart case (`needs_reproposal`), with no extra LangGraph re-runs.
+5. `decideApproval` is not called anywhere under `packages/themis-app/src`; the only callers are tests (outside the invariant guard). The `approvals/execution.ts` state is derived from audit events only.
+6. Final numbers: `npx jest` = 80 suites, 553 passed, 2 skipped (POSIX mode tests on Windows), 0 failed; `themis-app` project alone = 142 passed. `check-layout`, `check:deps` and `npx tsc -p packages/themis-app/tsconfig.json` pass.
