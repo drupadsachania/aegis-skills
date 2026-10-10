@@ -15,5 +15,5 @@ module.exports = {
     '^@aegis-skills/themis-core$': '<rootDir>/../themis-core/src/index.ts',
     '^@aegis-skills/themis-gateway$': '<rootDir>/../themis-gateway/src/index.ts',
   },
-  testTimeout: 20000,
+  setupFilesAfterEnv: ['<rootDir>/__tests__/helpers/setup.ts'],
 }
