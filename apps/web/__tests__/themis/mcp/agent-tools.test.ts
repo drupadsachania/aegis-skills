@@ -9,7 +9,7 @@ jest.mock('@aegis-skills/themis-core', () => ({
 
 const mockListServerTools = jest.fn()
 const mockCallServerTool = jest.fn()
-jest.mock('@/lib/themis/mcp/client', () => ({
+jest.mock('@aegis-skills/themis-gateway', () => ({
   listServerTools: (...a: unknown[]) => mockListServerTools(...a),
   callServerTool: (...a: unknown[]) => mockCallServerTool(...a),
 }))

@@ -113,3 +113,11 @@ export async function callServerTool(
     await conn.close()
   }
 }
+
+/** Network seam used by the gateway; tests inject a fake. */
+export interface McpConnector {
+  listServerTools(server: McpServerConfig): Promise<McpToolDescriptor[]>
+  callServerTool(server: McpServerConfig, toolName: string, args: Record<string, unknown>): Promise<CallOutcome>
+}
+
+export const defaultConnector: McpConnector = { listServerTools, callServerTool }
