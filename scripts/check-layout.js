@@ -31,12 +31,26 @@ const MUST_EXIST = [
   'packages/aegis/lib/config-writers.js', 'packages/aegis/lib/ledger.js',
   'apps/web/app/api/mcp/route.ts', 'apps/web/pages/index.js', 'apps/web/components/Layout.js',
   'apps/web/styles/globals.css', 'apps/web/supabase/migrations', 'packages/aegis/tests/mcp-server.test.js',
-  'scripts/tests/fixtures/legacy/test-skill/SKILL.md'
+  'scripts/tests/fixtures/legacy/test-skill/SKILL.md',
+  // Phase 2: deterministic engine + governed MCP client extracted from the web app
+  'packages/themis-core/package.json', 'packages/themis-core/tsconfig.build.json', 'packages/themis-core/jest.config.js', 'packages/themis-core/src/index.ts',
+  'packages/themis-gateway/package.json', 'packages/themis-gateway/tsconfig.build.json', 'packages/themis-gateway/jest.config.js',
+  'packages/themis-gateway/src/index.ts', 'packages/themis-gateway/src/client.ts', 'packages/themis-gateway/src/gateway.ts',
+  'scripts/check-deps-themis.js', 'scripts/build-themis-packages.js',
+  'apps/web/lib/themis/mcp/agent-tools.ts'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
   'health.json', '.intel-sync-state.json', 'next.config.js', 'tsconfig.json', 'postcss.config.js',
-  'tailwind.config.js', 'jest.setup.js', 'next-env.d.ts', 'run-supply-chain-fix.js', '.npmignore', 'tsconfig.tsbuildinfo'
+  'tailwind.config.js', 'jest.setup.js', 'next-env.d.ts', 'run-supply-chain-fix.js', '.npmignore', 'tsconfig.tsbuildinfo',
+  // Phase 2: these moved into packages/themis-core and packages/themis-gateway
+  'apps/web/lib/themis/types.ts', 'apps/web/lib/themis/secrets.ts', 'apps/web/lib/themis/sanitise.ts',
+  'apps/web/lib/themis/mcp/config.ts', 'apps/web/lib/themis/mcp/tool-policy.ts', 'apps/web/lib/themis/mcp/client.ts',
+  'apps/web/lib/themis/audit/types.ts', 'apps/web/lib/themis/audit/scorer.ts', 'apps/web/lib/themis/audit/standards.ts',
+  'apps/web/lib/themis/exposure/types.ts', 'apps/web/lib/themis/exposure/policy.ts', 'apps/web/lib/themis/exposure/risk.ts',
+  'apps/web/lib/themis/exposure/detection.ts', 'apps/web/lib/themis/exposure/verify.ts', 'apps/web/lib/themis/exposure/capabilities.ts',
+  'apps/web/__tests__/themis/secrets.test.ts', 'apps/web/__tests__/themis/sanitise.test.ts', 'apps/web/__tests__/themis/types.test.ts',
+  'apps/web/__tests__/themis/mcp/governance.test.ts'
 ]
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
@@ -46,7 +60,9 @@ const TRACKED_TOP = new Set([
 const PACKAGES = [
   ['package.json', 'aegis-skills-monorepo'],
   ['apps/web/package.json', '@aegis-skills/web'],
-  ['packages/aegis/package.json', 'aegis-skills']
+  ['packages/aegis/package.json', 'aegis-skills'],
+  ['packages/themis-core/package.json', '@aegis-skills/themis-core'],
+  ['packages/themis-gateway/package.json', '@aegis-skills/themis-gateway']
 ]
 
 for (const p of MUST_EXIST) if (!fs.existsSync(at(p))) problems.push(`missing: ${p}`)
