@@ -28,7 +28,8 @@
     "skills:migrate": "node scripts/migrate-skill-frontmatter.js",
     "build:prompts": "node scripts/build-flat-prompts.js",
     "atlas:check": "node scripts/check-atlas-ids.js",
-    "check:deps": "node scripts/check-deps.js && node scripts/check-deps-themis.js"
+    "check:deps": "node scripts/check-deps.js && node scripts/check-deps-themis.js && node scripts/check-registry-meta.js",
+    "check:registry": "node scripts/check-registry-meta.js"
   },
   "devDependencies": {
     "@swc/core": "1.7.0",

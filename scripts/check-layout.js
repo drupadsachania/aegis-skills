@@ -40,7 +40,7 @@ const MUST_EXIST = [
   'packages/themis-core/package.json', 'packages/themis-core/tsconfig.build.json', 'packages/themis-core/jest.config.js', 'packages/themis-core/src/index.ts',
   'packages/themis-gateway/package.json', 'packages/themis-gateway/tsconfig.build.json', 'packages/themis-gateway/jest.config.js',
   'packages/themis-gateway/src/index.ts', 'packages/themis-gateway/src/client.ts', 'packages/themis-gateway/src/gateway.ts',
-  'scripts/check-deps-themis.js', 'scripts/build-themis-packages.js',
+  'scripts/check-deps-themis.js', 'scripts/check-registry-meta.js', 'scripts/tests/check-registry-meta.test.js', 'scripts/build-themis-packages.js',
   'packages/themis-app/package.json', 'packages/themis-app/bin/themis.js',
   'packages/themis-app/tsconfig.build.json', 'packages/themis-app/jest.config.js', 'packages/themis-app/README.md', 'docs/themis/mode-2-app.md',
   'docs/aegis/index.md', 'docs/aegis/install.md', 'docs/aegis/single-file-prompts.md', 'docs/aegis/mcp.md', 'docs/aegis/cli.md', 'docs/aegis/skill-format.md', 'docs/aegis/intel.md',
