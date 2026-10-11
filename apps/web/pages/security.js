@@ -19,9 +19,9 @@ function SecurityPage ({ securityHtml, hasComplianceMapping }) {
           h('li', null, 'Docs are rendered from repository markdown with all raw HTML escaped.')),
         h('h2', null, 'Compliance mapping'),
         hasComplianceMapping
-          ? h('p', null, 'Themis controls mapped to OWASP Top 10 for LLM and Agentic applications and the NIST AI RMF: ',
+          ? h('p', null, 'The Themis controls mapped to the OWASP Top 10 for LLM Applications, NIST CSF, ISO 27001, SOC 2 and CIS Controls. It is an informational mapping, not a certification: ',
             h('a', { href: '/docs/themis/compliance-mapping' }, 'read the mapping'), '.')
-          : h('p', null, 'The mapping of Themis controls to OWASP Top 10 for LLM and Agentic applications and the NIST AI RMF is published with the next release.'))))
+          : h('p', null, 'An informational mapping of Themis controls to common frameworks (not a certification) is published with the next release.'))))
 }
 
 async function getStaticProps () {
