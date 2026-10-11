@@ -11,7 +11,7 @@ Naming: the organisation is **Kairos Foundation** (https://kairos-foundation.org
 | # | Principle | Why | In practice |
 |---|---|---|---|
 | 1 | **Warm paper, quiet ink** | Security tooling is anxious by default. A cream, serif-led, low-chroma surface signals care and independence, and reads for long sessions. | Cream page, ink text, accent colours used sparingly as fills and single-word emphasis, never as wallpaper. |
-| 2 | **Serif for voice, mono for machinery** | Separates what people say (essays, headlines) from what the system does (commands, IDs, status). Borrowed from MAI/Humanist (serif + Red Hat Mono) and Hermes (condensed + mono labels). | Newsreader headings; Red Hat Mono for labels, paths, commands, timestamps; IBM Plex Sans for reading and dense UI. |
+| 2 | **Serif for voice, mono for machinery** | Separates what people say (essays, headlines) from what the system does (commands, IDs, status). Borrowed from MAI/Humanist (serif + Red Hat Mono) and Hermes (condensed + mono labels). | teimer-web headings; Red Hat Mono for labels, paths, commands, timestamps; legitima for reading (Adobe Fonts kit, see FONTS.md). |
 | 3 | **Trust is visible** | Both products promise governance and openness. The UI must show state, source and consent, not hide them. | Licence in footer, "approval needed" states with persistent (non-animated) markers, one most-severe banner, explicit write-target banners (Hermes dashboard idea). |
 | 4 | **Motion explains; it never gates** | Reveals and transitions help orientation, but content must be readable without JS, without motion and at any zoom. | Motion tokens, reduced-motion layering, hidden-until-reveal only applied by JS. See `motion.md`. |
 | 5 | **One system, two accents** | Aegis and Themis must feel like siblings under one Foundation, and a new product must be addable without redesign. | Shared neutrals, type, radii, motion; product = one accent family (fill, hover, ink, soft, on). |
@@ -28,7 +28,7 @@ Kairos Foundation  (https://kairos-foundation.org/ ; GitHub org kairos-dev-kairo
 
 **Greek theme.** The Kairos products are named after figures from Greek myth: Argus (the all-seeing watchman), Aegis (Athena's shield, here with the Gorgon at its centre) and Themis (the scales of order and law). A new product should keep the theme. The Foundation is "Kairos Foundation" (never "Kairo"); sites and packages say "A Kairos Foundation project".
 
-- **Foundation tokens** (`--k-color-foundation*`) are a clearly marked PLACEHOLDER: neutral ink `#3A312B` on cream `#FEF9ED` (dark: cream `#F0E8D4` on `#020E1C`). The Foundation has no logo in this repository; do not invent one. When it exists, set the wordmark in Newsreader, ink colour, with product names in the product accent only as a dot/underline.
+- **Foundation tokens** (`--k-color-foundation*`) are a clearly marked PLACEHOLDER: neutral ink `#3A312B` on cream `#FEF9ED` (dark: cream `#F0E8D4` on `#020E1C`). The Foundation has no logo in this repository; do not invent one. When it exists, set the wordmark in teimer-web, ink colour, with product names in the product accent only as a dot/underline.
 - **Product accents**: a product owns exactly five tokens: `X`, `X-hover`, `X-ink` (text-safe variant), `X-soft` (tint background), `on-X` (label colour on the fill). Aegis and Themis follow this; a new product must pass the same contrast pairs in `tokens.json` before merge.
 - **Co-branding rule**: a surface has one dominant accent. The site shows Aegis gold as primary and Themis blue as link/secondary because blue is also the link colour; the Themis app uses blue as primary and gold only for Aegis-origin items (skills) and the "needs human" amber of warnings is NOT gold (warning is `#8A5A00` on `#FBEBC8`, see Colour).
 - **Product logos** (owner artwork, 2026-10): the Aegis shield with the Gorgon head and the Themis scales. They replace the earlier placeholder diamond-and-disc mark. The asset inventory and how they were produced is in `docs/design/LOGOS.md`.
@@ -160,27 +160,27 @@ Semantic tokens only in components (`var(--k-color-*)`); never hex in component 
 
 | Role | Family | Open-source fallback stack | Notes |
 |---|---|---|---|
-| Display / headings / essays | **Newsreader** (variable, optical size) | Iowan Old Style, Palatino Linotype, Georgia, serif | italic for single-word emphasis (accent colour allowed, e.g. `themis`) |
-| UI and reading | **IBM Plex Sans** | system-ui, -apple-system, Segoe UI, Roboto | body 16 px; dashboard 14 px |
-| Machinery | **Red Hat Mono** | ui-monospace, SFMono-Regular, Menlo, Consolas | labels, code, commands, IDs, timestamps |
+| Display / headings / essays | **teimer-web** (Adobe Fonts kit, 300; 300 italic; 600 for small strong headings only) | Georgia, Times New Roman, serif | italic 300 for the accent phrase (accent colour allowed, e.g. `themis`) |
+| Reading | **legitima** (Adobe Fonts kit, 500 and 500 italic only) | Georgia, Times New Roman, serif | body 16 px, line height 1.58; dashboard 14 px (fallback face) |
+| Machinery | **Red Hat Mono** (self-hosted, OFL, 400 and 500) | ui-monospace, SF Mono, Menlo, Consolas | labels, code, commands, IDs, timestamps |
 
-All three are open (SIL OFL). Reference sites use proprietary faces (Rules Gothic / Aeonik / Bradford LL); we do not. The closest open equivalents we considered: Big Shoulders Display or Antonio (condensed display, only if we ever want a Hermes-like poster face), EB Garamond/Source Serif 4 (Bradford-like). Decision: keep Newsreader.
+The two serifs come from the Adobe Fonts kit `pww4pkx` (served to allow-listed domains only; never copied into the repo); Red Hat Mono is open (SIL OFL) and self-hosted. Hosting, fallbacks, FOIT, the domain allow-list and the dashboard decision are in [FONTS.md](FONTS.md). The kit also holds aquavit, nimbus-roman and times-new-roman; they are deliberately unused.
 
 | Style | Token (`--k-text-*`) | Size | Line height | Tracking | Weight |
 |---|---|---|---|---|---|
-| Display XL (hero) | `display-xl` | clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem) | 1.04 | -0.02em | 400 |
-| Display | `display` | clamp(2.25rem, 1.5rem + 3.4vw, 3.75rem) | 1.04 | -0.02em | 400 |
-| H2 | `h2` | clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem) | 1.15 | -0.01em | 400-500 |
-| H3 | `h3` | clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem) | 1.15 | -0.01em | 500 |
-| H4 | `h4` | 1.25rem | 1.4 | 0 | 600 (sans) |
-| Body L | `body-l` | 1.125rem | 1.6 | 0 | 400 |
-| Body | `body` | 1rem | 1.6 | 0 | 400 |
-| Small | `small` | 0.875rem | 1.4 | 0 | 400 |
+| Display XL (hero) | `display-xl` | clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem) | 1.1 | -0.025em | 300 |
+| Display | `display` | clamp(2.25rem, 1.5rem + 3.4vw, 3.75rem) | 1.1 | -0.025em | 300 |
+| H2 | `h2` | clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem) | 1.18 | -0.015em | 300 |
+| H3 | `h3` | clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem) | 1.18 | -0.015em | 300 (600 for small strong headings) |
+| H4 | `h4` | 1.25rem | 1.4 | 0 | 600 (teimer-web) |
+| Body L | `body-l` | 1.125rem | 1.58 | 0 | 500 |
+| Body | `body` | 1rem | 1.58 | 0 | 500 |
+| Small | `small` | 0.875rem | 1.4 | 0 | 500 |
 | Label (mono, uppercase) | `label` | 0.75rem | 1.4 | +0.08em | 500 |
 | App body | `app-body` | 0.875rem | 1.4 | 0 | 400 |
 | Code | `app-small`/0.8125rem | | 1.5 | 0 | 400 |
 
-Rules: rem + `clamp()` only (never `vw` alone: WCAG 1.4.4 and reflow; the reference sites' pure-vw type fails zoom). Minimum size 12 px (Hermes goes to 9-10 px: not adopted). Prose measure 60-72 characters (`--k-layout-prose: 42.5rem` on a 16 px body is about 68 ch). Labels: uppercase mono, tracking +0.08em max (Humanist's +0.19em reads slowly). Headings sentence case; product names capitalised. Numerals in tables use `font-variant-numeric: tabular-nums`. Do not fake bold on Newsreader below weight 400.
+Rules: rem + `clamp()` only (never `vw` alone: WCAG 1.4.4 and reflow; the reference sites' pure-vw type fails zoom). Minimum size 12 px (Hermes goes to 9-10 px: not adopted). Prose measure 60-72 characters (`--k-layout-prose: 42.5rem` on a 16 px body is about 68 ch). Labels: uppercase mono, tracking +0.08em max (Humanist's +0.19em reads slowly). Headings sentence case; product names capitalised. Numerals in tables use `font-variant-numeric: tabular-nums`. legitima has weight 500 only: never request 600 on body text (faux bold); emphasise with colour. Body sets `font-variant-numeric: lining-nums` (legitima defaults to old-style figures) and `font-synthesis: none`.
 
 ## 5. Spacing, radius, elevation
 
@@ -213,7 +213,7 @@ Breakpoints (mobile-first, `min-width`): `sm` 480, `md` 768, `lg` 1024, `xl` 128
 
 ### 7.3 App dashboard shell (Themis)
 - Left rail 240 px: product mark, nav list, bottom "environment" block (build/version stamp, mode, API origin). Collapses to a 64 px icon rail at < 1024 px and to a top bar + drawer at < 768 px.
-- Top strip inside content: page title (Newsreader H2), context chips (profile/tenant/environment), a single banner slot (see 8.9). The write-target banner pattern from Hermes is mandatory whenever the active target is not the default.
+- Top strip inside content: page title (teimer-web H2), context chips (profile/tenant/environment), a single banner slot (see 8.9). The write-target banner pattern from Hermes is mandatory whenever the active target is not the default.
 - Active item: `themis-soft` fill + 2 px left bar + `aria-current`; counts (pending approvals) as `warning` pill with the number, never colour alone.
 - Deep-linkable state in the URL (profile, filters, selected run), as Hermes does with `?profile=`.
 
@@ -225,12 +225,12 @@ Radii/colours refer to tokens. All interactive components: min target 44 x 44 (t
 |---|---|---|
 | 8.1 | **Buttons** | Primary (product): fill = accent, label `on-*`, 3 em height pill (site) / 36 px radius `md` (app); label Red Hat Mono 500 14 px, optional arrow glyph that shifts 3 px on hover. Secondary: 1 px `border` outline, transparent, label `text`. Ghost: text-only with underline wipe. Destructive: `danger` outline; confirm in dialog. Disabled: 50 % opacity + `aria-disabled`, still readable (text >= 3:1 is not required for disabled but label must remain legible). States: hover colour 150 ms, active press 80 ms. Loading: label stays, braille spinner replaces icon, `aria-busy`. |
 | 8.2 | **Pills / chips** | Pill radius, mono 12 px label, `surface-raised` background, `line` border. Filter chips toggle `aria-pressed` and gain `themis-soft` + check glyph. Status chips: see 8.9. |
-| 8.3 | **Cards** | `surface`, radius `xl` (site) / `md` (app), 1 px `line` hairline, padding 24-32 px (site) / 16-20 px (app), title Newsreader h3, meta in mono label. Hover (fine pointer): lift 3 px + shadow-lift, 240 ms smooth; media cards: image zoom 1.04 + double ring (600 ms). Whole-card link with one real `<a>` (stretched pseudo-element), not nested links. |
+| 8.3 | **Cards** | `surface`, radius `xl` (site) / `md` (app), 1 px `line` hairline, padding 24-32 px (site) / 16-20 px (app), title teimer-web h3, meta in mono label. Hover (fine pointer): lift 3 px + shadow-lift, 240 ms smooth; media cards: image zoom 1.04 + double ring (600 ms). Whole-card link with one real `<a>` (stretched pseudo-element), not nested links. |
 | 8.4 | **Rows / lists** | 56 px (site) / 40 px (app) rows, bottom `line`, hover `surface-raised` (150 ms), leading mono ID or number (Hermes "#1 CONNECT" eyebrow idea), trailing chevron or status chip. Selected row = `themis-soft`. Sortable headers with `aria-sort`. |
 | 8.5 | **Code / terminal window** | `code-bg`, radius `lg`, 1 px line at 12 % `code-text`, title bar with three neutral dots (decorative, `aria-hidden`), mono 14 px/1.5, copy button top-right (44 px target), command prompt `$` in gold `#E3BD48` (8.5:1 on light `code-bg`), selectable text, horizontal scroll not wrap for commands (wrap for logs). OS switcher as segmented control (Hermes install box idea). Spinner glyph for running. Max-height with inner scroll (`tabindex=0`, labelled region). |
 | 8.6 | **Callouts** | Left 3 px bar + tinted `-soft`/`-bg` + icon + bold lead word ("Note", "Warning", "Security"); never colour alone. Types: info (`themis-soft`), tip (`aegis-soft`), warning, danger. |
 | 8.7 | **Tables** | Header mono label row on `surface`, rows `line` separators, 16 px cell padding (site) / 10 x 12 (app), numerals tabular, zebra off (use hover), sticky header in scroll containers, responsive: wrap in `overflow-x:auto` region with `tabindex=0` and caption; on < 480 px key tables become stacked cards. |
-| 8.8 | **Forms** | Label above (Plex Sans 600 14 px), helper text `text-subtle`, 44 px inputs (app 36 px with 44 px tap area on touch), `border` 1 px (3.70:1), radius `sm`/`md`, focus = ring + `border` darkens to `text`; error = `danger` border + icon + message linked with `aria-describedby`; required = text "(required)" not just asterisk. Switches: 40 x 24, thumb moves 150 ms, label states On/Off. Secrets (API keys) masked with reveal toggle and "stored in OS keychain" helper copy. |
+| 8.8 | **Forms** | Label above (legitima 500 14 px, `text` colour), helper text `text-subtle`, 44 px inputs (app 36 px with 44 px tap area on touch), `border` 1 px (3.70:1), radius `sm`/`md`, focus = ring + `border` darkens to `text`; error = `danger` border + icon + message linked with `aria-describedby`; required = text "(required)" not just asterisk. Switches: 40 x 24, thumb moves 150 ms, label states On/Off. Secrets (API keys) masked with reveal toggle and "stored in OS keychain" helper copy. |
 | 8.9 | **Status and approval states (Themis)** | See table below. |
 | 8.10 | **Banners** | One at a time, most severe wins (Hermes order: critical > elevated; dismiss scoped to the session/boot; escalation reopens). Colours `warning-bg` / `danger-bg` / `themis-soft` with icon and `role="status"` (info) or `role="alert"` (danger). The amber "write target" banner is persistent, not dismissible, while active. |
 | 8.11 | **Dialogs, menus, toasts** | Dialog: centred, radius `xl`, overlay token, focus trap, Escape, restore focus; destructive confirm names the object. Menu: radius `md`, shadow-md, roving tabindex. Toast: bottom-right, 5 s default, 8 s with action, `aria-live=polite`, pause on hover/focus, not for errors that need action. |
@@ -313,7 +313,7 @@ Durations 80 / 150 / 240 / 360 / 600 / 720 ms and stagger 60 ms; easings standar
 ### 13.2 Themis dashboard (`packages/themis-app/ui`, React + Vite)
 Currently a neutral grey/blue system-font UI (`src/styles.css`, 63 lines) with an OS-driven dark block. Moving it to Kairos:
 1. Import `design/tokens.css` (copy at build, or alias `@kairos/tokens`) at the top of `styles.css`; map `--bg/--fg/--card/--border/--accent` to tokens (`--k-color-bg/text/surface/border/themis`). Remove the `prefers-color-scheme` block; add the same `data-theme` toggle and first-paint script.
-2. Fonts: self-host Newsreader (headings only), IBM Plex Sans (body 14 px), Red Hat Mono (labels, IDs, code). No third-party font CDN at runtime in a local-first app: bundle woff2 with the UI.
+2. Fonts: the dashboard uses the token stacks with their fallbacks (Georgia, system mono); the Adobe kit is not loaded there and no font files are bundled (offline, strict CSP, licence). Decision recorded in FONTS.md.
 3. Shell: 240 px rail (`.nav`) on `surface` with `themis-soft` active item, instead of the near-black rail; top strip with page title and context chips; single banner slot.
 4. Components: map `.badge-*` to the status table 8.9 (add icons and labels), `.card` to 12 px radius + hairline, `.pre` to the terminal window 8.5, `button.primary` to `themis` fill with `on-themis`, `.error`/`.warn` to banners with icons.
 5. Motion: only 150 ms hovers, 240 ms indicator/underline, 360 ms drawer, braille spinner for `running`, attention pulse x3 for `awaiting_approval`, 150 ms content fade between routes. No scroll reveals in the app.
@@ -322,7 +322,7 @@ Currently a neutral grey/blue system-font UI (`src/styles.css`, 63 lines) with a
 8. Do not copy Hermes' brand blue, frame glow or condensed type; Themis blue stays `#2F4FD8`.
 
 ### 13.3 Future Kairos products
-Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), pick its role (primary on its own surfaces, secondary elsewhere), reuse type/shape/motion untouched. A product needs: wordmark in Newsreader, one accent, one signature motif (Aegis: gold diamond; Themis: blue disc), and a docs section using the docs shell.
+Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), pick its role (primary on its own surfaces, secondary elsewhere), reuse type/shape/motion untouched. A product needs: wordmark in teimer-web, one accent, one signature motif (Aegis: gold diamond; Themis: blue disc), and a docs section using the docs shell.
 
 ## 14. Hermes-inspired: what we adopted and why
 
@@ -345,7 +345,7 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 
 1. Foundation accent and logo are placeholders (neutral ink). Needs the owner. Aegis and Themis now have owner-supplied logos; Argus has none in this repository.
 2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. The legal copyright holder is also settled (owner decision 2026-10-12): Kairos Foundation.
-3. Font hosting: self-host woff2 (recommended) vs Google Fonts; check current `_document.js`.
+3. ~~Font hosting~~ Resolved: Adobe Fonts kit for teimer-web and legitima, Red Hat Mono self-hosted; owner must allow-list production domains in Adobe (see FONTS.md).
 4. Tokens are not yet consumed by `apps/web` or `themis-app/ui`; adoption is a follow-up task.
 5. Screenshots for this research were taken at narrow pane width; desktop-only behaviours (e.g. hover states, sticky sections on Hermes/MAI) were read from CSS and are not verified visually.
 6. Syntax-highlight palette for `code-bg` is not yet defined; must meet 4.5:1.

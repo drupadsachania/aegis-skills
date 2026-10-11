@@ -16,7 +16,7 @@ The website is a static site with a few read-only API routes. Its code writes no
 
 Two things happen outside our code:
 
-- **Fonts.** Pages load fonts from Google Fonts (`fonts.googleapis.com` and `fonts.gstatic.com`). Your browser therefore sends a request, including your IP address, to Google. Google's own privacy policy applies to that request.
+- **Fonts.** Pages load web fonts from Adobe Fonts (`use.typekit.net` and `p.typekit.net`). Your browser therefore sends a request to Adobe, and Adobe receives your IP address and browser user agent, plus the address of our site (not the full address of the page you are on), as part of serving the fonts and counting kit usage. Adobe's own privacy policy applies to that request: <https://www.adobe.com/privacy.html>. The monospace font (Red Hat Mono) is served from our own origin, and no other third party is contacted for fonts.
 - **Hosting.** The site is served by its hosting platform, which keeps its own standard request logs (for example IP address, time and requested path) under its own retention rules. Our code does not read or export those logs, and we do not control their retention. <!-- USER: confirm the hosting platform's log retention and add it here if you want it stated -->
 
 ## The hosted Aegis MCP server

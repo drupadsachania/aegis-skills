@@ -13,7 +13,7 @@ Status: nothing is published to npm or to a plugin directory yet. Paths that nee
 | Skill pack through the CLI (after the first release) | Your machine | npm, once, to download the package | Skill files and an install ledger | Nothing |
 | Themis plugin (after the first release) | Your machine, inside your AI client | Your AI client's own provider; only the MCP servers you configured | `~/.themis/themis.db` | What your AI client sends to its provider; arguments to your MCP servers |
 | Themis standalone (after the first release) | Your machine, dashboard on 127.0.0.1 | The model provider you chose, or a local model; only the MCP servers you configured | `~/.themis/` | Task text and context to your model provider; arguments to your MCP servers |
-| This website | Your browser | Our own origin and a font service (see Web fonts) | Your theme choice | Page requests |
+| This website | Your browser | Our own origin and Adobe Fonts (see Web fonts) | Your theme choice | Page requests |
 
 ## No hosted inference
 
@@ -58,8 +58,8 @@ The website, the hosted MCP and the downloads never call a model. They hold no m
 
 ## This website
 
-- **Your browser** loads pages, scripts and styles from our own origin. The page policy sets `default-src 'self'`, `connect-src 'self'` and `img-src 'self' data:`, so the browser itself refuses other hosts, apart from the font service below ([config](../../apps/web/next.config.js)).
-- **Web fonts:** the site loads web fonts from a third-party font service (currently Google Fonts; moving to Adobe Fonts).
+- **Your browser** loads pages, scripts and styles from our own origin. The page policy sets `default-src 'self'`, `connect-src 'self'` and `img-src 'self' data:`, so the browser itself refuses other hosts, apart from Adobe Fonts below ([config](../../apps/web/next.config.js)).
+- **Web fonts:** the site loads web fonts from Adobe Fonts (use.typekit.net and p.typekit.net). Adobe can see your IP address, your browser's user agent and the address of our site as part of serving the fonts and counting kit usage; our referrer policy (`strict-origin-when-cross-origin`) means the full address of the page you are on is not sent. The monospace face (Red Hat Mono) is self-hosted from our own origin. Nothing else third-party is loaded by the site ([page policy](../../apps/web/next.config.js), [font notes](../design/FONTS.md)).
 - **Cookies:** none. The only thing stored in your browser is your light or dark choice, under `aegis-theme` in local storage.
 - **Links** to GitHub and the Kairos Foundation open only when you click them.
 

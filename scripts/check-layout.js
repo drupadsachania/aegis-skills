@@ -72,7 +72,7 @@ const MUST_EXIST = [
   'apps/web/public/brand/themis-mark-640.webp', 'apps/web/public/brand/themis-mark-320.webp', 'apps/web/public/brand/themis-lockup-640.webp',
   'design/brand/source/aegis-mark.png', 'design/brand/source/aegis-lockup.png', 'design/brand/source/aegis-tile.webp',
   'design/brand/source/themis-mark.png', 'design/brand/source/themis-lockup.png', 'design/brand/source/themis-tile.webp',
-  'docs/design/LOGOS.md',
+  'docs/design/LOGOS.md', 'docs/design/FONTS.md', 'apps/web/public/fonts/OFL-RedHatMono.txt', 'apps/web/public/fonts/red-hat-mono-latin-400-normal.woff2', 'apps/web/public/fonts/red-hat-mono-latin-500-normal.woff2', 'apps/web/tests/guard/fonts-guard.test.js',
   // Design review (2026-10): quick start, trust and data flow, worked example, readability guard
   'apps/web/pages/quickstart.js', 'apps/web/pages/trust.js', 'docs/trust/data-flow.md',
   'apps/web/components/FlowDiagram.js', 'apps/web/components/AegisThemisFlow.js',

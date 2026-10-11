@@ -108,7 +108,7 @@ describe('trust page', () => {
 
   test('the font fact is stated once, generically, and the page never claims "no third party"', () => {
     const md = fs.readFileSync(path.join(DOCS_DIR, 'trust', 'data-flow.md'), 'utf8')
-    const sentence = 'loads web fonts from a third-party font service (currently Google Fonts; moving to Adobe Fonts)'
+    const sentence = 'loads web fonts from Adobe Fonts (use.typekit.net and p.typekit.net)'
     expect(md.split(sentence).length - 1).toBe(1)
     expect(text(html['/trust'])).toContain(sentence)
     expect(html['/trust']).not.toMatch(/no third part|contacts no third|never contacts/i)

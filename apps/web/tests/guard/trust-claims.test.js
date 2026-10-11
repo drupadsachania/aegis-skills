@@ -50,12 +50,15 @@ describe('what contacts the network', () => {
     expect(Object.keys(pkg.dependencies).filter(n => /langchain|openai|anthropic|@google\//.test(n))).toEqual([])
   })
 
-  test('the page policy allows only the site origin plus the font service', () => {
+  test('the page policy allows only the site origin plus Adobe Fonts (use.typekit.net, p.typekit.net)', () => {
     const cfg = read('apps/web/next.config.js')
     expect(cfg).toContain(`"default-src 'self'"`)
     expect(cfg).toContain(`"connect-src 'self'"`)
     expect(cfg).toContain(`"img-src 'self' data:"`)
     expect(cfg).toContain(`"frame-ancestors 'none'"`)
+    expect(cfg).toContain(`"style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net"`)
+    expect(cfg).toContain(`"font-src 'self' https://use.typekit.net"`)
+    expect(cfg).not.toMatch(/googleapis|gstatic|https?:\/\/\*|\s\*[;"]/)
   })
 })
 
