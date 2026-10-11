@@ -54,11 +54,20 @@ export function governedName(serverId: string, tool: string): string {
   return `themis__${serverId}__${tool}`
 }
 
+const TAG = 'external_tool_output'
+
+/** Escape any opening or closing wrapper tag inside untrusted text so it cannot end the wrapper early. */
+export function neutraliseWrapperTags(text: string): string {
+  return text.replace(/<(\s*\/?\s*external_tool_output)/gi, '&lt;$1')
+}
+
+const attr = (v: string): string => v.replace(/[^A-Za-z0-9_.:-]/g, '_')
+
 export function wrapUntrusted(serverId: string, tool: string, ok: boolean, text: string): string {
-  let t = redactSecrets(text)
+  let t = neutraliseWrapperTags(redactSecrets(text))
   if (t.length > MAX_OUTPUT_CHARS) t = t.slice(0, MAX_OUTPUT_CHARS) + '\n[truncated]'
   // Wrap so the model cannot mistake external output for system instructions.
-  return `<external_tool_output server="${serverId}" tool="${tool}" ok="${ok}">\n${t}\n</external_tool_output>`
+  return `<${TAG} server="${attr(serverId)}" tool="${attr(tool)}" ok="${ok}">\n${t}\n</${TAG}>`
 }
 
 export function createGateway(opts: GatewayOptions): Gateway {
