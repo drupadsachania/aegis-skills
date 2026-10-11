@@ -16,4 +16,4 @@ Every single-file prompt starts with an `Intel as of YYYY-MM-DD` line, taken fro
 
 ## Releases
 
-Updated skill content reaches you in a new Aegis version. Themis accepts any installed Aegis whose `osk` major version matches, so it picks up these updates automatically (see [Versions and compatibility](../themis/versions.md)). A downloaded prompt or zip does not update itself; fetch it again, or use the [hosted MCP server](../web/hosted-mcp.md).
+Updated skill content reaches you in a new Aegis version. Themis accepts any installed Aegis whose `osk` major version matches, so it picks up these updates automatically (see [Versions and compatibility](../themis/versions.md)). A downloaded prompt or zip does not update itself; fetch it again, or use the [hosted MCP server](./hosted-mcp.md).

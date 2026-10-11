@@ -29,8 +29,7 @@ const FOOTER_COLUMNS = [
   { title: 'Docs', links: [
     { href: '/docs', label: 'All docs' },
     { href: '/docs/aegis', label: 'Aegis' },
-    { href: '/docs/themis', label: 'Themis agent' },
-    { href: '/docs/web', label: 'This website' }
+    { href: '/docs/themis', label: 'Themis agent' }
   ] },
   { title: 'Trust', links: [
     { href: '/security', label: 'Security' },

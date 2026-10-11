@@ -37,7 +37,7 @@ const PATHS = [
   },
   {
     id: 'hosted-mcp', title: 'Hosted MCP', audience: 'Claude.ai, ChatGPT and any MCP client',
-    how: 'Connect to the hosted, read-only Aegis MCP server.', docs: '/docs/web/hosted-mcp',
+    how: 'Connect to the hosted, read-only Aegis MCP server.', docs: '/docs/aegis/hosted-mcp',
     platforms: [
       { id: 'claude-ai', label: 'Claude.ai', steps: [
         { text: 'Settings → Connectors → Add custom connector. Name it Aegis and paste this URL:' },

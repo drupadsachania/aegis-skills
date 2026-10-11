@@ -23,7 +23,7 @@ test('every page listed in SECTIONS exists and has an H1', () => {
   }
 })
 
-test('every markdown file in docs/{aegis,themis,web} is listed in SECTIONS', () => {
+test('every markdown file in docs/{aegis,themis} is listed in SECTIONS', () => {
   for (const s of SECTIONS) {
     const onDisk = fs.readdirSync(path.join(DOCS_DIR, s.key)).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)).sort()
     expect(onDisk).toEqual([...s.pages].sort())
@@ -33,9 +33,7 @@ test('every markdown file in docs/{aegis,themis,web} is listed in SECTIONS', () 
 test('no doc mentions removed products', () => {
   for (const d of allDocs()) {
     for (const bad of FORBIDDEN) expect(`${d.docPath}: ${d.markdown.includes(bad)}`).toBe(`${d.docPath}: false`)
-    if (d.docPath !== 'docs/web/api.md') {
-      for (const r of REMOVED) expect(`${d.docPath}: ${d.markdown.includes(r)}`).toBe(`${d.docPath}: false`)
-    }
+    for (const r of REMOVED) expect(`${d.docPath}: ${d.markdown.includes(r)}`).toBe(`${d.docPath}: false`)
   }
 })
 

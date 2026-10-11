@@ -11,8 +11,7 @@ const DocPage = require('../../pages/docs/[...slug]').default
 
 const NAV = [
   { key: 'aegis', title: 'Aegis', blurb: 'b', pages: [{ slug: 'index', title: 'Aegis', href: '/docs/aegis' }, { slug: 'install', title: 'Install Aegis', href: '/docs/aegis/install' }] },
-  { key: 'themis', title: 'Themis', blurb: 'b', pages: [] },
-  { key: 'web', title: 'Website & hosted MCP', blurb: 'b', pages: [] }
+  { key: 'themis', title: 'Themis', blurb: 'b', pages: [] }
 ]
 
 test('hub lists sections and pages', () => {

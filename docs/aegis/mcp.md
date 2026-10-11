@@ -31,7 +31,7 @@ If you installed the package globally, use `"command": "aegis"` with `"args": ["
 
 ## Use the hosted server
 
-The same tools are served over Streamable HTTP at `https://aegis-skills.vercel.app/api/mcp`, with no install. See [Connect to the hosted Aegis MCP](../web/hosted-mcp.md).
+The same tools are served over Streamable HTTP at `https://aegis-skills.vercel.app/api/mcp`, with no install. See [Connect to the hosted Aegis MCP](./hosted-mcp.md).
 
 ## Guarantees
 

@@ -10,7 +10,7 @@ A skill zip contains `<name>/SKILL.md`, `<name>/skill.json` and `<name>/referenc
 
 - Every [skill page](/skills) has Copy prompt, Download .md and Download .zip.
 - The URLs are stable: `/downloads/prompts/<name>.md` and `/downloads/skills/<name>.zip`.
-- A machine-readable index is at `/downloads/index.json` (see [Downloads](../web/downloads.md)).
+- A machine-readable index is at `/downloads/index.json`.
 
 ## Claude.ai
 
@@ -22,7 +22,7 @@ Add the `.md` file to a Project, a Gem or a custom assistant, or attach it to a 
 
 ## Freshness
 
-The files are regenerated on every deploy of the website, and skill content is updated monthly. A downloaded copy does not update itself. For always-current content, use the [hosted MCP server](../web/hosted-mcp.md) or the [skill pack](./install.md), which refreshes after upgrades.
+The files are regenerated on every deploy of the website, and skill content is updated monthly. A downloaded copy does not update itself. For always-current content, use the [hosted MCP server](./hosted-mcp.md) or the [skill pack](./install.md), which refreshes after upgrades.
 
 ## Size
 

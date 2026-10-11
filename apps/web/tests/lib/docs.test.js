@@ -16,8 +16,8 @@ beforeAll(() => {
 })
 afterAll(() => fs.rmSync(dir, { recursive: true, force: true }))
 
-test('sections are aegis, themis, web in that order', () => {
-  expect(SECTIONS.map(s => s.key)).toEqual(['aegis', 'themis', 'web'])
+test('sections are aegis, themis in that order', () => {
+  expect(SECTIONS.map(s => s.key)).toEqual(['aegis', 'themis'])
 })
 
 test('listDocs orders known pages first, appends unknown ones, skips unsafe names', () => {
@@ -25,7 +25,7 @@ test('listDocs orders known pages first, appends unknown ones, skips unsafe name
   expect(aegis.pages.map(p => p.slug)).toEqual(['index', 'install', 'zz-extra'])
   expect(aegis.pages[0]).toEqual({ slug: 'index', title: 'Aegis', href: '/docs/aegis' })
   expect(aegis.pages[1].href).toBe('/docs/aegis/install')
-  expect(listDocs(dir).find(s => s.key === 'web').pages).toEqual([])
+  expect(listDocs(dir).find(s => s.key === 'themis').pages).toEqual([])
 })
 
 test('loadDoc returns content and refuses unknown sections or unsafe slugs', () => {

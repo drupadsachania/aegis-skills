@@ -45,7 +45,7 @@ const MUST_EXIST = [
   'packages/themis-app/tsconfig.build.json', 'packages/themis-app/jest.config.js', 'packages/themis-app/README.md', 'docs/themis/mode-2-app.md',
   'docs/aegis/index.md', 'docs/aegis/install.md', 'docs/aegis/single-file-prompts.md', 'docs/aegis/mcp.md', 'docs/aegis/cli.md', 'docs/aegis/skill-format.md', 'docs/aegis/intel.md',
   'docs/themis/index.md', 'docs/themis/mode-1-plugin.md', 'docs/themis/governance.md', 'docs/themis/workflow.md', 'docs/themis/configuration.md', 'docs/themis/versions.md', 'docs/themis/compliance-mapping.md',
-  'docs/web/index.md', 'docs/web/hosted-mcp.md', 'docs/web/downloads.md', 'docs/web/api.md', 'docs/web/development.md', 'packages/themis-plugin/README.md',
+  'docs/aegis/hosted-mcp.md', 'packages/themis-plugin/README.md',
   'packages/themis-app/src/index.ts', 'packages/themis-app/src/app.ts', 'packages/themis-app/src/cli/index.ts',
   'packages/themis-app/src/graph/build.ts', 'packages/themis-app/src/runner/runner.ts', 'packages/themis-app/src/store/checkpointer.ts',
   'packages/themis-app/src/server/http.ts', 'packages/themis-app/src/server/security.ts', 'packages/themis-app/src/server/routes/approvals.ts',

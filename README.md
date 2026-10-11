@@ -124,7 +124,7 @@ node scripts/check-layout.js        # layout guard
 npm run lint:skills                 # skill format lint
 ```
 
-See [`docs/web/development.md`](docs/web/development.md). Requires Node.js 24 or later.
+The site lives in `apps/web`; `npm run dev -w @aegis-skills/web` starts it. Requires Node.js 24 or later.
 
 ## Project structure
 

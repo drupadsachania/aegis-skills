@@ -1,6 +1,6 @@
 # Install Aegis
 
-Nothing is published to npm or the plugin marketplace yet. Every command on this page that uses `npx aegis-skills` or `/plugin` works after the first release. Until then you can use the [single-file prompts](./single-file-prompts.md) or the [hosted MCP server](../web/hosted-mcp.md), which need no install.
+Nothing is published to npm or the plugin marketplace yet. Every command on this page that uses `npx aegis-skills` or `/plugin` works after the first release. Until then you can use the [single-file prompts](./single-file-prompts.md) or the [hosted MCP server](./hosted-mcp.md), which need no install.
 
 ## Requirements
 

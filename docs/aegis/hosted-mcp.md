@@ -6,7 +6,7 @@
 https://aegis-skills.vercel.app/api/mcp
 ```
 
-It speaks MCP over Streamable HTTP. It is stateless (no sessions) and needs no authentication. Requests over 64 KB are rejected. The server offers the three read-only tools `list_skills`, `get_skill` and `get_skill_phase` (see [Aegis MCP server](../aegis/mcp.md)).
+It speaks MCP over Streamable HTTP. It is stateless (no sessions) and needs no authentication. Requests over 64 KB are rejected. The server offers the three read-only tools `list_skills`, `get_skill` and `get_skill_phase` (see [Aegis MCP server](./mcp.md)).
 
 ## Claude.ai
 

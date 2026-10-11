@@ -62,7 +62,7 @@ function McpPage ({ paths }) {
       h(Sec, { id: 'check', num: '05', title: 'Check it works' },
         h(CodeBlock, { label: 'shell', content: CHECK_CMD }),
         h('p', { style: { marginTop: '16px' } }, 'You should see list_skills, get_skill and get_skill_phase. ',
-          h('a', { href: '/docs/web/hosted-mcp' }, 'Hosted MCP docs →'))))
+          h('a', { href: '/docs/aegis/hosted-mcp' }, 'Hosted MCP docs →'))))
   )
 }
 
