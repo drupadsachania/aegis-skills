@@ -3,7 +3,7 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { lintSkill, lintAll, BUDGETS } = require('../lint-skills')
+const { lintSkill, lintAll, checkScopeBlock, BUDGETS } = require('../lint-skills')
 const { migrateSkill } = require('../migrate-skill-frontmatter')
 const meta = require('aegis-skills/lib/skill-meta')
 
@@ -136,4 +136,33 @@ test('the real Aegis pack lints clean', () => {
   const results = lintAll(path.join(__dirname, '..', '..', 'packages', 'aegis', 'skills'))
   expect(Object.keys(results)).toHaveLength(24)
   for (const [name, errors] of Object.entries(results)) expect({ name, errors }).toEqual({ name, errors: [] })
+})
+
+describe('checkScopeBlock', () => {
+  const GOOD = [
+    '## Scope and authorization',
+    '- Purpose: defensive mapping',
+    '- Use only on systems you own or are explicitly authorized to assess.',
+    '- Out of scope: unauthorized targets',
+    ''
+  ].join('\n')
+
+  test('passes when all three scope lines are present', () => {
+    expect(checkScopeBlock(GOOD)).toEqual([])
+  })
+  test('flags a missing authorization line', () => {
+    const body = GOOD.replace(/- Use only[^\n]*\n/, '')
+    expect(checkScopeBlock(body).join('\n')).toMatch(/explicitly authorized/)
+  })
+  test('flags a missing purpose and a missing out-of-scope line', () => {
+    const problems = checkScopeBlock('## Scope and authorization\n- Use only on systems you own or are explicitly authorized to assess.\n').join('\n')
+    expect(problems).toMatch(/Purpose/)
+    expect(problems).toMatch(/Out of scope/)
+  })
+  test('flags a missing scope section entirely', () => {
+    expect(checkScopeBlock('## Overview\n')).toEqual(['missing "## Scope and authorization" section'])
+  })
+  test('works with CRLF line endings', () => {
+    expect(checkScopeBlock(GOOD.replace(/\n/g, '\r\n'))).toEqual([])
+  })
 })

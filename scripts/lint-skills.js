@@ -19,6 +19,24 @@ const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const SEMVER = /^\d+\.\d+\.\d+$/
 const AUTH_LINE = '- Use only on systems you own or are explicitly authorized to assess.'
 
+/**
+ * The one implementation of the scope rule: returns the problems found in the
+ * "## Scope and authorization" section of a SKILL.md body (purpose line, the exact
+ * authorization line, out-of-scope line). An empty array means the block is complete.
+ */
+function checkScopeBlock (body) {
+  const lines = body.split('\n')
+  const i = lines.findIndex(l => l.trim() === '## Scope and authorization')
+  if (i === -1) return ['missing "## Scope and authorization" section']
+  const sec = []
+  for (let j = i + 1; j < lines.length && !/^#{1,2} /.test(lines[j]); j++) sec.push(lines[j].trim())
+  const problems = []
+  if (!sec.some(l => /^- Purpose: \S/.test(l))) problems.push('scope section needs "- Purpose: ..."')
+  if (!sec.includes(AUTH_LINE)) problems.push(`scope section needs "${AUTH_LINE}"`)
+  if (!sec.some(l => /^- Out of scope: \S/.test(l))) problems.push('scope section needs "- Out of scope: ..."')
+  return problems
+}
+
 function lintSkill (dir) {
   const errors = []
   const err = m => errors.push(m)
@@ -88,16 +106,7 @@ function lintSkill (dir) {
     if (!fs.existsSync(path.join(dir, m[0]))) err(`linked file ${m[0]} does not exist`)
   }
 
-  const lines = body.split('\n')
-  const i = lines.findIndex(l => l.trim() === '## Scope and authorization')
-  if (i === -1) err('missing "## Scope and authorization" section')
-  else {
-    const sec = []
-    for (let j = i + 1; j < lines.length && !/^#{1,2} /.test(lines[j]); j++) sec.push(lines[j].trim())
-    if (!sec.some(l => /^- Purpose: \S/.test(l))) err('scope section needs "- Purpose: ..."')
-    if (!sec.includes(AUTH_LINE)) err(`scope section needs "${AUTH_LINE}"`)
-    if (!sec.some(l => /^- Out of scope: \S/.test(l))) err('scope section needs "- Out of scope: ..."')
-  }
+  for (const p of checkScopeBlock(body)) err(p)
   return [...new Set(errors)]
 }
 
@@ -122,4 +131,4 @@ function main () {
 
 if (require.main === module) main()
 
-module.exports = { lintSkill, lintAll, BUDGETS }
+module.exports = { lintSkill, lintAll, checkScopeBlock, BUDGETS }
