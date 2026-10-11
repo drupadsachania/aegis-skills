@@ -13,8 +13,8 @@ const DEFAULT_DESCRIPTION = 'Open cybersecurity skill pack and a governed SOC ag
 const REPO_URL = 'https://github.com/drupadsachania/aegis-skills'
 const KAIROS_URL = 'https://kairos-foundation.org/'
 const KAIROS_GITHUB_URL = 'https://github.com/kairos-dev-kairos-ecl'
-// Absolute origin for og:image (social crawlers need a full URL). Change it when a custom domain goes live.
-const SITE_URL = 'https://aegis-skills.vercel.app'
+// Absolute origin for og:image and the canonical link (crawlers need a full URL). Defined in lib/site-url.js; change it there when a custom domain goes live.
+const { SITE_URL } = require('../lib/site-url')
 const THEME_KEY = 'aegis-theme'
 
 const NAV = [
@@ -65,6 +65,14 @@ function Icon ({ d, children }) {
 // pages-router pathname; null when rendered outside Next (unit tests)
 function useCurrentPath () {
   try { return require('next/router').useRouter().pathname } catch (e) { return null }
+}
+
+// The visited path without query or hash (pathname is the route pattern for dynamic pages); null outside Next.
+function useCanonicalPath () {
+  try {
+    const p = require('next/router').useRouter().asPath
+    return typeof p === 'string' ? p.split(/[?#]/)[0] : null
+  } catch (e) { return null }
 }
 
 const isActive = (path, href) => !!path && (path === href || path.startsWith(href + '/'))
@@ -291,12 +299,14 @@ function Footer () {
 
 function Layout ({ title, description, children }) {
   useReveal()
+  const canonical = useCanonicalPath()
   return h(
     'div',
     { className: 'page-root' },
     h(Head, null,
       h('title', null, title ? `${title} · ${SITE}` : SITE),
       h('meta', { name: 'description', content: description || DEFAULT_DESCRIPTION }),
+      canonical && canonical !== '/404' ? h('link', { rel: 'canonical', href: `${SITE_URL}${canonical}`, key: 'canonical' }) : null,
       // social previews: one shared image (1200x630, cream, both lockups)
       h('meta', { property: 'og:type', content: 'website', key: 'og:type' }),
       h('meta', { property: 'og:site_name', content: SITE, key: 'og:site_name' }),

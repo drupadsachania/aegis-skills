@@ -8,6 +8,7 @@ coverage/
 .env*.local
 .next/
 apps/web/public/downloads/
+apps/web/public/sitemap.xml
 test_output.txt
 
 # Themis local SQLite debrief database — contains run metadata, never commit

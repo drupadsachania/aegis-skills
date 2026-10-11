@@ -2,7 +2,7 @@
 
 // Single source of truth for every install command shown on the site.
 // Pinned against repo facts by tests/lib/install-commands.test.js.
-const SITE_URL = 'https://aegis-skills.vercel.app'
+const { SITE_URL } = require('./site-url')
 const REPO = 'drupadsachania/aegis-skills'
 const REPO_URL = `https://github.com/${REPO}`
 const MCP_URL = `${SITE_URL}/api/mcp`

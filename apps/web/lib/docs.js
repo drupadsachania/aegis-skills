@@ -16,6 +16,20 @@ function titleOf (markdown, fallback) {
   return m ? m[1] : fallback
 }
 
+// First prose paragraph after the H1, as plain text, for <meta name="description"> (at most 160 characters).
+function descriptionOf (markdown, fallback = '') {
+  const body = markdown.replace(/^#\s+.+$/m, '')
+  for (const para of body.split(/\n\s*\n/)) {
+    const t = para.trim()
+    if (!t || /^(#|\||```|[-*>]|\d+\.|<)/.test(t)) continue
+    const plain = t.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/<([^>]+)>/g, '$1').replace(/[`*_]/g, '').replace(/\s+/g, ' ')
+    if (plain.length <= 160) return plain
+    const cut = plain.slice(0, 157)
+    return cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.]+$/, '') + '...'
+  }
+  return fallback
+}
+
 const hrefOf = (section, slug) => (slug === 'index' ? `/docs/${section}` : `/docs/${section}/${slug}`)
 
 function listDocs (docsDir) {
@@ -47,4 +61,4 @@ function loadDoc (docsDir, section, slug = 'index') {
   return { section, slug, title: titleOf(markdown, slug), markdown, docPath: `docs/${section}/${slug}.md`, href: hrefOf(section, slug) }
 }
 
-module.exports = { SECTIONS, listDocs, loadDoc, titleOf }
+module.exports = { SECTIONS, listDocs, loadDoc, titleOf, descriptionOf }

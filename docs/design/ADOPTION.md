@@ -66,3 +66,11 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 - Dashboard: context chips and write-target banner, Run terminal window with streamed output styling, secret-reveal pattern on Models & Keys, approval checkbox "I have read the exact command" for write/execute, deep-linkable filters, real self-hosted fonts.
 - Syntax highlight palette for code windows (DESIGN open item 6).
 - Screen-reader and keyboard walkthroughs are manual and were not run.
+
+## Launch markers and basics (2026-10-12)
+
+| Area | Adopted |
+|---|---|
+| Status pill | `components/StatusPill.js` renders an availability label: a soft tint (`--k-color-themis-soft` for "In development", `--k-color-aegis-soft` for "First release"), tokenised text colour, a 1 px currentColor border and a hollow or filled dot. It always carries a text label, so it is never colour-only; 12 px mono (13 px on small screens and touch), no motion. Used on the home Themis card and path rows, `/paths` rows, sections and install tabs, `/themis` (hero, "Where to get it", install), `/quickstart`. Data lives in `lib/install-commands.js` (`IN_DEV` next to `LATER`). No LIVE badges. |
+| Terms page | `/terms` renders `docs/legal/terms.md` in the existing `.prose` style; HTML comments in the source never reach the page. |
+| 404 | `pages/404.js`: page-head pattern plus a plain list of next steps. |

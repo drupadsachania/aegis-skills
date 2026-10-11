@@ -5,8 +5,8 @@ const Layout = require('../../components/Layout')
 
 const h = React.createElement
 
-function DocPage ({ nav, title, html, href, editUrl }) {
-  return h(Layout, { title },
+function DocPage ({ nav, title, description, html, href, editUrl }) {
+  return h(Layout, { title, description },
     h('div', { className: 'container' },
       h('div', { className: 'docs-layout' },
         h('aside', { className: 'docs-nav', 'aria-label': 'Docs' },
@@ -29,7 +29,7 @@ async function getStaticPaths () {
 }
 
 async function getStaticProps ({ params }) {
-  const { listDocs, loadDoc } = require('../../lib/docs')
+  const { listDocs, loadDoc, descriptionOf } = require('../../lib/docs')
   const { renderMarkdown } = require('../../lib/markdown')
   const { DOCS_DIR } = require('../../lib/site-paths')
   const section = params.slug[0]
@@ -42,6 +42,7 @@ async function getStaticProps ({ params }) {
     props: {
       nav: listDocs(DOCS_DIR),
       title: doc.title,
+      description: descriptionOf(doc.markdown, `${doc.title}: Aegis and Themis documentation.`),
       html: renderMarkdown(doc.markdown, { docPath: doc.docPath }),
       href: doc.href,
       editUrl: `https://github.com/drupadsachania/aegis-skills/edit/main/${doc.docPath}`
