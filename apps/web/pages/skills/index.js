@@ -115,7 +115,7 @@ function RecommendForm({ onResults, onClear, loading }) {
           disabled: loading || (selectedEnvs.size === 0 && selectedTags.size === 0),
           className: 'btn-primary'
         },
-        loading ? 'FINDING…' : 'FIND SKILLS'
+        loading ? [React.createElement('span', { key: 'spin', className: 'k-spin', 'aria-hidden': 'true' }), 'FINDING…'] : 'FIND SKILLS'
       ),
       React.createElement('button', { type: 'button', onClick: handleClear, className: 'btn-ghost' }, 'CLEAR')
     )

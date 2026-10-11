@@ -12,7 +12,7 @@ function PathMatrix ({ paths, linkBase = '/paths' }) {
     { className: 'path-list path-matrix' },
     ...paths.map(p => h(
       'li',
-      { key: p.id },
+      { key: p.id, 'data-reveal': '' },
       h('a', { href: `${linkBase}#${p.id}`, className: 'path-row' },
         h('span', { className: 'pr-main' },
           h('span', { className: 'pr-title' }, p.title),

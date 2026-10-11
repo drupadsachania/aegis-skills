@@ -13,7 +13,7 @@ function DocsHub ({ nav }) {
         h('h1', null, 'Docs'),
         h('p', null, 'Install guides, the hosted MCP, how Themis governs tools, and how the site is built. Every page is rendered from markdown in the repository.')),
       h('div', { className: 'doc-cards' },
-        ...nav.map(sec => h('div', { key: sec.key, className: 'doc-card' },
+        ...nav.map(sec => h('div', { key: sec.key, className: 'doc-card', 'data-reveal': '' },
           h('h3', null, sec.title),
           h('p', null, sec.blurb),
           h('ul', null, ...sec.pages.map(p => h('li', { key: p.href }, h('a', { href: p.href }, p.title)))))))))

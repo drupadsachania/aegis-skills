@@ -37,7 +37,7 @@ const TRUST = [
 ]
 
 function SecHead ({ num, kicker }) {
-  return h('div', { className: 'sec-head' },
+  return h('div', { className: 'sec-head', 'data-reveal': '' },
     h('span', { className: 'sec-num' }, num),
     h('span', { className: 'sec-kicker' }, kicker))
 }
@@ -63,8 +63,11 @@ function HomePage ({ skillCount, familyCount, paths }) {
         h('div', { className: 'hero-inner' },
           h('div', { className: 'hero-meta' },
             h('span', { className: 'dot' }), 'Aegis + Themis', h('span', { className: 'sep' }), 'Open cybersecurity pack'),
-          h('h1', { className: 'hero-h1' },
-            'Security skills and a SOC agent, ', h('em', null, 'on your own AI'), '.'),
+          h('h1', { className: 'hero-h1 k-lines' },
+            // explicit lines: each clips and rises with a 70 ms step (CSS animation only; always ends visible)
+            h('span', { className: 'k-line', style: { '--line': 0 } }, h('span', null, 'Security skills')), ' ',
+            h('span', { className: 'k-line', style: { '--line': 1 } }, h('span', null, 'and a SOC agent,')), ' ',
+            h('span', { className: 'k-line', style: { '--line': 2 } }, h('span', null, h('em', null, 'on your own AI'), '.'))),
           h('p', { className: 'hero-desc' },
             `Aegis is ${skillCount} defensive security skills in the open Agent Skills format. Themis is a governed security-operations agent that runs inside Claude Code, Codex or Gemini CLI, or as a local dashboard with your own model. No account, no hosted inference, Apache-2.0 OR MIT.`),
           h('div', { className: 'hero-cta' },
@@ -76,7 +79,7 @@ function HomePage ({ skillCount, familyCount, paths }) {
       h('section', { className: 'pack' },
         h(SecHead, { num: '01', kicker: 'The pack' }),
         h('div', { className: 'twin' },
-          h('div', { className: 'twin-card aegis' },
+          h('div', { className: 'twin-card aegis', 'data-reveal': '' },
             MARK_AEGIS,
             h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Aegis'),
             h('h3', null, 'Aegis'),
@@ -84,7 +87,7 @@ function HomePage ({ skillCount, familyCount, paths }) {
             h('p', null,
               `${skillCount} skills across ${familyCount} families: ATT&CK, ATLAS and Engage mapping, threat hunting, exposure validation, forensics, malware analysis, OT, identity, compliance and more. Each skill is plain markdown with a scope and authorization section, and its content is updated monthly.`),
             h('a', { href: '/skills', className: 'twin-link' }, 'Browse skills', h('span', { 'aria-hidden': 'true' }, '→'))),
-          h('div', { className: 'twin-card themis' },
+          h('div', { className: 'twin-card themis', 'data-reveal': '' },
             MARK_THEMIS,
             h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Themis'),
             h('h3', null, 'Themis'),
@@ -96,7 +99,7 @@ function HomePage ({ skillCount, familyCount, paths }) {
     // 02 Choose your path
     h(Section, { id: 'paths' },
       h(SecHead, { num: '02', kicker: 'Choose your path' }),
-      h('h2', { className: 'sec-title' }, 'The same skills, ', h('em', null, 'your path'), '.'),
+      h('h2', { className: 'sec-title', 'data-reveal': '' }, 'The same skills, ', h('em', null, 'your path'), '.'),
       h(PathMatrix, { paths }),
       h('p', { className: 'lede', style: { marginTop: '28px', marginBottom: 0 } },
         'Every path uses the same skills. Start with zero install and move up when you need more. ',
@@ -108,7 +111,7 @@ function HomePage ({ skillCount, familyCount, paths }) {
     h(Section, null,
       h(SecHead, { num: '03', kicker: 'Why trust it' }),
       h('ol', { className: 'principles' },
-        ...TRUST.map(t => h('li', { key: t.n, className: 'principle' },
+        ...TRUST.map(t => h('li', { key: t.n, className: 'principle', 'data-reveal': '' },
           h('span', { className: 'step-num' }, t.n),
           h('h3', null, t.label),
           h('p', null, t.desc))))),
@@ -119,7 +122,7 @@ function HomePage ({ skillCount, familyCount, paths }) {
       h('p', { className: 'lede' },
         'Skills go stale as the threat landscape moves. Threat-intel feeds are distilled into reusable attack patterns, and each pattern is routed into the skills whose attack surface it lands on. Skill content is updated monthly. Generated intel lives in its own reference file, is labelled LIVE, and never edits hand-written tradecraft. Every download carries an "Intel as of" date.'),
       h('div', { className: 'steps-grid' },
-        ...INTEL_STEPS.map(step => h('div', { key: step.n, className: 'step-cell' },
+        ...INTEL_STEPS.map(step => h('div', { key: step.n, className: 'step-cell', 'data-reveal': '' },
           h('span', { className: 'step-num' }, step.n),
           h('h3', null, step.label),
           h('p', null, step.desc)))))

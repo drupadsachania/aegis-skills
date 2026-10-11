@@ -38,7 +38,7 @@ const WORKFLOW = [
 
 function Sec ({ id, num, title, children }) {
   return h('section', { className: 'doc-section', id },
-    h('div', { className: 'doc-section-hd' },
+    h('div', { className: 'doc-section-hd', 'data-reveal': '' },
       h('span', { className: 'ds-num' }, num),
       h('h2', null, title)),
     children)

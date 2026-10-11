@@ -18,7 +18,7 @@ function PathsPage ({ paths }) {
         h('p', null, 'Five ways in, all using the same skills. Pick the lightest one that does the job.'),
         h('p', { className: 'status-note' }, 'Just want to read skills from your chat AI? The ', h('a', { href: '/mcp' }, 'hosted MCP'), ' needs no install. Also see the ', h('a', { href: '/security' }, 'security'), ' and ', h('a', { href: '/license' }, 'license'), ' pages.')),
       h(PathMatrix, { paths }),
-      ...paths.map(p => h('section', { key: p.id, id: p.id, className: 'path-section' },
+      ...paths.map(p => h('section', { key: p.id, id: p.id, className: 'path-section', 'data-reveal': '' },
         h('h2', null, p.title),
         h('p', { className: 'path-for' }, `FOR · ${p.audience.toUpperCase()}`),
         h('p', null, p.how),

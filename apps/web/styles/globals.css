@@ -44,7 +44,7 @@
 html {
   background: var(--k-color-bg);
   color: var(--k-color-text-muted);
-  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* sticky nav must not cover focused/anchored content (WCAG 2.4.11) */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -122,11 +122,22 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   position: sticky;
   top: 0;
   z-index: 200;
+  isolation: isolate;
+}
+/* Blur + hairline live on a pseudo-element so they can fade (opacity) after 8px of scroll.
+   Default (no JS) is the full bar; JS sets data-scrolled="false" at the very top only. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background: var(--k-color-nav-bg);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--k-color-line);
 }
+.site-header[data-scrolled="false"]::before { opacity: 0; }
 
 .nav-root {
   max-width: 1240px;
@@ -160,6 +171,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .brand-word .sep { color: var(--k-color-text-subtle); margin: 0 0.35em; }
 
 .nav-links {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -169,6 +181,8 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 
 .nav-links a {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   padding: 8px 15px;
@@ -181,12 +195,27 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   white-space: nowrap;
   transition: background var(--k-dur-fast) var(--k-ease-standard), color var(--k-dur-fast) var(--k-ease-standard);
 }
-.nav-links a:hover { background: var(--k-color-surface-raised); color: var(--k-color-text); }
-.nav-links a[aria-current="page"] {
+.nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--k-color-text); }
+/* Static fallback; once JS places the sliding indicator (data-ind) it draws the pill instead. */
+.nav-links:not([data-ind]) a:hover { background: var(--k-color-surface-raised); }
+.nav-links:not([data-ind]) a[aria-current="page"] {
   background: var(--k-color-surface-raised);
-  color: var(--k-color-text);
   box-shadow: inset 0 0 0 1px var(--k-color-line);
 }
+.nav-ind {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--ind-w, 0px);
+  transform: translateX(var(--ind-x, 0px));
+  border-radius: var(--k-radius-pill);
+  background: var(--k-color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--k-color-line);
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-links[data-ind="on"] .nav-ind { opacity: 1; }
 
 .nav-actions {
   flex: 1 1 0;
@@ -468,7 +497,6 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--k-color-aegis);
-  animation: pulse 2.4s ease-in-out infinite;
   flex-shrink: 0;
 }
 .hero-meta .sep { width: 18px; height: 1px; background: var(--k-color-line); flex-shrink: 0; }
@@ -484,6 +512,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   max-width: 14ch;
   text-wrap: balance;
 }
+.hero-h1.k-lines { max-width: 18ch; }
 .hero-h1 em {
   font-style: italic;
   color: var(--hero-em);
@@ -661,7 +690,6 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   background: var(--k-color-themis);
   border-color: var(--k-color-themis);
   color: var(--k-color-on-themis);
-  transform: translateX(4px);
 }
 .path-note { font-size: 13px; color: var(--k-color-text-subtle); margin-top: 20px; max-width: 70ch; }
 
@@ -961,48 +989,49 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
    Code blocks, install tabs, copy button
 ───────────────────────────────────────────── */
 .code-block {
-  border: 1px solid var(--k-color-line);
-  background: var(--k-color-surface);
+  --term-line: color-mix(in srgb, var(--k-color-code-text) 14%, transparent);
+  border: 1px solid var(--term-line);
+  background: var(--k-color-code-bg);
+  color: var(--k-color-code-text);
   border-radius: var(--k-radius-lg);
   margin: 14px 0;
   overflow: hidden;
 }
 .code-hd {
-  padding: 10px 14px 10px 20px;
-  border-bottom: 1px solid var(--k-color-line);
+  padding: 8px 10px 8px 16px;
+  border-bottom: 1px solid var(--term-line);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
+.term-dots { display: inline-flex; gap: 6px; flex: none; }
+.term-dots i {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--k-color-code-text) 26%, transparent);
+}
 .code-hd-label {
+  flex: 1;
+  min-width: 0;
   font-family: var(--k-font-mono);
   font-size: 11px;
-  color: var(--k-color-text-subtle);
-  letter-spacing: 0.08em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.code-hd-label::before {
-  content: '';
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--k-color-aegis);
-  flex-shrink: 0;
+  color: color-mix(in srgb, var(--k-color-code-text) 78%, transparent);
+  letter-spacing: var(--k-tracking-label);
+  text-transform: uppercase;
 }
 .code-body {
   margin: 0;
-  padding: 20px 24px;
+  padding: 18px 22px 20px;
   font-family: var(--k-font-mono);
   font-size: 13px;
-  line-height: 1.8;
-  color: var(--k-color-text);
+  line-height: var(--k-leading-code);
+  color: var(--k-color-code-text);
   overflow-x: auto;
   font-weight: 400;
   white-space: pre-wrap;
   word-break: break-all;
 }
+.code-body .cmd[data-prompt]::before { content: attr(data-prompt) ' '; color: var(--k-color-aegis); user-select: none; }
 
 .install-tabs { max-width: 100%; border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); overflow: hidden; background: var(--k-color-bg); }
 .install-tab-bar {
@@ -1046,6 +1075,10 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 
 .copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
   font-family: var(--k-font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -1060,6 +1093,14 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .copy-btn:hover { background: var(--k-color-surface-raised); }
 .copy-btn.copied { color: var(--k-color-on-aegis); background: var(--k-color-aegis); border-color: var(--k-color-aegis); }
+.code-hd .copy-btn { color: var(--k-color-code-text); border-color: color-mix(in srgb, var(--k-color-code-text) 38%, transparent); }
+.code-hd .copy-btn:hover { background: color-mix(in srgb, var(--k-color-code-text) 12%, transparent); }
+.code-hd .copy-btn.copied { color: var(--k-color-on-aegis); background: var(--k-color-aegis); border-color: var(--k-color-aegis); }
+.copy-ic { position: relative; display: inline-block; width: 14px; height: 14px; flex: none; }
+.copy-ic svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.copy-ic .ic-check { opacity: 0; }
+.copy-btn.copied .ic-copy { opacity: 0; }
+.copy-btn.copied .ic-check { opacity: 1; }
 
 /* ─────────────────────────────────────────────
    Lifecycle, tags, badges, inline code
@@ -1147,8 +1188,8 @@ code {
 .prose strong { color: var(--k-color-text); font-weight: 600; }
 .prose a { color: var(--k-color-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .prose a:hover { color: var(--k-color-themis-hover); }
-.prose pre { background: var(--k-color-surface); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-lg); padding: 20px 24px; overflow-x: auto; font-size: 13px; line-height: 1.7; }
-.prose pre code { color: var(--k-color-text); }
+.prose pre { background: var(--k-color-code-bg); border: 1px solid color-mix(in srgb, var(--k-color-code-text) 14%, transparent); border-radius: var(--k-radius-lg); padding: 20px 24px; overflow-x: auto; font-size: 13px; line-height: 1.7; }
+.prose pre code { color: var(--k-color-code-text); }
 .prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; display: block; overflow-x: auto; }
 .prose th, .prose td { border-bottom: 1px solid var(--k-color-line); padding: 10px 14px; text-align: left; vertical-align: top; }
 .prose th { color: var(--k-color-text); font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
@@ -1329,4 +1370,132 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Motion (docs/design/motion.md)
+   Every movement is inside prefers-reduced-motion: no-preference;
+   hover effects also need a fine, hovering pointer. Content is
+   visible without JS and without motion. Only transform, opacity,
+   translate and small colour changes animate.
+═════════════════════════════════════════════════════════════ */
+
+/* Static, motion-free affordances (all users) */
+.btn-primary { position: relative; }
+.btn-primary:disabled { cursor: not-allowed; }
+.k-spin { display: inline-block; min-width: 1.1em; margin-right: 0.45em; text-align: center; }
+.k-line { display: block; padding-block: 0.08em; margin-block: -0.08em; padding-inline: 0.06em; margin-inline: -0.06em; overflow: hidden; }
+.k-line > span { display: inline-block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  /* 4.1 reveal on scroll: JS marks below-fold items pending, then in (480ms decelerate, 60ms stagger) */
+  [data-reveal-state="pending"] { opacity: 0; translate: 0 8px; will-change: opacity, translate; }
+  [data-reveal-state="in"] { animation: k-reveal 480ms var(--k-ease-decelerate) var(--reveal-delay, 0ms) backwards; }
+
+  /* 4.3 hero headline: each line rises out of a clip, 70ms apart. A finite CSS animation that always
+     ends visible, so it needs no JS and cannot leave text hidden. */
+  .k-lines .k-line > span { animation: k-line-in var(--k-dur-reveal) var(--k-ease-arrival) calc(var(--line, 0) * 70ms) backwards; }
+  .hero-meta { animation: k-fade-up 480ms var(--k-ease-decelerate) backwards; }
+  .hero-desc { animation: k-fade-up 600ms var(--k-ease-decelerate) 260ms backwards; }
+  .hero-cta  { animation: k-fade-up 600ms var(--k-ease-decelerate) 340ms backwards; }
+  .hero-meta .dot { animation: pulse 2.4s ease-in-out infinite; } /* static dot is the reduced-motion form */
+
+  /* 4.6 nav: hairline + blur fade in after 8px of scroll */
+  .site-header::before { transition: opacity var(--k-dur-base) var(--k-ease-standard); }
+
+  /* 4.7 pill indicator slides between items */
+  .nav-ind { transition: opacity var(--k-dur-fast) var(--k-ease-standard); }
+  .nav-links[data-ind-ready] .nav-ind {
+    transition: transform var(--k-dur-base) var(--k-ease-fold), width var(--k-dur-base) var(--k-ease-fold), opacity var(--k-dur-fast) var(--k-ease-standard);
+  }
+
+  /* 4.8 theme crossfade (fallback when View Transitions are unavailable) */
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--k-dur-moderate); animation-timing-function: var(--k-ease-fold); }
+  :root.k-theme-anim, :root.k-theme-anim *, :root.k-theme-anim *::before, :root.k-theme-anim *::after {
+    transition: background-color var(--k-dur-moderate) var(--k-ease-fold), color var(--k-dur-moderate) var(--k-ease-fold), border-color var(--k-dur-moderate) var(--k-ease-fold), fill var(--k-dur-moderate) var(--k-ease-fold) !important;
+  }
+
+  /* 4.9 press feedback */
+  .btn-primary, .btn-ghost, .btn-themis {
+    transition: background-color var(--k-dur-fast) var(--k-ease-standard), color var(--k-dur-fast) var(--k-ease-standard),
+                border-color var(--k-dur-fast) var(--k-ease-standard), box-shadow var(--k-dur-fast) var(--k-ease-standard),
+                transform var(--k-dur-instant) var(--k-ease-standard),
+                padding-left var(--k-dur-base) var(--k-ease-smooth), padding-right var(--k-dur-base) var(--k-ease-smooth);
+  }
+  .btn-primary:not(:disabled):active, .btn-ghost:active, .btn-themis:active { transform: translateY(1px) scale(0.985); }
+  .btn-primary:not(:disabled):active { box-shadow: var(--k-shadow-press); }
+
+  /* cards that hold links */
+  .twin-card, .doc-card, .download-card {
+    transition: transform var(--k-dur-base) var(--k-ease-smooth), box-shadow var(--k-dur-base) var(--k-ease-smooth), background-color var(--k-dur-fast) var(--k-ease-standard);
+  }
+
+  /* copy button: glyph swap and a small pop on success */
+  .copy-ic svg { transition: opacity var(--k-dur-fast) var(--k-ease-standard), transform var(--k-dur-base) var(--k-ease-smooth); }
+  .copy-ic .ic-check, .copy-btn.copied .ic-copy { transform: scale(0.5); }
+  .copy-btn.copied .ic-check { transform: none; }
+  .copy-btn.copied { animation: k-pop var(--k-dur-base) var(--k-ease-smooth); }
+
+  /* 4.12 braille spinner (only the skill finder has a loading state); the label says FINDING too */
+  .k-spin::before { content: "⠋"; animation: k-braille 800ms steps(1, end) infinite; }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* 4.4 hover lift */
+  .twin-card:hover, .doc-card:hover, .download-card:hover { transform: translateY(-3px); box-shadow: var(--k-shadow-lift); }
+  .twin-card:active, .doc-card:active, .download-card:active { transform: translateY(-1px); box-shadow: var(--k-shadow-md); transition-duration: var(--k-dur-instant); }
+
+  /* 4.5 link underline wipe: a 2px line enters from the left and leaves to the right.
+     Only plain text links (no class), so buttons, rows and cards are untouched. */
+  main :is(p, figcaption, .lede, .path-note, .bullets li) a:not([class]), .prose a:not([class]), .docs-edit a, .footer-col a {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size: 0 2px;
+    transition: background-size var(--k-dur-base) var(--k-ease-smooth), background-position var(--k-dur-base) var(--k-ease-smooth), color var(--k-dur-fast) var(--k-ease-standard);
+  }
+  main :is(p, figcaption, .lede, .path-note, .bullets li) a:not([class]):hover, .prose a:not([class]):hover, .docs-edit a:hover, .footer-col a:hover {
+    background-position: 0 100%;
+    background-size: 100% 2px;
+  }
+  .footer-col a { background-size: 0 1px; }
+  .footer-col a:hover { background-size: 100% 1px; }
+
+  /* microsoft.ai style primary pill: the label slides left (width unchanged) while an arrow circle grows in */
+  .btn-primary { --btn-px: 26px; padding-inline: var(--btn-px); }
+  .nav-cta.btn-primary { --btn-px: 22px; }
+  .btn-primary::after {
+    content: "→";
+    content: "→" / "";
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    width: 2.1em;
+    height: 2.1em;
+    margin-top: -1.05em;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--k-color-on-aegis);
+    color: var(--k-color-aegis);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: transform var(--k-dur-base) var(--k-ease-arrival), opacity var(--k-dur-fast) var(--k-ease-standard);
+    pointer-events: none;
+  }
+  .btn-primary:not(:disabled):hover, .btn-primary:not(:disabled):focus-visible { padding-left: calc(var(--btn-px) - 10px); padding-right: calc(var(--btn-px) + 10px); }
+  .btn-primary:not(:disabled):hover::after, .btn-primary:not(:disabled):focus-visible::after { opacity: 1; transform: scale(1); }
+  .path-row:hover .pr-arrow, .path-row:focus-visible .pr-arrow { transform: translateX(4px); }
+  .btn-ghost:hover .arr, .btn-themis:hover .arr { transform: translateX(3px); }
+}
+
+@keyframes k-reveal { from { opacity: 0; translate: 0 8px; } }
+@keyframes k-line-in { from { transform: translateY(105%); } }
+@keyframes k-fade-up { from { opacity: 0; translate: 0 10px; } }
+@keyframes k-pop { 50% { transform: scale(1.06); } }
+@keyframes k-braille {
+  0%, 100% { content: "⠋"; } 10% { content: "⠙"; } 20% { content: "⠹"; } 30% { content: "⠸"; } 40% { content: "⠼"; }
+  50% { content: "⠴"; } 60% { content: "⠦"; } 70% { content: "⠧"; } 80% { content: "⠇"; } 90% { content: "⠏"; }
 }

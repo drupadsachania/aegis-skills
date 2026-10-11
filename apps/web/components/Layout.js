@@ -2,6 +2,7 @@
 
 const React = require('react')
 const Head = require('next/head').default || require('next/head')
+const { useReveal } = require('./reveal')
 
 const { useState, useEffect, useRef, useCallback } = React
 const h = React.createElement
@@ -101,6 +102,81 @@ function ThemeToggle () {
     h('span', { className: 'i-moon' }, h(Icon, null, h('path', { d: 'M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z' }))))
 }
 
+// Pill-nav indicator (motion.md 4.7): one absolutely positioned pill slides under the active
+// or hovered/focused link (transform + width only). Without JS, or on touch, the static
+// aria-current background applies and nothing moves.
+function NavLinks ({ path }) {
+  const listRef = useRef(null)
+  const indRef = useRef(null)
+  useEffect(() => {
+    const list = listRef.current
+    const ind = indRef.current
+    if (!list || !ind) return undefined
+    const hoverOk = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches)
+    const current = () => list.querySelector('a[aria-current="page"]')
+    let raf = 0
+    const place = a => {
+      if (!a || !list.offsetWidth) { list.removeAttribute('data-ind'); return }
+      const wasOn = list.getAttribute('data-ind') === 'on'
+      if (!wasOn) list.removeAttribute('data-ind-ready') // appear in place, do not fly in from the left
+      ind.style.setProperty('--ind-x', a.offsetLeft + 'px')
+      ind.style.setProperty('--ind-w', a.offsetWidth + 'px')
+      list.setAttribute('data-ind', 'on')
+      if (!wasOn) {
+        raf = window.requestAnimationFrame(() => { raf = window.requestAnimationFrame(() => list.setAttribute('data-ind-ready', '')) })
+      }
+    }
+    const rest = () => {
+      const c = current()
+      if (c) place(c)
+      else if (list.offsetWidth) list.setAttribute('data-ind', 'off')
+      else list.removeAttribute('data-ind')
+    }
+    rest()
+    const links = Array.from(list.querySelectorAll('a'))
+    const enters = links.map(a => {
+      const onEnter = e => { if (e.type === 'focus' || hoverOk) place(a) }
+      a.addEventListener('pointerenter', onEnter)
+      a.addEventListener('focus', onEnter)
+      return [a, onEnter]
+    })
+    const onLeave = () => rest()
+    list.addEventListener('pointerleave', onLeave)
+    list.addEventListener('focusout', onLeave)
+    window.addEventListener('resize', rest)
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(rest).catch(() => {})
+    return () => {
+      window.cancelAnimationFrame(raf)
+      for (const [a, fn] of enters) { a.removeEventListener('pointerenter', fn); a.removeEventListener('focus', fn) }
+      list.removeEventListener('pointerleave', onLeave)
+      list.removeEventListener('focusout', onLeave)
+      window.removeEventListener('resize', rest)
+    }
+  }, [path])
+
+  return h('ul', { className: 'nav-links', ref: listRef },
+    ...NAV.map(l => h('li', { key: l.href },
+      h('a', { href: l.href, 'aria-current': isActive(path, l.href) ? 'page' : undefined }, l.label))),
+    h('li', { key: 'github' },
+      h('a', { href: REPO_URL, target: '_blank', rel: 'noopener noreferrer' }, 'GitHub ↗')),
+    h('li', { key: 'ind', className: 'nav-ind', role: 'presentation', 'aria-hidden': 'true', ref: indRef }))
+}
+
+// data-scrolled drives the header hairline and blur (fade in after 8 px of scroll).
+// One passive listener, rAF-throttled, no layout reads.
+function useScrolled (ref) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return undefined
+    let ticking = false
+    const apply = () => { ticking = false; el.setAttribute('data-scrolled', window.scrollY > 8 ? 'true' : 'false') }
+    const onScroll = () => { if (!ticking) { ticking = true; window.requestAnimationFrame(apply) } }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [ref])
+}
+
 function MobileMenu ({ path, onClose }) {
   const ref = useRef(null)
   useEffect(() => {
@@ -145,6 +221,8 @@ function Header () {
   const path = useCurrentPath()
   const [open, setOpen] = useState(false)
   const burger = useRef(null)
+  const headerRef = useRef(null)
+  useScrolled(headerRef)
   const close = useCallback(() => {
     setOpen(false)
     if (burger.current) burger.current.focus()
@@ -157,14 +235,10 @@ function Header () {
     return () => { mq.removeEventListener ? mq.removeEventListener('change', onChange) : mq.removeListener(onChange) }
   }, [open])
 
-  return h(React.Fragment, null, h('header', { className: 'site-header' },
+  return h(React.Fragment, null, h('header', { className: 'site-header', ref: headerRef },
     h('nav', { className: 'nav-root', 'aria-label': 'Main' },
       h('a', { href: '/', className: 'nav-brand' }, h(BrandMark), h('span', { className: 'brand-word' }, 'Aegis', h('span', { className: 'sep' }, '·'), 'Themis')),
-      h('ul', { className: 'nav-links' },
-        ...NAV.map(l => h('li', { key: l.href },
-          h('a', { href: l.href, 'aria-current': isActive(path, l.href) ? 'page' : undefined }, l.label))),
-        h('li', { key: 'github' },
-          h('a', { href: REPO_URL, target: '_blank', rel: 'noopener noreferrer' }, 'GitHub ↗'))),
+      h(NavLinks, { path }),
       h('div', { className: 'nav-actions' },
         h(ThemeToggle),
         h('a', { href: '/paths', className: 'btn-primary nav-cta' }, 'Get started'),
@@ -200,6 +274,7 @@ function Footer () {
 }
 
 function Layout ({ title, description, children }) {
+  useReveal()
   return h(
     'div',
     { className: 'page-root' },

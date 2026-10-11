@@ -8,7 +8,7 @@ const h = React.createElement
 function Screenshot ({ src, alt, caption, exists }) {
   return h(
     'figure',
-    { className: 'screenshot' },
+    { className: 'screenshot', 'data-reveal': '' },
     exists
       ? h('img', { src, alt, loading: 'lazy', width: 1600, height: 1000 })
       : h('div', { className: 'screenshot-placeholder', role: 'img', 'aria-label': alt }, `Screenshot pending: ${alt}`),
