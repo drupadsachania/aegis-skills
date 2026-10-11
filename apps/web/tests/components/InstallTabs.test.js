@@ -28,6 +28,14 @@ test('switches tabs', async () => {
   expect(screen.queryByText('Inside Claude Code:')).not.toBeInTheDocument()
 })
 
+test('flags tabs that are only available after the first release', async () => {
+  const tabs = [{ ...TABS[0], availability: 'after-first-release' }, TABS[1]]
+  render(React.createElement(InstallTabs, { tabs }))
+  expect(screen.getByText(/Available after the first release/)).toBeInTheDocument()
+  await userEvent.setup().click(screen.getByRole('tab', { name: 'Codex' }))
+  expect(screen.queryByText(/Available after the first release/)).not.toBeInTheDocument()
+})
+
 test('renders one copy button per code block and nothing for empty tabs', () => {
   const { container } = render(React.createElement(InstallTabs, { tabs: TABS }))
   expect(screen.getAllByRole('button', { name: 'COPY' })).toHaveLength(1)

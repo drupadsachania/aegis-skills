@@ -37,6 +37,9 @@ function InstallTabs ({ tabs }) {
     h(
       'div',
       { className: 'install-tab-content', role: 'tabpanel' },
+      current.availability
+        ? h('p', { className: 'install-later' }, 'Available after the first release. Nothing is published yet, so this command will not work until then.')
+        : null,
       ...current.steps.map((s, i) => h(
         React.Fragment,
         { key: `${current.id}-${i}` },
