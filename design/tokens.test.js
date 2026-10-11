@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 const { load, buildCss, contrast, leaves, OUT } = require('./build-tokens')
 
 const tokens = load()
@@ -50,5 +51,42 @@ describe('tokens.css', () => {
 
   it('collapses motion durations for reduced-motion users', () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*--k-dur-base: 0\.01ms/)
+  })
+})
+
+describe('brand colours (logo artwork)', () => {
+  const brand = Object.fromEntries(leaves(tokens.brand))
+  const plate = colour('light', 'plate')
+
+  it('are exposed as --k-brand-* custom properties', () => {
+    const css = buildCss(tokens)
+    for (const [name, value] of Object.entries(brand)) expect(css).toContain(`--k-brand-${name}: ${value};`)
+  })
+
+  it('the logo plate is the same cream in light and dark', () => {
+    expect(colour('dark', 'plate')).toBe(plate)
+  })
+
+  it.each(tokens.$extensions['kairos.brand'].map(r => [`${r.token} on plate: ${r.usage}, ${r.ratio}:1 (${r.rule} ${r.limit})`, r]))('%s', (_label, r) => {
+    const ratio = contrast(brand[r.token], plate)
+    // the recorded number is the documented measurement
+    expect(Math.abs(ratio - r.ratio)).toBeLessThan(0.02)
+    if (r.rule === 'max') expect(ratio).toBeLessThan(r.limit)
+    else expect(ratio).toBeGreaterThanOrEqual(r.limit)
+  })
+
+  it('brand gold and blue never reach AA for text, so they are fills/art only', () => {
+    for (const r of tokens.$extensions['kairos.brand'].filter(x => x.usage === 'fill-only' && x.token !== 'paper')) {
+      expect(contrast(brand[r.token], plate)).toBeLessThan(4.5)
+    }
+  })
+
+  it('no stylesheet uses a --k-brand-* colour as text colour or on borders/outlines', () => {
+    const roots = [path.join(__dirname, '..', 'apps', 'web', 'styles', 'globals.css'), path.join(__dirname, '..', 'packages', 'themis-app', 'ui', 'src', 'styles.css')]
+    for (const f of roots) {
+      const css = fs.readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+      const bad = css.split(/\r?\n/).filter(l => /var\(--k-brand-/.test(l) && /(^|[\s{;])(color|border[a-z-]*|outline[a-z-]*|stroke|-webkit-text-fill-color|text-decoration-color|caret-color)\s*:/.test(l))
+      expect(bad).toEqual([])
+    }
   })
 })

@@ -25,7 +25,8 @@ const GROUPS = [
   ['radius', '--k-radius-'],
   ['shadow', '--k-shadow-'],
   ['layout', '--k-layout-'],
-  ['z', '--k-z-']
+  ['z', '--k-z-'],
+  ['brand', '--k-brand-']
 ]
 const MOTION = [
   ['motion.duration', '--k-dur-'],
