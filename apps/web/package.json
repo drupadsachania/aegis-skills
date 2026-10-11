@@ -16,9 +16,9 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "predev": "node ../../scripts/build-flat-prompts.js --out .generated/prompts",
+    "predev": "node scripts/build-downloads.js",
     "dev": "next dev",
-    "prebuild": "node ../../scripts/build-flat-prompts.js --out .generated/prompts",
+    "prebuild": "node scripts/build-downloads.js",
     "build": "next build",
     "start": "next start"
   },

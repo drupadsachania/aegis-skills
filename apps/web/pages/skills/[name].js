@@ -224,10 +224,10 @@ async function getStaticProps({ params }) {
   const manifest = await getSkillManifest(name)
   if (!manifest) return { notFound: true }
 
-  // Built by scripts/build-flat-prompts.js in the prebuild step (apps/web/package.json).
+  // Built by scripts/build-downloads.js in the prebuild step (apps/web/package.json).
   let systemPrompt = ''
   try {
-    systemPrompt = await fs.readFile(path.join(process.cwd(), '.generated', 'prompts', `${name}.md`), 'utf8')
+    systemPrompt = await fs.readFile(path.join(process.cwd(), 'public', 'downloads', 'prompts', `${name}.md`), 'utf8')
   } catch (_) { systemPrompt = '' }
 
   return {
