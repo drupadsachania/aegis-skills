@@ -1021,7 +1021,7 @@ code {
 .skill-rows { border-top: 1px solid var(--border-dim); }
 .skill-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 20px;
   padding: 13px 12px;
@@ -1085,7 +1085,6 @@ code {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.sr-health { display: flex; align-items: center; }
 .skill-rows-empty {
   border-top: 1px solid var(--border-dim);
   padding: 32px 12px;
@@ -1096,7 +1095,7 @@ code {
 }
 
 @media (max-width: 760px) {
-  .skill-row { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .skill-row { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .sr-family, .sr-phases { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
