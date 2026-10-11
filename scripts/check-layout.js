@@ -82,7 +82,12 @@ const MUST_EXIST = [
   // Themis dashboard brand: favicon with cream plate (icons come from apps/web/public/brand via the @brand alias)
   'packages/themis-app/ui/public/favicon.svg',
   // Launch (2026-10-12): terms of service (single source rendered at /terms; kept out of the docs hub)
-  'docs/legal/terms.md', 'apps/web/pages/terms.js', 'apps/web/tests/pages/terms.render.test.js'
+  'docs/legal/terms.md', 'apps/web/pages/terms.js', 'apps/web/tests/pages/terms.render.test.js',
+  // Themis in-development markers
+  'apps/web/components/StatusPill.js', 'apps/web/tests/components/StatusPill.test.js', 'apps/web/tests/pages/in-development.render.test.js',
+  // Launch basics: deploy notes, robots, sitemap generator, 404, per-page meta
+  'docs/DEPLOY.md', 'apps/web/public/robots.txt', 'apps/web/scripts/build-sitemap.js', 'apps/web/lib/site-url.js', 'apps/web/pages/404.js',
+  'apps/web/tests/lib/sitemap.test.js', 'apps/web/tests/pages/page-meta.test.js'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
