@@ -58,10 +58,32 @@ function useCurrentPath () {
 
 const isActive = (path, href) => !!path && (path === href || path.startsWith(href + '/'))
 
+// Light is the default. Dark only when the toggle (or its saved choice, applied by the
+// _document script) set data-theme="dark"; prefers-color-scheme is deliberately not read.
 function currentTheme () {
-  const attr = document.documentElement.getAttribute('data-theme')
-  if (attr === 'light' || attr === 'dark') return attr
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+}
+
+function applyTheme (next) {
+  const root = document.documentElement
+  root.setAttribute('data-theme', next)
+  const meta = document.querySelector('meta[name="color-scheme"]')
+  if (meta) meta.setAttribute('content', next)
+  try { window.localStorage.setItem(THEME_KEY, next) } catch (e) { /* storage unavailable */ }
+}
+
+// Crossfade: View Transitions where supported, otherwise a short colour-transition class.
+function switchTheme (next) {
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduce) { applyTheme(next); return }
+  if (typeof document.startViewTransition === 'function') {
+    document.startViewTransition(() => applyTheme(next))
+    return
+  }
+  const root = document.documentElement
+  root.classList.add('k-theme-anim')
+  applyTheme(next)
+  window.setTimeout(() => root.classList.remove('k-theme-anim'), 400)
 }
 
 function ThemeToggle () {
@@ -69,8 +91,7 @@ function ThemeToggle () {
   useEffect(() => { setDark(currentTheme() === 'dark') }, [])
   const flip = () => {
     const next = currentTheme() === 'dark' ? 'light' : 'dark'
-    document.documentElement.setAttribute('data-theme', next)
-    try { window.localStorage.setItem(THEME_KEY, next) } catch (e) { /* storage unavailable */ }
+    switchTheme(next)
     setDark(next === 'dark')
   }
   return h('button', { type: 'button', className: 'icon-btn theme-toggle', onClick: flip, 'aria-pressed': dark, 'aria-label': 'Dark theme' },

@@ -15,9 +15,9 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "predev": "node scripts/build-downloads.js",
+    "predev": "node scripts/sync-design-tokens.js && node scripts/build-downloads.js",
     "dev": "next dev",
-    "prebuild": "node scripts/build-downloads.js",
+    "prebuild": "node scripts/sync-design-tokens.js && node scripts/build-downloads.js",
     "build": "next build",
     "start": "next start"
   },

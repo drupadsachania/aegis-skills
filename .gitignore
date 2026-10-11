@@ -24,3 +24,4 @@ graphify-out/
 dist/
 apps/web/.generated/
 *.tgz
+apps/web/styles/tokens.generated.css
