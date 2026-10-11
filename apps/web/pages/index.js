@@ -4,8 +4,7 @@ const React = require('react')
 const { useState } = React
 const Layout = require('../components/Layout')
 const PlatformBadge = require('../components/PlatformBadge')
-const { listSkills } = require('../lib/skill-reader')
-const { FAMILIES, familyOf, labelOf } = require('aegis-skills/mcp/skill-families')
+const { listSkills, FAMILIES, familyOf, labelOf } = require('../lib/aegis')
 
 const PLATFORMS = ['chatgpt', 'claude', 'cursor', 'gemini']
 
@@ -692,36 +691,10 @@ function HomePage({ skills: initialSkills }) {
 }
 
 async function getStaticProps() {
-  const fs = require('fs')
-  const path = require('path')
   const skills = await listSkills()
 
-  // Load health scores and merge into skills
-  let healthScores = {}
-  try {
-    const { healthFile } = require('../lib/aegis-paths')
-    const healthPath = healthFile()
-    if (fs.existsSync(healthPath)) {
-      const healthContent = fs.readFileSync(healthPath, 'utf8')
-      const healthData = JSON.parse(healthContent)
-      healthScores = (healthData && healthData.skills) || {}
-    }
-  } catch (err) {
-    console.warn('Health scores not available:', err.message)
-    // Continue without scores if health.json cannot be loaded
-  }
-
-  // Merge health scores into skills
-  const skillsWithHealth = skills.map(skill => {
-    const score = healthScores[skill.name]?.['health-score']
-    return {
-      ...skill,
-      healthScore: typeof score === 'number' ? score : null
-    }
-  })
-
   return {
-    props: { skills: skillsWithHealth },
+    props: { skills },
     revalidate: 3600 // Revalidate every hour
   }
 }

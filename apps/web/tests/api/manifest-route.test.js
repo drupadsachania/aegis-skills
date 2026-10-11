@@ -1,10 +1,10 @@
 'use strict'
 
-jest.mock('../../lib/skill-reader', () => ({
+jest.mock('../../lib/aegis', () => ({
   getSkillManifest: jest.fn()
 }))
 
-const { getSkillManifest } = require('../../lib/skill-reader')
+const { getSkillManifest } = require('../../lib/aegis')
 const httpMocks = require('node-mocks-http')
 const handler = require('../../pages/api/[skill]/manifest')
 

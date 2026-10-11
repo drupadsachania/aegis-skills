@@ -24,7 +24,7 @@ const MUST_EXIST = [
   'packages/aegis/package.json', 'packages/aegis/health.json', 'packages/aegis/skills',
   'apps/web/package.json', 'apps/web/next.config.js', 'apps/web/jest.config.js', 'apps/web/jest.setup.js',
   'apps/web/tsconfig.json', 'apps/web/next-env.d.ts', 'apps/web/postcss.config.js', 'apps/web/tailwind.config.js',
-  'apps/web/lib/skill-reader.js', 'apps/web/lib/aegis-paths.js',
+  'apps/web/lib/aegis.js', 'apps/web/lib/site-paths.js',
   'packages/aegis/cli/aegis.js', 'packages/aegis/lib/installer.js',
   'packages/aegis/mcp/server.js', 'packages/aegis/mcp/stdio.js', 'packages/aegis/mcp/skill-reader.js',
   'packages/aegis/mcp/skill-families.js', 'packages/aegis/lib/skill-meta.js', 'packages/aegis/lib/targets.js',

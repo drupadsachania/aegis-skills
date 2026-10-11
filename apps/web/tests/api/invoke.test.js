@@ -1,6 +1,6 @@
 'use strict'
 
-jest.mock('../../lib/skill-reader', () => ({
+jest.mock('../../lib/aegis', () => ({
   getSkillManifest: jest.fn(),
   getPhaseContent: jest.fn()
 }))
@@ -10,7 +10,7 @@ jest.mock('../../lib/telemetry', () => ({
   detectPlatform: jest.fn().mockReturnValue('unknown')
 }))
 
-const { getSkillManifest, getPhaseContent } = require('../../lib/skill-reader')
+const { getSkillManifest, getPhaseContent } = require('../../lib/aegis')
 const { logInvocation, detectPlatform } = require('../../lib/telemetry')
 const httpMocks = require('node-mocks-http')
 const handler = require('../../pages/api/[skill]/invoke')

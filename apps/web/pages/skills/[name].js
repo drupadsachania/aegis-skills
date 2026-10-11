@@ -5,7 +5,7 @@ const fs = require('fs').promises
 const path = require('path')
 const Layout = require('../../components/Layout')
 const InstallTabs = require('../../components/InstallTabs')
-const { listSkills, getSkillManifest } = require('../../lib/skill-reader')
+const { listSkills, getSkillManifest } = require('../../lib/aegis')
 
 function SkillDetailPage({ manifest, systemPrompt }) {
   const mcpUrl = 'https://aegis-skills.vercel.app/api/mcp'

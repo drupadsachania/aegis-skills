@@ -1,6 +1,6 @@
 'use strict'
 
-const { getSkillManifest } = require('../../../lib/skill-reader')
+const { getSkillManifest } = require('../../../lib/aegis')
 const { handleCors } = require('../../../lib/cors')
 
 async function handler (req, res) {

@@ -1,6 +1,6 @@
 'use strict'
 
-const { getSkillManifest, getPhaseContent } = require('../../../lib/skill-reader')
+const { getSkillManifest, getPhaseContent } = require('../../../lib/aegis')
 const { logInvocation, detectPlatform } = require('../../../lib/telemetry')
 const { handleCors } = require('../../../lib/cors')
 
