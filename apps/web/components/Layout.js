@@ -27,6 +27,7 @@ const NAV = [
 const FOOTER_COLUMNS = [
   { title: 'Product', links: [
     { href: '/skills', label: 'Skills' },
+    { href: '/quickstart', label: 'Quick start' },
     { href: '/paths', label: 'Paths' },
     { href: '/themis', label: 'Themis' },
     { href: '/mcp', label: 'Hosted MCP' }
@@ -37,6 +38,7 @@ const FOOTER_COLUMNS = [
     { href: '/docs/themis', label: 'Themis agent' }
   ] },
   { title: 'Trust', links: [
+    { href: '/trust', label: 'Trust and data flow' },
     { href: '/security', label: 'Security' },
     { href: '/license', label: 'License' },
     { href: REPO_URL, label: 'GitHub', external: true },
@@ -218,9 +220,10 @@ function MobileMenu ({ path, onClose }) {
         h('a', { href: REPO_URL, className: 'mm-link', target: '_blank', rel: 'noopener noreferrer' }, 'GitHub', h('span', { className: 'arr', 'aria-hidden': 'true' }, '↗')))),
     h('div', { className: 'mm-more' },
       h('a', { href: '/mcp', onClick: onClose }, 'Hosted MCP'),
+      h('a', { href: '/trust', onClick: onClose }, 'Trust and data flow'),
       h('a', { href: '/security', onClick: onClose }, 'Security'),
       h('a', { href: '/license', onClick: onClose }, 'License')),
-    h('div', { className: 'mm-cta' }, h('a', { href: '/paths', className: 'btn-primary', onClick: onClose }, 'Get started')))
+    h('div', { className: 'mm-cta' }, h('a', { href: '/quickstart', className: 'btn-primary', onClick: onClose }, 'Try it in 2 minutes')))
 }
 
 function Header () {
@@ -247,7 +250,7 @@ function Header () {
       h(NavLinks, { path }),
       h('div', { className: 'nav-actions' },
         h(ThemeToggle),
-        h('a', { href: '/paths', className: 'btn-primary nav-cta' }, 'Get started'),
+        h('a', { href: '/quickstart', className: 'btn-primary nav-cta' }, 'Quick start'),
         h('button', {
           type: 'button',
           className: 'icon-btn nav-burger',

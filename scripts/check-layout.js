@@ -73,6 +73,12 @@ const MUST_EXIST = [
   'design/brand/source/aegis-mark.png', 'design/brand/source/aegis-lockup.png', 'design/brand/source/aegis-tile.webp',
   'design/brand/source/themis-mark.png', 'design/brand/source/themis-lockup.png', 'design/brand/source/themis-tile.webp',
   'docs/design/LOGOS.md',
+  // Design review (2026-10): quick start, trust and data flow, worked example, readability guard
+  'apps/web/pages/quickstart.js', 'apps/web/pages/trust.js', 'docs/trust/data-flow.md',
+  'apps/web/components/FlowDiagram.js', 'apps/web/components/AegisThemisFlow.js',
+  'apps/web/lib/captured-mcp.js', 'apps/web/lib/version-stamp-sample.js',
+  'apps/web/tests/pages/new-pages.render.test.js', 'apps/web/tests/guard/trust-claims.test.js',
+  'apps/web/tests/guard/readability-css.test.js', 'apps/web/tests/lib/captured-mcp.test.js',
   // Themis dashboard brand: favicon with cream plate (icons come from apps/web/public/brand via the @brand alias)
   'packages/themis-app/ui/public/favicon.svg'
 ]
