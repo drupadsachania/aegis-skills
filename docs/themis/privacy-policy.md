@@ -16,7 +16,7 @@ The website is a static site with a few read-only API routes. Its code writes no
 
 Two things happen outside our code:
 
-- **Fonts.** The site's fonts (Newsreader, IBM Plex Sans, Red Hat Mono; SIL Open Font License) are served from the site itself. Your browser makes no request to Google or any other third party to render a page.
+- **Fonts.** Pages load fonts from Google Fonts (`fonts.googleapis.com` and `fonts.gstatic.com`). Your browser therefore sends a request, including your IP address, to Google. Google's own privacy policy applies to that request.
 - **Hosting.** The site is served by its hosting platform, which keeps its own standard request logs (for example IP address, time and requested path) under its own retention rules. Our code does not read or export those logs, and we do not control their retention. <!-- USER: confirm the hosting platform's log retention and add it here if you want it stated -->
 
 ## The hosted Aegis MCP server
