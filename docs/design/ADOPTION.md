@@ -24,6 +24,16 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 | Tokens | `brand.gold|blue|ink|paper` become `--k-brand-*`; `color.plate` is new. `design/tokens.test.js` asserts the recorded contrast numbers and that no stylesheet uses a `--k-brand-*` colour for text, borders or outlines. |
 | Guards | `apps/web/tests/pages/brand-images.test.js` (alt/width/height on key pages, loading strategy, favicon and OG wiring), `scripts/tests/naming.test.js` (the old misspelt organisation name must not return outside historical plans), dashboard `static-ui.test.ts` (icons emitted as same-origin assets). |
 
+## Outside design review (2026-10-12)
+
+| Review point | Adopted |
+|---|---|
+| Decisive primary CTA | Hero: "Try it in 2 minutes" (`/quickstart`) and "Browse all 24 skills"; "Choose your path" stays as home section 02 and `/paths`. The header and menu CTA also lead to `/quickstart`. `/quickstart` shows the two paths that work today, with real output: the skill's scope lines read from its file, and `list_skills` / `get_skill` captured by running `packages/aegis/mcp/server.js` in-process at build time (`lib/captured-mcp.js`); illustrative text is labelled. |
+| Auditable trust claims | `/trust` renders `docs/trust/data-flow.md` (single source) with an accessible two-layout SVG diagram (`components/FlowDiagram.js`, token classes `.fd-*`, numbered arrows plus a text list). Linked from the footer Trust column, mobile menu, `/security` and the docs hub. `tests/guard/trust-claims.test.js` pins the cited code facts. The font statement is one generic sentence in the markdown (currently Google Fonts, moving to Adobe Fonts); font loading itself is unchanged. |
+| Small-screen readability | No `font-size` below 12px in `globals.css` (15 declarations raised), prose and descriptions 15px, mono labels 13px and 44px nav/button/pill targets under 761px or on touch. `tests/guard/readability-css.test.js` parses the stylesheet and fails on regressions (empty allow-list). |
+| Aegis vs Themis | Home: one sentence on each pack card and a five-step worked example (`components/AegisThemisFlow.js`; a list that becomes a vertical timeline on phones; revealed with the existing `data-reveal` system, so no motion under reduce). |
+| Versioning and authorization | Home section "Provenance and approval" and `/themis#provenance`: a real stamp (`lib/version-stamp-sample.js` reads the inputs `versionStamp()` reads) and the approval boundary, limited to what code and tests verify. |
+
 ## Token delivery decisions
 
 - Site: build-time copy, not a committed copy. It cannot drift by hand, and it relies on the assumption `build-downloads.js` already makes on Vercel (the whole repository is checked out even with Root Directory = `apps/web`); nothing imports `../../design` at runtime. If a deploy ever builds with only `apps/web`, `sync-design-tokens.js` fails loudly with an explanatory message instead of shipping unstyled pages. Running `npx next build` directly (without npm's `prebuild`) fails on the missing generated file; use `npm run build`.
