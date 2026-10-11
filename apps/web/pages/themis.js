@@ -4,6 +4,7 @@ const React = require('react')
 const Layout = require('../components/Layout')
 const InstallTabs = require('../components/InstallTabs')
 const Screenshot = require('../components/Screenshot')
+const { Logo } = require('../components/Brand')
 
 const h = React.createElement
 
@@ -50,12 +51,15 @@ function ThemisPage ({ paths, shots }) {
     Layout,
     { title: 'Themis', description: 'A governed security-operations agent that runs on your AI or as a local dashboard.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
-      h('div', { className: 'page-head' },
-        h('div', { className: 'eyebrow' }, 'SOC agent'),
-        h('h1', null, h('em', null, 'Themis')),
-        h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
-        h('p', { className: 'callout' },
-          'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
+      h('div', { className: 'page-head page-head-logo' },
+        h('div', { className: 'page-head-text' },
+          h('div', { className: 'eyebrow' }, 'SOC agent'),
+          h('h1', null, h('em', null, 'Themis')),
+          h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
+          h('p', { className: 'callout' },
+            'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
+        // hero image: eager and high priority (above the fold)
+        h(Logo, { brand: 'themis', kind: 'lockup', priority: true, className: 'hero-logo', reveal: true })),
 
       h(Sec, { id: 'modes', num: '01', title: 'Two ways to run' },
         h('div', { className: 'table-wrap' },

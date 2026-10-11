@@ -3,6 +3,7 @@
 const React = require('react')
 const Head = require('next/head').default || require('next/head')
 const { useReveal } = require('./reveal')
+const { BrandIcons } = require('./Brand')
 
 const { useState, useEffect, useRef, useCallback } = React
 const h = React.createElement
@@ -10,6 +11,10 @@ const h = React.createElement
 const SITE = 'Aegis + Themis'
 const DEFAULT_DESCRIPTION = 'Open cybersecurity skill pack and a governed SOC agent that runs on your own AI. Apache-2.0 OR MIT.'
 const REPO_URL = 'https://github.com/drupadsachania/aegis-skills'
+const KAIROS_URL = 'https://kairos-foundation.org/'
+const KAIROS_GITHUB_URL = 'https://github.com/kairos-dev-kairos-ecl'
+// Absolute origin for og:image (social crawlers need a full URL). Change it when a custom domain goes live.
+const SITE_URL = 'https://aegis-skills.vercel.app'
 const THEME_KEY = 'aegis-theme'
 
 const NAV = [
@@ -35,16 +40,18 @@ const FOOTER_COLUMNS = [
     { href: '/security', label: 'Security' },
     { href: '/license', label: 'License' },
     { href: REPO_URL, label: 'GitHub', external: true },
-    { href: 'https://kairos-foundation.org/', label: 'Kairos Foundation', external: true }
+    { href: KAIROS_URL, label: 'Kairos Foundation', external: true }
   ] }
 ]
 
 const FOCUSABLE = 'a[href], button:not([disabled])'
 
-function BrandMark () {
-  return h('svg', { className: 'brand-mark', viewBox: '0 0 32 32', 'aria-hidden': 'true', focusable: 'false' },
-    h('rect', { className: 'mk-a', x: 4, y: 9, width: 14, height: 14, rx: 3, transform: 'rotate(45 11 16)' }),
-    h('circle', { className: 'mk-t', cx: 21.5, cy: 16, r: 8 }))
+// Header / menu brand: the two small icons (Aegis shield, Themis scales) plus the wordmark text.
+// The text is hidden between 761 and 900 px, so the link carries its own accessible name.
+function Brand () {
+  return h('a', { href: '/', className: 'nav-brand', 'aria-label': 'Aegis and Themis home' },
+    h(BrandIcons, { size: 26 }),
+    h('span', { className: 'brand-word' }, 'Aegis', h('span', { className: 'sep' }, '·'), 'Themis'))
 }
 
 function Icon ({ d, children }) {
@@ -201,7 +208,7 @@ function MobileMenu ({ path, onClose }) {
 
   return h('div', { id: 'mobile-menu', className: 'mobile-menu', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Site menu', ref },
     h('div', { className: 'mobile-menu-top' },
-      h('a', { href: '/', className: 'nav-brand' }, h(BrandMark), h('span', { className: 'brand-word' }, 'Aegis', h('span', { className: 'sep' }, '·'), 'Themis')),
+      h(Brand),
       h('button', { type: 'button', className: 'icon-btn', onClick: onClose, 'aria-label': 'Close menu' },
         h(Icon, null, h('path', { d: 'M6 6l12 12M18 6L6 18' })))),
     h('ul', null,
@@ -236,7 +243,7 @@ function Header () {
 
   return h(React.Fragment, null, h('header', { className: 'site-header', ref: headerRef },
     h('nav', { className: 'nav-root', 'aria-label': 'Main' },
-      h('a', { href: '/', className: 'nav-brand' }, h(BrandMark), h('span', { className: 'brand-word' }, 'Aegis', h('span', { className: 'sep' }, '·'), 'Themis')),
+      h(Brand),
       h(NavLinks, { path }),
       h('div', { className: 'nav-actions' },
         h(ThemeToggle),
@@ -261,8 +268,12 @@ function Footer () {
     h('div', { className: 'footer-inner' },
       h('div', { className: 'footer-top' },
         h('div', { className: 'footer-brand-col' },
-          h('a', { href: '/', className: 'footer-brand' }, h(BrandMark), h('span', null, 'Aegis ', h('em', null, '+ Themis'))),
-          h('p', { className: 'footer-blurb' }, 'An open cybersecurity skill pack and a governed SOC agent, run on your own AI.')),
+          h('a', { href: '/', className: 'footer-brand' }, h(BrandIcons, { size: 30 }), h('span', null, 'Aegis ', h('em', null, '+ Themis'))),
+          h('p', { className: 'footer-blurb' }, 'An open cybersecurity skill pack and a governed SOC agent, run on your own AI.'),
+          h('p', { className: 'footer-parent' },
+            'A ', external(KAIROS_URL, 'Kairos Foundation'), ' project',
+            h('span', { className: 'sep', 'aria-hidden': 'true' }, '·'),
+            external(KAIROS_GITHUB_URL, 'Kairos on GitHub ↗'))),
         ...FOOTER_COLUMNS.map(col => h('div', { key: col.title, className: 'footer-col' },
           h('h2', null, col.title),
           h('ul', null, ...col.links.map(l => h('li', { key: l.label },
@@ -279,7 +290,20 @@ function Layout ({ title, description, children }) {
     { className: 'page-root' },
     h(Head, null,
       h('title', null, title ? `${title} · ${SITE}` : SITE),
-      h('meta', { name: 'description', content: description || DEFAULT_DESCRIPTION })),
+      h('meta', { name: 'description', content: description || DEFAULT_DESCRIPTION }),
+      // social previews: one shared image (1200x630, cream, both lockups)
+      h('meta', { property: 'og:type', content: 'website', key: 'og:type' }),
+      h('meta', { property: 'og:site_name', content: SITE, key: 'og:site_name' }),
+      h('meta', { property: 'og:title', content: title ? `${title} · ${SITE}` : SITE, key: 'og:title' }),
+      h('meta', { property: 'og:description', content: description || DEFAULT_DESCRIPTION, key: 'og:description' }),
+      h('meta', { property: 'og:image', content: `${SITE_URL}/og.png`, key: 'og:image' }),
+      h('meta', { property: 'og:image:width', content: '1200', key: 'og:image:width' }),
+      h('meta', { property: 'og:image:height', content: '630', key: 'og:image:height' }),
+      h('meta', { property: 'og:image:alt', content: 'Aegis and Themis logos', key: 'og:image:alt' }),
+      h('meta', { name: 'twitter:card', content: 'summary_large_image', key: 'twitter:card' }),
+      h('meta', { name: 'twitter:title', content: title ? `${title} · ${SITE}` : SITE, key: 'twitter:title' }),
+      h('meta', { name: 'twitter:description', content: description || DEFAULT_DESCRIPTION, key: 'twitter:description' }),
+      h('meta', { name: 'twitter:image', content: `${SITE_URL}/og.png`, key: 'twitter:image' })),
     h('a', { href: '#main', className: 'skip-link' }, 'Skip to content'),
     h(Header),
     h('main', { id: 'main', tabIndex: -1 }, children),

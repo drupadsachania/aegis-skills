@@ -4,6 +4,7 @@ const React = require('react')
 const Layout = require('../../components/Layout')
 const InstallTabs = require('../../components/InstallTabs')
 const CopyButton = require('../../components/CopyButton')
+const { BrandIcon } = require('../../components/Brand')
 
 const h = React.createElement
 
@@ -33,6 +34,7 @@ function SkillDetailPage ({ manifest, family, scopeHtml, flatPrompt, intelAsOf, 
         'div',
         { className: 'page-head skill-hero' },
         h('nav', { className: 'breadcrumb', 'aria-label': 'Breadcrumb' },
+          h(BrandIcon, { brand: 'aegis', size: 20, className: 'crumb-icon' }),
           h('a', { href: '/skills' }, 'Skills'),
           h('span', { className: 'sep', 'aria-hidden': 'true' }, '/'),
           h('span', null, family.label),

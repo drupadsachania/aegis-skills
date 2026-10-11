@@ -165,9 +165,21 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .nav-brand:hover { color: var(--k-color-text); }
 
-.brand-mark { width: 30px; height: 30px; flex-shrink: 0; display: block; }
-.brand-mark .mk-a { fill: var(--k-color-aegis); }
-.brand-mark .mk-t { fill: var(--k-color-themis); opacity: 0.92; }
+/* Logos (docs/design/LOGOS.md). The artwork is drawn for light backgrounds: its brown ink is
+   invisible on navy, so in the dark theme every icon sits on a cream chip and every raster logo on a
+   cream plate (--k-color-plate). Padding is constant in both themes, so toggling never shifts layout. */
+.brand-icons { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.brand-icon { display: block; flex-shrink: 0; padding: 2px; border-radius: 8px; box-sizing: content-box; }
+:root[data-theme="dark"] .brand-icon { background: var(--k-color-plate); }
+.brand-icons.subtle { opacity: 0.9; }
+.page-head .eyebrow.has-icon::before { display: none; }
+.eyebrow.has-icon { gap: 8px; }
+.eyebrow.has-icon .brand-icon { padding: 1px; border-radius: 6px; }
+.crumb-icon { margin-right: 2px; }
+
+.logo-plate { display: inline-block; line-height: 0; padding: 10px; border-radius: var(--k-radius-lg); max-width: 100%; }
+:root[data-theme="dark"] .logo-plate { background: var(--k-color-plate); }
+.logo-img { display: block; width: 100%; height: auto; }
 .brand-word .sep { color: var(--k-color-text-subtle); margin: 0 0.35em; }
 
 .nav-links {
@@ -359,6 +371,11 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .footer-brand em { font-style: italic; }
 .footer-blurb { font-size: 14px; color: var(--k-color-text-muted); line-height: 1.6; margin: 0; }
+.footer-parent { font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--k-color-text-subtle); margin: 0; line-height: 1.8; }
+.footer-parent a { color: var(--k-color-text-muted); text-decoration: underline; text-underline-offset: 3px; }
+.footer-parent a:hover { color: var(--k-color-themis); }
+.footer-parent .sep { margin: 0 0.6em; }
+.footer-brand .brand-icon { width: 30px; height: 30px; }
 .footer-col h2 {
   font-family: var(--k-font-mono);
   font-weight: 500;
@@ -569,9 +586,10 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .twin-card.themis::after { background: radial-gradient(circle, var(--k-color-themis-soft), transparent 68%); }
 .twin-card > * { position: relative; z-index: 1; }
 
-.twin-mark { width: 56px; height: 56px; margin-bottom: 28px; display: block; }
-.twin-card.aegis  .twin-mark .m { fill: var(--k-color-aegis); }
-.twin-card.themis .twin-mark .m { fill: var(--k-color-themis); }
+/* pack cards: large raster mark, fixed width so the card never reflows when the image decodes */
+.twin-logo { align-self: flex-start; margin: -10px 0 18px -10px; }
+.twin-logo .logo-img { width: 168px; }
+@media (max-width: 640px) { .twin-logo .logo-img { width: 132px; } }
 
 .twin-tag {
   font-family: var(--k-font-mono);
@@ -1275,6 +1293,14 @@ code {
 .page-head h1 em { font-style: italic; color: var(--k-color-themis); }
 .page-head p { color: var(--k-color-text-muted); font-size: clamp(16px, 1.5vw, 19px); max-width: 64ch; line-height: 1.65; margin: 0; }
 .page-head p + p { margin-top: 14px; }
+.page-head-logo { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(24px, 5vw, 72px); }
+.page-head-logo .hero-logo { margin-right: -10px; }
+.page-head-logo .hero-logo .logo-img { width: clamp(200px, 24vw, 280px); }
+@media (max-width: 760px) {
+  .page-head-logo { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .page-head-logo .hero-logo { order: -1; justify-self: start; margin: -10px 0 0 -10px; }
+  .page-head-logo .hero-logo .logo-img { width: 120px; }
+}
 .page-head .status-note { font-size: 14px; color: var(--k-color-text-subtle); }
 
 .callout {

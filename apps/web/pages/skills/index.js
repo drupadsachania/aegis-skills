@@ -3,6 +3,7 @@
 const React = require('react')
 const { useState } = React
 const Layout = require('../../components/Layout')
+const { BrandIcon } = require('../../components/Brand')
 
 const COMMON_ENVIRONMENTS = ['enterprise', 'cloud', 'hybrid', 'ot', 'remote-workforce', 'saas']
 const COMMON_TAGS = ['network', 'endpoint', 'web-application', 'api', 'lateral-movement', 'credential-theft', 'supply-chain', 'detection', 'compliance']
@@ -262,7 +263,7 @@ function SkillsPage({ skills: initialSkills, families, familyByName }) {
       React.createElement(
         'div',
         { className: 'page-head' },
-        React.createElement('div', { className: 'eyebrow' }, 'Aegis'),
+        React.createElement('div', { className: 'eyebrow has-icon' }, React.createElement(BrandIcon, { brand: 'aegis', size: 22 }), 'Aegis'),
         React.createElement('h1', null, 'Skills'),
         React.createElement('p', null, `${initialSkills.length} defensive security skills in ${families.length} families. Every skill is free to copy as a single-file prompt, download as a zip, install into your coding assistant, or read over MCP.`)
       ),

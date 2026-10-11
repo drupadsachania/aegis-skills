@@ -3,6 +3,7 @@
 const React = require('react')
 const Layout = require('../components/Layout')
 const PathMatrix = require('../components/PathMatrix')
+const { Logo } = require('../components/Brand')
 
 const h = React.createElement
 
@@ -47,10 +48,9 @@ function Section ({ id, children }) {
     h('div', { className: 'container' }, h('div', { className: 'section' }, children)))
 }
 
-const MARK_AEGIS = h('svg', { className: 'twin-mark', viewBox: '0 0 56 56', 'aria-hidden': 'true', focusable: 'false' },
-  h('rect', { className: 'm', x: 10, y: 10, width: 36, height: 36, rx: 8, transform: 'rotate(45 28 28)' }))
-const MARK_THEMIS = h('svg', { className: 'twin-mark', viewBox: '0 0 56 56', 'aria-hidden': 'true', focusable: 'false' },
-  h('circle', { className: 'm', cx: 28, cy: 28, r: 22 }))
+// Large raster marks for the pack cards (lazy: they sit below the fold; sizes are explicit, so no layout shift).
+const MARK_AEGIS = h(Logo, { brand: 'aegis', kind: 'mark', className: 'twin-logo' })
+const MARK_THEMIS = h(Logo, { brand: 'themis', kind: 'mark', className: 'twin-logo' })
 
 function HomePage ({ skillCount, familyCount, paths }) {
   return h(
