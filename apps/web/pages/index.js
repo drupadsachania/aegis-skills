@@ -4,7 +4,8 @@ const React = require('react')
 const { useState } = React
 const Layout = require('../components/Layout')
 const PlatformBadge = require('../components/PlatformBadge')
-const { listSkills, FAMILIES, familyOf, labelOf } = require('../lib/aegis')
+const { listSkills } = require('../lib/aegis')
+const { FAMILIES, familyOf, labelOf } = require('aegis-skills/mcp/skill-families')
 
 const PLATFORMS = ['chatgpt', 'claude', 'cursor', 'gemini']
 

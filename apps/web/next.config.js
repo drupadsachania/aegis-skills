@@ -7,7 +7,7 @@ const AEGIS_RUNTIME_FILES = [
   '../../packages/aegis/skills/**/SKILL.md',
   '../../packages/aegis/skills/**/skill.json',
   '../../packages/aegis/skills/**/references/*.md',
-  '../../packages/aegis/health.json'
+  '../../packages/aegis/package.json'
 ]
 
 /** @type {import('next').NextConfig} */
@@ -59,6 +59,10 @@ const nextConfig = {
             ].join('; ')
           }
         ]
+      },
+      {
+        source: '/downloads/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, must-revalidate' }]
       }
     ]
   }
