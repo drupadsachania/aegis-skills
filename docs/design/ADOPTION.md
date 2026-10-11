@@ -1,6 +1,6 @@
 # Design language adoption record
 
-Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (section 13 follow-ups) became in code. Product code keeps its existing author, licence and footer strings (the "Kairo" / "Kairos" spelling is still an open owner question).
+Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (section 13 follow-ups) became in code. The organisation spelling is settled as "Kairos Foundation" (kairos-foundation.org); who the legal copyright holder is remains an open owner question.
 
 ## What was adopted where
 
@@ -39,7 +39,7 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 
 ## Remaining gaps
 
-- Foundation mark/accent still placeholders; naming (Kairo vs Kairos) unresolved.
+- Foundation mark/accent still placeholders; naming resolved (Kairos Foundation).
 - Cmd/Ctrl+K command palette, docs right-hand TOC and prev/next cards, accordion and menu/drawer keyframes for the site are not built.
 - Dashboard: context chips and write-target banner, Run terminal window with streamed output styling, secret-reveal pattern on Models & Keys, approval checkbox "I have read the exact command" for write/execute, deep-linkable filters, real self-hosted fonts.
 - Syntax highlight palette for code windows (DESIGN open item 6).

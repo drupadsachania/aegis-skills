@@ -21,7 +21,7 @@
     "build": "next build",
     "start": "next start"
   },
-  "author": "Kairo Foundation",
+  "author": "Kairos Foundation",
   "keywords": [
     "skills",
     "claude",

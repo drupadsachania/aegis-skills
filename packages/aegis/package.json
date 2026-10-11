@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "Aegis: 24 defensive cybersecurity Agent Skills with a native installer and a read-only MCP skill server.",
   "license": "(Apache-2.0 OR MIT)",
-  "author": "Kairo Foundation",
+  "author": "Kairos Foundation",
   "homepage": "https://aegis-skills.vercel.app",
   "repository": {
     "type": "git",

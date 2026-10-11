@@ -35,7 +35,7 @@ const FOOTER_COLUMNS = [
     { href: '/security', label: 'Security' },
     { href: '/license', label: 'License' },
     { href: REPO_URL, label: 'GitHub', external: true },
-    { href: 'https://kairo-foundation.org', label: 'Kairo Foundation', external: true }
+    { href: 'https://kairos-foundation.org/', label: 'Kairos Foundation', external: true }
   ] }
 ]
 

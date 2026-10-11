@@ -12,6 +12,7 @@ Requirements discovered while writing individual phase plans that change OTHER p
 | 0.4 | `scripts/` stays at the repo root. `health.json` and `.intel-sync-state.json` move to `packages/aegis/`. The site resolves skills via `apps/web/lib/aegis-paths.js` (override `AEGIS_PACKAGE_DIR`). `scripts/check-layout.js` is the layout guard each phase updates. | all | open |
 | 0.5 | Intel sync is a local Claude scheduled task (Saturdays), not CI. `.intel-sync-state.json` is gitignored. `exposure-validation` and `threat-modeling` have no `intel-state.json`. | contracts §2, Phase 7 | open |
 | 0.6 | Copyright holder mismatch: LICENSE says "Kairo Foundation", README says "Drupad Sachania". | USER decision | open |
+| 0.12 | Organisation spelling resolved by the owner: **Kairos Foundation** (not "Kairo Foundation"; site https://kairos-foundation.org/, GitHub org `kairos-dev-kairos-ecl`). All tracked files now use the corrected spelling. 0.6 remains open as an owner question: is the legal copyright holder "Kairos Foundation" (as now in LICENSE) or "Drupad Sachania" (as in the README)? | USER decision (0.6 open) | resolved (spelling) |
 
 ## From Phase 5
 

@@ -3,7 +3,7 @@
   "displayName": "Themis Security Operations",
   "version": "1.1.0",
   "description": "Run Themis security workflows on your own AI, with human-approved, audited tool use.",
-  "author": { "name": "Kairo Foundation", "url": "https://github.com/drupadsachania/aegis-skills" },
+  "author": { "name": "Kairos Foundation", "url": "https://github.com/drupadsachania/aegis-skills" },
   "homepage": "https://aegis-skills.vercel.app",
   "repository": "https://github.com/drupadsachania/aegis-skills",
   "license": "Apache-2.0 OR MIT",

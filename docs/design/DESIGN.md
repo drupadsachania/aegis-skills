@@ -4,7 +4,7 @@ One visual and interaction language for Kairos Foundation and its products: Aegi
 
 Status: v0.1, 2026-10-11. Light is the default theme; dark appears only when the user toggles it (owner decision; no OS-driven auto-dark). Inspiration only: we adopted ideas from Hermes Agent, Nous Research, Microsoft AI and The Humanist Review; we copy none of their images, logos, brand names, copy or proprietary fonts.
 
-Naming note: the site footer currently says "Kairo Foundation" with domain `kairo-foundation.org`; this document uses "Kairos Foundation" as instructed. Reconcile before publishing (unverified which is canonical).
+Naming: the organisation is **Kairos Foundation** (https://kairos-foundation.org/); the spelling was confirmed by the owner and is used everywhere in the repository.
 
 ## 1. Principles
 
@@ -291,7 +291,7 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 ## 15. Open items and decisions to confirm
 
 1. Foundation accent and logo are placeholders (neutral ink). Needs the owner.
-2. Foundation name spelling and domain (Kairos vs Kairo) in site footer.
+2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. Still open: legal copyright holder in LICENSE (Kairos Foundation vs Drupad Sachania).
 3. Font hosting: self-host woff2 (recommended) vs Google Fonts; check current `_document.js`.
 4. Tokens are not yet consumed by `apps/web` or `themis-app/ui`; adoption is a follow-up task.
 5. Screenshots for this research were taken at narrow pane width; desktop-only behaviours (e.g. hover states, sticky sections on Hermes/MAI) were read from CSS and are not verified visually.
