@@ -10,7 +10,7 @@ const SOURCE_DIRS = ['pages', 'app', 'components', 'lib', 'scripts']
 const REMOVED_ROUTES = ['/api/themis', '/api/audit', '/api/exposure', '/invoke']
 // TEMPORARY: these pages are rewritten in Phase 5 Tasks 13-15 and still carry prose that
 // mentions removed routes. Delete this list when they are rewritten.
-const PENDING_REWRITE = ['pages/docs.js', 'pages/index.js', 'pages/themis.js']
+const PENDING_REWRITE = ['pages/docs.js', 'pages/themis.js']
 
 function walk (dir, out = []) {
   if (!fs.existsSync(dir)) return out

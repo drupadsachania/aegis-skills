@@ -1,31 +1,10 @@
 'use strict'
 
 const React = require('react')
-const { useState } = React
 const Layout = require('../components/Layout')
-const PlatformBadge = require('../components/PlatformBadge')
-const { listSkills } = require('../lib/aegis')
-const { FAMILIES, familyOf, labelOf } = require('aegis-skills/mcp/skill-families')
+const PathMatrix = require('../components/PathMatrix')
 
-const PLATFORMS = ['chatgpt', 'claude', 'cursor', 'gemini']
-
-const STEPS = [
-  {
-    n: '01',
-    label: 'Write SKILL.md',
-    desc: 'Author your skill as an open-standard Agent Skill: SKILL.md plus phase references and a skill.json sidecar.'
-  },
-  {
-    n: '02',
-    label: 'Install natively',
-    desc: 'Run npx aegis-skills install --platform <id>: skills land in the tool’s own skills folder and the MCP server is registered.'
-  },
-  {
-    n: '03',
-    label: 'Deploy anywhere',
-    desc: 'Or skip installing: paste the single-file prompt, or connect the hosted read-only MCP server.'
-  }
-]
+const h = React.createElement
 
 const INTEL_STEPS = [
   {
@@ -50,656 +29,110 @@ const INTEL_STEPS = [
   }
 ]
 
-const COMMANDS = [
-  { cmd: 'aegis install --platform <id> [--project]', desc: 'Copy the skills into a tool’s native folder (claude, codex, gemini, cursor, vscode, antigravity) and register the MCP server.' },
-  { cmd: 'aegis uninstall --platform <id>', desc: 'Remove only the files and MCP entry Aegis installed. Your edits are kept as .bak.' },
-  { cmd: 'aegis update', desc: 'Re-sync every recorded install with this version of the pack.' },
-  { cmd: 'aegis list', desc: 'Show the bundled skills and where they are installed.' },
-  { cmd: 'aegis mcp', desc: 'Serve the skill library over MCP (stdio) to any MCP client.' }
+const TRUST = [
+  { n: '01', label: 'No hosted inference', desc: 'The website never calls a model. Prompts and zips are static files; the hosted MCP only serves skill text.' },
+  { n: '02', label: 'Human-approved actions', desc: 'Themis classifies every external tool as read, write or execute. Writes and executes wait for a person, never the model.' },
+  { n: '03', label: 'Scoped by design', desc: 'Every skill states its defensive purpose and is for systems you own or are authorized to assess.' },
+  { n: '04', label: 'Open and portable', desc: 'Apache-2.0 OR MIT. Markdown and JSON you can read, fork and run anywhere.' }
 ]
 
-const COMMON_ENVIRONMENTS = ['enterprise', 'cloud', 'hybrid', 'ot', 'remote-workforce', 'saas']
-const COMMON_TAGS = ['network', 'endpoint', 'web-application', 'api', 'lateral-movement', 'credential-theft', 'supply-chain', 'detection', 'compliance']
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
-
-// Free-text match across everything a searcher might reasonably type: the skill
-// name, its description, tags, frameworks and the environments it applies to.
-function matchesQuery(skill, query) {
-  if (!query) return true
-  const ctx = skill.context || {}
-  const haystack = [
-    skill.name,
-    skill.description,
-    (skill.tags || []).join(' '),
-    (skill.frameworks || []).join(' '),
-    (ctx.environments || []).join(' '),
-    (ctx['attack-surface-tags'] || []).join(' ')
-  ].join(' ').toLowerCase()
-  return haystack.includes(query)
+function SecHead ({ num, kicker }) {
+  return h('div', { className: 'sec-head' },
+    h('span', { className: 'sec-num' }, num),
+    h('span', { className: 'sec-kicker' }, kicker))
 }
 
-function firstSentence(desc) {
-  const text = String(desc || '').replace(/\s+/g, ' ').trim()
-  const cut = text.split(/\.\s|\. Triggers|Triggers for:/)[0]
-  return cut.length > 132 ? cut.slice(0, 132).trimEnd() + '…' : cut
+function Band ({ id, children }) {
+  return h('div', { id, style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
+    h('div', { className: 'container' }, h('div', { className: 'section' }, children)))
 }
 
-// ─── Recommend form ───────────────────────────────────────────────────────────
-
-function RecommendForm({ onResults, onClear, loading }) {
-  const [selectedEnvs, setSelectedEnvs] = useState(new Set())
-  const [selectedTags, setSelectedTags] = useState(new Set())
-  const [error, setError] = useState(null)
-
-  function toggleSet(setter, value) {
-    setter(prev => {
-      const next = new Set(prev)
-      next.has(value) ? next.delete(value) : next.add(value)
-      return next
-    })
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setError(null)
-    try {
-      const res = await fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          environments: [...selectedEnvs],
-          attack_surface_tags: [...selectedTags]
-        })
-      })
-      if (!res.ok) { setError('Recommendation failed. Try again.'); return }
-      const data = await res.json()
-      onResults(data.skills)
-    } catch {
-      setError('Network error. Try again.')
-    }
-  }
-
-  function handleClear() {
-    setSelectedEnvs(new Set())
-    setSelectedTags(new Set())
-    setError(null)
-    onClear()
-  }
-
-  function PillToggle({ value, selected, onToggle: toggle }) {
-    return React.createElement(
-      'button',
-      {
-        type: 'button',
-        onClick: () => toggle(value),
-        className: ['pill-toggle', selected ? 'selected' : ''].join(' ').trim()
-      },
-      value
-    )
-  }
-
-  return React.createElement(
-    'form',
-    { onSubmit: handleSubmit, className: 'recommend-form' },
-    React.createElement('h3', null, 'Find skills for your environment'),
-    React.createElement('p', null, 'Select environments and attack surface focus areas to get ranked recommendations.'),
-    React.createElement('span', { className: 'pill-group-label' }, 'Environments'),
-    React.createElement(
-      'div',
-      { className: 'pill-group' },
-      ...COMMON_ENVIRONMENTS.map(e =>
-        React.createElement(PillToggle, { key: e, value: e, selected: selectedEnvs.has(e), onToggle: v => toggleSet(setSelectedEnvs, v) })
-      )
-    ),
-    React.createElement('span', { className: 'pill-group-label' }, 'Attack surface'),
-    React.createElement(
-      'div',
-      { className: 'pill-group' },
-      ...COMMON_TAGS.map(t =>
-        React.createElement(PillToggle, { key: t, value: t, selected: selectedTags.has(t), onToggle: v => toggleSet(setSelectedTags, v) })
-      )
-    ),
-    error ? React.createElement('p', { style: { color: 'var(--gold-warm)', fontFamily: 'var(--f-mono)', fontSize: '11px', marginTop: '8px' } }, error) : null,
-    React.createElement(
-      'div',
-      { className: 'recommend-actions' },
-      React.createElement(
-        'button',
-        {
-          type: 'submit',
-          disabled: loading || (selectedEnvs.size === 0 && selectedTags.size === 0),
-          className: 'btn-primary'
-        },
-        loading ? 'FINDING…' : 'FIND SKILLS'
-      ),
-      React.createElement('button', { type: 'button', onClick: handleClear, className: 'btn-ghost' }, 'CLEAR')
-    )
-  )
-}
-
-// ─── Skills section ───────────────────────────────────────────────────────────
-
-function SkillsSection({ skills }) {
-  if (skills.length === 0) {
-    return React.createElement('div', { className: 'skill-rows-empty' }, 'No skills match the current filter.')
-  }
-
-  return React.createElement(
-    'div',
-    { className: 'skill-rows' },
-    ...skills.map(skill => {
-      const pct = skill.healthScore != null ? Math.round(skill.healthScore * 100) : null
-      // Scores cluster between 0.85 and 1.00, so map that band across the bar's full
-      // width — a raw 0-100 fill renders every skill as a near-identical stripe.
-      const fill = pct != null
-        ? Math.max(6, Math.min(100, Math.round(((skill.healthScore - 0.85) / 0.15) * 100)))
-        : 0
-      const phaseCount = skill.authoredPhases != null ? skill.authoredPhases : skill.phases
-
-      return React.createElement(
-        'a',
-        { key: skill.name, className: 'skill-row', href: `/skills/${skill.name}` },
-        React.createElement(
-          'span',
-          { className: 'sr-main' },
-          React.createElement(
-            'span',
-            { className: 'sr-name' },
-            skill.name,
-            skill.live ? React.createElement('span', { className: 'sr-live' }, 'LIVE') : null
-          ),
-          React.createElement('span', { className: 'sr-desc' }, firstSentence(skill.description))
-        ),
-        React.createElement('span', { className: 'sr-family' }, labelOf(familyOf(skill.name))),
-        React.createElement('span', { className: 'sr-phases' }, `${phaseCount} phase${phaseCount === 1 ? '' : 's'}`),
-        React.createElement(
-          'span',
-          { className: 'sr-health' },
-          pct != null
-            ? React.createElement(
-              'span',
-              { className: 'pct-bar' },
-              React.createElement(
-                'span',
-                { className: 'pct-track' },
-                React.createElement('span', { className: 'pct-fill', style: { width: `${fill}%` } })
-              ),
-              React.createElement('span', { className: 'pct-num' }, String(pct))
-            )
-            : React.createElement('span', { className: 'pct-num', style: { color: 'var(--faint)' } }, '—')
-        )
-      )
-    })
-  )
-}
-
-// ─── Family selector ──────────────────────────────────────────────────────────
-
-function FamilyBar({ counts, active, onSelect }) {
-  const items = [{ key: 'all', label: 'All' }].concat(FAMILIES)
-  return React.createElement(
-    'div',
-    { className: 'family-bar', role: 'group', 'aria-label': 'Skill families' },
-    ...items.map(f =>
-      React.createElement(
-        'button',
-        {
-          key: f.key,
-          type: 'button',
-          className: 'family-btn' + (active === f.key ? ' selected' : ''),
-          'aria-pressed': active === f.key,
-          onClick: () => onSelect(f.key)
-        },
-        f.label,
-        React.createElement('span', { className: 'family-n' }, String(counts[f.key] || 0))
-      )
-    )
-  )
-}
-
-// ─── Search field ─────────────────────────────────────────────────────────────
-
-function SkillSearch({ value, onChange }) {
-  return React.createElement(
-    'div',
-    { className: 'skill-search' },
-    React.createElement(
-      'svg',
-      { width: '13', height: '13', viewBox: '0 0 16 16', fill: 'none', 'aria-hidden': 'true' },
-      React.createElement('circle', { cx: '7', cy: '7', r: '5', stroke: 'currentColor', strokeWidth: '1.4' }),
-      React.createElement('path', { d: 'M11 11l4 4', stroke: 'currentColor', strokeWidth: '1.4', strokeLinecap: 'round' })
-    ),
-    React.createElement('input', {
-      type: 'search',
-      value,
-      placeholder: 'Search skills, frameworks, techniques, environments…',
-      'aria-label': 'Search skills',
-      onChange: e => onChange(e.target.value),
-      onKeyDown: e => { if (e.key === 'Escape') onChange('') }
-    })
-  )
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-function HomePage({ skills: initialSkills }) {
-  const [query, setQuery] = useState('')
-  const [family, setFamily] = useState('all')
-  const [recommendedSkills, setRecommendedSkills] = useState(null)
-  const [recommendLoading, setRecommendLoading] = useState(false)
-
-  // Family tallies come from the full library, not the filtered view, so the
-  // numbers stay stable as a reference rather than shifting on every keystroke.
-  const familyCounts = { all: initialSkills.length }
-  for (const f of FAMILIES) familyCounts[f.key] = 0
-  for (const s of initialSkills) {
-    const k = familyOf(s.name)
-    familyCounts[k] = (familyCounts[k] || 0) + 1
-  }
-
-  function handleSelectFamily(key) {
-    setFamily(key)
-    setRecommendedSkills(null)
-  }
-
-  function handleQuery(value) {
-    setQuery(value)
-    setRecommendedSkills(null)
-  }
-
-  async function handleRecommend(skills) {
-    setRecommendLoading(true)
-    setQuery('')
-    setFamily('all')
-    setRecommendedSkills(skills)
-    setRecommendLoading(false)
-  }
-
-  function handleClearRecommend() {
-    setRecommendedSkills(null)
-    setQuery('')
-    setFamily('all')
-  }
-
-  const q = query.trim().toLowerCase()
-  const displaySkills = recommendedSkills != null
-    ? recommendedSkills
-    : initialSkills.filter(s =>
-      (family === 'all' || familyOf(s.name) === family) && matchesQuery(s, q)
-    )
-
-  return React.createElement(
+function HomePage ({ skillCount, familyCount, paths }) {
+  return h(
     Layout,
     null,
 
-    // ── Hero ──────────────────────────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { className: 'section' },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        // Animated status dot + label
-        React.createElement(
-          'div',
-          { className: 'hero-meta' },
-          React.createElement('span', { className: 'dot' }),
-          React.createElement('span', { className: 'sep' }),
-          'AEGIS',
-          React.createElement('span', { className: 'sep' }),
-          'Defensive AI Skills'
-        ),
-        // Display heading
-        React.createElement(
-          'h1',
-          { className: 'hero-h1' },
-          'Skills built for',
-          React.createElement('br'),
-          React.createElement('em', null, 'defenders'),
-          '.'
-        ),
-        // One-liner description
-        React.createElement(
-          'p',
-          { className: 'hero-desc' },
-          'Write once in ',
-          React.createElement('strong', null, 'SKILL.md'),
-          ' — one open-standard skill, installed natively, served over MCP, or flattened into a single prompt. Use it in ',
-          React.createElement('strong', null, 'Claude, Gemini, Cursor'),
-          ' and any MCP-compatible tool without changing the source.'
-        ),
-        // Platform badges row
-        React.createElement(
-          'div',
-          { style: { display: 'flex', gap: '8px', marginTop: '28px', flexWrap: 'wrap' } },
-          ...PLATFORMS.map(p => React.createElement(PlatformBadge, { key: p, platform: p }))
-        )
-      )
-    ),
+    // Hero
+    h('div', { className: 'section' },
+      h('div', { className: 'container' },
+        h('div', { className: 'hero-meta' },
+          h('span', { className: 'dot' }), h('span', { className: 'sep' }),
+          'AEGIS + THEMIS', h('span', { className: 'sep' }), 'Open cybersecurity pack'),
+        h('h1', { className: 'hero-h1' },
+          'Security skills and a SOC agent,', h('br'), h('em', null, 'on your own AI'), '.'),
+        h('p', { className: 'hero-desc' },
+          `Aegis is ${skillCount} defensive security skills in the open Agent Skills format. Themis is a governed security-operations agent that runs inside Claude Code, Codex or Gemini CLI, or as a local dashboard with your own model. No account, no hosted inference, Apache-2.0 OR MIT.`),
+        h('div', { style: { display: 'flex', gap: '12px', marginTop: '28px', flexWrap: 'wrap' } },
+          h('a', { className: 'btn-primary', href: '/paths' }, 'CHOOSE YOUR PATH'),
+          h('a', { className: 'btn-ghost', href: '/skills' }, `BROWSE ${skillCount} SKILLS`)))),
 
-    // ── Twin cards — Aegis / Themis ────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { style: { position: 'relative', zIndex: 1 } },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        React.createElement(
-          'div',
-          { className: 'section' },
-          React.createElement(
-            'div',
-            { className: 'sec-head' },
-            React.createElement('span', { className: 'sec-num' }, '01'),
-            React.createElement('span', { className: 'sec-kicker' }, 'The Platform')
-          ),
-          React.createElement(
-            'div',
-            { className: 'twin' },
-            // Aegis card
-            React.createElement(
-              'div',
-              { className: 'twin-card aegis' },
-              React.createElement(
-                'div',
-                { className: 'twin-tag' },
-                React.createElement('span', { className: 'marker' }),
-                'AEGIS'
-              ),
-              React.createElement('h3', null, 'Aegis'),
-              React.createElement('div', { className: 'role' }, 'Skill pack · MCP server · Installer'),
-              React.createElement(
-                'p',
-                null,
-                'Defensive security skills in the open Agent Skills format. One source installs natively into coding assistants, serves over MCP to Claude and ChatGPT, and flattens into a single-file prompt.'
-              ),
-              React.createElement('a', { href: '#skills', className: 'twin-link' }, 'Browse skills library', '→')
-            ),
-            // Themis card
-            React.createElement(
-              'div',
-              { className: 'twin-card themis' },
-              React.createElement(
-                'div',
-                { className: 'twin-tag' },
-                React.createElement('span', { className: 'marker' }),
-                'THEMIS'
-              ),
-              React.createElement('h3', null, 'Themis'),
-              React.createElement('div', { className: 'role' }, 'LangGraph orchestrator · Multi-agent analysis'),
-              React.createElement(
-                'p',
-                null,
-                'An AI-powered threat analysis engine. Decompose a security task, fan out to specialist skill agents in parallel, apply guardrails to every output, and synthesise a structured findings report.'
-              ),
-              React.createElement('a', { href: '/themis', className: 'twin-link' }, 'Learn More', '→')
-            )
-          )
-        )
-      )
-    ),
+    // 01 The pack
+    h('div', { style: { position: 'relative', zIndex: 1 } },
+      h('div', { className: 'container' },
+        h('div', { className: 'section' },
+          h(SecHead, { num: '01', kicker: 'The pack' }),
+          h('div', { className: 'twin' },
+            h('div', { className: 'twin-card aegis' },
+              h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'AEGIS'),
+              h('h3', null, 'Aegis'),
+              h('div', { className: 'role' }, 'Skill pack · open Agent Skills format'),
+              h('p', null,
+                `${skillCount} skills across ${familyCount} families: ATT&CK, ATLAS and Engage mapping, threat hunting, exposure validation, forensics, malware analysis, OT, identity, compliance and more. Each skill is plain markdown with a scope and authorization section, and its content is updated monthly.`),
+              h('a', { href: '/skills', className: 'twin-link' }, 'Browse skills', '→')),
+            h('div', { className: 'twin-card themis' },
+              h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'THEMIS'),
+              h('h3', null, 'Themis'),
+              h('div', { className: 'role' }, 'SOC agent · plugin or standalone'),
+              h('p', null,
+                'Plans a security task, fans it out to specialist skills, checks every output with guardrails, and writes a report stamped with the exact Themis and Aegis versions. Tools that write or execute only run after a human approves them.'),
+              h('a', { href: '/themis', className: 'twin-link' }, 'How Themis works', '→')))))),
 
-    // ── Getting Started ──────────────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        React.createElement(
-          'div',
-          { className: 'section' },
-          React.createElement(
-            'div',
-            { className: 'sec-head' },
-            React.createElement('span', { className: 'sec-num' }, '02'),
-            React.createElement('span', { className: 'sec-kicker' }, 'Getting Started')
-          ),
+    // 02 Choose your path
+    h(Band, { id: 'paths' },
+      h(SecHead, { num: '02', kicker: 'Choose your path' }),
+      h(PathMatrix, { paths }),
+      h('p', { style: { color: 'var(--cream-dim)', marginTop: '20px' } },
+        'Every path uses the same skills. Start with zero install and move up when you need more. ',
+        h('a', { href: '/paths', className: 'twin-link' }, 'All install commands →')),
+      h('p', { style: { color: 'var(--faint)', fontSize: '12px', marginTop: '8px' } },
+        'Nothing is published to npm or a plugin marketplace yet: install commands that need them are marked "after the first release". Zero install and the hosted MCP work today.')),
 
-          // ── Universal Installation ──
-          React.createElement(
-            'div',
-            { style: { marginBottom: '50px' } },
-            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Universal Installation'),
-            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '20px' } },
-              'One command per tool: Claude Code, Codex, Gemini CLI, Cursor, VS Code Copilot and Antigravity. Claude.ai and ChatGPT connect to the hosted MCP server.'
-            ),
-            React.createElement(
-              'div',
-              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '13px', color: 'var(--cream)', overflowX: 'auto', marginBottom: '20px' } },
-              React.createElement('div', null, 'npx aegis-skills install --platform claude'),
-              React.createElement('div', { style: { marginTop: '10px' } }, 'npx aegis-skills install --platform claude --project')
-            ),
-            React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px' } },
-              React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px' } }, 'aegis install'),
-              ' will:'
-            ),
-            React.createElement(
-              'ul',
-              { style: { color: 'var(--cream-dim)', fontSize: '13px', marginLeft: '20px', marginTop: '10px' } },
-              React.createElement('li', null, 'Copy the skills into each tool’s native skills folder (your user folder, or the project with --project)'),
-              React.createElement('li', null, 'Register the read-only Aegis MCP server in the tool’s own config, after backing the file up'),
-              React.createElement('li', null, 'Refresh installed skills after an upgrade, keeping any edits you made as .bak files'),
-              React.createElement('li', null,
-                'Record what it installed in ',
-                React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 4px' } }, '~/.aegis/installed.json'),
-                ' so aegis uninstall removes only its own files'
-              )
-            )
-          ),
+    // 03 Why trust it
+    h(Band, null,
+      h(SecHead, { num: '03', kicker: 'Why trust it' }),
+      h('div', { className: 'steps-grid' },
+        ...TRUST.map(t => h('div', { key: t.n, className: 'step-cell' },
+          h('span', { className: 'step-num' }, t.n),
+          h('h3', null, t.label),
+          h('p', null, t.desc))))),
 
-          // ── Post-Install Commands ──
-          React.createElement(
-            'div',
-            null,
-            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '20px', color: 'var(--cream)' } }, 'Available Commands'),
-            React.createElement(
-              'div',
-              { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' } },
-              ...COMMANDS.map(cmd =>
-                React.createElement(
-                  'div',
-                  { key: cmd.cmd, style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px' } },
-                  React.createElement('div', { style: { fontFamily: 'var(--f-mono)', color: 'var(--cream)', marginBottom: '10px', fontSize: '13px' } }, cmd.cmd),
-                  React.createElement('p', { style: { color: 'var(--cream-dim)', fontSize: '13px', margin: 0 } }, cmd.desc)
-                )
-              )
-            )
-          ),
+    // 04 Intel
+    h(Band, { id: 'intel' },
+      h(SecHead, { num: '04', kicker: 'Updated threat intel' }),
+      h('p', { style: { color: 'var(--cream-dim)', maxWidth: '760px', marginBottom: '32px' } },
+        'Skills go stale as the threat landscape moves. Threat-intel feeds are distilled into reusable attack patterns, and each pattern is routed into the skills whose attack surface it lands on. Skill content is updated monthly. Generated intel lives in its own reference file, is labelled LIVE, and never edits hand-written tradecraft. Every download carries an "Intel as of" date.'),
+      h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' } },
+        ...INTEL_STEPS.map(step => h('div', { key: step.n, className: 'step-cell' },
+          h('span', { className: 'step-num' }, step.n),
+          h('h3', null, step.label),
+          h('p', null, step.desc))))),
 
-          // ── Audit API ──
-          React.createElement(
-            'div',
-            { style: { marginTop: '40px' } },
-            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '16px', color: 'var(--cream)' } }, 'Audit API'),
-            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '16px', fontSize: '14px' } },
-              'POST to /api/audit to run a standards-based security audit against CIS, NIST CSF, ISO 27001, SOC 2, PCI-DSS, HIPAA, IEC 62443, or NIST 800-53.'
-            ),
-            React.createElement(
-              'div',
-              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
-              React.createElement('div', null, 'POST /api/audit'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '{ "input": "<config or policy text>",'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "inputType": "config",'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "standards": ["cis-l1", "nist-csf"] }')
-            )
-          ),
-
-          // ── Exposure Validation API ──
-          React.createElement(
-            'div',
-            { style: { marginTop: '40px' } },
-            React.createElement('h3', { style: { fontSize: '18px', marginBottom: '16px', color: 'var(--cream)' } }, 'Exposure Validation API'),
-            React.createElement('p', { style: { color: 'var(--cream-dim)', marginBottom: '16px', fontSize: '14px' } },
-              'POST to /api/exposure to assess a CVE against an asset: exposure, impact, control outcome and risk, each tracked as a separate state. Authorization gates and risk scores are deterministic. The workflow plans validation but never executes it, so exploitability stays unvalidated until you supply evidence.'
-            ),
-            React.createElement(
-              'div',
-              { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
-              React.createElement('div', null, 'POST /api/exposure'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '{ "input": "<advisory or asset description>",'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "cve": "CVE-2026-12345", "kevListed": true,'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "authorization": { "authorized": true, "scopeConfirmed": true,'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '                    "targetIdentityVerified": true },'),
-              React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  "context": { "businessCriticality": "high", "environments": ["cloud"] } }')
-            )
-          )
-        )
-      )
-    ),
-
-    // ── How it works ─────────────────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        React.createElement(
-          'div',
-          { className: 'section' },
-          React.createElement(
-            'div',
-            { className: 'sec-head' },
-            React.createElement('span', { className: 'sec-num' }, '03'),
-            React.createElement('span', { className: 'sec-kicker' }, 'How it works')
-          ),
-          React.createElement(
-            'div',
-            { className: 'steps-grid' },
-            ...STEPS.map(step =>
-              React.createElement(
-                'div',
-                { key: step.n, className: 'step-cell' },
-                React.createElement('span', { className: 'step-num' }, step.n),
-                React.createElement('h3', null, step.label),
-                React.createElement('p', null, step.desc)
-              )
-            )
-          )
-        )
-      )
-    ),
-
-    // ── Skills library ────────────────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { id: 'skills', style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        React.createElement(
-          'div',
-          { className: 'section' },
-          React.createElement(
-            'div',
-            { className: 'sec-head' },
-            React.createElement('span', { className: 'sec-num' }, '04'),
-            React.createElement('span', { className: 'sec-kicker' }, 'Skills Library')
-          ),
-          // Recommend form
-          React.createElement(RecommendForm, {
-            onResults: handleRecommend,
-            onClear: handleClearRecommend,
-            loading: recommendLoading
-          }),
-          // Search
-          recommendedSkills == null
-            ? React.createElement(SkillSearch, { value: query, onChange: handleQuery })
-            : null,
-          // Families
-          recommendedSkills == null
-            ? React.createElement(FamilyBar, {
-              counts: familyCounts,
-              active: family,
-              onSelect: handleSelectFamily
-            })
-            : null,
-          // Count + relevance note
-          React.createElement(
-            'div',
-            { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 0 4px' } },
-            React.createElement(
-              'span',
-              { style: { fontFamily: 'var(--f-mono)', fontSize: '11px', color: 'var(--faint)', letterSpacing: '0.08em' } },
-              `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}` +
-              `${displaySkills.filter(s => s.live).length > 0 ? ` · ${displaySkills.filter(s => s.live).length} live` : ''}`
-            ),
-            recommendedSkills != null
-              ? React.createElement('span', { style: { fontFamily: 'var(--f-mono)', fontSize: '10px', color: 'var(--gold)', letterSpacing: '0.1em' } }, '↑ RANKED BY RELEVANCE')
-              : null
-          ),
-          // Rows
-          React.createElement(SkillsSection, { skills: displaySkills })
-        )
-      )
-    ),
-
-    // ── Self-updating intel loop ──────────────────────────────────────────────
-    React.createElement(
-      'div',
-      { id: 'intel', style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
-      React.createElement(
-        'div',
-        { className: 'container' },
-        React.createElement(
-          'div',
-          { className: 'section' },
-          React.createElement(
-            'div',
-            { className: 'sec-head' },
-            React.createElement('span', { className: 'sec-num' }, '05'),
-            React.createElement('span', { className: 'sec-kicker' }, 'Self-Updating Intel')
-          ),
-          React.createElement(
-            'p',
-            { style: { color: 'var(--cream-dim)', maxWidth: '760px', marginBottom: '32px' } },
-            'Skills go stale as the threat landscape moves. ',
-            React.createElement('code', { style: { background: 'var(--bg)', padding: '2px 6px', borderRadius: '4px', fontFamily: 'var(--f-mono)', fontSize: '13px' } }, 'aegis intel-sync'),
-            ' ingests a threat-intelligence corpus — news feeds, knowledge graphs, and incident teardowns — extracts the reusable attack patterns, and routes each one into the skills whose attack surface it actually lands on.'
-          ),
-          React.createElement(
-            'div',
-            { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' } },
-            ...INTEL_STEPS.map(step =>
-              React.createElement(
-                'div',
-                { key: step.n, className: 'step-cell' },
-                React.createElement('span', { className: 'step-num' }, step.n),
-                React.createElement('h3', null, step.label),
-                React.createElement('p', null, step.desc)
-              )
-            )
-          ),
-          React.createElement(
-            'div',
-            { style: { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', fontFamily: 'var(--f-mono)', fontSize: '12px', color: 'var(--cream)', overflowX: 'auto' } },
-            React.createElement('div', null, '$ aegis intel-sync --days 7'),
-            React.createElement('div', { style: { color: 'var(--cream-dim)', marginTop: '8px' } }, '  corpus: 199 article(s) · 2 teardown(s) · graph 323 nodes'),
-            React.createElement('div', { style: { color: 'var(--cream-dim)' } }, '  routed to 19 skill(s) · coverage prompts written'),
-            React.createElement('div', { style: { color: 'var(--gold)', marginTop: '8px' } }, '  ✓ intel blocks written · skill.json updated')
-          ),
-          React.createElement(
-            'p',
-            { style: { color: 'var(--faint)', fontSize: '12px', marginTop: '16px', maxWidth: '760px' } },
-            'Generated intel is confined to its own reference file between explicit markers — hand-authored tradecraft is never modified, and every block is fully regenerable. Auto-generated phases are excluded from health scoring so a live feed can never inflate a skill\'s score.'
-          )
-        )
-      )
-    )
+    // Links row
+    h('div', { className: 'container', style: { position: 'relative', zIndex: 1, paddingBottom: '80px' } },
+      h('p', { style: { color: 'var(--faint)', fontSize: '13px', display: 'flex', gap: '20px', flexWrap: 'wrap' } },
+        h('a', { href: '/docs' }, 'Docs'),
+        h('a', { href: '/mcp' }, 'Hosted MCP'),
+        h('a', { href: '/security' }, 'Security'),
+        h('a', { href: '/license' }, 'License')))
   )
 }
 
-async function getStaticProps() {
-  const skills = await listSkills()
-
-  return {
-    props: { skills },
-    revalidate: 3600 // Revalidate every hour
-  }
+async function getStaticProps () {
+  const { listSkills } = require('../lib/aegis')
+  const { FAMILIES } = require('../lib/aegis')
+  const { PATHS } = require('../lib/install-commands')
+  return { props: { skillCount: (await listSkills()).length, familyCount: FAMILIES.length, paths: PATHS } }
 }
 
-const pageExports = { default: HomePage, getStaticProps }
-module.exports = pageExports
+module.exports = { default: HomePage, getStaticProps }
 module.exports.default = HomePage
