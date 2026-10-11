@@ -1504,6 +1504,89 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
 }
 
 /* ─────────────────────────────────────────────
+   Home: hero hint, pack relationship line, worked example, provenance
+───────────────────────────────────────────── */
+.hero-sub { text-align: center; margin: 18px 0 0; font-size: 15px; color: var(--k-color-text-muted); }
+.twin-card p.twin-rel { flex: 0 0 auto; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--k-color-line); color: var(--k-color-text); font-weight: 500; font-size: 15px; line-height: 1.55; }
+
+.flow { margin-top: clamp(28px, 4vw, 48px); background: var(--k-color-surface); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: clamp(22px, 3vw, 40px); }
+.flow-head h3 { font-family: var(--k-font-display); font-weight: 400; font-size: clamp(26px, 3vw, 38px); letter-spacing: -0.03em; line-height: 1.1; color: var(--k-color-text); margin: 0 0 10px; }
+.flow-head p { margin: 0 0 24px; max-width: 70ch; font-size: 16px; color: var(--k-color-text-muted); }
+.flow-head p strong { color: var(--k-color-text); font-weight: 500; }
+.flow-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.flow-step { position: relative; background: var(--k-color-bg); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-lg); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.flow-n { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--k-font-mono); font-size: 13px; font-weight: 500; background: var(--k-color-text); color: var(--k-color-bg); }
+.flow-who { align-self: flex-start; font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: var(--k-radius-pill); border: 1px solid currentColor; }
+.flow-step.tone-you .flow-who { color: var(--k-color-text-muted); background: var(--k-color-surface-raised); }
+.flow-step.tone-themis .flow-who { color: var(--k-color-themis); background: var(--k-color-themis-soft); }
+.flow-step.tone-both .flow-who { color: var(--k-color-aegis-ink); background: var(--k-color-aegis-soft); }
+.flow-step h4 { font-family: var(--k-font-display); font-weight: 500; font-size: 20px; line-height: 1.2; letter-spacing: -0.01em; color: var(--k-color-text); margin: 0; }
+.flow-step p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--k-color-text-muted); }
+.flow-note { margin: 20px 0 0; font-size: 15px; color: var(--k-color-text-subtle); }
+@media (max-width: 760px) {
+  .flow-steps { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .flow-step { border-radius: 0; border-width: 0 0 0 2px; border-left-color: var(--k-color-border); background: transparent; padding: 4px 0 24px 22px; margin-left: 13px; }
+  .flow-step:last-child { padding-bottom: 4px; }
+  .flow-n { position: absolute; left: -15px; top: 0; }
+}
+
+.prov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 8px; }
+.prov-card { background: var(--k-color-surface); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: clamp(22px, 3vw, 36px); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.prov-card h3 { font-family: var(--k-font-display); font-weight: 400; font-size: 28px; letter-spacing: -0.03em; line-height: 1.1; color: var(--k-color-text); margin: 0; }
+.prov-card p { margin: 0; font-size: 15px; line-height: 1.65; color: var(--k-color-text-muted); }
+.prov-code { margin: 0; padding: 16px 20px; background: var(--k-color-code-bg); color: var(--k-color-code-text); border-radius: var(--k-radius-lg); font-family: var(--k-font-mono); font-size: 14px; line-height: 1.6; overflow-x: auto; }
+.prov-line { font-family: var(--k-font-mono); font-size: 13px; color: var(--k-color-text); overflow-wrap: anywhere; }
+.prov-card p.prov-line { font-size: 13px; color: var(--k-color-text); }
+.prov-card p.prov-note { color: var(--k-color-text-subtle); }
+
+/* ─────────────────────────────────────────────
+   Quick start
+───────────────────────────────────────────── */
+.qs-steps { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 70ch; }
+.qs-step { display: flex; gap: 16px; align-items: flex-start; font-size: 16px; line-height: 1.65; color: var(--k-color-text-muted); }
+.qs-step > div { min-width: 0; flex: 1; }
+.qs-n { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--k-font-mono); font-size: 13px; font-weight: 500; background: var(--k-color-aegis); color: var(--k-color-on-aegis); }
+.qs-sub { font-family: var(--k-font-display); font-weight: 400; font-size: 26px; letter-spacing: -0.02em; color: var(--k-color-text); margin: 32px 0 12px; }
+.qs-quote { margin: 0 0 16px; padding: 4px 0 4px 18px; border-left: 3px solid var(--k-color-aegis); max-width: 70ch; }
+.qs-quote p { margin: 6px 0; font-size: 15px; line-height: 1.6; color: var(--k-color-text-muted); }
+.qs-illus { max-width: 70ch; padding: 14px 18px; background: var(--k-color-surface-raised); border-radius: var(--k-radius-lg); font-size: 15px; line-height: 1.6; }
+.qs-panel .code-block { margin: 12px 0 18px; max-width: 70ch; }
+.qs-panel p { max-width: 70ch; }
+.qs-panel .code-body { max-height: 420px; overflow: auto; }
+
+/* ─────────────────────────────────────────────
+   Trust page and data-flow diagram (colours from tokens only)
+───────────────────────────────────────────── */
+.trust-lede { max-width: 70ch; }
+.trust-lede p { margin: 0 0 12px; font-size: 17px; line-height: 1.65; color: var(--k-color-text-muted); }
+.fd-wrap { margin: 8px 0 clamp(32px, 4vw, 56px); }
+.fd-figure { margin: 0; background: var(--k-color-surface); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: clamp(14px, 2.4vw, 32px); }
+.fd-svg { display: block; width: 100%; height: auto; max-width: 820px; margin: 0 auto; }
+.fd-narrow { display: none; max-width: 420px; }
+@media (max-width: 760px) { .fd-wide { display: none; } .fd-narrow { display: block; } .fd-figure { padding: 10px; } }
+.fd-zone { fill: var(--k-color-bg); stroke: var(--k-color-line); stroke-width: 1.5; }
+.fd-zone-title { fill: var(--k-color-text-subtle); font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.1em; }
+.fd-node { stroke-width: 1.5; }
+.fd-plain { fill: var(--k-color-surface-raised); stroke: var(--k-color-border); }
+.fd-aegis { fill: var(--k-color-aegis-soft); stroke: var(--k-color-aegis-ink); }
+.fd-themis { fill: var(--k-color-themis-soft); stroke: var(--k-color-themis); }
+.fd-head { fill: var(--k-color-text); font-family: var(--k-font-sans); font-size: 14px; font-weight: 600; }
+.fd-text { fill: var(--k-color-text-muted); font-family: var(--k-font-sans); font-size: 13px; }
+.fd-edge { stroke: var(--k-color-text); stroke-width: 2; }
+.fd-local { stroke-dasharray: 6 5; stroke: var(--k-color-text-muted); }
+.fd-arrow { fill: var(--k-color-text); }
+.fd-badge { fill: var(--k-color-text); }
+.fd-badge-text { fill: var(--k-color-bg); font-family: var(--k-font-mono); font-size: 13px; font-weight: 600; }
+.fd-cap-title { margin: 20px 0 8px; font-family: var(--k-font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--k-color-text-subtle); }
+.fd-list { margin: 0; padding-left: 22px; list-style: decimal; display: grid; gap: 8px; font-size: 15px; line-height: 1.6; color: var(--k-color-text-muted); }
+.fd-list strong { color: var(--k-color-text); font-weight: 500; }
+.trust-prose { max-width: 1000px; }
+.trust-prose > :is(p, ul, ol, h2, h3, pre) { max-width: 70ch; }
+.trust-prose table { font-size: 15px; min-width: 760px; }
+.trust-prose td, .trust-prose th { vertical-align: top; }
+.trust-prose td:first-child, .trust-prose th:first-child { min-width: 9rem; }
+
+/* ─────────────────────────────────────────────
    Small screens and touch (readability and tap targets)
    Mono labels step up to 13px; every nav item, button and pill reaches the 44px
    design target (layout-target-min). Prose is never below 15px (set above).

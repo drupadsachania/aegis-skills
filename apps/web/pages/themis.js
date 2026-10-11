@@ -45,7 +45,7 @@ function Sec ({ id, num, title, children }) {
     children)
 }
 
-function ThemisPage ({ paths, shots }) {
+function ThemisPage ({ paths, shots, stamp, stampLine }) {
   const platformsOf = id => paths.find(p => p.id === id).platforms
   return h(
     Layout,
@@ -88,17 +88,25 @@ function ThemisPage ({ paths, shots }) {
           'Honest boundary: in plugin mode, tools you connect directly to your assistant bypass Themis and are not governed or audited. Register security tools with Themis to govern them. ',
           h('a', { href: '/docs/themis/governance' }, 'Governance details →'))),
 
-      h(Sec, { id: 'screenshots', num: '04', title: 'Screenshots' },
+      h(Sec, { id: 'provenance', num: '04', title: 'Provenance and approval' },
+        h('p', null, 'Every run carries a version stamp: the Themis core, the installed Aegis pack and the skill-format (osk) version. A real stamp from this repository:'),
+        h('pre', { className: 'prov-code', tabIndex: 0, 'aria-label': 'Example version stamp' }, JSON.stringify(stamp, null, 2)),
+        h('p', { className: 'prov-line' }, stampLine),
+        h('p', null, 'Standalone reports end with that line and carry the stamp in their JSON export. In plugin mode the stamp is returned with each run payload and with the report. The stamp names the Aegis package installed next to Themis, so check it if you registered a different Aegis server separately.'),
+        h('p', null, 'The approval boundary sits at execution: the gateway runs a write or execute action only if its approval is approved and decided by a human, and only once. ',
+          h('a', { href: '/trust' }, 'Trust and data flow'), ' lists what runs where and how to verify it.')),
+
+      h(Sec, { id: 'screenshots', num: '05', title: 'Screenshots' },
         h('div', { className: 'screenshot-grid' },
           ...shots.map(s => h(Screenshot, { key: s.file, src: '/img/themis/' + s.file, alt: s.alt, caption: s.caption, exists: s.exists })))),
 
-      h(Sec, { id: 'install', num: '05', title: 'Install' },
+      h(Sec, { id: 'install', num: '06', title: 'Install' },
         h('h3', null, 'Plugin mode (no API key)'),
         h(InstallTabs, { tabs: platformsOf('themis-plugin') }),
         h('h3', { style: { marginTop: '40px' } }, 'Standalone dashboard (your key or a local model)'),
         h(InstallTabs, { tabs: platformsOf('themis-app') })),
 
-      h(Sec, { id: 'versions', num: '06', title: 'Versions' },
+      h(Sec, { id: 'versions', num: '07', title: 'Versions' },
         h('p', null,
           'Themis reads skills from any installed Aegis with the same osk major version. Monthly skill updates and new skills are picked up automatically; an osk major bump needs a Themis release. The plugin uses your installed Aegis; the standalone app bundles its own. ',
           h('a', { href: '/docs/themis/versions' }, 'Version compatibility →')),
@@ -112,7 +120,9 @@ async function getStaticProps () {
   const { WEB_ROOT } = require('../lib/site-paths')
   const { PATHS } = require('../lib/install-commands')
   const shots = SHOTS.map(s => ({ ...s, exists: fs.existsSync(path.join(WEB_ROOT, 'public', 'img', 'themis', s.file)) }))
-  return { props: { paths: PATHS, shots } }
+  const { sampleStamp, stampLine } = require('../lib/version-stamp-sample')
+  const stamp = sampleStamp()
+  return { props: { paths: PATHS, shots, stamp, stampLine: stampLine(stamp) } }
 }
 
 module.exports = { default: ThemisPage, getStaticProps }
