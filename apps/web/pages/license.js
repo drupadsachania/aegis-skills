@@ -10,6 +10,7 @@ function LicensePage ({ licenseText }) {
   return h(Layout, { title: 'License', description: 'Aegis and Themis are dual-licensed Apache-2.0 OR MIT.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
       h('div', { className: 'page-head' },
+        h('div', { className: 'eyebrow' }, 'Trust'),
         h('h1', null, 'License'),
         h('p', null, 'Every package in this repository is licensed under Apache-2.0 OR MIT, at your option. SPDX: (Apache-2.0 OR MIT).')),
       h('div', { className: 'prose' },

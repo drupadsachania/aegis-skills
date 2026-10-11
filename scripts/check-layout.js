@@ -27,7 +27,7 @@ const MUST_EXIST = [
   'apps/web/lib/aegis.js', 'apps/web/lib/site-paths.js', 'apps/web/lib/zip.js', 'apps/web/lib/downloads.js', 'apps/web/lib/flat-prompt.js',
   'apps/web/lib/install-commands.js', 'apps/web/lib/markdown.js', 'apps/web/lib/docs.js', 'apps/web/lib/skill-page.js',
   'apps/web/scripts/build-downloads.js',
-  'apps/web/pages/skills/index.js', 'apps/web/pages/skills/[name].js', 'apps/web/pages/paths.js', 'apps/web/pages/themis.js', 'apps/web/pages/mcp.js',
+  'apps/web/pages/_document.js', 'apps/web/pages/skills/index.js', 'apps/web/pages/skills/[name].js', 'apps/web/pages/paths.js', 'apps/web/pages/themis.js', 'apps/web/pages/mcp.js',
   'apps/web/pages/docs/index.js', 'apps/web/pages/docs/[...slug].js', 'apps/web/pages/security.js', 'apps/web/pages/license.js',
   'packages/aegis/cli/aegis.js', 'packages/aegis/lib/installer.js',
   'packages/aegis/mcp/server.js', 'packages/aegis/mcp/stdio.js', 'packages/aegis/mcp/skill-reader.js',

@@ -51,13 +51,14 @@ function ThemisPage ({ paths, shots }) {
     { title: 'Themis', description: 'A governed security-operations agent that runs on your AI or as a local dashboard.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
       h('div', { className: 'page-head' },
-        h('h1', null, 'Themis'),
+        h('div', { className: 'eyebrow' }, 'SOC agent'),
+        h('h1', null, h('em', null, 'Themis')),
         h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
-        h('p', { style: { marginTop: '12px', fontSize: '13px', color: 'var(--muted)' } },
+        h('p', { className: 'callout' },
           'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
 
       h(Sec, { id: 'modes', num: '01', title: 'Two ways to run' },
-        h('div', { style: { border: '1px solid var(--border-dim)', overflowX: 'auto' } },
+        h('div', { className: 'table-wrap' },
           h('table', { className: 'platforms-table compare-table' },
             h('thead', null, h('tr', null, ...['', 'Themis on your AI', 'Themis standalone'].map((c, i) => h('th', { key: i }, c)))),
             h('tbody', null, ...COMPARE.map(row => h('tr', { key: row[0] },
@@ -73,13 +74,13 @@ function ThemisPage ({ paths, shots }) {
           'Deterministic steps are plain code in themis-core and behave the same in both modes. Reasoning steps are done by your assistant (plugin) or by the configured model (standalone).')),
 
       h(Sec, { id: 'governance', num: '03', title: 'Governance and approvals' },
-        h('ul', { style: { marginLeft: '20px', marginBottom: '16px', lineHeight: 1.8, color: 'var(--cream-dim)' } },
+        h('ul', { className: 'bullets' },
           h('li', null, 'Every external tool is classified read, write or execute.'),
           h('li', null, 'Reads run automatically within a per-run call budget and timeout; secrets are redacted and the output is wrapped as untrusted data.'),
           h('li', null, 'Writes and executes become approval requests. Only a human can approve: the dashboard\'s Approvals page, or your client\'s own MCP prompt. No tool, graph node or model output can approve.'),
           h('li', null, 'Every call, result and decision is written to the audit log.'),
           h('li', null, 'An unreachable tool server degrades to "no tools"; it never crashes a run.')),
-        h('p', { style: { color: 'var(--muted)' } },
+        h('p', { className: 'muted' },
           'Honest boundary: in plugin mode, tools you connect directly to your assistant bypass Themis and are not governed or audited. Register security tools with Themis to govern them. ',
           h('a', { href: '/docs/themis/governance' }, 'Governance details →'))),
 
@@ -88,15 +89,16 @@ function ThemisPage ({ paths, shots }) {
           ...shots.map(s => h(Screenshot, { key: s.file, src: '/img/themis/' + s.file, alt: s.alt, caption: s.caption, exists: s.exists })))),
 
       h(Sec, { id: 'install', num: '05', title: 'Install' },
-        h('h3', { style: { margin: '8px 0 12px', color: 'var(--cream)' } }, 'Plugin mode (no API key)'),
+        h('h3', null, 'Plugin mode (no API key)'),
         h(InstallTabs, { tabs: platformsOf('themis-plugin') }),
-        h('h3', { style: { margin: '32px 0 12px', color: 'var(--cream)' } }, 'Standalone dashboard (your key or a local model)'),
+        h('h3', { style: { marginTop: '40px' } }, 'Standalone dashboard (your key or a local model)'),
         h(InstallTabs, { tabs: platformsOf('themis-app') })),
 
       h(Sec, { id: 'versions', num: '06', title: 'Versions' },
         h('p', null,
           'Themis reads skills from any installed Aegis with the same osk major version. Monthly skill updates and new skills are picked up automatically; an osk major bump needs a Themis release. The plugin uses your installed Aegis; the standalone app bundles its own. ',
-          h('a', { href: '/docs/themis/versions' }, 'Version compatibility →'))))
+          h('a', { href: '/docs/themis/versions' }, 'Version compatibility →')),
+        h('p', null, 'Skills only: ', h('a', { href: '/mcp' }, 'hosted MCP'), '. Trust: ', h('a', { href: '/security' }, 'security'), ' and ', h('a', { href: '/license' }, 'license'), '.')))
   )
 }
 

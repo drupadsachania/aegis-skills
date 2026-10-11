@@ -13,15 +13,17 @@ function PathsPage ({ paths }) {
     { title: 'Choose your path', description: 'Five ways to use Aegis and Themis, from zero install to a local SOC dashboard.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
       h('div', { className: 'page-head' },
-        h('h1', null, 'Choose your path'),
-        h('p', null, 'Five ways in, all using the same skills. Pick the lightest one that does the job.')),
+        h('div', { className: 'eyebrow' }, 'Install'),
+        h('h1', null, 'Choose your ', h('em', null, 'path')),
+        h('p', null, 'Five ways in, all using the same skills. Pick the lightest one that does the job.'),
+        h('p', { className: 'status-note' }, 'Just want to read skills from your chat AI? The ', h('a', { href: '/mcp' }, 'hosted MCP'), ' needs no install. Also see the ', h('a', { href: '/security' }, 'security'), ' and ', h('a', { href: '/license' }, 'license'), ' pages.')),
       h(PathMatrix, { paths }),
       ...paths.map(p => h('section', { key: p.id, id: p.id, className: 'path-section' },
         h('h2', null, p.title),
         h('p', { className: 'path-for' }, `FOR · ${p.audience.toUpperCase()}`),
         h('p', null, p.how),
         h(InstallTabs, { tabs: p.platforms }),
-        h('p', null, h('a', { href: p.docs }, 'Full guide →')))))
+        h('p', { style: { marginTop: '20px' } }, h('a', { href: p.docs }, 'Full guide →')))))
   )
 }
 

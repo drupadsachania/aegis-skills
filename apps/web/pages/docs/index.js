@@ -9,6 +9,7 @@ function DocsHub ({ nav }) {
   return h(Layout, { title: 'Docs', description: 'Documentation for Aegis, Themis, the hosted MCP and the website.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
       h('div', { className: 'page-head' },
+        h('div', { className: 'eyebrow' }, 'Documentation'),
         h('h1', null, 'Docs'),
         h('p', null, 'Install guides, the hosted MCP, how Themis governs tools, and how the site is built. Every page is rendered from markdown in the repository.')),
       h('div', { className: 'doc-cards' },

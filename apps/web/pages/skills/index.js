@@ -104,7 +104,7 @@ function RecommendForm({ onResults, onClear, loading }) {
         React.createElement(PillToggle, { key: t, value: t, selected: selectedTags.has(t), onToggle: v => toggleSet(setSelectedTags, v) })
       )
     ),
-    error ? React.createElement('p', { style: { color: 'var(--gold-warm)', fontFamily: 'var(--f-mono)', fontSize: '11px', marginTop: '8px' } }, error) : null,
+    error ? React.createElement('p', { className: 'form-error' }, error) : null,
     React.createElement(
       'div',
       { className: 'recommend-actions' },
@@ -262,6 +262,7 @@ function SkillsPage({ skills: initialSkills, families, familyByName }) {
       React.createElement(
         'div',
         { className: 'page-head' },
+        React.createElement('div', { className: 'eyebrow' }, 'Aegis'),
         React.createElement('h1', null, 'Skills'),
         React.createElement('p', null, `${initialSkills.length} defensive security skills in ${families.length} families. Every skill is free to copy as a single-file prompt, download as a zip, install into your coding assistant, or read over MCP.`)
       ),
@@ -283,15 +284,15 @@ function SkillsPage({ skills: initialSkills, families, familyByName }) {
         : null,
       React.createElement(
         'div',
-        { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 0 4px' } },
+        { className: 'list-meta' },
         React.createElement(
           'span',
-          { style: { fontFamily: 'var(--f-mono)', fontSize: '11px', color: 'var(--faint)', letterSpacing: '0.08em' } },
+          null,
           `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}` +
           `${displaySkills.filter(s => s.live).length > 0 ? ` · ${displaySkills.filter(s => s.live).length} live` : ''}`
         ),
         recommendedSkills != null
-          ? React.createElement('span', { style: { fontFamily: 'var(--f-mono)', fontSize: '10px', color: 'var(--gold)', letterSpacing: '0.1em' } }, '↑ RANKED BY RELEVANCE')
+          ? React.createElement('span', { className: 'ranked' }, '↑ Ranked by relevance')
           : null
       ),
       React.createElement(SkillsSection, { skills: displaySkills, familyLabel })

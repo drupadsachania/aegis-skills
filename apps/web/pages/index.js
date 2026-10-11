@@ -42,10 +42,15 @@ function SecHead ({ num, kicker }) {
     h('span', { className: 'sec-kicker' }, kicker))
 }
 
-function Band ({ id, children }) {
-  return h('div', { id, style: { position: 'relative', zIndex: 1, borderTop: '1px solid var(--border-dim)' } },
+function Section ({ id, children }) {
+  return h('section', { id, 'aria-label': undefined, style: { position: 'relative', zIndex: 1 } },
     h('div', { className: 'container' }, h('div', { className: 'section' }, children)))
 }
+
+const MARK_AEGIS = h('svg', { className: 'twin-mark', viewBox: '0 0 56 56', 'aria-hidden': 'true', focusable: 'false' },
+  h('rect', { className: 'm', x: 10, y: 10, width: 36, height: 36, rx: 8, transform: 'rotate(45 28 28)' }))
+const MARK_THEMIS = h('svg', { className: 'twin-mark', viewBox: '0 0 56 56', 'aria-hidden': 'true', focusable: 'false' },
+  h('circle', { className: 'm', cx: 28, cy: 28, r: 22 }))
 
 function HomePage ({ skillCount, familyCount, paths }) {
   return h(
@@ -53,77 +58,71 @@ function HomePage ({ skillCount, familyCount, paths }) {
     null,
 
     // Hero
-    h('div', { className: 'section' },
+    h('section', { className: 'hero' },
       h('div', { className: 'container' },
-        h('div', { className: 'hero-meta' },
-          h('span', { className: 'dot' }), h('span', { className: 'sep' }),
-          'AEGIS + THEMIS', h('span', { className: 'sep' }), 'Open cybersecurity pack'),
-        h('h1', { className: 'hero-h1' },
-          'Security skills and a SOC agent,', h('br'), h('em', null, 'on your own AI'), '.'),
-        h('p', { className: 'hero-desc' },
-          `Aegis is ${skillCount} defensive security skills in the open Agent Skills format. Themis is a governed security-operations agent that runs inside Claude Code, Codex or Gemini CLI, or as a local dashboard with your own model. No account, no hosted inference, Apache-2.0 OR MIT.`),
-        h('div', { style: { display: 'flex', gap: '12px', marginTop: '28px', flexWrap: 'wrap' } },
-          h('a', { className: 'btn-primary', href: '/paths' }, 'CHOOSE YOUR PATH'),
-          h('a', { className: 'btn-ghost', href: '/skills' }, `BROWSE ${skillCount} SKILLS`)))),
+        h('div', { className: 'hero-inner' },
+          h('div', { className: 'hero-meta' },
+            h('span', { className: 'dot' }), 'Aegis + Themis', h('span', { className: 'sep' }), 'Open cybersecurity pack'),
+          h('h1', { className: 'hero-h1' },
+            'Security skills and a SOC agent, ', h('em', null, 'on your own AI'), '.'),
+          h('p', { className: 'hero-desc' },
+            `Aegis is ${skillCount} defensive security skills in the open Agent Skills format. Themis is a governed security-operations agent that runs inside Claude Code, Codex or Gemini CLI, or as a local dashboard with your own model. No account, no hosted inference, Apache-2.0 OR MIT.`),
+          h('div', { className: 'hero-cta' },
+            h('a', { className: 'btn-primary', href: '/paths' }, 'Choose your path'),
+            h('a', { className: 'btn-ghost', href: '/skills' }, `Browse ${skillCount} skills`))))),
 
     // 01 The pack
-    h('div', { style: { position: 'relative', zIndex: 1 } },
-      h('div', { className: 'container' },
-        h('div', { className: 'section' },
-          h(SecHead, { num: '01', kicker: 'The pack' }),
-          h('div', { className: 'twin' },
-            h('div', { className: 'twin-card aegis' },
-              h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'AEGIS'),
-              h('h3', null, 'Aegis'),
-              h('div', { className: 'role' }, 'Skill pack · open Agent Skills format'),
-              h('p', null,
-                `${skillCount} skills across ${familyCount} families: ATT&CK, ATLAS and Engage mapping, threat hunting, exposure validation, forensics, malware analysis, OT, identity, compliance and more. Each skill is plain markdown with a scope and authorization section, and its content is updated monthly.`),
-              h('a', { href: '/skills', className: 'twin-link' }, 'Browse skills', '→')),
-            h('div', { className: 'twin-card themis' },
-              h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'THEMIS'),
-              h('h3', null, 'Themis'),
-              h('div', { className: 'role' }, 'SOC agent · plugin or standalone'),
-              h('p', null,
-                'Plans a security task, fans it out to specialist skills, checks every output with guardrails, and writes a report stamped with the exact Themis and Aegis versions. Tools that write or execute only run after a human approves them.'),
-              h('a', { href: '/themis', className: 'twin-link' }, 'How Themis works', '→')))))),
+    h('div', { className: 'pack-wrap' },
+      h('section', { className: 'pack' },
+        h(SecHead, { num: '01', kicker: 'The pack' }),
+        h('div', { className: 'twin' },
+          h('div', { className: 'twin-card aegis' },
+            MARK_AEGIS,
+            h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Aegis'),
+            h('h3', null, 'Aegis'),
+            h('div', { className: 'role' }, 'Skill pack · open Agent Skills format'),
+            h('p', null,
+              `${skillCount} skills across ${familyCount} families: ATT&CK, ATLAS and Engage mapping, threat hunting, exposure validation, forensics, malware analysis, OT, identity, compliance and more. Each skill is plain markdown with a scope and authorization section, and its content is updated monthly.`),
+            h('a', { href: '/skills', className: 'twin-link' }, 'Browse skills', h('span', { 'aria-hidden': 'true' }, '→'))),
+          h('div', { className: 'twin-card themis' },
+            MARK_THEMIS,
+            h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Themis'),
+            h('h3', null, 'Themis'),
+            h('div', { className: 'role' }, 'SOC agent · plugin or standalone'),
+            h('p', null,
+              'Plans a security task, fans it out to specialist skills, checks every output with guardrails, and writes a report stamped with the exact Themis and Aegis versions. Tools that write or execute only run after a human approves them.'),
+            h('a', { href: '/themis', className: 'twin-link' }, 'How Themis works', h('span', { 'aria-hidden': 'true' }, '→')))))),
 
     // 02 Choose your path
-    h(Band, { id: 'paths' },
+    h(Section, { id: 'paths' },
       h(SecHead, { num: '02', kicker: 'Choose your path' }),
+      h('h2', { className: 'sec-title' }, 'The same skills, ', h('em', null, 'your path'), '.'),
       h(PathMatrix, { paths }),
-      h('p', { style: { color: 'var(--cream-dim)', marginTop: '20px' } },
+      h('p', { className: 'lede', style: { marginTop: '28px', marginBottom: 0 } },
         'Every path uses the same skills. Start with zero install and move up when you need more. ',
-        h('a', { href: '/paths', className: 'twin-link' }, 'All install commands →')),
-      h('p', { style: { color: 'var(--faint)', fontSize: '12px', marginTop: '8px' } },
+        h('a', { href: '/paths' }, 'All install commands →')),
+      h('p', { className: 'path-note' },
         'Nothing is published to npm or a plugin marketplace yet: install commands that need them are marked "after the first release". Zero install and the hosted MCP work today.')),
 
     // 03 Why trust it
-    h(Band, null,
+    h(Section, null,
       h(SecHead, { num: '03', kicker: 'Why trust it' }),
-      h('div', { className: 'steps-grid' },
-        ...TRUST.map(t => h('div', { key: t.n, className: 'step-cell' },
+      h('ol', { className: 'principles' },
+        ...TRUST.map(t => h('li', { key: t.n, className: 'principle' },
           h('span', { className: 'step-num' }, t.n),
           h('h3', null, t.label),
           h('p', null, t.desc))))),
 
     // 04 Intel
-    h(Band, { id: 'intel' },
+    h(Section, { id: 'intel' },
       h(SecHead, { num: '04', kicker: 'Updated threat intel' }),
-      h('p', { style: { color: 'var(--cream-dim)', maxWidth: '760px', marginBottom: '32px' } },
+      h('p', { className: 'lede' },
         'Skills go stale as the threat landscape moves. Threat-intel feeds are distilled into reusable attack patterns, and each pattern is routed into the skills whose attack surface it lands on. Skill content is updated monthly. Generated intel lives in its own reference file, is labelled LIVE, and never edits hand-written tradecraft. Every download carries an "Intel as of" date.'),
-      h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' } },
+      h('div', { className: 'steps-grid' },
         ...INTEL_STEPS.map(step => h('div', { key: step.n, className: 'step-cell' },
           h('span', { className: 'step-num' }, step.n),
           h('h3', null, step.label),
-          h('p', null, step.desc))))),
-
-    // Links row
-    h('div', { className: 'container', style: { position: 'relative', zIndex: 1, paddingBottom: '80px' } },
-      h('p', { style: { color: 'var(--faint)', fontSize: '13px', display: 'flex', gap: '20px', flexWrap: 'wrap' } },
-        h('a', { href: '/docs' }, 'Docs'),
-        h('a', { href: '/mcp' }, 'Hosted MCP'),
-        h('a', { href: '/security' }, 'Security'),
-        h('a', { href: '/license' }, 'License')))
+          h('p', null, step.desc)))))
   )
 }
 

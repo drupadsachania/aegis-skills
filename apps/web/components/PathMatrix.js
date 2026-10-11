@@ -4,24 +4,24 @@ const React = require('react')
 
 const h = React.createElement
 
+// One row per install path: big serif title, mono "who it's for" caption,
+// a short description and an arrow affordance. Each row links to its section.
 function PathMatrix ({ paths, linkBase = '/paths' }) {
   return h(
-    'div',
-    { style: { border: '1px solid var(--border-dim)', overflowX: 'auto' } },
-    h(
-      'table',
-      { className: 'platforms-table path-matrix' },
-      h('thead', null, h('tr', null,
-        h('th', null, 'Path'), h('th', null, 'For'), h('th', null, 'How'), h('th', null, ''))),
-      h('tbody', null, ...paths.map(p => h(
-        'tr',
-        { key: p.id },
-        h('td', { className: 'pm-title' }, p.title),
-        h('td', null, p.audience),
-        h('td', null, p.how),
-        h('td', null, h('a', { href: `${linkBase}#${p.id}`, className: 'twin-link' }, 'Set up →'))
-      )))
-    )
+    'ul',
+    { className: 'path-list path-matrix' },
+    ...paths.map(p => h(
+      'li',
+      { key: p.id },
+      h('a', { href: `${linkBase}#${p.id}`, className: 'path-row' },
+        h('span', { className: 'pr-main' },
+          h('span', { className: 'pr-title' }, p.title),
+          h('span', { className: 'pr-for' }, `For · ${p.audience}`)),
+        h('span', { className: 'pr-how' }, p.how),
+        h('span', { className: 'pr-go' },
+          h('span', { className: 'pr-label' }, 'Set up'),
+          h('span', { className: 'pr-arrow', 'aria-hidden': 'true' }, '→')))
+    ))
   )
 }
 

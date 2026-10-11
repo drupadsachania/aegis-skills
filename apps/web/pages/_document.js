@@ -1,0 +1,29 @@
+'use strict'
+
+const React = require('react')
+const { Html, Head, Main, NextScript } = require('next/document')
+
+const h = React.createElement
+
+// Newsreader (display), Red Hat Mono (labels, nav) and IBM Plex Sans (body).
+// Loaded as a <link> with display=swap; the CSP allows fonts.googleapis.com (styles)
+// and fonts.gstatic.com (font files).
+const FONTS_URL = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Red+Hat+Mono:wght@400;500;600&display=swap'
+
+// Applies a saved theme before first paint so there is no flash of the wrong one.
+// With nothing saved the CSS follows prefers-color-scheme.
+const THEME_SCRIPT = "try{var t=localStorage.getItem('aegis-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}"
+
+function Document () {
+  return h(Html, { lang: 'en' },
+    h(Head, null,
+      h('meta', { name: 'color-scheme', content: 'light dark' }),
+      h('link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }),
+      h('link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' }),
+      h('link', { rel: 'stylesheet', href: FONTS_URL }),
+      h('script', { dangerouslySetInnerHTML: { __html: THEME_SCRIPT } })),
+    h('body', null, h(Main), h(NextScript)))
+}
+
+module.exports = Document
+module.exports.default = Document

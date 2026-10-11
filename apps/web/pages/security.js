@@ -8,7 +8,7 @@ const h = React.createElement
 function SecurityPage ({ securityHtml, hasComplianceMapping }) {
   return h(Layout, { title: 'Security', description: 'Security policy, vulnerability reporting and how the site is hardened.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
-      h('div', { className: 'page-head' }, h('h1', null, 'Security')),
+      h('div', { className: 'page-head' }, h('div', { className: 'eyebrow' }, 'Trust'), h('h1', null, 'Security')),
       h('div', { className: 'prose', dangerouslySetInnerHTML: { __html: securityHtml } }),
       h('div', { className: 'prose' },
         h('h2', null, 'How this site is built'),
