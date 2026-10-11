@@ -383,7 +383,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   text-decoration: none;
 }
 .footer-brand em { font-style: italic; }
-.footer-blurb { font-size: 14px; color: var(--k-color-text-muted); line-height: 1.6; margin: 0; }
+.footer-blurb { font-size: 15px; color: var(--k-color-text-muted); line-height: 1.6; margin: 0; }
 .footer-parent { font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--k-color-text-subtle); margin: 0; line-height: 1.8; }
 .footer-parent a { color: var(--k-color-text-muted); text-decoration: underline; text-underline-offset: 3px; }
 .footer-parent a:hover { color: var(--k-color-themis); }
@@ -392,7 +392,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .footer-col h2 {
   font-family: var(--k-font-mono);
   font-weight: 500;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--k-color-text-subtle);
@@ -415,7 +415,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   justify-content: space-between;
   gap: 8px 24px;
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   color: var(--k-color-text-subtle);
 }
@@ -691,7 +691,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   display: block;
   margin-top: 10px;
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--k-color-text-subtle);
@@ -722,7 +722,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   border-color: var(--k-color-themis);
   color: var(--k-color-on-themis);
 }
-.path-note { font-size: 13px; color: var(--k-color-text-subtle); margin-top: 20px; max-width: 70ch; }
+.path-note { font-size: 15px; color: var(--k-color-text-subtle); margin-top: 20px; max-width: 70ch; }
 
 @media (max-width: 860px) {
   .path-row { grid-template-columns: minmax(0, 1fr) auto; }
@@ -789,7 +789,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   color: var(--k-color-text);
   margin: 0 0 10px;
 }
-.step-cell p { font-size: 14.5px; color: var(--k-color-text-muted); line-height: 1.65; margin: 0; }
+.step-cell p { font-size: 15px; color: var(--k-color-text-muted); line-height: 1.65; margin: 0; }
 
 .lede { max-width: 70ch; color: var(--k-color-text-muted); font-size: 17px; margin: 0 0 36px; }
 
@@ -797,10 +797,10 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
    Tables (compare / platforms)
 ───────────────────────────────────────────── */
 .table-wrap { border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); overflow-x: auto; background: var(--k-color-surface); }
-.platforms-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.platforms-table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .platforms-table th {
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--k-color-text-subtle);
@@ -864,14 +864,14 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   cursor: pointer;
   padding: 8px 16px;
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   transition: color var(--k-dur-fast) var(--k-ease-standard), background var(--k-dur-fast) var(--k-ease-standard), border-color var(--k-dur-fast) var(--k-ease-standard);
 }
 .family-btn:hover { color: var(--k-color-text); background: var(--k-color-surface-raised); }
 .family-btn.selected { color: var(--k-color-bg); background: var(--k-color-text); border-color: var(--k-color-text); }
-.family-n { font-variant-numeric: tabular-nums; color: var(--k-color-text-subtle); font-size: 11px; }
+.family-n { font-variant-numeric: tabular-nums; color: var(--k-color-text-subtle); font-size: 12px; }
 .family-btn.selected .family-n { color: inherit; opacity: 0.85; }
 
 .skill-rows { border-top: 1px solid var(--k-color-line); }
@@ -913,7 +913,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .sr-desc {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--k-color-text-muted);
   margin-top: 4px;
   overflow: hidden;
@@ -922,7 +922,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .sr-family {
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--k-color-text-subtle);
@@ -977,10 +977,10 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   color: var(--k-color-text);
   margin: 0 0 6px;
 }
-.recommend-form > p { font-size: 14.5px; color: var(--k-color-text-muted); margin: 0 0 22px; }
+.recommend-form > p { font-size: 15px; color: var(--k-color-text-muted); margin: 0 0 22px; }
 .pill-group-label {
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--k-color-text-subtle);
@@ -1034,7 +1034,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   flex: 1;
   min-width: 0;
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   color: color-mix(in srgb, var(--k-color-code-text) 78%, transparent);
   letter-spacing: var(--k-tracking-label);
   text-transform: uppercase;
@@ -1080,11 +1080,11 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .install-tab-btn:hover { background: var(--k-color-surface-raised); color: var(--k-color-text); }
 .install-tab-btn.active { background: var(--k-color-text); color: var(--k-color-bg); }
 .install-tab-content { padding: clamp(16px, 2.4vw, 28px); }
-.install-note { font-size: 14px; color: var(--k-color-text-muted); margin: 0 0 12px; line-height: 1.6; }
+.install-note { font-size: 15px; color: var(--k-color-text-muted); margin: 0 0 12px; line-height: 1.6; }
 .install-later {
   display: inline-block;
   font-family: var(--k-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.02em;
   line-height: 1.5;
   color: var(--k-color-aegis-ink);
@@ -1100,7 +1100,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   gap: 8px;
   min-height: 34px;
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--k-color-text);
   background: transparent;
@@ -1142,7 +1142,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 
 .tag-pill {
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   padding: 4px 12px;
   border-radius: var(--k-radius-pill);
   color: var(--k-color-text-muted);
@@ -1155,7 +1155,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 
 .platform-badge {
   font-family: var(--k-font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   padding: 3px 12px;
   border-radius: var(--k-radius-pill);
@@ -1198,9 +1198,9 @@ code {
 .prose a:hover { color: var(--k-color-themis-hover); }
 .prose pre { background: var(--k-color-code-bg); border: 1px solid color-mix(in srgb, var(--k-color-code-text) 14%, transparent); border-radius: var(--k-radius-lg); padding: 20px 24px; overflow-x: auto; font-size: 13px; line-height: 1.7; }
 .prose pre code { color: var(--k-color-code-text); }
-.prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; display: block; overflow-x: auto; }
+.prose table { width: 100%; border-collapse: collapse; font-size: 15px; display: block; overflow-x: auto; }
 .prose th, .prose td { border-bottom: 1px solid var(--k-color-line); padding: 10px 14px; text-align: left; vertical-align: top; }
-.prose th { color: var(--k-color-text); font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+.prose th { color: var(--k-color-text); font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
 .prose blockquote {
   border-left: 3px solid var(--k-color-aegis);
   background: var(--k-color-aegis-soft);
@@ -1215,8 +1215,8 @@ code {
    Docs layout
 ───────────────────────────────────────────── */
 .docs-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); padding: clamp(40px, 6vw, 72px) 0 120px; }
-.docs-nav { position: sticky; top: 88px; align-self: start; font-size: 14px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 4px; }
-.docs-nav h4 { font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--k-color-text-subtle); margin: 24px 0 8px; }
+.docs-nav { position: sticky; top: 88px; align-self: start; font-size: 15px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 4px; }
+.docs-nav h4 { font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--k-color-text-subtle); margin: 24px 0 8px; }
 .docs-nav a {
   display: block;
   color: var(--k-color-text-muted);
@@ -1242,11 +1242,11 @@ code {
 }
 .doc-card:hover { background: var(--k-color-surface-raised); }
 .doc-card h3 { font-family: var(--k-font-display); font-weight: 400; font-size: 30px; letter-spacing: -0.035em; color: var(--k-color-text); margin: 0 0 8px; line-height: 1.1; }
-.doc-card p { color: var(--k-color-text-muted); font-size: 14.5px; margin: 0; }
+.doc-card p { color: var(--k-color-text-muted); font-size: 15px; margin: 0; }
 .doc-card ul { list-style: none; padding: 0; margin: 18px 0 0; border-top: 1px solid var(--k-color-line); }
 .doc-card li { border-bottom: 1px solid var(--k-color-line); }
 .doc-card li:last-child { border-bottom: 0; }
-.doc-card li a, main .doc-card li a { display: block; color: var(--k-color-text); font-size: 14.5px; padding: 10px 0; text-decoration: none; transition: color var(--k-dur-fast) var(--k-ease-standard), padding var(--k-dur-fast) var(--k-ease-standard); }
+.doc-card li a, main .doc-card li a { display: block; color: var(--k-color-text); font-size: 15px; padding: 10px 0; text-decoration: none; transition: color var(--k-dur-fast) var(--k-ease-standard), padding var(--k-dur-fast) var(--k-ease-standard); }
 .doc-card li a:hover, main .doc-card li a:hover { color: var(--k-color-themis); padding-left: 6px; }
 
 @media (max-width: 860px) {
@@ -1291,19 +1291,19 @@ code {
   .page-head-logo .hero-logo { order: -1; justify-self: start; margin: -10px 0 0 -10px; }
   .page-head-logo .hero-logo .logo-img { width: 120px; }
 }
-.page-head .status-note { font-size: 14px; color: var(--k-color-text-subtle); }
+.page-head .status-note { font-size: 15px; color: var(--k-color-text-subtle); }
 
 .callout {
   display: block;
   background: var(--k-color-aegis-soft);
   border-radius: var(--k-radius-lg);
   padding: 14px 20px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--k-color-text);
   max-width: 70ch;
 }
-.page-head p.callout { color: var(--k-color-text); font-size: 14px; margin-top: 20px; }
+.page-head p.callout { color: var(--k-color-text); font-size: 15px; margin-top: 20px; }
 
 .doc-section { padding: clamp(40px, 5vw, 64px) 0; border-top: 1px solid var(--k-color-line); scroll-margin-top: 88px; }
 .doc-section-hd { display: flex; align-items: baseline; gap: 16px; margin-bottom: 28px; }
@@ -1324,15 +1324,15 @@ code {
 .download-card { border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: 28px; background: var(--k-color-surface); display: flex; flex-direction: column; gap: 14px; }
 .download-card h3 { font-family: var(--k-font-display); font-weight: 400; color: var(--k-color-text); font-size: 30px; letter-spacing: -0.035em; line-height: 1.1; margin: 0; }
 .download-card p { margin: 0; font-size: 15px; }
-.download-card .meta { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-color-text-subtle); }
+.download-card .meta { font-family: var(--k-font-mono); font-size: 13px; color: var(--k-color-text-subtle); }
 .download-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: auto; }
 .download-card > a.btn-primary { align-self: flex-start; margin-top: auto; }
 
 .screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
 .screenshot { border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); overflow: hidden; margin: 0; background: var(--k-color-surface); }
 .screenshot img { display: block; width: 100%; height: auto; }
-.screenshot-placeholder { aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--k-color-text-subtle); font-family: var(--k-font-mono); font-size: 12px; background: var(--k-color-surface); }
-.screenshot figcaption { padding: 14px 20px; font-size: 13px; color: var(--k-color-text-muted); border-top: 1px solid var(--k-color-line); }
+.screenshot-placeholder { aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--k-color-text-subtle); font-family: var(--k-font-mono); font-size: 13px; background: var(--k-color-surface); }
+.screenshot figcaption { padding: 14px 20px; font-size: 15px; color: var(--k-color-text-muted); border-top: 1px solid var(--k-color-line); }
 
 .breadcrumb {
   display: flex;
@@ -1348,7 +1348,7 @@ code {
 .breadcrumb a { color: var(--k-color-text-muted); text-decoration: none; padding: 4px 12px; border-radius: var(--k-radius-pill); border: 1px solid var(--k-color-border); transition: background var(--k-dur-fast) var(--k-ease-standard); }
 .breadcrumb a:hover { background: var(--k-color-surface-raised); color: var(--k-color-text); }
 .breadcrumb .sep { color: var(--k-color-text-subtle); }
-.version-pill { background: var(--k-color-aegis); color: var(--k-color-on-aegis); border-radius: var(--k-radius-pill); padding: 2px 12px; font-weight: 600; font-size: 11px; }
+.version-pill { background: var(--k-color-aegis); color: var(--k-color-on-aegis); border-radius: var(--k-radius-pill); padding: 2px 12px; font-weight: 600; font-size: 12px; }
 
 .skill-hero h1 { font-family: var(--k-font-display); font-weight: 400; font-size: clamp(40px, 7vw, 96px); line-height: 1; letter-spacing: -0.04em; color: var(--k-color-text); margin: 0 0 20px; overflow-wrap: anywhere; }
 .skill-hero .skill-desc { font-size: clamp(16px, 1.5vw, 19px); color: var(--k-color-text-muted); max-width: 66ch; line-height: 1.65; margin: 0 0 28px; }
@@ -1373,7 +1373,7 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
    Mobile
 ───────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .code-body { padding: 16px 18px; font-size: 12.5px; }
+  .code-body { padding: 16px 18px; font-size: 13px; }
   .hero-cta .btn-primary, .hero-cta .btn-ghost { width: 100%; }
   .pack { border-radius: 28px; }
   .twin-card { border-radius: 22px; }
@@ -1514,4 +1514,24 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
 @keyframes k-braille {
   0%, 100% { content: "⠋"; } 10% { content: "⠙"; } 20% { content: "⠹"; } 30% { content: "⠸"; } 40% { content: "⠼"; }
   50% { content: "⠴"; } 60% { content: "⠦"; } 70% { content: "⠧"; } 80% { content: "⠇"; } 90% { content: "⠏"; }
+}
+
+/* ─────────────────────────────────────────────
+   Small screens and touch (readability and tap targets)
+   Mono labels step up to 13px; every nav item, button and pill reaches the 44px
+   design target (layout-target-min). Prose is never below 15px (set above).
+   tests/guard/readability-css.test.js pins the floors.
+───────────────────────────────────────────── */
+@media (max-width: 760px), (pointer: coarse) {
+  .pr-for, .code-hd-label, .copy-label, .pill-group-label, .family-n, .footer-col h2, .footer-legal, .tag-pill, .version-pill,
+  .docs-nav h4, .prose th, .platforms-table th, .path-for, .path-section .path-for, .install-later, .copy-btn, .sr-family, .principle .step-num, .ds-num, .lifecycle-num, .lifecycle-tokens { font-size: 13px; }
+  .nav-brand { min-height: 44px; }
+  .icon-btn { width: 44px; height: 44px; }
+  .twin-link, .twin-card .twin-link, .install-tab-btn, .copy-btn, .pill-toggle, .family-btn { min-height: 44px; align-items: center; }
+  .install-tab-btn, .pill-toggle { display: inline-flex; align-items: center; }
+  .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+  .docs-nav a { padding-top: 12px; padding-bottom: 12px; }
+  .footer-col ul { gap: 0; }
+  .footer-col a { display: inline-flex; align-items: center; min-height: 44px; }
+  .mobile-menu .mm-more a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; }
 }
