@@ -37,3 +37,6 @@ Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested i
 - [Configuration](./configuration.md)
 - [Versions and compatibility](./versions.md)
 - [Compliance mapping](./compliance-mapping.md)
+- [Threat model (MITRE ATLAS)](./threat-model-atlas.md)
+- [Privacy policy](./privacy-policy.md)
+- [Reviewer test prompts](./test-prompts.md)

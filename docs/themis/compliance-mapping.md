@@ -2,7 +2,16 @@
 
 **This is an informational mapping, not a certification.** It lists security controls that the Themis code implements today and the framework controls they relate to, so that a reviewer can see where Themis may help with an assessment. Aegis and Themis are not certified, audited or attested against any framework, and nothing here says they are. Passing an audit depends on how your organisation runs the tools, not on the tools alone.
 
-Framework references are given at the level of control or category identifiers. They were written from the published frameworks and should be checked against the current text of each framework before you rely on them. A deeper, per-risk mapping with test references is planned for a later release.
+Framework references are given at the level of control or category identifiers. The OWASP LLM identifiers in the table below were checked against the live OWASP list on 2026-10-11. The NIST CSF, ISO/IEC 27001, SOC 2 and CIS identifiers were written from the published frameworks and have not been re-verified against live sources; check them against the current text of each framework before you rely on them.
+
+The deeper, per-risk mappings with code paths, tests and open gaps are in the compliance set, each written from the live published source with its retrieval date:
+
+- [OWASP Top 10 for LLM Applications mapping](./compliance/owasp-llm.md)
+- [OWASP Top 10 for Agentic Applications mapping](./compliance/owasp-agentic.md)
+- [NIST AI RMF and Generative AI Profile mapping](./compliance/nist-ai-rmf.md)
+- [Compliance set overview](./compliance/README.md)
+- [Threat model (MITRE ATLAS)](./threat-model-atlas.md)
+- [Privacy policy](./privacy-policy.md) and [reviewer test prompts](./test-prompts.md)
 
 ## What is mapped
 
