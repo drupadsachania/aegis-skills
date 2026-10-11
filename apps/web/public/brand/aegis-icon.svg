@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Aegis — Defensive Security</title>
+  <g fill="none" stroke="#5D524B" stroke-linejoin="round">
+    <path d="M256 32 420 112 397 286Q368 397 256 472 144 397 115 286L92 112Z"
+      stroke-width="12"/>
+    <path d="M256 53 397 124 375 278Q348 370 256 434 164 370 137 278L115 124Z"
+      stroke="#D4AF37" stroke-width="5"/>
+    <path d="M256 84 341 135 370 249 325 335 256 400 187 335 142 249 171 135Z"
+      stroke="#D4AF37" stroke-width="5"/>
+  </g>
+  <g stroke="#D4AF37" stroke-width="5" fill="#FAF8F3">
+    <path d="M256 32 256 434 M115 124 397 278 M397 124 115 278
+      M92 112 256 400 420 112" fill="none"/>
+    <circle cx="256" cy="32" r="10"/>
+    <circle cx="115" cy="124" r="10"/>
+    <circle cx="397" cy="124" r="10"/>
+    <circle cx="92" cy="112" r="10"/>
+    <circle cx="420" cy="112" r="10"/>
+    <circle cx="137" cy="278" r="10"/>
+    <circle cx="375" cy="278" r="10"/>
+    <circle cx="256" cy="434" r="10"/>
+    <circle cx="164" cy="370" r="10"/>
+    <circle cx="348" cy="370" r="10"/>
+    <circle cx="187" cy="335" r="10"/>
+    <circle cx="325" cy="335" r="10"/>
+    <circle cx="142" cy="249" r="10"/>
+    <circle cx="370" cy="249" r="10"/>
+    <circle cx="171" cy="135" r="10"/>
+    <circle cx="341" cy="135" r="10"/>
+    <circle cx="256" cy="84" r="10"/>
+    <circle cx="256" cy="400" r="10"/>
+    <circle cx="256" cy="217" r="10"/>
+    <circle cx="210" cy="170" r="10"/>
+    <circle cx="302" cy="170" r="10"/>
+    <circle cx="210" cy="290" r="10"/>
+    <circle cx="302" cy="290" r="10"/>
+    <circle cx="256" cy="326" r="10"/>
+  </g>
+  <path d="M185 185 224 167 256 187 288 167 327 185
+    309 226 284 244 274 295 256 337 238 295 228 244 203 226Z"
+    fill="#5D524B" stroke="#D4AF37" stroke-width="5"
+    stroke-linejoin="round"/>
+  <path d="M199 211 230 203 247 216 222 222Z
+    M313 211 282 203 265 216 290 222Z" fill="#D4AF37"/>
+  <path d="M242 248 256 234 270 248 256 265Z" fill="#FAF8F3"/>
+  <path d="M239 288 256 295 273 288 M246 311 256 315 266 311"
+    fill="none" stroke="#FAF8F3" stroke-width="5"
+    stroke-linecap="round"/>
+</svg>
