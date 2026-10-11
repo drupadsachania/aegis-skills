@@ -32,7 +32,9 @@ async function getStaticProps ({ params }) {
   const { listDocs, loadDoc } = require('../../lib/docs')
   const { renderMarkdown } = require('../../lib/markdown')
   const { DOCS_DIR } = require('../../lib/site-paths')
-  const [section, slug = 'index', extra] = params.slug
+  const section = params.slug[0]
+  const slug = params.slug[1] || 'index'
+  const extra = params.slug[2]
   if (extra) return { notFound: true }
   const doc = loadDoc(DOCS_DIR, section, slug)
   if (!doc) return { notFound: true }
