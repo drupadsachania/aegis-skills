@@ -1174,3 +1174,18 @@ code {
   padding: 4px 10px;
   margin-bottom: 12px;
 }
+
+/* Mobile: keep nav, footer and containers inside the viewport */
+@media (max-width: 640px) {
+  .container, .footer-inner { padding-left: 16px; padding-right: 16px; }
+  .nav-root { padding: 0 16px; gap: 12px; }
+  .nav-brand { flex-shrink: 0; }
+  .nav-links { gap: 16px; overflow-x: auto; white-space: nowrap; min-width: 0; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .footer-right { flex-wrap: wrap; gap: 10px 20px; }
+}
+.install-tabs { max-width: 100%; }
+.install-tab-bar { overflow-x: auto; scrollbar-width: thin; }
+.install-tab-btn { flex-shrink: 0; white-space: nowrap; }
+.code-body { overflow-x: auto; }

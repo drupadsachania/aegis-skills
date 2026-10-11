@@ -53,7 +53,7 @@ function ThemisPage ({ paths, shots }) {
       h('div', { className: 'page-head' },
         h('h1', null, 'Themis'),
         h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
-        h('p', { style: { marginTop: '12px', fontSize: '13px', color: 'var(--faint)' } },
+        h('p', { style: { marginTop: '12px', fontSize: '13px', color: 'var(--muted)' } },
           'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
 
       h(Sec, { id: 'modes', num: '01', title: 'Two ways to run' },
