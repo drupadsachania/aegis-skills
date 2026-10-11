@@ -30,7 +30,7 @@ const MUST_EXIST = [
   'packages/aegis/mcp/skill-families.js', 'packages/aegis/lib/skill-meta.js', 'packages/aegis/lib/targets.js',
   'packages/aegis/lib/config-writers.js', 'packages/aegis/lib/ledger.js',
   'apps/web/app/api/mcp/route.ts', 'apps/web/pages/index.js', 'apps/web/components/Layout.js',
-  'apps/web/styles/globals.css', 'apps/web/supabase/migrations', 'packages/aegis/tests/mcp-server.test.js',
+  'apps/web/styles/globals.css', 'packages/aegis/tests/mcp-server.test.js',
   'scripts/tests/fixtures/legacy/test-skill/SKILL.md',
   // Phase 2: deterministic engine + governed MCP client extracted from the web app
   'packages/themis-core/package.json', 'packages/themis-core/tsconfig.build.json', 'packages/themis-core/jest.config.js', 'packages/themis-core/src/index.ts',
@@ -65,7 +65,7 @@ const MUST_NOT_EXIST = [
   'apps/web/__tests__/themis/secrets.test.ts', 'apps/web/__tests__/themis/sanitise.test.ts', 'apps/web/__tests__/themis/types.test.ts',
   'apps/web/__tests__/themis/mcp/governance.test.ts',
   // Phase 4: Themis left apps/web entirely
-  'apps/web/lib/themis', 'apps/web/__tests__/themis', 'apps/web/app/api/themis', 'apps/web/app/api/audit', 'apps/web/app/api/exposure'
+  'apps/web/lib/themis', 'apps/web/__tests__/themis', 'apps/web/app/api/themis', 'apps/web/app/api/audit', 'apps/web/app/api/exposure', 'apps/web/supabase'
 ]
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
