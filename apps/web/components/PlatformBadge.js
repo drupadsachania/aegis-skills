@@ -3,19 +3,19 @@
 const React = require('react')
 
 const PLATFORM_LABELS = {
-  chatgpt: 'ChatGPT',
   claude: 'Claude',
+  'claude-ai': 'Claude.ai',
+  'claude-code': 'Claude Code',
+  chatgpt: 'ChatGPT',
+  codex: 'Codex',
+  gemini: 'Gemini',
   cursor: 'Cursor',
-  gemini: 'Gemini'
+  vscode: 'VS Code',
+  antigravity: 'Antigravity'
 }
 
-function PlatformBadge({ platform }) {
-  const label = PLATFORM_LABELS[platform] || platform
-  return React.createElement(
-    'span',
-    { className: 'platform-badge' },
-    label
-  )
+function PlatformBadge ({ platform }) {
+  return React.createElement('span', { className: 'platform-badge' }, PLATFORM_LABELS[platform] || platform)
 }
 
 module.exports = PlatformBadge

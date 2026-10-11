@@ -7,39 +7,30 @@ const React = require('react')
 const { render, screen } = require('@testing-library/react')
 const userEvent = require('@testing-library/user-event').default
 require('@testing-library/jest-dom')
-
 const InstallTabs = require('../../components/InstallTabs')
 
-const MCP_URL = 'https://aegis-skills.vercel.app/api/mcp'
-const PROPS = {
-  name: 'test-skill',
-  systemPrompt: 'You are a test assistant.',
-  mcpUrl: MCP_URL,
-  mcpConfig: JSON.stringify({ mcpServers: { aegis: { type: 'http', url: MCP_URL } } })
-}
+const TABS = [
+  { id: 'claude', label: 'Claude Code', steps: [{ text: 'Inside Claude Code:' }, { label: 'shell', code: '/plugin install aegis@aegis-skills' }] },
+  { id: 'codex', label: 'Codex', steps: [{ label: 'shell', code: 'npx aegis-skills install --platform codex' }] }
+]
 
-describe('InstallTabs', () => {
-  test('renders the System Prompt tab by default', () => {
-    render(React.createElement(InstallTabs, PROPS))
-    expect(screen.getByRole('button', { name: 'System Prompt' })).toBeInTheDocument()
-    expect(screen.getAllByText(/You are a test assistant/).length).toBeGreaterThan(0)
-  })
+test('shows the first tab by default with its note and code', () => {
+  render(React.createElement(InstallTabs, { tabs: TABS }))
+  expect(screen.getByRole('tab', { name: 'Claude Code' })).toHaveAttribute('aria-selected', 'true')
+  expect(screen.getByText('Inside Claude Code:')).toBeInTheDocument()
+  expect(screen.getByText('/plugin install aegis@aegis-skills')).toBeInTheDocument()
+})
 
-  test('switches to the MCP tab', async () => {
-    render(React.createElement(InstallTabs, PROPS))
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /^mcp$/i }))
-    expect(screen.getAllByText(/aegis-skills\.vercel\.app\/api\/mcp/).length).toBeGreaterThan(0)
-  })
+test('switches tabs', async () => {
+  render(React.createElement(InstallTabs, { tabs: TABS }))
+  await userEvent.setup().click(screen.getByRole('tab', { name: 'Codex' }))
+  expect(screen.getByText('npx aegis-skills install --platform codex')).toBeInTheDocument()
+  expect(screen.queryByText('Inside Claude Code:')).not.toBeInTheDocument()
+})
 
-  test('offers no ChatGPT Action tab', () => {
-    render(React.createElement(InstallTabs, PROPS))
-    expect(screen.queryByRole('button', { name: /chatgpt action/i })).toBeNull()
-  })
-
-  test('lists both platforms in the summary table', () => {
-    render(React.createElement(InstallTabs, PROPS))
-    expect(screen.getByText('Any chat UI')).toBeInTheDocument()
-    expect(screen.getByText('MCP clients')).toBeInTheDocument()
-  })
+test('renders one copy button per code block and nothing for empty tabs', () => {
+  const { container } = render(React.createElement(InstallTabs, { tabs: TABS }))
+  expect(screen.getAllByRole('button', { name: 'COPY' })).toHaveLength(1)
+  expect(render(React.createElement(InstallTabs, { tabs: [] })).container.innerHTML).toBe('')
+  expect(container.textContent).not.toMatch(/ChatGPT Action/)
 })
