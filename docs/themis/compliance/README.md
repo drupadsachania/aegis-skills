@@ -25,9 +25,9 @@ This folder holds the responsible-design mappings that reviewers and security te
 
 ## Open gaps worth knowing first
 
-- The gateway wrapper must neutralise a closing tag inside tool output; that fix and its test land in the same release as these documents.
+- The gateway neutralises wrapper tags inside tool output (`packages/themis-gateway/test/wrapper-breakout.test.ts`); wrapping still only reduces the risk of injected instructions.
 - The hosted Aegis MCP route has no rate limit yet; the planned limiter is in-memory and therefore best-effort on serverless hosting.
 - Intel content in the skills is committed from the maintainer's machine, so the maintainer is a trust assumption.
-- Tool descriptions from servers you connect reach the model unmodified.
+- Tool descriptions from servers you connect reach the model unmodified (GAP: they are not wrapped).
 
 To report a weakness in any control, see [SECURITY.md](../../../SECURITY.md).
