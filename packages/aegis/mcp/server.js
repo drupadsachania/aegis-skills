@@ -59,8 +59,8 @@ function createAegisMcpServer() {
     { name: 'aegis-skills', version: pkg.version },
     {
       instructions:
-        'Aegis is a library of defensive security skills. Use list_skills to find a skill, ' +
-        'get_skill to see its phases, and get_skill_phase to load the methodology for a phase.'
+        'Aegis is a read-only library of defensive security skills. list_skills lists skills, ' +
+        'get_skill returns the phases of a skill and get_skill_phase returns the methodology text for one phase.'
     }
   )
 
@@ -111,7 +111,7 @@ function createAegisMcpServer() {
     },
     async ({ name }) => {
       const manifest = await getSkillManifest(name)
-      if (!manifest) return errorResult(`Unknown skill "${name}". Use list_skills to see available skills.`)
+      if (!manifest) return errorResult(`Unknown skill "${name}". list_skills returns the available skill names.`)
       return text(JSON.stringify({
         name: manifest.name,
         version: manifest.version,
@@ -135,7 +135,7 @@ function createAegisMcpServer() {
       title: 'Load a skill phase',
       description:
         'Load the methodology content for one phase of a skill. ' +
-        'Pass the phase id from get_skill, or its 0-based index among authored phases.',
+        'The phase is given as a phase id or as a 0-based index among authored phases.',
       inputSchema: {
         name: z.string().regex(SLUG).describe('Skill slug'),
         phase: z.string().min(1).max(80).describe('Phase id (e.g. "edr-deployment") or index (e.g. "0")')
