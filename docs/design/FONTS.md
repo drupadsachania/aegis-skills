@@ -65,3 +65,9 @@ The Adobe Fonts web licence covers use of the kit on allow-listed domains. The f
 ## Privacy
 
 Loading the kit means Adobe sees the visitor's IP address, user agent and the site origin (our referrer policy sends no full page address), and counts kit usage through `p.typekit.net`. This is disclosed in `docs/trust/data-flow.md` and `docs/themis/privacy-policy.md`. The CSP allows exactly `https://use.typekit.net` and `https://p.typekit.net` (styles) and `https://use.typekit.net` (font files); no image or connect host is needed (`p.css` is a stylesheet only).
+
+## Landing headline (owner decision, 2026-10-12)
+
+The home page H1 ("Security skills and a SOC agent, on your own AI.") is set in **legitima 500** with the 500 italic for the accent phrase. All other headings stay teimer-web 300 and body text stays legitima 500.
+
+The owner also supplied `.woff2` files for teimer-web light, questa, aquavit, legitima and legitima (the file named `legitima-bold` is actually Legitima Italic). Their metadata points to Adobe Fonts licences (`fonts.adobe.com/eulas/...`), which allow web use through the kit only. They are therefore NOT committed to this public repository and not self-hosted; `apps/web/tests/guard/fonts-guard.test.js` enforces that. Questa and a true bold are not in the kit; add them to the Adobe Fonts project first if they are wanted.

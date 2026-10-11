@@ -526,11 +526,13 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .hero-meta .sep { width: 18px; height: 1px; background: var(--k-color-line); flex-shrink: 0; }
 
 .hero-h1 {
-  font-family: var(--k-font-display);
-  font-weight: 300;
-  font-size: clamp(44px, 8.4vw, 120px);
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+  /* Landing headline is set in legitima (the body face), owner decision 2026-10-12 */
+  font-family: var(--k-font-body);
+  font-weight: 500;
+  font-size: clamp(46px, 8.8vw, 124px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  font-synthesis: none;
   color: var(--k-color-text);
   margin: 0 0 clamp(24px, 3vw, 40px);
   max-width: 14ch;
@@ -539,6 +541,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .hero-h1.k-lines { max-width: 18ch; }
 .hero-h1 em {
   font-style: italic;
+  font-weight: 500;
   color: var(--hero-em);
   background: linear-gradient(transparent 82%, var(--k-color-aegis) 82%, var(--k-color-aegis) 92%, transparent 92%);
   padding: 0 0.04em;
