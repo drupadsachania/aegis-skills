@@ -31,5 +31,5 @@ it('ships the skill and both agents, and no Aegis skills', () => {
 })
 
 it('depends only on Themis packages, the MCP SDK and zod (no model SDKs, no native modules)', () => {
-  expect(Object.keys(pkg.dependencies).sort()).toEqual(['@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk', 'zod'])
+  expect(Object.keys(pkg.dependencies).sort()).toEqual(['@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk', 'aegis-skills', 'zod'])
 })

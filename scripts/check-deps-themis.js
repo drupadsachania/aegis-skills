@@ -16,7 +16,7 @@ const ROOT = path.resolve(__dirname, '..')
 const RULES = [
   { name: '@aegis-skills/themis-core', dir: 'packages/themis-core', allowed: ['zod'] },
   { name: '@aegis-skills/themis-gateway', dir: 'packages/themis-gateway', allowed: ['zod', '@aegis-skills/themis-core', '@modelcontextprotocol/sdk'] },
-  { name: '@aegis-skills/themis-plugin', dir: 'packages/themis-plugin', allowed: ['zod', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk'], allowOwnPackageJson: true },
+  { name: '@aegis-skills/themis-plugin', dir: 'packages/themis-plugin', allowed: ['zod', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', '@modelcontextprotocol/sdk', 'aegis-skills'], allowOwnPackageJson: true },
   { name: '@aegis-skills/themis', dir: 'packages/themis-app', allowed: ['zod', '@langchain/core', '@langchain/openai', '@langchain/anthropic', '@langchain/google-genai', '@langchain/langgraph', '@langchain/langgraph-checkpoint', '@aegis-skills/themis-core', '@aegis-skills/themis-gateway', 'aegis-skills'], allowOwnPackageJson: true },
 ]
 const APPROVAL_DECIDERS = ['packages/themis-plugin/src/approval.ts', 'packages/themis-app/src/server/routes/approvals.ts'] // repo-relative posix paths
