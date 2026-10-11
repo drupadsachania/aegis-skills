@@ -1,20 +1,21 @@
 /* Themis dashboard styles on the shared Kairos tokens (design/tokens.css, imported in main.tsx).
    Light (cream) is the default; dark only via html[data-theme="dark"] (the in-app toggle).
-   prefers-color-scheme is deliberately never used. Fonts: the token stacks name Newsreader, IBM Plex Sans
-   and Red Hat Mono first and fall back to system faces; nothing is fetched at runtime (strict CSP,
-   offline loopback). To ship the real faces, bundle open-licence woff2 files into dist/ui via @font-face. */
+   prefers-color-scheme is deliberately never used. Fonts: the token stacks name teimer-web, legitima (Adobe Fonts kit)
+   and Red Hat Mono first and fall back to Georgia and system faces. Nothing is fetched at runtime (strict CSP,
+   offline loopback) and no font files ship in dist/ui, so the dashboard uses the fallbacks by design
+   (docs/design/FONTS.md). */
 * { box-sizing: border-box; }
 html { scroll-padding-top: 1rem; }
 body {
   margin: 0; background: var(--k-color-bg); color: var(--k-color-text-muted);
-  font: var(--k-text-app-body)/var(--k-leading-ui) var(--k-font-sans);
+  font: var(--k-text-app-body)/var(--k-leading-ui) var(--k-font-body);
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--k-color-link); text-underline-offset: 3px; }
 a:hover { color: var(--k-color-themis-hover); }
 :focus-visible { outline: 2px solid var(--k-color-focus); outline-offset: 3px; border-radius: var(--k-radius-xs); }
 ::selection { background: var(--k-color-aegis); color: var(--k-color-on-aegis); }
-h1, h2 { color: var(--k-color-text); font-family: var(--k-font-display); font-weight: 400; letter-spacing: var(--k-tracking-heading); line-height: var(--k-leading-heading); }
+h1, h2 { color: var(--k-color-text); font-family: var(--k-font-display); font-weight: var(--k-weight-light); letter-spacing: var(--k-tracking-heading); line-height: var(--k-leading-heading); }
 h1 { font-size: var(--k-text-h2); margin: 0 0 var(--k-space-2); }
 h2 { font-size: var(--k-text-h3); margin: var(--k-space-5) 0 var(--k-space-2); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
