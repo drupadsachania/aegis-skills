@@ -1,5 +1,7 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
 
+import { clientIp, rateLimited } from '../../../lib/rate-limit'
+
 // skill-reader reads the skills directory from disk — Node runtime required.
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -33,6 +35,14 @@ function withHeaders(res: Response): Response {
  * only public skill content (see packages/aegis/mcp/server.js).
  */
 async function handle(req: Request): Promise<Response> {
+  // Best-effort per-instance limit; Anthropic's outbound range is exempt (see lib/rate-limit.ts).
+  if (rateLimited(clientIp(req.headers))) {
+    return withHeaders(new Response(JSON.stringify({ error: 'Too many requests' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+    }))
+  }
+
   const declared = Number(req.headers.get('content-length') ?? '0')
   if (declared > MAX_BODY_BYTES) {
     return withHeaders(new Response(JSON.stringify({ error: 'Request too large' }), {

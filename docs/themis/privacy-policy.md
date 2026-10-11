@@ -26,7 +26,8 @@ The hosted server is the route `/api/mcp` on the website. It has three tools: `l
 What the code does with a request:
 
 - It handles each request on its own, with no session and no shared state: a fresh server object is created for the request and closed when the response is made.
-- It stores nothing. It writes no database record, no file and no log line of its own, and there is no account, token or credential involved.
+- It keeps a short-lived request counter in the memory of the running server instance to slow down bursts from one client (120 requests a minute per IP address taken from the `x-forwarded-for` header). The counter is never written to disk, never logged and never shared, and it disappears when the instance restarts.
+- It stores nothing else. It writes no database record, no file and no log line of its own, and there is no account, token or credential involved.
 - It makes no model calls and holds no model keys. A test (`apps/web/tests/guard/no-model-deps.test.js`) fails if the website declares or imports model packages, reads secrets from the environment, references a removed route, or brings back the telemetry module or the removed routes.
 - It rejects bodies over 64 KB, validates tool arguments against a strict schema, and sends `Cache-Control: no-store` so responses are not cached.
 

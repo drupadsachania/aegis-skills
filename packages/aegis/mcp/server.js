@@ -27,6 +27,9 @@ const MAX_PHASE_CHARS = 20000
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
 
+// Directory reviews want a human-readable title inside annotations as well as at the tool level.
+const readOnly = title => ({ ...READ_ONLY, title })
+
 function text(t) {
   return { content: [{ type: 'text', text: t }] }
 }
@@ -72,7 +75,7 @@ function createAegisMcpServer() {
         query: z.string().max(200).optional().describe('Free-text filter'),
         family: z.enum(FAMILY_KEYS).optional().describe('Skill family: ' + FAMILY_KEYS.join(', '))
       },
-      annotations: READ_ONLY
+      annotations: readOnly('List Aegis skills')
     },
     async ({ query, family }) => {
       const skills = await listSkills()
@@ -104,7 +107,7 @@ function createAegisMcpServer() {
       inputSchema: {
         name: z.string().regex(SLUG).describe('Skill slug, e.g. "exposure-validation"')
       },
-      annotations: READ_ONLY
+      annotations: readOnly('Get an Aegis skill')
     },
     async ({ name }) => {
       const manifest = await getSkillManifest(name)
@@ -137,7 +140,7 @@ function createAegisMcpServer() {
         name: z.string().regex(SLUG).describe('Skill slug'),
         phase: z.string().min(1).max(80).describe('Phase id (e.g. "edr-deployment") or index (e.g. "0")')
       },
-      annotations: READ_ONLY
+      annotations: readOnly('Load a skill phase')
     },
     async ({ name, phase }) => {
       const manifest = await getSkillManifest(name)

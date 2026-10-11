@@ -29,6 +29,8 @@ describe('Aegis MCP server', () => {
     for (const t of tools) {
       expect(t.annotations?.readOnlyHint).toBe(true)
       expect(t.annotations?.destructiveHint).toBe(false)
+      expect(typeof t.annotations?.title).toBe('string')
+      expect(t.annotations.title.length).toBeGreaterThan(0)
     }
     await client.close(); await server.close()
   })

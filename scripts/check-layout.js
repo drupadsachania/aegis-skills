@@ -33,7 +33,7 @@ const MUST_EXIST = [
   'packages/aegis/mcp/server.js', 'packages/aegis/mcp/stdio.js', 'packages/aegis/mcp/skill-reader.js',
   'packages/aegis/mcp/skill-families.js', 'packages/aegis/lib/skill-meta.js', 'packages/aegis/lib/targets.js',
   'packages/aegis/lib/config-writers.js', 'packages/aegis/lib/ledger.js',
-  'apps/web/app/api/mcp/route.ts', 'apps/web/pages/index.js', 'apps/web/components/Layout.js',
+  'apps/web/app/api/mcp/route.ts', 'apps/web/app/.well-known/openai-apps-challenge/route.ts', 'apps/web/lib/rate-limit.ts', 'apps/web/lib/openai-challenge.ts', 'apps/web/config/openai-apps-challenge.txt', 'apps/web/__tests__/rate-limit.test.ts', 'apps/web/pages/index.js', 'apps/web/components/Layout.js',
   'apps/web/styles/globals.css', 'packages/aegis/tests/mcp-server.test.js',
   'scripts/tests/fixtures/legacy/test-skill/SKILL.md',
   // Phase 2: deterministic engine + governed MCP client extracted from the web app
