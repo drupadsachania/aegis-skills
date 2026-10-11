@@ -57,7 +57,11 @@ const MUST_EXIST = [
   'packages/themis-plugin/skills/themis-orchestrator/SKILL.md', 'packages/themis-plugin/skills/themis-orchestrator/skill.json',
   'packages/themis-plugin/agents/themis-subtask-runner.md', 'packages/themis-plugin/agents/themis-guardrail-reviewer.md',
   'packages/themis-plugin/.claude-plugin/plugin.json', 'packages/themis-plugin/.mcp.json', 'packages/themis-plugin/server.json',
-  'packages/themis-plugin/docs/manual-verification.md'
+  'packages/themis-plugin/docs/manual-verification.md',
+  // Design language (tokens, generator, spec docs)
+  'design/tokens.json', 'design/tokens.css', 'design/build-tokens.js', 'design/tokens.test.js', 'design/jest.config.js',
+  'docs/design/DESIGN.md', 'docs/design/motion.md',
+  'docs/design/research/hermes-agent.md', 'docs/design/research/nousresearch.md', 'docs/design/research/microsoft-ai.md', 'docs/design/research/humanistreview.md'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
@@ -81,7 +85,7 @@ const MUST_NOT_EXIST = [
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
   'README.md', 'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
-  'apps', 'packages', 'scripts', 'docs'
+  'apps', 'packages', 'scripts', 'docs', 'design'
 ])
 const PACKAGES = [
   ['package.json', 'aegis-skills-monorepo'],
