@@ -219,3 +219,78 @@ The plan text predated Phase 2's final API. Adaptations (deliberate; the design 
 8. Mobile layout (checked in the in-app browser at 390px) showed horizontal overflow from the Layout nav/footer and from install tab bars (all from Task 9/10 styles). Fixed with a `max-width: 640px` block (smaller container padding, scrollable nav links, stacked footer) and overflow rules for `.install-tab-bar` and `.code-body`; all of `/`, `/skills`, `/skills/compliance`, `/paths`, `/themis`, `/mcp`, `/docs`, `/security`, `/license` now report scrollWidth == clientWidth == 390 with no console errors.
 9. `check-layout` MUST_EXIST gained the new pages; `apps/web/pages/docs.js` joined MUST_NOT_EXIST. The `fs`-bundling note still holds: pages keep `listSkills`/`FAMILIES` requires inside `getStaticProps` only.
 10. Tests: tasks 12-16 test files were taken verbatim from the plan; to keep the whole repo green at each commit the not-yet-implemented tests were held out and added with their task. Final: whole repo `npx jest` = 104 suites, 665 passed, 2 skipped, 0 failed (651 before the batch). `npm run build -w @aegis-skills/web`, `node scripts/check-layout.js` and `npm run check:deps` pass.
+
+## Phase 5 execution results — batch D (tasks 17-21) and exit
+
+Work is on `restructure`; no branch, push or PR (Task 21 is replaced by the PR body below). Commits: a4b96c9 (T17), 073a238 (T18), e1047cb (T19), 964fe82 (T20 fixes), plus the findings commit. Final numbers: whole repo `npx jest` = 106 suites, 676 passed, 2 skipped, 0 failed (665 before the batch; +10 docs-content tests, +1 facade test); web project alone 27 suites / 116 tests; prompt-parity snapshot untouched (11 passed, no `-u`).
+
+Deviations (numbered; each was verified against the code before the docs were written):
+
+1. **Node 24, not 22.13.** Every doc says Node.js 24 or later (engines `>=24` everywhere, contracts correction 11).
+2. **`mode-2.md` became `mode-2-app.md`** (`git mv`; Phase 4 wrote it as `mode-2.md`, but the plan, `SECTIONS` and `install-commands.js` use `mode-2-app`). I added a status line, the default port (9120, 127.0.0.1), the bundled-Aegis note, a global-install snippet and a link to configuration. It is longer than the 600-word target because it is the full dashboard guide. `check-layout` MUST_EXIST updated.
+3. **`docs/themis/compliance-mapping.md` was written now** (the plan puts it in Phase 6) because the Security page links to it and the task asked for it. It maps only ten controls that exist in code (C1 human-only approval, C2 allowlist, C3 audit log, C4 redaction, C5 untrusted wrapping, C6 budgets, C7 input validation, C8 exposure authorization gate, C9 local-only and dashboard hardening, C10 version stamp) to OWASP LLM Top 10 (2025), NIST CSF 2.0, ISO 27001:2022 Annex A, SOC 2 and CIS v8. It is labelled "informational mapping, not a certification", states what it does not cover, and asks readers to verify framework text. The framework IDs were written from knowledge and were not re-fetched from the published frameworks: Phase 6's verified per-risk mapping should supersede or check them. `SECTIONS` gained the page, so `/docs/[...slug]` has 20 paths (plan: 19). The `/security` page copy said "OWASP LLM and Agentic, NIST AI RMF" and was changed to describe what the doc really maps; the OWASP Agentic list and per-subcategory AI RMF IDs are deliberately not claimed.
+4. **Plugin mode is configured by env, not `config.json`.** The plan (18.6) says `config.json -> mcpServers`. The plugin's gateway calls `loadMcpServers()` with no argument, so it reads only the `THEMIS_MCP_SERVERS` env var of the `themis` server entry; only the standalone app reads `config.json`. `configuration.md` says both, lists `app.db`, and documents `headers`, `maxCalls` (default 5, max 20) and `timeoutMs` (default 15000, max 30000).
+5. **Plugin tool list is the real ten tools** (`themis_start_run`, `_submit_step`, `_get_run`, `_list_runs`, `_validate_exposure`, `_assess_risk`, `_record_finding`, `_get_report`, `_external_list`, `_external_call`), not the plan's guessed `plan/schedule/request_approval/...`. There is no approval tool by design.
+6. **Wrapper format.** The plan says `<external_tool_output untrusted>`; the code wraps as `<external_tool_output server="..." tool="..." ok="...">` and caps output at 4000 chars. Docs use the real form. Finding 6.6 (the wrapper does not escape a closing tag in tool output) is still open in code, so neither the governance doc nor the compliance mapping claims escaping; the mapping says prompt injection is "reduced, not solved".
+7. **`human_handoff`:** the plan says Themis "records the outcome"; no tool does. The approval stays `pending` and nothing is recorded after the user runs the action. Docs say that. Approval `expired` is documented as a type value that nothing produces (finding 4.4), and `needs_reproposal` is described.
+8. **Exact version pins, not `^1`.** Plan 18.7 says the plugin pins `npx aegis-skills@^1 mcp`; the real `.mcp.json` pins `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0` (contracts correction 3). `versions.md` says so.
+9. **Gemini extension line kept** (`GEMINI_EXTENSION_INSTALL` is non-null in `install-commands.js`); the install doc opens with "nothing is published yet; these work after the first release", which also covers finding 1.2. No installer target is disabled, so the plan's "not yet supported" mark is unused; the Where-files-go table lists all six with `verifiedOn` 2026-10-07. I also documented the MCP config backup name (`<file>.aegis.bak`) and the `~/.aegis/installed.json` ledger (`AEGIS_HOME`).
+10. **Health amendment and "monthly".** No doc or page mentions health scores or weekly updates; `intel.md` was rewritten (no weekly job, no "excluded from health scoring") and says content is updated monthly. A new test forbids `health` and `weekly` in docs and README. The CLI doc lists exit codes 0/1/2 taken from the source.
+11. **`healthScore` leak fixed.** The Aegis reader still returns `healthScore: null` from `listSkills()`, so `/api/skills` and `/api/recommend` carried the field. `apps/web/lib/aegis.js` now whitelists public fields (no `packages/` change), with a test. `check-layout --trace` no longer expects `packages/aegis/health.json` or an `/api/health` trace file (it checks `packages/aegis/package.json`). The exit-checklist grep for "health" in `apps/web` JS/TS finds only tests.
+12. **Content test is 10 tests** (plan: 5): the plan's five plus all-files-listed, no health/weekly, TECHNICAL.md retired, absolute site links resolve, and relative repo links exist.
+13. **README rewritten from scratch** (the old one still described `/api/themis`, LLM keys, `lib/themis`, weekly refresh and `docs/TECHNICAL.md`): Aegis, Themis, a Links section (website, /paths, /docs, /mcp, SECURITY.md, LICENSE) and the real project structure. `docs/TECHNICAL.md` was removed with `git rm`; `check-layout` MUST_NOT_EXIST lists it. I also added a short `packages/themis-plugin/README.md` (none existed; the plan lists none), written from the source and linking `docs/manual-verification.md`.
+14. **Docs layout bug at 390px.** The docs pages overflowed (layout width 635-776px) because the mobile `.docs-layout` column was `1fr` (min-content sized). Changed to `minmax(0, 1fr)` and made `.prose` code and links wrap. After the fix every checked docs page reports scrollWidth == 390 and tables scroll inside their box.
+15. **Observations not fixed (`packages/*` is read-only in this phase), documented in the docs as they are:** (a) `themis-plugin` does not depend on `aegis-skills`, so under `npx` the version stamp records `aegis: unknown` and the decompose step cannot check sub-task skills against the installed list unless an `aegis-skills` package is resolvable next to it; (b) `isOskSupported` exists in core but nothing calls it, so an osk major mismatch is recorded but not refused. Both are candidates for a Phase 7 or follow-up fix.
+16. **Verification quirk:** the first server I started kept port 3123 after I "stopped" it (the real listener was a child PID), so the first mobile check hit a stale build. I found it from the stylesheet text, killed the listener by PID and restarted. All servers I started are stopped (port free). A stray empty `apps/web/s.name`, created by a malformed one-liner, was deleted.
+
+### Task 20 verification results
+
+- `npx jest` whole repo 106 suites / 676 passed / 2 skipped; `(cd apps/web && npx jest)` 27 suites / 116 passed.
+- No-model sweep (20.2): the only hit is the docs-content test's own forbidden-string list.
+- `npm run build -w @aegis-skills/web`: `build-downloads: 24 prompts + 24 zips`, compiled successfully, 54 static pages; routes `/`, `/paths`, `/skills`, `/skills/[name]` (24), `/themis`, `/mcp`, `/docs`, `/docs/[...slug]` (20), `/security`, `/license`, `/api/skills`, `/api/recommend`, `/api/[skill]/manifest`, `/api/[skill]/phase/[phaseId]`, `/api/mcp`; no health, invoke, themis, audit or exposure routes. No large-page-data warning appeared.
+- `node scripts/check-layout.js` (also `--trace` after the build), `npm run check:deps` and `node scripts/lint-skills.js` (24 skills, 0 errors) pass.
+- Runtime (20.4, `next start` on port 3123): `/api/skills` returns 24 items without `healthScore`; invoke, themis and health return 404; zip is `200 application/zip`; prompt headers include `Cache-Control: public, max-age=3600, must-revalidate` and the CSP; the phase text is served; MCP lists `get_skill`, `get_skill_phase`, `list_skills`; error bodies match `docs/web/api.md` (400 Invalid request, 405, 404 skill/phase not found); CORS `*` on `/api/skills`, none on `/api/mcp`; all 14 spot-checked pages return 200 and `/skills/nope` returns 404.
+- Link crawl of the built site from `/` (follows every `href` and `src`, checks hash anchors): 119 URLs including 21 `/docs` URLs, zero 404s or missing anchors.
+- Browser (in-app, `mcp__Claude_Browser__*`): /docs pages checked at 390px (hub, install, skill-format, compliance-mapping, mode-2-app, hosted-mcp, api, mode-1-plugin, configuration, themis) and at desktop (compliance-mapping: current page highlighted, "Edit this page" points to GitHub `edit/main/docs/...`, no overflow); `/security` links the mapping. Screenshots timed out (pane not drawn), so layout was verified by DOM measurement instead of images. The console showed only my own iframe attempt blocked by `frame-ancestors 'none'` (expected). The remaining 20.5 items (home, paths, catalogue, clipboard, keyboard) were exercised in batch C and not repeated.
+- `graphify update .` ran; `graphify-out/` is ignored and not committed. `git status` shows no tracked changes and no generated downloads.
+
+### Exit checklist (plan section 9, with the health amendment)
+
+- [x] `apps/web/package.json` dependencies are exactly `@modelcontextprotocol/sdk`, `aegis-skills`, `marked`, `next`, `react`, `react-dom`; 13 devDependencies as in 4.2.
+- [x] `next.config.js`: no `serverExternalPackages`, same security headers, `/downloads` cache header, tracing includes for `packages/aegis/skills` (under `experimental`, Next 14).
+- [x] Routes present: skills, manifest, phase, recommend, mcp. `/api/health` is intentionally absent (amendment); invoke, themis, audit and exposure are absent (404 at runtime).
+- [x] No telemetry, Supabase, `lib/themis` or `supabase/` folder remain.
+- [x] Build generates 24 prompts and 24 zips and succeeds with the route table above.
+- [x] `public/downloads/` is gitignored and untracked.
+- [x] Pages exist: `/`, `/paths`, `/skills`, `/skills/[name]` (24), `/themis`, `/mcp`, `/docs`, `/docs/...` (20, not 19: compliance mapping added), `/security`, `/license`.
+- [x] Install commands come from `lib/install-commands.js`, pinned by tests; docs copy them verbatim.
+- [x] Jest is green; the guard, docs-content, install-commands, zip, downloads and skill-page tests are present.
+- [x] 20.4 runtime checks run and recorded above; the 20.5 manual checklist is partly re-run (see above) and partly covered by batch C.
+- [x] `docs/TECHNICAL.md` is deleted; README has a Links section and no removed endpoints, weekly or health claims.
+- [x] Amendment grep: `grep -rn "health" apps/web --include=*.js --include=*.ts --include=*.tsx -l` finds only tests (route-absence guard, legacy scorer-mirror test, docs and facade tests, an unrelated "healthcare" fixture).
+- [ ] PR: not opened (by instruction). User actions U1-U3 remain (see the PR body).
+
+### Would-be pull request body (base `main`, title "Phase 5: website redesign and documentation hub")
+
+```
+## Summary
+- Website presents Aegis + Themis as one pack: home, choose-your-path, catalogue, skill pages, Themis, hosted MCP, docs hub, security, license.
+- Single-file prompts (intel-stamped) and skill zips generated at build time into public/downloads (gitignored), zip writer on node:zlib.
+- Removed: /api/[skill]/invoke, Supabase telemetry, Themis/audit/exposure web remnants, LLM/LangChain/sqlite/Supabase deps, serverExternalPackages, /api/health and every skill-health surface (health scores are internal only; skill content is updated monthly).
+- Docs: docs/aegis (7), docs/themis (8, including an informational compliance mapping that is not a certification), docs/web (5), rendered with marked (raw HTML escaped). README rewritten; TECHNICAL.md retired.
+
+## Baseline
+Whole repo at the start of batch D: 104 suites / 665 passed / 2 skipped / 0 failed.
+
+## Verification
+- npx jest: 106 suites, 676 passed, 2 skipped, 0 failed (web project: 27 suites, 116 passed).
+- npm run build -w @aegis-skills/web: 24 prompts + 24 zips, 54 static pages; check-layout (also --trace), check:deps and lint-skills pass.
+- next start: 14 spot-checked pages 200, /skills/nope 404, invoke/themis/health 404, zip 200 application/zip, CSP and cache headers present, MCP lists 3 tools.
+- Link crawl: 119 URLs, 0 broken links or anchors.
+- In-app browser: /docs pages fit at 390px and desktop.
+
+## User actions after merge
+U1 Vercel settings: Root Directory apps/web, default Build Command, Node 24, include source files outside the Root Directory. U2 Preview check: add the preview /api/mcp as a custom connector in Claude.ai and in ChatGPT developer mode, and upload compliance.zip in Claude.ai; report any menu label that differs from install-commands.js or docs/web/hosted-mcp.md. U3 After production passes, remove the old env vars (provider keys, Supabase, THEMIS_*, LANGCHAIN_*), revoke unused provider keys and decide about the Supabase project. U4 (optional) add Themis screenshots under apps/web/public/img/themis/.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+```
