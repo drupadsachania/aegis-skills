@@ -8,9 +8,6 @@ const FORBIDDEN = [/^@anthropic-ai\//, /^openai$/, /^@google\/generative-ai$/, /
   /^@langchain\//, /^langsmith$/, /^better-sqlite3$/, /^@types\/better-sqlite3$/, /^@supabase\//, /^ai$/]
 const SOURCE_DIRS = ['pages', 'app', 'components', 'lib', 'scripts']
 const REMOVED_ROUTES = ['/api/themis', '/api/audit', '/api/exposure', '/invoke']
-// TEMPORARY: these pages are rewritten in Phase 5 Tasks 13-15 and still carry prose that
-// mentions removed routes. Delete this list when they are rewritten.
-const PENDING_REWRITE = ['pages/docs.js']
 
 function walk (dir, out = []) {
   if (!fs.existsSync(dir)) return out
@@ -51,7 +48,6 @@ describe('website has no model, LLM-framework, sqlite or Supabase code', () => {
   test('no source file references a removed route', () => {
     const offenders = []
     for (const f of files) {
-      if (PENDING_REWRITE.includes(rel(f))) continue
       const src = fs.readFileSync(f, 'utf8')
       for (const r of REMOVED_ROUTES) if (src.includes(r)) offenders.push(`${rel(f)} -> ${r}`)
     }
