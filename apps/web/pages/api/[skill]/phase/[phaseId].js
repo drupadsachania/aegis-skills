@@ -1,7 +1,6 @@
 'use strict'
 
 const { getSkillManifest, getPhaseContent } = require('../../../../lib/aegis')
-const { logInvocation, detectPlatform } = require('../../../../lib/telemetry')
 const { handleCors } = require('../../../../lib/cors')
 
 async function handler (req, res) {
@@ -18,9 +17,6 @@ async function handler (req, res) {
 
   const content = await getPhaseContent(skill, phaseId)
   if (content === null) return res.status(404).json({ error: 'phase not found' })
-
-  const platform = detectPlatform(req.headers['user-agent'])
-  logInvocation({ skill, phase: phaseId, platform })
 
   res.setHeader('Content-Type', 'text/markdown')
   res.status(200).send(content)

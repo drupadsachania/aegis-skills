@@ -5,13 +5,7 @@ jest.mock('../../lib/aegis', () => ({
   getPhaseContent: jest.fn()
 }))
 
-jest.mock('../../lib/telemetry', () => ({
-  logInvocation: jest.fn(),
-  detectPlatform: jest.fn().mockReturnValue('unknown')
-}))
-
 const { getSkillManifest, getPhaseContent } = require('../../lib/aegis')
-const { logInvocation } = require('../../lib/telemetry')
 const httpMocks = require('node-mocks-http')
 const handler = require('../../pages/api/[skill]/phase/[phaseId]')
 
@@ -32,22 +26,6 @@ describe('GET /api/[skill]/phase/[phaseId]', () => {
     expect(res.statusCode).toBe(200)
     expect(res.getHeader('Content-Type')).toContain('text/markdown')
     expect(res._getData()).toContain('Signal Writing Guide')
-  })
-
-  test('calls logInvocation', async () => {
-    getSkillManifest.mockResolvedValue(MOCK_MANIFEST)
-    getPhaseContent.mockResolvedValue('content')
-    const req = httpMocks.createRequest({
-      method: 'GET',
-      query: { skill: 'deception-engineering', phaseId: 'signal-writing-guide' }
-    })
-    const res = httpMocks.createResponse()
-    await handler(req, res)
-    expect(logInvocation).toHaveBeenCalledWith({
-      skill: 'deception-engineering',
-      phase: 'signal-writing-guide',
-      platform: 'unknown'
-    })
   })
 
   test('returns 404 for unknown skill', async () => {
