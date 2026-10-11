@@ -9,7 +9,7 @@ const { AEGIS_PLATFORM_IDS } = require('../../lib/install-commands')
 
 const FORBIDDEN = ['ChatGPT Action', 'openai-action', '@aegis-skills/core', 'aegis compile', 'better-sqlite3', 'Supabase']
 const REMOVED = ['/api/themis', '/api/audit', '/api/exposure', '/invoke']
-const SITE_ROUTES = ['/skills', '/paths', '/mcp', '/themis', '/docs', '/security', '/license']
+const SITE_ROUTES = ['/skills', '/paths', '/mcp', '/themis', '/docs', '/security', '/license', '/terms', '/trust']
 
 const allDocs = () => SECTIONS.flatMap(s => s.pages.map(p => loadDoc(DOCS_DIR, s.key, p)))
 

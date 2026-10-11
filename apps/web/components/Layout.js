@@ -40,6 +40,8 @@ const FOOTER_COLUMNS = [
   { title: 'Trust', links: [
     { href: '/trust', label: 'Trust and data flow' },
     { href: '/security', label: 'Security' },
+    { href: '/docs/themis/privacy-policy', label: 'Privacy' },
+    { href: '/terms', label: 'Terms' },
     { href: '/license', label: 'License' },
     { href: REPO_URL, label: 'GitHub', external: true },
     { href: KAIROS_URL, label: 'Kairos Foundation', external: true }
@@ -222,6 +224,7 @@ function MobileMenu ({ path, onClose }) {
       h('a', { href: '/mcp', onClick: onClose }, 'Hosted MCP'),
       h('a', { href: '/trust', onClick: onClose }, 'Trust and data flow'),
       h('a', { href: '/security', onClick: onClose }, 'Security'),
+      h('a', { href: '/terms', onClick: onClose }, 'Terms'),
       h('a', { href: '/license', onClick: onClose }, 'License')),
     h('div', { className: 'mm-cta' }, h('a', { href: '/quickstart', className: 'btn-primary', onClick: onClose }, 'Try it in 2 minutes')))
 }

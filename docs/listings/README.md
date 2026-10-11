@@ -19,7 +19,7 @@ Maintainer folder, not product documentation and not on the public site. Status 
 2. The GitHub repository is public (owner statement; not verified by the tooling that wrote these files).
 3. Security and privacy contact: no foundation mailbox and no personal email will be published. GitHub private vulnerability reporting (<https://github.com/drupadsachania/aegis-skills/security/advisories/new>) is the single security channel; the privacy policy names GitHub Issues for non-sensitive questions and private reporting for sensitive ones.
 4. No demo recording. ChatGPT gets Aegis as a skills-only plugin; Themis on ChatGPT is deferred. An MCP server cannot be added to a skills-only plugin later (see the decision section in [chatgpt-app.md](chatgpt-app.md)).
-5. A terms-of-service page is wanted and is a Phase 7 item. It is not written yet.
+5. The terms-of-service page is written (`docs/legal/terms.md`, served at `/terms`). Once the site is deployed its URL is <https://aegis-skills.vercel.app/terms>. Legal review of the text and the governing-law line are owner actions.
 
 ## Consolidated owner blockers
 
@@ -38,7 +38,7 @@ Maintainer folder, not product documentation and not on the public site. Status 
 
 Removed since the previous version: the copyright holder question (decided), "repository must be public" (stated public by the owner), the security email placeholder (private vulnerability reporting is the channel), the privacy email placeholder (interim contact written), the ChatGPT demo video and test cases (not needed for a skills-only plugin).
 
-Phase 7 items: the terms-of-service page, `scripts/build-chatgpt-bundle.js`, the Gemini release archive, the version script and the npm publish.
+Phase 7 items: `scripts/build-chatgpt-bundle.js`, the Gemini release archive, the version script and the npm publish.
 
 ## Verified versus unverified sources
 

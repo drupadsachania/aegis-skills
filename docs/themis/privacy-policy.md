@@ -1,6 +1,6 @@
 # Privacy policy
 
-Last reviewed: 2026-10-11. This page describes what the Aegis and Themis website, the hosted Aegis MCP server, and the Themis software do with data. It is written from the code in this repository. It is not legal advice.
+Last reviewed: 2026-10-11. This page describes what the Aegis and Themis website, the hosted Aegis MCP server, and the Themis software do with data. It is written from the code in this repository. It is not legal advice. The terms for using the website and the hosted MCP server are at [Terms of Service](/terms).
 
 Contact for privacy questions: for non-sensitive questions, open an issue at <https://github.com/drupadsachania/aegis-skills/issues>. For anything sensitive, use GitHub private vulnerability reporting at <https://github.com/drupadsachania/aegis-skills/security/advisories/new>. A Kairos Foundation role mailbox for privacy questions will be added to this policy when one exists.
 

@@ -17,7 +17,7 @@ function SecurityPage ({ securityHtml, hasComplianceMapping }) {
           h('li', null, 'Every API is read-only and serves public skill content only.'),
           h('li', null, 'Strict security headers on every response: HSTS, a same-origin Content-Security-Policy, X-Frame-Options DENY, nosniff and a locked-down Permissions-Policy.'),
           h('li', null, 'Docs are rendered from repository markdown with all raw HTML escaped.')),
-        h('p', null, 'What runs where, what each path contacts and how to verify it yourself: ', h('a', { href: '/trust' }, 'Trust and data flow'), '.'),
+        h('p', null, 'What runs where, what each path contacts and how to verify it yourself: ', h('a', { href: '/trust' }, 'Trust and data flow'), '. Terms of use and privacy: ', h('a', { href: '/terms' }, 'terms of service'), ' and ', h('a', { href: '/docs/themis/privacy-policy' }, 'privacy policy'), '.'),
         h('h2', null, 'Compliance mapping'),
         hasComplianceMapping
           ? h('p', null, 'The Themis controls mapped to the OWASP Top 10 for LLM Applications, NIST CSF, ISO 27001, SOC 2 and CIS Controls. It is an informational mapping, not a certification: ',

@@ -22,6 +22,7 @@ Status as of 2026-10-12: not submitted, not listed. The route exists in the repo
 5. **Name check** for "Aegis" in the connector directory.
 6. **Anthropic egress range** `160.79.104.0/21` was confirmed on 2026-10-12 against the IP addresses page (listed there as the stable outbound range for MCP tool calls). Re-check it right before submitting; the code exempts it in `apps/web/lib/rate-limit.ts`.
 7. A paid Claude plan and a role that may submit.
+8. **Terms of service URL.** The page is written (`docs/legal/terms.md`, rendered at `/terms`). Once the site is deployed, the URL to give is <https://aegis-skills.vercel.app/terms>. Have the text reviewed by a lawyer first and fill in the governing-law line (a visible placeholder sentence today).
 
 ## Requirements and where Aegis stands
 

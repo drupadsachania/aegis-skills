@@ -24,6 +24,7 @@ The submit page did not cover version pinning; the checklist does (see "Pins" be
 5. **Vercel deploy** of the website, because the Aegis plugin's `.mcp.json` points at `https://aegis-skills.vercel.app/api/mcp` and the privacy policy link must resolve.
 6. **Name check.** Search the directory for "aegis" and "themis". A name used by another organization blocks; a look-alike is held for a reviewer.
 7. A paid Claude plan and a role that may submit, with your GitHub account connected on claude.ai (portal prerequisites).
+8. **Terms of service URL.** The page is written (`docs/legal/terms.md`, rendered at `/terms`). Once the site is deployed, the URL to give is <https://aegis-skills.vercel.app/terms>. Have the text reviewed by a lawyer first and fill in the governing-law line (a visible placeholder sentence today).
 
 ## What the repository already satisfies
 

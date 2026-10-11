@@ -20,6 +20,7 @@ The registry is described as in preview: "Breaking changes or data resets may oc
 3. **Deploy the site** before publishing Aegis, because its `server.json` lists the remote `https://aegis-skills.vercel.app/api/mcp`, and the page says a remote server must be publicly accessible at its URL.
 4. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** The registry name still uses the GitHub user namespace `io.github.drupadsachania/` (that is how GitHub authentication works), while the entry's repository and website describe Kairos Foundation. The repository is public per the owner (not verified here). The registry pages read do not ask for a support mailbox; the role-mailbox blocker in [README.md](README.md) does not block this listing.
 5. **Name check**: search the registry for existing `aegis` and `themis` servers.
+6. **Terms of service URL.** The registry does not ask for one in the pages read; if a listing form does, give <https://aegis-skills.vercel.app/terms> once the site is deployed (`docs/legal/terms.md`).
 
 ## Current metadata
 
