@@ -1160,8 +1160,9 @@ code {
 .page-head p { color: var(--cream-dim); font-size: 17px; max-width: 680px; line-height: 1.65; font-weight: 300; }
 
 @media (max-width: 860px) {
-  .docs-layout { grid-template-columns: 1fr; gap: 24px; padding-top: 64px; }
+  .docs-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 64px; }
   .docs-nav { position: static; }
+  .prose code, .prose a { overflow-wrap: anywhere; }
 }
 
 .install-later {

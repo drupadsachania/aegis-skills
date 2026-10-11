@@ -127,8 +127,8 @@ for (const [file, name] of PACKAGES) {
 
 const trace = process.argv.includes('--trace')
 if (trace) {
-  const WANT = ['packages/aegis/skills/mitre-attack/SKILL.md', 'packages/aegis/skills/mitre-attack/skill.json', 'packages/aegis/health.json']
-  for (const t of ['pages/index.js', 'pages/api/skills.js', 'pages/api/health.js', 'app/api/mcp/route.js']) {
+  const WANT = ['packages/aegis/skills/mitre-attack/SKILL.md', 'packages/aegis/skills/mitre-attack/skill.json', 'packages/aegis/package.json']
+  for (const t of ['pages/index.js', 'pages/api/skills.js', 'app/api/mcp/route.js']) {
     const f = at(`apps/web/.next/server/${t}.nft.json`)
     if (!fs.existsSync(f)) { problems.push(`missing trace file: apps/web/.next/server/${t}.nft.json`); continue }
     const files = JSON.parse(fs.readFileSync(f, 'utf8')).files.map(x => x.replace(/\\/g, '/'))
