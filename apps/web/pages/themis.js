@@ -5,8 +5,24 @@ const Layout = require('../components/Layout')
 const InstallTabs = require('../components/InstallTabs')
 const Screenshot = require('../components/Screenshot')
 const { Logo } = require('../components/Brand')
+const StatusPill = require('../components/StatusPill')
+
+const CodeBlock = require('../components/CodeBlock')
 
 const h = React.createElement
+
+// Verified from a checkout on 2026-10-12: the built CLI prints its version and the built plugin answers MCP initialize.
+const FROM_SOURCE_APP = [
+  'git clone https://github.com/drupadsachania/aegis-skills',
+  'cd aegis-skills',
+  'npm ci',
+  'npm run build -w @aegis-skills/themis',
+  'node packages/themis-app/bin/themis.js dashboard'
+].join('\n')
+const FROM_SOURCE_PLUGIN = [
+  'npm run build -w @aegis-skills/themis-core -w @aegis-skills/themis-gateway -w @aegis-skills/themis-plugin',
+  'node packages/themis-plugin/dist/index.js'
+].join('\n')
 
 const SHOTS = [
   { file: 'dashboard-run.png', alt: 'Themis dashboard Run page', caption: 'Run: sub-agents stream as each skill finishes.' },
@@ -54,10 +70,11 @@ function ThemisPage ({ paths, shots, stamp, stampLine }) {
       h('div', { className: 'page-head page-head-logo' },
         h('div', { className: 'page-head-text' },
           h('div', { className: 'eyebrow' }, 'SOC agent'),
+          h('p', { className: 'status-line' }, h(StatusPill, { status: 'in-development' })),
           h('h1', null, h('em', null, 'Themis')),
           h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
           h('p', { className: 'callout' },
-            'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
+            'Status: in development. Themis is local-first and still being matured. The plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository, and you can run both from a checkout today (see ', h('a', { href: '#install' }, 'Install'), '). They are not published to npm or AI directories yet; that will be announced here.')),
         // hero image: eager and high priority (above the fold)
         h(Logo, { brand: 'themis', kind: 'lockup', priority: true, className: 'hero-logo', reveal: true })),
 
@@ -100,13 +117,36 @@ function ThemisPage ({ paths, shots, stamp, stampLine }) {
         h('div', { className: 'screenshot-grid' },
           ...shots.map(s => h(Screenshot, { key: s.file, src: '/img/themis/' + s.file, alt: s.alt, caption: s.caption, exists: s.exists })))),
 
-      h(Sec, { id: 'install', num: '06', title: 'Install' },
-        h('h3', null, 'Plugin mode (no API key)'),
+      h(Sec, { id: 'where', num: '06', title: 'Where to get it' },
+        h('div', { className: 'table-wrap' },
+          h('table', { className: 'platforms-table where-table' },
+            h('thead', null, h('tr', null, ...['', 'Status', 'Where'].map((c, i) => h('th', { key: i }, c)))),
+            h('tbody', null,
+              h('tr', null,
+                h('td', null, 'Aegis'),
+                h('td', null, h(StatusPill, { status: 'first-release' })),
+                h('td', null, 'The first release: the npm package, with the plugin directories coming right after launch. The website, the downloads and the hosted MCP work today.')),
+              h('tr', null,
+                h('td', null, 'Themis'),
+                h('td', null, h(StatusPill, { status: 'in-development' })),
+                h('td', null, 'Local-first today: run it from the repository. Marketplace and directory distribution is planned for a later milestone, once its tool contract is stable and a supported remote endpoint exists.'))))),
+        h('p', { className: 'muted', style: { marginTop: '16px' } }, 'These are plans, not promises, and they carry no dates. Anything that changes will be announced on this site.')),
+
+      h(Sec, { id: 'install', num: '07', title: 'Install' },
+        h('div', { className: 'install-indev' },
+          h(StatusPill, { status: 'in-development' }),
+          h('p', null, 'The npm and marketplace commands below are the planned installs and do not work yet. Run Themis from the repository today.')),
+        h('h3', null, 'Run from the repository'),
+        h('p', null, 'Needs Node.js 24 or later and a checkout of ', h('a', { href: 'https://github.com/drupadsachania/aegis-skills', target: '_blank', rel: 'noopener noreferrer' }, 'the repository'), '. Standalone dashboard:'),
+        h(CodeBlock, { label: 'shell', content: FROM_SOURCE_APP }),
+        h('p', null, 'Plugin mode: build the plugin, then register the built server with your assistant (the commands are in ', h('a', { href: '/docs/themis/mode-1-plugin' }, 'the plugin guide'), ').'),
+        h(CodeBlock, { label: 'shell', content: FROM_SOURCE_PLUGIN }),
+        h('h3', { style: { marginTop: '40px' } }, 'Plugin mode, planned install (no API key)'),
         h(InstallTabs, { tabs: platformsOf('themis-plugin') }),
-        h('h3', { style: { marginTop: '40px' } }, 'Standalone dashboard (your key or a local model)'),
+        h('h3', { style: { marginTop: '40px' } }, 'Standalone dashboard, planned install (your key or a local model)'),
         h(InstallTabs, { tabs: platformsOf('themis-app') })),
 
-      h(Sec, { id: 'versions', num: '07', title: 'Versions' },
+      h(Sec, { id: 'versions', num: '08', title: 'Versions' },
         h('p', null,
           'Themis reads skills from any installed Aegis with the same osk major version. Monthly skill updates and new skills are picked up automatically; an osk major bump needs a Themis release. The plugin uses your installed Aegis; the standalone app bundles its own. ',
           h('a', { href: '/docs/themis/versions' }, 'Version compatibility →')),

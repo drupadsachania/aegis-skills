@@ -51,15 +51,33 @@ test('no removed product appears in any command or note', () => {
   expect(allCode).toContain(C.MCP_URL)
 })
 
-test('npm, marketplace and release based platforms are flagged as not yet available', () => {
-  const flagged = C.PATHS.flatMap(p => p.platforms.filter(pl => pl.availability === C.LATER).map(pl => pl.id))
-  expect(flagged.length).toBeGreaterThan(0)
+const THEMIS_PATHS = ['themis-plugin', 'themis-app']
+
+test('availability: Aegis items are after-first-release or available; every Themis item is in-development', () => {
+  expect(C.LATER).toBe('after-first-release')
+  expect(C.IN_DEV).toBe('in-development')
   for (const p of C.PATHS) {
     for (const pl of p.platforms) {
-      const code = pl.steps.map(s => s.code || '').join(' ')
-      if (/npx |npm install|\/plugin |gemini extensions/.test(code)) expect(pl.availability).toBe(C.LATER)
+      const label = `${p.id}/${pl.id}`
+      if (THEMIS_PATHS.includes(p.id)) {
+        // owner decision 2026-10-12: Themis is deferred on npm and the directories
+        expect(`${label}: ${pl.availability}`).toBe(`${label}: ${C.IN_DEV}`)
+      } else {
+        expect([undefined, C.LATER]).toContain(pl.availability)
+      }
     }
   }
+  expect(C.PATHS.filter(p => THEMIS_PATHS.includes(p.id)).every(p => p.status === C.IN_DEV)).toBe(true)
+  expect(C.PATHS.filter(p => !THEMIS_PATHS.includes(p.id)).every(p => !p.status)).toBe(true)
+})
+
+test('npm, marketplace and release based Aegis platforms are flagged as not yet available', () => {
+  const flagged = C.PATHS.flatMap(p => p.platforms.filter(pl => pl.availability === C.LATER).map(pl => pl.id))
+  expect(flagged.length).toBeGreaterThan(0)
+  const aegisNeedsRelease = C.PATHS.filter(p => !p.id.startsWith('themis')).flatMap(p => p.platforms)
+    .filter(pl => /npx |npm install|\/plugin |gemini extensions/.test(pl.steps.map(s => s.code || '').join(' ')))
+  expect(aegisNeedsRelease.length).toBeGreaterThan(0)
+  for (const pl of aegisNeedsRelease) expect(pl.availability).toBe(C.LATER)
   // zero-install and the hosted MCP work from the website alone
   for (const id of ['zero-install', 'hosted-mcp']) {
     expect(C.PATHS.find(p => p.id === id).platforms.every(pl => !pl.availability)).toBe(true)

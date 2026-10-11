@@ -2,7 +2,7 @@
 
 This page says, path by path, what runs where, which outside services each path contacts, what is stored and what leaves your machine. Every claim names the file that backs it, and the checklist near the end shows how to confirm it yourself rather than take our word for it.
 
-Status: nothing is published to npm or to a plugin directory yet. Paths that need a release are marked "after the first release". The website, the hosted MCP and the downloads work today.
+Status: nothing is published to npm or to a plugin directory yet. Aegis publishes first, so its paths are marked "after the first release". Themis is in development and local-first; its paths are marked "in development" and it is not published to npm or AI directories yet. The website, the hosted MCP and the downloads work today.
 
 ## At a glance
 
@@ -11,8 +11,8 @@ Status: nothing is published to npm or to a plugin directory yet. Paths that nee
 | Zero install (copy a prompt, upload a zip) | Nothing of ours; your chat AI | The AI service you paste into | Nothing | Whatever you paste into your chat AI |
 | Hosted MCP | A read-only function on our Vercel deployment | None from our side; your AI client calls our endpoint | Nothing | The tool name and arguments your AI client sends us |
 | Skill pack through the CLI (after the first release) | Your machine | npm, once, to download the package | Skill files and an install ledger | Nothing |
-| Themis plugin (after the first release) | Your machine, inside your AI client | Your AI client's own provider; only the MCP servers you configured | `~/.themis/themis.db` | What your AI client sends to its provider; arguments to your MCP servers |
-| Themis standalone (after the first release) | Your machine, dashboard on 127.0.0.1 | The model provider you chose, or a local model; only the MCP servers you configured | `~/.themis/` | Task text and context to your model provider; arguments to your MCP servers |
+| Themis plugin (in development) | Your machine, inside your AI client | Your AI client's own provider; only the MCP servers you configured | `~/.themis/themis.db` | What your AI client sends to its provider; arguments to your MCP servers |
+| Themis standalone (in development) | Your machine, dashboard on 127.0.0.1 | The model provider you chose, or a local model; only the MCP servers you configured | `~/.themis/` | Task text and context to your model provider; arguments to your MCP servers |
 | This website | Your browser | Our own origin and Adobe Fonts (see Web fonts) | Your theme choice | Page requests |
 
 ## No hosted inference

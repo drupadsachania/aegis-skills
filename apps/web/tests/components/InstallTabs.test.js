@@ -42,3 +42,14 @@ test('renders one copy button per code block and nothing for empty tabs', () => 
   expect(render(React.createElement(InstallTabs, { tabs: [] })).container.innerHTML).toBe('')
   expect(container.textContent).not.toMatch(/ChatGPT Action/)
 })
+
+test('in-development tabs show the pill and the honest Themis note, not the after-first-release note', async () => {
+  const tabs = [{ ...TABS[0], availability: 'in-development' }, TABS[1]]
+  const { container } = render(React.createElement(InstallTabs, { tabs }))
+  expect(screen.getByText('In development')).toBeInTheDocument()
+  expect(container.querySelector('.install-indev p').textContent).toBe('Themis is being matured locally and is not published yet. It will be announced here and is not available through AI directories yet. You can run it today from the repository — see the Themis docs.')
+  expect(screen.getByRole('link', { name: 'Themis docs' })).toHaveAttribute('href', '/docs/themis')
+  expect(screen.queryByText(/Available after the first release/)).not.toBeInTheDocument()
+  await userEvent.setup().click(screen.getByRole('tab', { name: 'Codex' }))
+  expect(screen.queryByText('In development')).not.toBeInTheDocument()
+})

@@ -12,7 +12,7 @@ Two products, one repository:
 | **Calls a model?** | Never. It is markdown and JSON | Uses your assistant (plugin) or your own key or a local model (standalone) |
 | **Package** | `aegis-skills` | `@aegis-skills/themis-plugin` and `@aegis-skills/themis` |
 
-Status: nothing is published to npm or the plugin marketplace yet. The commands below that use `npx` or `/plugin` work after the first release. The [website](https://aegis-skills.vercel.app) works today.
+Status: nothing is published to npm or the plugin marketplace yet. The commands below that use `npx` or `/plugin` work after the first release. The [website](https://aegis-skills.vercel.app) works today. Aegis publishes first; Themis is in development, local-first and not published yet (run it from a checkout, see [docs/themis](docs/themis/index.md)).
 
 ---
 

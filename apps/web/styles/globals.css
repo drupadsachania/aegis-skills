@@ -1091,6 +1091,35 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   margin: 0 0 14px;
 }
 
+/* Availability pill (components/StatusPill.js): text label plus a dot, never colour alone. Tokens only. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--k-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 3px 12px;
+  border-radius: var(--k-radius-pill);
+  border: 1px solid currentColor;
+  vertical-align: middle;
+}
+.status-pill-dot { width: 8px; height: 8px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; flex-shrink: 0; }
+.status-pill-themis { background: var(--k-color-themis-soft); color: var(--k-color-themis); }
+.status-pill-aegis { background: var(--k-color-aegis-soft); color: var(--k-color-aegis-ink); }
+.status-pill-aegis .status-pill-dot { background: currentColor; }
+.pr-main .pr-status { margin-top: 12px; }
+.path-section h2 .h-status { margin-left: 14px; transform: translateY(-0.2em); }
+.twin-tag .status-pill { margin-left: 6px; }
+.install-indev { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 16px; margin: 0 0 16px; }
+.install-indev p { flex: 1 1 280px; margin: 0; font-size: 15px; line-height: 1.6; color: var(--k-color-text-muted); max-width: 70ch; }
+.page-head .status-line { margin: 0 0 14px; }
+.where-table td:first-child { white-space: nowrap; }
+
 .copy-btn {
   display: inline-flex;
   align-items: center;
@@ -1517,6 +1546,7 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
    Home: hero hint, pack relationship line, worked example, provenance
 ───────────────────────────────────────────── */
 .hero-sub { text-align: center; margin: 18px 0 0; font-size: 15px; color: var(--k-color-text-muted); }
+.twin-card p.twin-status { flex: 0 0 auto; margin-top: 12px; font-size: 15px; line-height: 1.55; color: var(--k-color-text-subtle); }
 .twin-card p.twin-rel { flex: 0 0 auto; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--k-color-line); color: var(--k-color-text); font-weight: 500; font-size: 15px; line-height: 1.55; }
 
 .flow { margin-top: clamp(28px, 4vw, 48px); background: var(--k-color-surface); border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: clamp(22px, 3vw, 40px); }
@@ -1604,7 +1634,7 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
 ───────────────────────────────────────────── */
 @media (max-width: 760px), (pointer: coarse) {
   .pr-for, .code-hd-label, .copy-label, .pill-group-label, .family-n, .footer-col h2, .footer-legal, .tag-pill, .version-pill,
-  .docs-nav h4, .prose th, .platforms-table th, .path-for, .path-section .path-for, .install-later, .copy-btn, .sr-family, .principle .step-num, .ds-num, .lifecycle-num, .lifecycle-tokens { font-size: 13px; }
+  .docs-nav h4, .prose th, .platforms-table th, .path-for, .path-section .path-for, .install-later, .status-pill, .copy-btn, .sr-family, .principle .step-num, .ds-num, .lifecycle-num, .lifecycle-tokens { font-size: 13px; }
   .nav-brand { min-height: 44px; }
   .icon-btn { width: 44px; height: 44px; }
   .twin-link, .twin-card .twin-link, .install-tab-btn, .copy-btn, .pill-toggle, .family-btn { min-height: 44px; align-items: center; }

@@ -2,7 +2,7 @@
 
 In plugin mode your own assistant is the model. Themis runs as a local MCP server (`themis-mcp`) that holds the workflow, enforces the rules and keeps the audit log, while your assistant does the reasoning steps. No API key is involved.
 
-Status: the plugin is version 1.1.0 and is built and tested in the repository. The installs below work after the first release.
+Status: in development. The plugin is version 1.1.0 and is built and tested in the repository, and Themis is still being matured locally. It is not published to npm or to any directory yet, so the installs below do not work yet. Run it from a checkout today (next section). It will be announced on the website when it is published.
 
 ## Requirements
 
@@ -10,7 +10,26 @@ Status: the plugin is version 1.1.0 and is built and tested in the repository. T
 - Node.js 24 or later.
 - No API key.
 
-## Install
+## Run from the repository
+
+Verified on 2026-10-12: the built server answers the MCP `initialize` request over stdio. You need Node.js 24 or later and a checkout of the repository.
+
+```bash
+git clone https://github.com/drupadsachania/aegis-skills
+cd aegis-skills
+npm ci
+npm run build -w @aegis-skills/themis-core -w @aegis-skills/themis-gateway -w @aegis-skills/themis-plugin
+```
+
+Then register the built server with your assistant, with the absolute path to your checkout. For Claude Code:
+
+```bash
+claude mcp add themis -- node /path/to/aegis-skills/packages/themis-plugin/dist/index.js
+```
+
+For Codex or Gemini CLI use the same `node` command and path in place of `npx` and its arguments in the configs below. Add the `aegis` server as well, from `packages/aegis` in the same checkout or from the hosted MCP.
+
+## Install (planned, once published)
 
 Claude Code, inside the app:
 

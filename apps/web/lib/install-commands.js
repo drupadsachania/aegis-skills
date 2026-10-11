@@ -9,9 +9,12 @@ const MCP_URL = `${SITE_URL}/api/mcp`
 const MARKETPLACE = 'aegis-skills' // PHASE-1 BINDING
 const PACKAGES = { aegis: 'aegis-skills', themisPlugin: '@aegis-skills/themis-plugin', themisApp: '@aegis-skills/themis' }
 const AEGIS_PLATFORM_IDS = ['claude', 'codex', 'gemini', 'cursor', 'vscode', 'antigravity'] // PHASE-1 BINDING
-// Nothing is published yet (Phase 7 publishes). Anything that needs the npm packages, the GitHub
-// marketplace or a GitHub release is flagged with `availability: LATER` so pages can say so.
+// Nothing is published yet (Phase 7 publishes). Aegis installs that need the npm package, the GitHub
+// marketplace or a GitHub release are flagged `availability: LATER` (they open with the first release).
+// Owner decision 2026-10-12: Aegis publishes first; Themis is still being matured locally and is deferred
+// on npm and the directories, so every Themis install is flagged `availability: IN_DEV` instead.
 const LATER = 'after-first-release'
+const IN_DEV = 'in-development'
 const GEMINI_EXTENSION_INSTALL = `gemini extensions install ${REPO_URL}` // PHASE-1 BINDING (null if not offered)
 
 const aegisInstall = id => `npx ${PACKAGES.aegis} install --platform ${id}`
@@ -75,29 +78,29 @@ const PATHS = [
     ]
   },
   {
-    id: 'themis-plugin', title: 'Themis on your AI', audience: 'Claude Code, Codex, Gemini CLI',
+    id: 'themis-plugin', title: 'Themis on your AI', status: IN_DEV, audience: 'Claude Code, Codex, Gemini CLI',
     how: 'Install the Themis plugin. Your assistant is the model, so no API key is needed.', docs: '/docs/themis/mode-1-plugin',
     platforms: [
-      { id: 'claude', label: 'Claude Code', availability: LATER, steps: [
+      { id: 'claude', label: 'Claude Code', availability: IN_DEV, steps: [
         { label: 'Claude Code', code: `${marketplaceAdd}\n/plugin install themis@${MARKETPLACE}` }] },
-      { id: 'codex', label: 'Codex', availability: LATER, steps: [ // PHASE-3 BINDING
+      { id: 'codex', label: 'Codex', availability: IN_DEV, steps: [ // PHASE-3 BINDING
         { text: 'Add to ~/.codex/config.toml:' },
         { label: 'config.toml', code: '[mcp_servers.aegis]\ncommand = "npx"\nargs = ["-y", "aegis-skills", "mcp"]\n\n[mcp_servers.themis]\ncommand = "npx"\nargs = ["-y", "@aegis-skills/themis-plugin"]' }] },
-      { id: 'gemini', label: 'Gemini CLI', availability: LATER, steps: [ // PHASE-3 BINDING
+      { id: 'gemini', label: 'Gemini CLI', availability: IN_DEV, steps: [ // PHASE-3 BINDING
         { text: 'Add to ~/.gemini/settings.json:' },
         { label: 'settings.json', code: json({ mcpServers: { aegis: stdio([PACKAGES.aegis, 'mcp']), themis: stdio([PACKAGES.themisPlugin]) } }) }] }
     ]
   },
   {
-    id: 'themis-app', title: 'Themis standalone', audience: 'A local SOC dashboard',
+    id: 'themis-app', title: 'Themis standalone', status: IN_DEV, audience: 'A local SOC dashboard',
     how: 'Run Themis with its own web UI on 127.0.0.1, using your own key or a local model.', docs: '/docs/themis/mode-2-app',
     platforms: [
-      { id: 'npx', label: 'Run with npx', availability: LATER, steps: [
+      { id: 'npx', label: 'Run with npx', availability: IN_DEV, steps: [
         { text: 'Needs Node.js 24 or later. No Docker, no build tools.' },
         sh(`npx ${PACKAGES.themisApp} dashboard`)] },
-      { id: 'global', label: 'Global install', availability: LATER, steps: [sh(`npm install -g ${PACKAGES.themisApp}\nthemis dashboard`)] }
+      { id: 'global', label: 'Global install', availability: IN_DEV, steps: [sh(`npm install -g ${PACKAGES.themisApp}\nthemis dashboard`)] }
     ]
   }
 ]
 
-module.exports = { LATER, SITE_URL, REPO, REPO_URL, MCP_URL, MARKETPLACE, PACKAGES, AEGIS_PLATFORM_IDS, GEMINI_EXTENSION_INSTALL, PATHS }
+module.exports = { LATER, IN_DEV, SITE_URL, REPO, REPO_URL, MCP_URL, MARKETPLACE, PACKAGES, AEGIS_PLATFORM_IDS, GEMINI_EXTENSION_INSTALL, PATHS }

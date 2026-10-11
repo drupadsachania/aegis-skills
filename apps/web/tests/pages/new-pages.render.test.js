@@ -17,7 +17,7 @@ const PAGES = {
   '/security': '../../pages/security',
   '/docs': '../../pages/docs/index'
 }
-const STATIC_ROUTES = ['/', '/skills', '/paths', '/themis', '/mcp', '/docs', '/security', '/license', '/trust', '/quickstart']
+const STATIC_ROUTES = ['/', '/skills', '/paths', '/themis', '/mcp', '/docs', '/security', '/license', '/trust', '/quickstart', '/terms']
 
 const html = {}
 beforeAll(async () => {

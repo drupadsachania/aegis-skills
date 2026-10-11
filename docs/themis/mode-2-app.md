@@ -4,11 +4,25 @@ Themis standalone is the `@aegis-skills/themis` package: a local web dashboard p
 
 This guide covers install, every dashboard page, local models, tool-calling behaviour and troubleshooting. The package README has the command reference and the security model.
 
-Status: the app is version 0.1.0 and is built and tested in the repository. The `npx` commands below work after the first release.
+Status: in development. The app is version 0.1.0 and is built and tested in the repository, and Themis is still being matured locally. It is not published to npm yet, so the `npx` commands below do not work yet. Run it from a checkout today (first install option below); the release will be announced on the website.
 
 The dashboard listens on `127.0.0.1` only, on port 9120 by default. It bundles its own copy of the Aegis skills, so the Skills page shows the bundled version and how fresh each skill's intel is. Everything the app stores lives in `~/.themis/`; see [Configuration](./configuration.md).
 
-## Install on a clean machine
+## Run from the repository
+
+Verified on 2026-10-12: the built CLI prints `themis --version` and the dashboard starts and serves from a checkout. You need Node.js 24 or later.
+
+```bash
+git clone https://github.com/drupadsachania/aegis-skills
+cd aegis-skills
+npm ci
+npm run build -w @aegis-skills/themis
+node packages/themis-app/bin/themis.js dashboard
+```
+
+The dashboard prints a `Dashboard:` link with a one-launch session token and opens your browser (add `--no-open` to skip that). See the troubleshooting list below if the UI is reported as not built.
+
+## Install on a clean machine (planned, once published)
 
 You need only Node.js 24 or newer, on Windows, macOS or Linux. No Docker, compiler or build tools are required.
 

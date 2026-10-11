@@ -5,6 +5,7 @@ const Layout = require('../components/Layout')
 const PathMatrix = require('../components/PathMatrix')
 const { Logo } = require('../components/Brand')
 const AegisThemisFlow = require('../components/AegisThemisFlow')
+const StatusPill = require('../components/StatusPill')
 
 const h = React.createElement
 
@@ -113,12 +114,13 @@ function HomePage ({ skillCount, familyCount, paths, stamp, stampLine }) {
             h('a', { href: '/skills', className: 'twin-link' }, 'Browse skills', h('span', { 'aria-hidden': 'true' }, '→'))),
           h('div', { className: 'twin-card themis', 'data-reveal': '' },
             MARK_THEMIS,
-            h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Themis'),
+            h('div', { className: 'twin-tag' }, h('span', { className: 'marker' }), 'Themis', h(StatusPill, { status: 'in-development' })),
             h('h3', null, 'Themis'),
             h('div', { className: 'role' }, 'SOC agent · plugin or standalone'),
             h('p', null,
               'Plans a security task, fans it out to specialist skills, checks every output with guardrails, and writes a report stamped with the exact Themis and Aegis versions. Tools that write or execute only run after a human approves them.'),
             h('p', { className: 'twin-rel' }, 'Themis governs how an agent invokes an Aegis skill and what it can do with the result.'),
+            h('p', { className: 'twin-status' }, 'Local-first and still being matured. It runs from the repository today; it is not on npm or in AI directories yet.'),
             h('a', { href: '/themis', className: 'twin-link' }, 'How Themis works', h('span', { 'aria-hidden': 'true' }, '→')))),
         h(AegisThemisFlow))),
 
@@ -131,7 +133,7 @@ function HomePage ({ skillCount, familyCount, paths, stamp, stampLine }) {
         'Every path uses the same skills. Start with zero install and move up when you need more. ',
         h('a', { href: '/paths' }, 'All install commands →')),
       h('p', { className: 'path-note' },
-        'Nothing is published to npm or a plugin marketplace yet: install commands that need them are marked "after the first release". Zero install and the hosted MCP work today.')),
+        'Aegis publishes first: its npm and plugin installs are marked "after the first release", and zero install and the hosted MCP work today. Themis is in development and local-first; it is not published to npm or AI directories yet, and its rows are marked.')),
 
     // 03 Provenance and approval
     h(ProvenanceSection, { stamp, stampLine }),

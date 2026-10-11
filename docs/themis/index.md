@@ -6,7 +6,7 @@ Themis is a security-operations agent built on [Aegis](../aegis/index.md). You g
 
 Everything that touches an outside tool goes through a governed gateway: reads are budgeted and audited, and anything that writes or executes waits for a human.
 
-Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release.
+Status: in development. Themis is local-first and still being matured. The plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository and can be run from a checkout today (see [Themis standalone](./mode-2-app.md) and [Themis on your AI](./mode-1-plugin.md)). They are not published to npm or to AI directories yet. Aegis is released first; Themis distribution through directories is planned for a later milestone, once its tool contract is stable and a supported remote endpoint exists. These are plans, not promises, and carry no dates.
 
 ## Two modes
 

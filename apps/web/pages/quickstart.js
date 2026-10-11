@@ -4,6 +4,7 @@ const React = require('react')
 const Layout = require('../components/Layout')
 const CodeBlock = require('../components/CodeBlock')
 const InstallTabs = require('../components/InstallTabs')
+const StatusPill = require('../components/StatusPill')
 
 const h = React.createElement
 
@@ -56,7 +57,7 @@ function QuickStartPage ({ skillCount, mcp, scope, promptKb, hostedMcpTabs }) {
       h('section', { className: 'doc-section' },
         h('div', { className: 'doc-section-hd', 'data-reveal': '' }, h('span', { className: 'ds-num' }, '→'), h('h2', null, 'Next')),
         h('ul', { className: 'bullets' },
-          h('li', null, h('a', { href: '/themis' }, 'Themis'), ': run a governed agent that picks skills for you and asks before it writes or executes.'),
+          h('li', null, h('a', { href: '/themis' }, 'Themis'), ' ', h(StatusPill, { status: 'in-development' }), ': a governed agent that picks skills for you and asks before it writes or executes. It is being matured locally and runs from the repository; it is not published yet.'),
           h('li', null, h('a', { href: '/paths' }, 'Choose your path'), ': every install route, from the skill pack in your assistant to the local dashboard.'),
           h('li', null, h('a', { href: '/skills' }, `Browse all ${skillCount} skills`), '.'),
           h('li', null, h('a', { href: '/trust' }, 'Trust and data flow'), ': what runs where, and how to check it.'))))

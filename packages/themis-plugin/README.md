@@ -2,7 +2,7 @@
 
 Themis on your own AI. This package is an MCP server (`themis-mcp`) that runs the Themis security workflow with your assistant doing the reasoning, so no model API key is needed. Themis holds the workflow, enforces the governance rules and keeps a local audit log. It works with Claude Code, Codex and Gemini CLI.
 
-Status: version 1.1.0, built and tested in the repository; not published yet. The install commands below work after the first release.
+Status: in development. Version 1.1.0, built and tested in the repository and still being matured locally; not published yet, and not available through AI directories yet. The install commands below are the planned ones. To run it today, build it from a checkout (see `docs/themis/mode-1-plugin.md`).
 
 ## Install
 

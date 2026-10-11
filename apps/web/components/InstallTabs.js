@@ -3,6 +3,7 @@
 const React = require('react')
 const { useState } = React
 const CodeBlock = require('./CodeBlock')
+const StatusPill = require('./StatusPill')
 
 const h = React.createElement
 
@@ -37,9 +38,13 @@ function InstallTabs ({ tabs }) {
     h(
       'div',
       { className: 'install-tab-content', role: 'tabpanel' },
-      current.availability
-        ? h('p', { className: 'install-later' }, 'Available after the first release. Nothing is published yet, so this command will not work until then.')
-        : null,
+      current.availability === 'in-development'
+        ? h('div', { className: 'install-indev' },
+          h(StatusPill, { status: 'in-development' }),
+          h('p', null, 'Themis is being matured locally and is not published yet. It will be announced here and is not available through AI directories yet. You can run it today from the repository — see the ', h('a', { href: '/docs/themis' }, 'Themis docs'), '.'))
+        : current.availability
+          ? h('p', { className: 'install-later' }, 'Available after the first release. Nothing is published yet, so this command will not work until then.')
+          : null,
       ...current.steps.map((s, i) => h(
         React.Fragment,
         { key: `${current.id}-${i}` },
