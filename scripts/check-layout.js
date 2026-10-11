@@ -45,6 +45,7 @@ const MUST_EXIST = [
   'packages/themis-app/tsconfig.build.json', 'packages/themis-app/jest.config.js', 'packages/themis-app/README.md', 'docs/themis/mode-2-app.md',
   'docs/aegis/index.md', 'docs/aegis/install.md', 'docs/aegis/single-file-prompts.md', 'docs/aegis/mcp.md', 'docs/aegis/cli.md', 'docs/aegis/skill-format.md', 'docs/aegis/intel.md',
   'docs/themis/index.md', 'docs/themis/mode-1-plugin.md', 'docs/themis/governance.md', 'docs/themis/workflow.md', 'docs/themis/configuration.md', 'docs/themis/versions.md', 'docs/themis/compliance-mapping.md',
+  'docs/web/index.md', 'docs/web/hosted-mcp.md', 'docs/web/downloads.md', 'docs/web/api.md', 'docs/web/development.md', 'packages/themis-plugin/README.md',
   'packages/themis-app/src/index.ts', 'packages/themis-app/src/app.ts', 'packages/themis-app/src/cli/index.ts',
   'packages/themis-app/src/graph/build.ts', 'packages/themis-app/src/runner/runner.ts', 'packages/themis-app/src/store/checkpointer.ts',
   'packages/themis-app/src/server/http.ts', 'packages/themis-app/src/server/security.ts', 'packages/themis-app/src/server/routes/approvals.ts',
@@ -73,7 +74,9 @@ const MUST_NOT_EXIST = [
   // Phase 4: Themis left apps/web entirely
   'apps/web/lib/themis', 'apps/web/__tests__/themis', 'apps/web/app/api/themis', 'apps/web/app/api/audit', 'apps/web/app/api/exposure', 'apps/web/supabase',
   // Phase 5: replaced by pages/docs/ (hub rendered from repository markdown)
-  'apps/web/pages/docs.js'
+  'apps/web/pages/docs.js',
+  // Phase 5: retired; the docs hub supersedes it
+  'docs/TECHNICAL.md'
 ]
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
