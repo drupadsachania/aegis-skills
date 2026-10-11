@@ -20,16 +20,67 @@ Naming: the organisation is **Kairos Foundation** (https://kairos-foundation.org
 ## 2. Brand architecture
 
 ```
-Kairos Foundation (core: neutrals, type, shape, motion)
+Kairos Foundation  (https://kairos-foundation.org/ ; GitHub org kairos-dev-kairos-ecl)
+ |- Argus   sibling Kairos product (name only; nothing else is documented here)
  |- Aegis   gold   #E8B93C fill / #7A5600 ink     open defensive-security skill pack, site, docs, CLI
- |- Themis  blue   #2F4FD8                         governed SOC agent: plugin, standalone dashboard
- `- (future products: one new accent family each)
+ `- Themis  blue   #2F4FD8                         governed SOC agent: plugin, standalone dashboard
 ```
 
-- **Foundation tokens** (`--k-color-foundation*`) are a clearly marked PLACEHOLDER: neutral ink `#3A312B` on cream `#FEF9ED` (dark: cream `#F0E8D4` on `#020E1C`). No logo is defined here; do not invent one. The Foundation wordmark, when it exists, is set in Newsreader, ink colour, with product names in the product accent only as a dot/underline, not as a recolouring of the wordmark.
+**Greek theme.** The Kairos products are named after figures from Greek myth: Argus (the all-seeing watchman), Aegis (Athena's shield, here with the Gorgon at its centre) and Themis (the scales of order and law). A new product should keep the theme. The Foundation is "Kairos Foundation" (never "Kairo"); sites and packages say "A Kairos Foundation project".
+
+- **Foundation tokens** (`--k-color-foundation*`) are a clearly marked PLACEHOLDER: neutral ink `#3A312B` on cream `#FEF9ED` (dark: cream `#F0E8D4` on `#020E1C`). The Foundation has no logo in this repository; do not invent one. When it exists, set the wordmark in Newsreader, ink colour, with product names in the product accent only as a dot/underline.
 - **Product accents**: a product owns exactly five tokens: `X`, `X-hover`, `X-ink` (text-safe variant), `X-soft` (tint background), `on-X` (label colour on the fill). Aegis and Themis follow this; a new product must pass the same contrast pairs in `tokens.json` before merge.
 - **Co-branding rule**: a surface has one dominant accent. The site shows Aegis gold as primary and Themis blue as link/secondary because blue is also the link colour; the Themis app uses blue as primary and gold only for Aegis-origin items (skills) and the "needs human" amber of warnings is NOT gold (warning is `#8A5A00` on `#FBEBC8`, see Colour).
-- **Mark** in current use: `BrandMark` in `apps/web/components/Layout.js` (diamond + disc). Treat as the Aegis+Themis pair mark; retire or replace once the Foundation mark exists.
+- **Product logos** (owner artwork, 2026-10): the Aegis shield with the Gorgon head and the Themis scales. They replace the earlier placeholder diamond-and-disc mark. The asset inventory and how they were produced is in `docs/design/LOGOS.md`.
+
+### 2.1 Logo usage rules
+
+**Which asset where**
+
+| Place | Asset | Size | Notes |
+|---|---|---|---|
+| Header, mobile menu | `aegis-icon.svg` + `themis-icon.svg`, with the "Aegis · Themis" text | 26 px | Decorative `alt=""`; the link has `aria-label`. |
+| Footer, "A Kairos Foundation project" | the same two icons | 30 px | |
+| Home pack cards | `aegis-mark-320.webp` / `themis-mark-320.webp` (srcset to 640) | 168 px (132 px on phones) | Lazy. Alt "Aegis mark" / "Themis mark". |
+| `/themis` hero | `themis-lockup-640.webp` | 200-280 px (120 px on phones) | Eager, `fetchpriority="high"`. |
+| `/skills`, skill pages, docs hub | small icon(s) in the eyebrow or breadcrumb | 20-22 px | A brand cue, not decoration to fill space. |
+| Dashboard sidebar and top bar | Themis icon | 28 px | Imported as a hashed asset. |
+| Dashboard Skills page | Aegis icon | 20 px | Cue that these are Aegis skills. |
+| Browser tab | `favicon.svg` (Aegis shield on cream plate), `favicon.ico` fallback; dashboard: Themis icon on a cream plate | 16-48 px | |
+| Link previews | `og.png` 1200x630 (both lockups, cream) | | |
+| Print, large format | none yet | | Needs a designer's vectorisation first (LOGOS.md). |
+
+**Rules**
+
+1. **Light plate rule.** The artwork is drawn for light backgrounds; its brown ink (`#5D524B`) disappears on navy (2.56:1). On light surfaces show logos bare. In the dark theme every raster logo sits on a rounded cream plate (`--k-color-plate`, `#FEF9ED`, radius `lg`, 10 px padding) and every small icon on a cream chip (radius 8 px, 2 px padding). Padding is the same in both themes, so toggling the theme never shifts layout. Never place a logo bare on navy, on photos, or on a gradient.
+2. **Clear space.** Keep at least 25 % of the logo's width free on every side (a mark 168 px wide needs 42 px). Plates and chips count as part of the logo.
+3. **Minimum sizes.** Raster mark or lockup: 96 px wide. Simplified icon: 16 px (the favicon uses its own simplified shield). Below that, use the favicon shield or the product name in text.
+4. **Pair order.** Aegis first, Themis second; Aegis on the left or above.
+5. **One of each.** Do not repeat the same logo twice in one view; the header icons, a card mark and the footer icons are different roles, but a page should not add a fourth.
+6. **Motion.** Logos get the standard subtle reveal (or none). No continuous animation, parallax, spin or glow, and nothing that moves under `prefers-reduced-motion`.
+7. **Sizes are explicit.** Every `<img>` has `width`, `height` and `alt` (empty `alt` only for icons that sit beside the product name). Below the fold: `loading="lazy"`.
+
+**Do not**
+
+- Recolour, tint, outline or put effects (shadow, glow, gradient overlay) on the artwork.
+- Stretch, rotate or crop it; keep the aspect ratio.
+- Use gold `#D4AF37` or logo blue `#0080FF` for text, links or thin UI strokes (2.0:1 and 3.6:1 on cream). They are artwork colours only.
+- Redraw the logos or substitute the simplified icons for the full artwork at large sizes.
+- Re-add the retired diamond-and-disc mark.
+- Combine either logo with the Foundation name in a single lockup; the Foundation has no logo yet. Credit it in text.
+
+### 2.2 Logo colours versus UI tokens
+
+The logo colours are exposed as `--k-brand-gold|blue|ink|paper` (`brand.*` in `design/tokens.json`) for fills and artwork. UI accents are different tokens on purpose: contrast. `design/tokens.test.js` records the numbers and fails if a stylesheet uses a `--k-brand-*` colour for text, borders or outlines.
+
+| Logo colour | Hex | Contrast on cream plate | Rule | UI token used for the same job |
+|---|---|---|---|---|
+| Gold | `#D4AF37` | 2.00 : 1 (1.98 on logo paper) | fill / artwork only | `aegis` `#E8B93C` for fills (with `on-aegis` text, 6.0 : 1), `aegis-ink` `#7A5600` for gold-toned text (6.3 : 1) |
+| Blue | `#0080FF` | 3.61 : 1 (3.58 on logo paper) | fill / artwork only; below 4.5 : 1 for text | `themis` `#2F4FD8` for text, links, fills (6.2 : 1) |
+| Ink | `#5D524B` | 7.21 : 1 (7.13 on logo paper) | text-safe on light; equals the `text-muted` token | `text-muted` |
+| Paper | `#FAF8F3` | 1.01 : 1 | highlight inside icons | `bg` / `plate` `#FEF9ED` |
+
+Why the UI accents differ: the artwork was designed as an image, where the eye reads shape and the gold or bright blue only needs to look good. UI text must reach 4.5 : 1 (WCAG 1.4.3) and controls 3 : 1 (1.4.11). The logo gold is 2.0 : 1 and the logo blue 3.6 : 1 on our cream, so using them for links or labels would fail. The UI accents keep the same hue family but shift lightness to pass; the two are never swapped.
 
 ## 3. Colour
 
@@ -57,6 +108,8 @@ Semantic tokens only in components (`var(--k-color-*)`); never hex in component 
 | `danger` / `-bg` | `#B42318` / `#FBE3DF` | `#FF8A80` / `#341514` | |
 | `nav-bg`, `overlay`, `shadow-ink` | rgba values | rgba values | translucent surfaces |
 | `code-bg` / `code-text` | `#2A241F` / `#F0E8D4` | `#0A1626` / `#F0E8D4` | terminal window is dark in both themes |
+| `plate` | `#FEF9ED` | `#FEF9ED` | cream behind logos, identical in both themes |
+| `brand.gold` / `.blue` / `.ink` / `.paper` (`--k-brand-*`) | `#D4AF37` / `#0080FF` / `#5D524B` / `#FAF8F3` | same | logo artwork colours: fills and art only, see 2.2 |
 
 ### 3.2 Contrast (computed; asserted by `design/tokens.test.js`)
 
@@ -290,7 +343,7 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 
 ## 15. Open items and decisions to confirm
 
-1. Foundation accent and logo are placeholders (neutral ink). Needs the owner.
+1. Foundation accent and logo are placeholders (neutral ink). Needs the owner. Aegis and Themis now have owner-supplied logos; Argus has none in this repository.
 2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. Still open: legal copyright holder in LICENSE (Kairos Foundation vs Drupad Sachania).
 3. Font hosting: self-host woff2 (recommended) vs Google Fonts; check current `_document.js`.
 4. Tokens are not yet consumed by `apps/web` or `themis-app/ui`; adoption is a follow-up task.
@@ -300,7 +353,8 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 ## 16. Files
 
 - `design/tokens.json`, `design/tokens.css` (generated), `design/build-tokens.js`, `design/tokens.test.js`, `design/jest.config.js`
-- `docs/design/DESIGN.md` (this), `docs/design/motion.md`
+- `docs/design/DESIGN.md` (this), `docs/design/motion.md`, `docs/design/LOGOS.md` (logo asset inventory)
+- `design/brand/source/` (full-resolution logo masters, not served)
 - `docs/design/research/{hermes-agent,nousresearch,microsoft-ai,humanistreview}.md`
 
 Regenerate tokens: `node design/build-tokens.js`; verify: `npx jest design`.

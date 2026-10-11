@@ -13,6 +13,17 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 | Terminal motif (site) | Install command blocks (`CodeBlock`) are dark terminal windows in both themes: window dots, mono label, copy button, CSS `$` prompt (not selectable, not copied). Docs `pre` blocks share the dark surface. No simulated output anywhere. |
 | Themis dashboard | `ui/src/main.tsx` imports `@design/tokens.css` (Vite alias to `design/`), so the bundle carries the same tokens; `styles.css` was rewritten on them (cream light default, no OS dark block). In-app theme toggle (`data-theme`, `localStorage` key `themis-theme`, try/catch) with an external first-paint script `ui/public/theme-init.v1.js` (the CSP forbids inline scripts). Sidebar shell (240 px rail, 64 px icon rail below 1024 px, top bar + drawer below 768 px) over the existing eight routes, Themis-blue active item with a 2 px bar, gold only in the brand mark, status chips with colour + glyph + label, persistent ring and 3x attention pulse for "needs approval" (nav count and pending cards), a single most-severe banner (unreachable beats pending approvals), loopback cue and "updated Ns ago" in the rail, 150 ms route fade, braille spinner for `running`. API behaviour and the strict UI CSP are untouched. |
 
+## Logos and brand colours (2026-10)
+
+| Area | Adopted |
+|---|---|
+| Assets | `apps/web/public/brand/` ships the two simplified SVG icons and 640/320 px WebP marks and 640 px lockups (20-60 KB each, down from 166-334 KB PNGs). The full-resolution masters live in `design/brand/source/` and are not served. Favicon, touch icon and social image are in `apps/web/public/`. Inventory and provenance: `docs/design/LOGOS.md`. |
+| Site | `components/Brand.js` renders every logo with explicit width/height and alt. Header/menu: two icons plus the "Aegis · Themis" text (replaces the diamond-and-disc mark). Footer: icons plus "A Kairos Foundation project" (https://kairos-foundation.org/) and the Kairos GitHub org. Home cards: large marks. `/themis`: lockup hero (eager). `/skills`, skill pages and the docs hub: small icon cues. `_document.js` links the favicon set; `Layout.js` adds Open Graph and Twitter tags (absolute `og:image` on the `aegis-skills.vercel.app` origin). CSP unchanged (`img-src 'self' data:`). |
+| Dashboard | The Themis icon (sidebar, top bar) and Aegis icon (Skills page) are imported from `apps/web/public/brand` through the `@brand` Vite alias, so one copy of each file exists; Vite emits hashed files under `dist/ui/assets` (no `data:` URLs, strict CSP intact). Favicon: `ui/public/favicon.svg` (Themis icon on a cream plate). |
+| Dark theme | Raster logos sit on a cream plate and icons on a cream chip, both using `--k-color-plate`; padding is identical in both themes so toggling never shifts layout. |
+| Tokens | `brand.gold|blue|ink|paper` become `--k-brand-*`; `color.plate` is new. `design/tokens.test.js` asserts the recorded contrast numbers and that no stylesheet uses a `--k-brand-*` colour for text, borders or outlines. |
+| Guards | `apps/web/tests/pages/brand-images.test.js` (alt/width/height on key pages, loading strategy, favicon and OG wiring), `scripts/tests/naming.test.js` (the old misspelt organisation name must not return outside historical plans), dashboard `static-ui.test.ts` (icons emitted as same-origin assets). |
+
 ## Token delivery decisions
 
 - Site: build-time copy, not a committed copy. It cannot drift by hand, and it relies on the assumption `build-downloads.js` already makes on Vercel (the whole repository is checked out even with Root Directory = `apps/web`); nothing imports `../../design` at runtime. If a deploy ever builds with only `apps/web`, `sync-design-tokens.js` fails loudly with an explanatory message instead of shipping unstyled pages. Running `npx next build` directly (without npm's `prebuild`) fails on the missing generated file; use `npm run build`.
@@ -39,7 +50,8 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 
 ## Remaining gaps
 
-- Foundation mark/accent still placeholders; naming resolved (Kairos Foundation).
+- Foundation mark/accent still placeholders; naming resolved (Kairos Foundation). Argus has no assets here.
+- No vector masters of the full Aegis and Themis artwork; the SVG icons are simplified (LOGOS.md). The legal copyright holder in LICENSE (Kairos Foundation vs Drupad Sachania) is an open owner question.
 - Cmd/Ctrl+K command palette, docs right-hand TOC and prev/next cards, accordion and menu/drawer keyframes for the site are not built.
 - Dashboard: context chips and write-target banner, Run terminal window with streamed output styling, secret-reveal pattern on Models & Keys, approval checkbox "I have read the exact command" for write/execute, deep-linkable filters, real self-hosted fonts.
 - Syntax highlight palette for code windows (DESIGN open item 6).
