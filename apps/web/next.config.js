@@ -50,7 +50,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline'",
+              process.env.NODE_ENV === 'production' ? "script-src 'self' 'unsafe-inline'" : "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // dev only: React Refresh needs eval
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data:",
               "connect-src 'self'",

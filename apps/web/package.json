@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Aegis + Themis website: skill library, docs hub and hosted read-only Aegis MCP server.",
-  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/drupadsachania/aegis-skills",
