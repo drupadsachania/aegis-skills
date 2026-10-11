@@ -21,7 +21,7 @@ function SkillDetailPage ({ manifest, family, scopeHtml, flatPrompt, intelAsOf, 
   ]
   const all = manifest.phases || []
   const authored = all.filter(p => !p.auto).length
-  const live = all.length - authored
+  const intelRefs = all.length - authored
 
   return h(
     Layout,
@@ -84,7 +84,7 @@ function SkillDetailPage ({ manifest, family, scopeHtml, flatPrompt, intelAsOf, 
         h(
           'p',
           { className: 'note' },
-          `This skill has ${authored} authored phase${authored === 1 ? '' : 's'}${live > 0 ? ` plus ${live} live intel feed${live === 1 ? '' : 's'} updated monthly` : ''}. Each phase represents a distinct analysis step with its own context window.`
+          `This skill has ${authored} authored phase${authored === 1 ? '' : 's'}${intelRefs > 0 ? ` plus ${intelRefs} intel reference${intelRefs === 1 ? '' : 's'} updated monthly` : ''}. Each phase represents a distinct analysis step with its own context window.`
         ),
         h(
           'div',
@@ -97,9 +97,7 @@ function SkillDetailPage ({ manifest, family, scopeHtml, flatPrompt, intelAsOf, 
               h(
                 'span',
                 { className: 'lifecycle-name' },
-                phase.id,
-                // Auto-generated phases are a live feed, not authored tradecraft.
-                phase.auto ? h('span', { className: 'lifecycle-live' }, 'LIVE') : null
+                phase.id
               ),
               h('span', { className: 'lifecycle-tokens' }, `${phase.tokens != null ? phase.tokens.toLocaleString() : '—'} tokens`)
             )

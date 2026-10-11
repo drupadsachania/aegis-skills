@@ -8,7 +8,7 @@ const families = require('aegis-skills/mcp/skill-families') // PHASE-1 BINDING
 
 // The site serves only these public fields. Anything else the reader returns is internal data
 // and must never reach a page or an API response (Phase 5 amendment).
-const PUBLIC_FIELDS = ['name', 'version', 'description', 'frameworks', 'tags', 'phases', 'authoredPhases', 'live', 'context']
+const PUBLIC_FIELDS = ['name', 'version', 'description', 'frameworks', 'tags', 'phases', 'authoredPhases', 'context']
 
 async function listSkills (...args) {
   const skills = await reader.listSkills(...args)

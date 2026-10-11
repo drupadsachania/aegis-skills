@@ -145,8 +145,7 @@ function SkillsSection({ skills, familyLabel }) {
           React.createElement(
             'span',
             { className: 'sr-name' },
-            skill.name,
-            skill.live ? React.createElement('span', { className: 'sr-live' }, 'LIVE') : null
+            skill.name
           ),
           React.createElement('span', { className: 'sr-desc' }, firstSentence(skill.description))
         ),
@@ -289,8 +288,7 @@ function SkillsPage({ skills: initialSkills, families, familyByName }) {
         React.createElement(
           'span',
           null,
-          `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}` +
-          `${displaySkills.filter(s => s.live).length > 0 ? ` · ${displaySkills.filter(s => s.live).length} live` : ''}`
+          `${displaySkills.length} skill${displaySkills.length === 1 ? '' : 's'}`
         ),
         recommendedSkills != null
           ? React.createElement('span', { className: 'ranked' }, '↑ Ranked by relevance')
@@ -311,7 +309,6 @@ async function getStaticProps () {
     frameworks: s.frameworks || [],
     phases: s.phases ?? 0,
     authoredPhases: s.authoredPhases ?? s.phases ?? 0,
-    live: !!s.live,
     context: s.context || null
   })).sort((a, b) => a.name.localeCompare(b.name))
   const familyByName = Object.fromEntries(skills.map(s => [s.name, familyOf(s.name)]))

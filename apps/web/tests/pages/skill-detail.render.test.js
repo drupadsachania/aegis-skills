@@ -24,7 +24,7 @@ test('renders description, phases, scope, downloads and install', () => {
   expect(screen.getByRole('heading', { level: 1, name: 'compliance' })).toBeInTheDocument()
   expect(screen.getByText('Compliance workflow.')).toBeInTheDocument()
   expect(screen.getByText('scope-definition')).toBeInTheDocument()
-  expect(screen.getByText('LIVE')).toBeInTheDocument()
+  expect(screen.queryByText('LIVE')).not.toBeInTheDocument()
   expect(screen.getByText(/explicitly authorized/)).toBeInTheDocument()
   expect(screen.getByText(/Intel as of 2026-08-18/)).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'COPY PROMPT' })).toBeInTheDocument()

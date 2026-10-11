@@ -907,17 +907,6 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sr-live, .live-badge {
-  font-family: var(--k-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--k-color-on-aegis);
-  background: var(--k-color-aegis);
-  border-radius: var(--k-radius-pill);
-  padding: 2px 9px;
-  flex: none;
-  font-weight: 600;
-}
 .sr-family {
   font-family: var(--k-font-mono);
   font-size: 11px;
@@ -1137,18 +1126,6 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .lifecycle-num { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-color-text-subtle); letter-spacing: 0.1em; }
 .lifecycle-name { font-family: var(--k-font-mono); font-size: 14px; color: var(--k-color-text); letter-spacing: 0.01em; overflow-wrap: anywhere; }
 .lifecycle-tokens { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-color-text-subtle); letter-spacing: 0.04em; white-space: nowrap; }
-.lifecycle-live {
-  margin-left: 10px;
-  padding: 1px 9px;
-  border-radius: var(--k-radius-pill);
-  background: var(--k-color-aegis);
-  color: var(--k-color-on-aegis);
-  font-family: var(--k-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  font-weight: 600;
-  vertical-align: middle;
-}
 
 .tag-pill {
   font-family: var(--k-font-mono);
