@@ -31,7 +31,7 @@ export function ApprovalsPage(_props: { param?: string }) {
       <h2>Pending</h2>
       {pending.loading ? <p>Loading...</p> : (pending.data?.approvals ?? []).length === 0 ? <p className="muted">Nothing is waiting for approval.</p> : (
         (pending.data?.approvals ?? []).map((a) => (
-          <div className="card" key={a.id}>
+          <div className="card needs-approval" key={a.id}>
             <p><a href={`#/sessions/${a.runId}`}>Run {shortId(a.runId)}</a> · <strong>{a.serverId}/{a.tool}</strong> <StatusBadge value={a.toolClass} /></p>
             <p>{a.reason}</p>
             <Pre text={JSON.stringify(a.args, null, 2)} />

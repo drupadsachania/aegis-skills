@@ -49,7 +49,7 @@ const MUST_EXIST = [
   'packages/themis-app/src/index.ts', 'packages/themis-app/src/app.ts', 'packages/themis-app/src/cli/index.ts',
   'packages/themis-app/src/graph/build.ts', 'packages/themis-app/src/runner/runner.ts', 'packages/themis-app/src/store/checkpointer.ts',
   'packages/themis-app/src/server/http.ts', 'packages/themis-app/src/server/security.ts', 'packages/themis-app/src/server/routes/approvals.ts',
-  'packages/themis-app/ui/index.html', 'packages/themis-app/ui/vite.config.mts', 'packages/themis-app/ui/tsconfig.json', 'packages/themis-app/ui/src/main.tsx',
+  'packages/themis-app/ui/index.html', 'packages/themis-app/ui/src/theme.ts', 'packages/themis-app/ui/public/theme-init.v1.js', 'docs/design/ADOPTION.md', 'packages/themis-app/ui/vite.config.mts', 'packages/themis-app/ui/tsconfig.json', 'packages/themis-app/ui/src/main.tsx',
   // Phase 3: Mode 1 plugin (Themis on the user's own AI)
   'packages/themis-plugin/package.json', 'packages/themis-plugin/tsconfig.build.json', 'packages/themis-plugin/jest.config.js',
   'packages/themis-plugin/src/index.ts', 'packages/themis-plugin/src/server.ts', 'packages/themis-plugin/src/approval.ts',
