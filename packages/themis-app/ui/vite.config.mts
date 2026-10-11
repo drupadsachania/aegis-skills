@@ -10,7 +10,11 @@ export default defineConfig({
   base: '/',
   plugins: [react()],
   resolve: {
-    alias: { '@design': fileURLToPath(new URL('../../../design', import.meta.url)) },
+    alias: {
+      '@design': fileURLToPath(new URL('../../../design', import.meta.url)),
+      // one copy of the logo icons: the site's public/brand folder (emitted as hashed files into dist/ui/assets)
+      '@brand': fileURLToPath(new URL('../../../apps/web/public/brand', import.meta.url)),
+    },
   },
   build: {
     outDir: fileURLToPath(new URL('../dist/ui', import.meta.url)),

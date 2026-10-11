@@ -32,9 +32,12 @@ h2 { font-size: var(--k-text-h3); margin: var(--k-space-5) 0 var(--k-space-2); }
 .nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .brand { display: inline-flex; align-items: center; gap: var(--k-space-3); padding: var(--k-space-1) var(--k-space-2) var(--k-space-3); text-decoration: none; color: var(--k-color-text); font-family: var(--k-font-display); font-size: var(--k-text-h3); letter-spacing: var(--k-tracking-heading); }
 .brand:hover { color: var(--k-color-text); }
-.brand-mark { width: 28px; height: 28px; flex: none; }
-.brand-mark .mk-a { fill: var(--k-color-aegis); }
-.brand-mark .mk-t { fill: var(--k-color-themis); opacity: 0.92; }
+/* Logo icons are drawn for light backgrounds (brown ink): in dark they sit on a cream chip (--k-color-plate).
+   Padding is constant, so switching theme never shifts layout. */
+.brand-mark { display: block; width: 28px; height: 28px; flex: none; padding: 2px; box-sizing: content-box; border-radius: 8px; }
+:root[data-theme="dark"] .brand-mark, :root[data-theme="dark"] .aegis-cue img { background: var(--k-color-plate); }
+.aegis-cue { display: flex; align-items: center; gap: var(--k-space-2); }
+.aegis-cue img { display: block; width: 20px; height: 20px; padding: 2px; box-sizing: content-box; border-radius: 6px; flex: none; }
 .nav li a {
   position: relative; display: flex; align-items: center; gap: var(--k-space-3); min-height: 40px;
   padding: var(--k-space-2) var(--k-space-3); border-radius: var(--k-radius-md);

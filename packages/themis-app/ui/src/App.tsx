@@ -10,6 +10,7 @@ import { SkillsPage } from './pages/Skills'
 import { McpPage } from './pages/Mcp'
 import { ModelsPage } from './pages/Models'
 import { SettingsPage } from './pages/Settings'
+import themisIcon from '@brand/themis-icon.svg'
 
 // Stroke icons on a 24px grid (decorative; the label is always in the DOM).
 const I = (d: ReactNode) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{d}</svg>
@@ -35,13 +36,9 @@ const PAGES = [
   { id: 'settings', label: 'Settings', Component: SettingsPage },
 ] as const
 
+// The Themis icon is a hashed asset emitted into dist/ui/assets (CSP img-src 'self'); decorative, the name is beside it.
 function BrandMark() {
-  return (
-    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect className="mk-a" x="4" y="9" width="14" height="14" rx="3" transform="rotate(45 11 16)" />
-      <circle className="mk-t" cx="21.5" cy="16" r="8" />
-    </svg>
-  )
+  return <img className="brand-mark" src={themisIcon} alt="" width={28} height={28} />
 }
 
 function ThemeToggle() {

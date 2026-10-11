@@ -3,6 +3,7 @@ import { api } from '../api'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { StatusBadge } from '../components/StatusBadge'
 import { errMsg, useLoad } from '../hooks'
+import aegisIcon from '@brand/aegis-icon.svg'
 
 interface Skill { name: string; description: string; phases: number; enabled: boolean; intelAsOf: string | null }
 const THIRTY_DAYS = 30 * 24 * 3600 * 1000
@@ -22,7 +23,7 @@ export function SkillsPage(_props: { param?: string }) {
       <ErrorBanner error={error ?? sk.error} />
       {sk.loading || !sk.data ? <p>Loading...</p> : (
         <>
-          <p className="muted">Aegis {sk.data.aegis.version} · osk {sk.data.aegis.osk}</p>
+          <p className="muted aegis-cue"><img src={aegisIcon} alt="" width={20} height={20} /><span>Aegis skills {sk.data.aegis.version} · osk {sk.data.aegis.osk}</span></p>
           <table>
             <thead><tr><th>Name</th><th>Description</th><th>Phases</th><th>Intel as of</th><th>Enabled</th></tr></thead>
             <tbody>

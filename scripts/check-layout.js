@@ -61,7 +61,18 @@ const MUST_EXIST = [
   // Design language (tokens, generator, spec docs)
   'design/tokens.json', 'design/tokens.css', 'design/build-tokens.js', 'design/tokens.test.js', 'design/jest.config.js',
   'docs/design/DESIGN.md', 'docs/design/motion.md',
-  'docs/design/research/hermes-agent.md', 'docs/design/research/nousresearch.md', 'docs/design/research/microsoft-ai.md', 'docs/design/research/humanistreview.md'
+  'docs/design/research/hermes-agent.md', 'docs/design/research/nousresearch.md', 'docs/design/research/microsoft-ai.md', 'docs/design/research/humanistreview.md',
+  // Brand: logos, favicon set, social image, masters, docs
+  'apps/web/components/Brand.js', 'apps/web/tests/pages/brand-images.test.js', 'scripts/tests/naming.test.js',
+  'apps/web/public/favicon.svg', 'apps/web/public/favicon.ico', 'apps/web/public/apple-touch-icon.png', 'apps/web/public/og.png',
+  'apps/web/public/brand/aegis-icon.svg', 'apps/web/public/brand/themis-icon.svg',
+  'apps/web/public/brand/aegis-mark-640.webp', 'apps/web/public/brand/aegis-mark-320.webp', 'apps/web/public/brand/aegis-lockup-640.webp',
+  'apps/web/public/brand/themis-mark-640.webp', 'apps/web/public/brand/themis-mark-320.webp', 'apps/web/public/brand/themis-lockup-640.webp',
+  'design/brand/source/aegis-mark.png', 'design/brand/source/aegis-lockup.png', 'design/brand/source/aegis-tile.webp',
+  'design/brand/source/themis-mark.png', 'design/brand/source/themis-lockup.png', 'design/brand/source/themis-tile.webp',
+  'docs/design/LOGOS.md',
+  // Themis dashboard brand: favicon with cream plate (icons come from apps/web/public/brand via the @brand alias)
+  'packages/themis-app/ui/public/favicon.svg'
 ]
 const MUST_NOT_EXIST = [
   'skills', 'lib', 'src', 'app', 'pages', 'components', 'styles', 'bin', 'supabase', 'tests', '__tests__',
@@ -80,7 +91,10 @@ const MUST_NOT_EXIST = [
   // Phase 5: replaced by pages/docs/ (hub rendered from repository markdown)
   'apps/web/pages/docs.js',
   // Phase 5: retired; the docs hub supersedes it
-  'docs/TECHNICAL.md'
+  'docs/TECHNICAL.md',
+  // Brand: the 300 KB PNG masters live in design/brand/source; the site ships optimised WebP only
+  'apps/web/public/brand/aegis-mark.png', 'apps/web/public/brand/aegis-lockup.png', 'apps/web/public/brand/themis-mark.png', 'apps/web/public/brand/themis-lockup.png',
+  'apps/web/public/brand/aegis-tile.webp', 'apps/web/public/brand/themis-tile.webp'
 ]
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
