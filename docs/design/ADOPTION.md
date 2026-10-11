@@ -51,7 +51,7 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 ## Remaining gaps
 
 - Foundation mark/accent still placeholders; naming resolved (Kairos Foundation). Argus has no assets here.
-- No vector masters of the full Aegis and Themis artwork; the SVG icons are simplified (LOGOS.md). The legal copyright holder in LICENSE (Kairos Foundation vs Drupad Sachania) is an open owner question.
+- No vector masters of the full Aegis and Themis artwork; the SVG icons are simplified (LOGOS.md). The legal copyright holder is settled: Kairos Foundation (owner decision, 2026-10-12), and LICENSE, the package manifests and the marketplace owner all say so.
 - Cmd/Ctrl+K command palette, docs right-hand TOC and prev/next cards, accordion and menu/drawer keyframes for the site are not built.
 - Dashboard: context chips and write-target banner, Run terminal window with streamed output styling, secret-reveal pattern on Models & Keys, approval checkbox "I have read the exact command" for write/execute, deep-linkable filters, real self-hosted fonts.
 - Syntax highlight palette for code windows (DESIGN open item 6).

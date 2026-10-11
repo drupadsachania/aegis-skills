@@ -4,7 +4,7 @@ Maintainer file. Every directory runbook in this folder takes its names, descrip
 
 Publisher and organisation name used on listings: **Kairos Foundation** (<https://kairos-foundation.org/>). Project repository: <https://github.com/drupadsachania/aegis-skills>. Website: <https://aegis-skills.vercel.app>.
 
-> BLOCKER, USER ACTION: who holds the copyright and licence (Kairos Foundation or Drupad Sachania) is still open. Every directory that asks for a publisher or licence holder needs that answer first. `LICENSE*`, `package.json` `author` and `.claude-plugin/plugin.json` `author` currently say Kairos Foundation, while `.claude-plugin/marketplace.json` `owner` says Drupad Sachania. Settle it, then make them agree.
+> DECIDED (owner, 2026-10-12): the copyright and licence holder is **Kairos Foundation**. `LICENSE*`, `package.json` `author`, both `.claude-plugin/plugin.json` `author` fields and `.claude-plugin/marketplace.json` `owner` all say so. The repository URL `github.com/drupadsachania/aegis-skills` is only the repository location.
 
 ## Names and category
 
@@ -14,6 +14,15 @@ Publisher and organisation name used on listings: **Kairos Foundation** (<https:
 | Directory category | Security / Cybersecurity wherever a category is offered (`security` in the Claude marketplace file) |
 | Positioning | Defensive cybersecurity for authorized use. Every skill states its purpose, an authorization assumption and what it will not do |
 | Licence | Apache-2.0 OR MIT |
+
+## Directory listing fields (Anthropic limits)
+
+The Anthropic directory limits are: name 100 characters, tagline 55, description 2,000, one to five categories (<https://www.claude.com/docs/plugins/submit> and the connector submission page; the same limits are in the uploaded Anthropic guidelines). `scripts/tests/listing-copy.test.js` parses this table and the long descriptions below and fails when a limit is exceeded, when a listing has fewer than three example prompts, or when a ChatGPT or registry limit is exceeded.
+
+| Product | Name | Tagline | Categories |
+|---|---|---|---|
+| Aegis | Aegis Security Skills | Defensive security skills for your AI | Security |
+| Themis | Themis Security Operations | Governed security workflows on your own AI | Security |
 
 ## One-line descriptions (100 characters or fewer)
 
@@ -53,6 +62,23 @@ Themis is for authorized defensive work. It carries the Aegis skills' scope-and-
 
 (about 890 characters)
 
+## Example prompts (at least three per listing)
+
+The Anthropic directory requires at least three working example prompts. Aegis prompts are taken from `docs/themis/test-prompts.md` (each has a verified expected tool call). Themis prompts are workflow requests for the plugin and are not part of the hosted-server test set.
+
+### Aegis prompts
+
+- What security skills are available?
+- Show me the compliance skill.
+- Open the exposure-validation authorization phase.
+- Which skill covers MITRE ATT&CK?
+
+### Themis prompts
+
+- Start a Themis run to assess the exposure of our staging web application, using only the tools I have connected.
+- Which Aegis skill and phase should a Themis run use to triage a suspected phishing incident?
+- Show the audit log and pending approvals for my latest Themis run.
+
 ## Keywords
 
 cybersecurity, security, defensive security, blue team, MITRE ATT&CK, MITRE ATLAS, MITRE Engage, DFIR, digital forensics, incident response, threat hunting, threat intelligence, threat modeling, exposure validation, attack surface, compliance, GRC, risk management, identity and access management, OT security, SOC, agent skills, MCP.
@@ -64,10 +90,10 @@ Do not use: offensive, exploit, hacking, red team, bypass. The copy is about aut
 - Hosted Aegis MCP: `https://aegis-skills.vercel.app/api/mcp`, Streamable HTTP, stateless, no authentication, three tools, all read-only.
 - All three tools carry `title`, `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: false`.
 - Rate limit: best-effort, 120 requests a minute per client IP, per server instance; Anthropic's published outbound range is exempt. It is not a hard quota on serverless hosting.
-- Privacy policy: <https://aegis-skills.vercel.app/docs/themis/privacy-policy> (the privacy contact email is a USER ACTION placeholder in the source).
+- Privacy policy: <https://aegis-skills.vercel.app/docs/themis/privacy-policy> (the policy names GitHub Issues and private vulnerability reporting as the interim contact; a Kairos Foundation role mailbox is a USER ACTION, see [README.md](README.md)).
 - Reviewer test prompts: <https://aegis-skills.vercel.app/docs/themis/test-prompts>.
 - Dual-use review and compliance mapping: `docs/themis/dual-use-review.md`, `docs/themis/compliance/`.
-- Support and security contact: SECURITY.md in the repository (the contact email there is a USER ACTION placeholder).
+- Support and security contact: SECURITY.md in the repository (GitHub private vulnerability reporting, the only security channel). Directories want a verified support channel as well; see [README.md](README.md) for the role mailbox that is still missing.
 
 Check before using any link above: the site is not deployed from this branch yet, so these URLs only resolve after the Vercel step in the project's user actions.
 

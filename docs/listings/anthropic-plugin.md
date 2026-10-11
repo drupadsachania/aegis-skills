@@ -2,7 +2,7 @@
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
 
-Status as of 2026-10-12: nothing is submitted and nothing is listed. The Aegis plugin can be submitted once the repository is public and the site is deployed. The Themis plugin waits for the Phase 7 npm publish, because its `.mcp.json` runs a published package.
+Status as of 2026-10-12: nothing is submitted and nothing is listed. The Aegis plugin can be submitted once the site is deployed and a verified contact channel exists (blocker 3). The Themis plugin also waits for the Phase 7 npm publish, because its `.mcp.json` runs a published package.
 
 ## Sources (fetched 2026-10-12)
 
@@ -11,17 +11,18 @@ Status as of 2026-10-12: nothing is submitted and nothing is listed. The Aegis p
 | Submit a plugin (portal steps, limits, review, updates) | <https://www.claude.com/docs/plugins/submit> |
 | Plugin pre-submission checklist (what validation and the scan check) | <https://claude.com/docs/plugins/pre-submission-checklist> |
 | Software Directory Terms and Policy (linked from both pages above, not fetched) | <https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy> |
+| Owner-supplied summary of the same rules (chat-assistant text, not an official source; used only where it matches the pages above) | `D:Downloadsanthropic_guidelines.txt`, read 2026-10-12 |
 
 The submit page did not cover version pinning; the checklist does (see "Pins" below).
 
 ## Blockers (USER ACTION unless stated)
 
-1. **Copyright and licence holder is undecided** (Kairos Foundation or Drupad Sachania). The portal's compliance step needs a contact and acknowledgements, and `author.name` in both `plugin.json` files says Kairos Foundation while `.claude-plugin/marketplace.json` `owner` says Drupad Sachania. Decide, then make them agree.
-2. **Repository must be public** before the listing goes live (it may be private during validation if the Claude GitHub App is installed and you accept the source being uploaded to Anthropic for scanning).
-3. **Phase 7 publish** of `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0`. Until they exist on npm, the Themis plugin's `.mcp.json` points at a package that cannot be fetched, and Themis must not be submitted.
-4. **Vercel deploy** of the website, because the Aegis plugin's `.mcp.json` points at `https://aegis-skills.vercel.app/api/mcp`.
-5. **Name check.** Search the directory for "aegis" and "themis". A name used by another organization blocks; a look-alike is held for a reviewer.
-6. **Security contact email** in `SECURITY.md` and **privacy contact email** in `docs/themis/privacy-policy.md` are placeholders.
+1. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** `author.name` in both `plugin.json` files and `.claude-plugin/marketplace.json` `owner` agree. Nothing to do.
+2. ~~Repository must be public~~ **Satisfied, per the owner's statement (2026-10-12).** This was not verified by the maintainer tooling.
+3. **Verified contact and support channel (USER ACTION, blocks submission).** The Anthropic rules list "a privacy policy link" and "verified contact and support channels" as developer duties, and the portal's compliance step asks for a contact email. GitHub private vulnerability reporting (the channel in `SECURITY.md`) and GitHub Issues are real channels but are not a mailbox the portal can verify, and the owner will not publish a personal email. Recommended fix: a role alias (for example `support@` and `privacy@kairos-foundation.org`) using free email forwarding at the DNS host. As of 2026-10-12, `nslookup -type=MX kairos-foundation.org` returns no MX records, so no mail is set up. Until then the portal cannot be completed. Development is not blocked.
+4. **Phase 7 publish** of `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0`. Until they exist on npm, the Themis plugin's `.mcp.json` points at a package that cannot be fetched, and Themis must not be submitted.
+5. **Vercel deploy** of the website, because the Aegis plugin's `.mcp.json` points at `https://aegis-skills.vercel.app/api/mcp` and the privacy policy link must resolve.
+6. **Name check.** Search the directory for "aegis" and "themis". A name used by another organization blocks; a look-alike is held for a reviewer.
 7. A paid Claude plan and a role that may submit, with your GitHub account connected on claude.ai (portal prerequisites).
 
 ## What the repository already satisfies
@@ -34,14 +35,39 @@ Checked against the pre-submission checklist on 2026-10-12. "Check" means verify
 | One plugin per submission | Submit `packages/aegis` and `packages/themis-plugin` separately; the portal does not accept the marketplace repo as one submission |
 | `name` lowercase letters, digits, hyphens | `aegis`, `themis` |
 | `description`, `author`, `version` set | Present in both |
-| README of at least 40 words in the plugin folder | `packages/aegis/README.md` (141 words), `packages/themis-plugin/README.md` (273 words) |
-| LICENSE file or `license` in `plugin.json` | Aegis has LICENSE files; Themis sets `license` in `plugin.json` |
+| README of at least 40 words in the plugin folder | `packages/aegis/README.md` and `packages/themis-plugin/README.md`, each with a "What this plugin runs, sends and fetches" section (checked by `scripts/check-plugin-bundle.js`) |
+| LICENSE file in each plugin folder | `LICENSE`, `LICENSE-MIT`, `LICENSE-APACHE` in both (Themis copies added 2026-10-12; Kairos Foundation in all) |
 | Files: 512 or fewer, each non-image file under 256 KiB, text only | Aegis has 245 tracked files, none over 256 KiB (checked with `git ls-files`); Themis has 33 tracked files. Check the report for `health.json` and the skill `intel-state.json` files being listed |
 | Remote MCP server has `type` and an `https://` url | `packages/aegis/.mcp.json` uses `type: http` and the hosted URL |
 | Package launchers pinned to an exact version | `packages/themis-plugin/.mcp.json` pins `@aegis-skills/themis-plugin@1.1.0` and `aegis-skills@1.1.0` |
-| No `.npmrc`, `bunfig.toml`, `uv.toml` in a plugin that uses a launcher | None present in either plugin folder (re-check before submitting) |
+| No `.npmrc`, `bunfig.toml`, `uv.toml` in a plugin that uses a launcher | None present in either plugin folder; `check-plugin-bundle.js` fails if one appears |
+| Valid YAML front matter, exact `skills/` and `SKILL.md` names, ASCII names, no reserved words, no paths outside the folder | Checked by `scripts/check-plugin-bundle.js` (part of `npm run check:deps`) |
 | No real credentials in files | None; the plugins need none |
 | Readable source, not minified or compiled | Themis plugin ships TypeScript source and builds `dist/` at publish time; `dist/` is not committed |
+
+### Local validation results
+
+`claude plugin validate` (the installed `claude` CLI, run 2026-10-12 from the repository root):
+
+| Command | Output |
+|---|---|
+| `claude plugin validate ./packages/aegis` | Validation passed |
+| `claude plugin validate ./packages/themis-plugin` | Validation passed |
+| `claude plugin validate .` (the marketplace file) | Validation passed |
+
+The portal's Validate step is stricter; its report is the authority.
+
+### Rules from the uploaded guidelines and how the repository meets them
+
+| Rule | State |
+|---|---|
+| Tool descriptions state what a tool does and do not tell Claude how to behave or to call other tools (an "attack surface") | The three Aegis tool descriptions in `packages/aegis/mcp/server.js` were reviewed on 2026-10-12. `get_skill_phase` said "Pass the phase id from get_skill"; that is reworded to describe the argument only, and the server instructions and the unknown-skill error no longer tell the model to call another tool. Tests stay green |
+| Tool names 64 characters or fewer; separate read and write tools | Names are 10 to 15 characters; all tools are read-only, so there are no write tools to split |
+| Security scan: the README and source must disclose everything the plugin runs, sends or fetches | Both READMEs have a "What this plugin runs, sends and fetches" section written from the code: the hosted URL, pinned `npx` packages, the local store path, the gateway contacting only user-configured MCP servers, no telemetry |
+| At least 3 working example prompts | `listing-copy.md` lists four for Aegis and three for Themis; Aegis ones have verified expected results in `docs/themis/test-prompts.md` |
+| Privacy policy link | `/docs/themis/privacy-policy` once deployed |
+| Raise `version` in `plugin.json` for every release | Phase 7's version script |
+| `claude plugin eval` (with and without the plugin) | Not run; it is described as the quality test and is optional here |
 
 ### Pins
 

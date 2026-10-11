@@ -33,11 +33,12 @@ describe('organisation naming', () => {
     expect(files.filter(f => read(f).includes(OLD_DOMAIN))).toEqual([])
   })
 
-  it('the findings file records the resolved spelling and keeps the copyright-holder question open', () => {
+  it('the findings file records the resolved spelling and records the copyright holder as resolved (Kairos Foundation)', () => {
     const text = read('docs/superpowers/plans/restructure/01-cross-phase-findings.md')
     expect(text).toContain('Organisation spelling resolved by the owner')
     expect(text).toMatch(/copyright holder/i)
-    expect(text).toMatch(/USER decision \(0\.6 open\)/)
+    expect(text).toMatch(/0\.6 is now resolved too/)
+    expect(text).toMatch(/copyright holder is Kairos Foundation/)
   })
 
   it('licences, authors and the footer use the corrected name', () => {

@@ -13,8 +13,7 @@
 We take the security of Aegis and Themis seriously. If you discover a security vulnerability or flaw in any of our skills, rules, or core modules, please disclose it responsibly.
 
 ### How to Report
-- **Private security advisory (preferred):** <https://github.com/drupadsachania/aegis-skills/security/advisories/new>
-- **Email:** Report security issues directly to the maintainers via email or private security advisory. <!-- USER: add security contact email -->
+- **GitHub private vulnerability reporting (the only channel):** <https://github.com/drupadsachania/aegis-skills/security/advisories/new>
 - **Do NOT** open public GitHub issues for security vulnerabilities.
 
 ### Response Timeline
