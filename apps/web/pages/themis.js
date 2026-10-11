@@ -1,507 +1,113 @@
 'use strict'
 
 const React = require('react')
-const Head = require('next/head').default
 const Layout = require('../components/Layout')
+const InstallTabs = require('../components/InstallTabs')
+const Screenshot = require('../components/Screenshot')
 
-module.exports = function ThemisPage() {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      Head,
-      null,
-      React.createElement('title', null, 'Themis — Threat Analysis Orchestrator')
-    ),
-    React.createElement(
-      Layout,
-      null,
-      React.createElement('div', { style: { position: 'relative', zIndex: 1, paddingTop: '80px' } },
-        // ── Doc meta ──
-        React.createElement('div', { className: 'doc-meta' },
-          React.createElement('span', { className: 'dot' }),
-          React.createElement('span', null, 'ORCHESTRATION ENGINE'),
-          React.createElement('span', { className: 'sep' })
-        ),
+const h = React.createElement
 
-        // ── Title & intro ──
-        React.createElement('h1', { className: 'doc-title' }, 'Themis'),
-        React.createElement('p', { className: 'doc-subtitle' }, 'LangGraph-powered multi-agent threat analysis'),
-        React.createElement('p', { className: 'doc-intro' },
-          'An AI-driven threat analysis orchestrator that decomposes security tasks into specialist sub-tasks, executes them in parallel via Aegis skills, applies guardrails to every output, and synthesises a structured findings report. All processing is memory-ephemeral—no findings or task content persists to disk.'
-        ),
+const SHOTS = [
+  { file: 'dashboard-run.png', alt: 'Themis dashboard Run page', caption: 'Run: sub-agents stream as each skill finishes.' },
+  { file: 'dashboard-approvals.png', alt: 'Themis dashboard Approvals page', caption: 'Approvals: nothing that writes or executes runs without a click.' },
+  { file: 'dashboard-models.png', alt: 'Themis dashboard Models and Keys page', caption: 'Models & Keys: bring your own key or a local model.' },
+  { file: 'plugin-claude-code.png', alt: 'Themis plugin in Claude Code', caption: 'Plugin mode: the host AI reasons; Themis governs.' }
+]
 
-        // ── Architecture ──
-        React.createElement('section', { className: 'doc-section', id: 'architecture' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '01'),
-            React.createElement('h2', null, 'Architecture')
-          ),
-          React.createElement('p', null,
-            'Themis is a LangGraph StateGraph with six nodes wired as a directed acyclic graph:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '20px', marginBottom: '20px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '12px', fontFamily: 'var(--f-mono)', padding: '16px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } },
-              `specNode
-   │
-fanOutNode  ── Send() ──▶ skillAgentNode (×N, parallel)
-                            │
-                       guardrailNode
-                            │
-                       synthesisNode
-                            │
-                        auditNode`
-            )
-          ),
-          React.createElement('p', null,
-            'Fan-out uses the LangGraph Send API — fanOutNode returns one Send per sub-task, and LangGraph executes them in parallel on separate graph branches.'
-          ),
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '24px', marginBottom: '12px', color: 'var(--cream)' } }, 'Node Responsibilities'),
-          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '20px' } },
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'specNode'),
-              ' — Parse task + context, emit sub-tasks for specialist agents'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'fanOutNode'),
-              ' — Return Send[] for parallel dispatch'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'skillAgentNode'),
-              ' — Run createReactAgent for one sub-task; call skill phase fetch tool'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'guardrailNode'),
-              ' — Score each output; block/flag/pass based on content integrity'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'synthesisNode'),
-              ' — Reduce guardrailed results into structured report'
-            ),
-            React.createElement('li', null,
-              React.createElement('strong', null, 'auditNode'),
-              ' — Write metadata-only debrief to SQLite; strip findings'
-            )
-          )
-        ),
+const COMPARE = [
+  ['Where the model runs', 'Your assistant (Claude Code, Codex, Gemini CLI)', 'Your API key (Anthropic, OpenAI, Gemini) or a local model (Ollama, LM Studio)'],
+  ['API key needed', 'No', 'Yes, or a local model'],
+  ['Interface', 'Your assistant\'s chat', 'Local web dashboard on 127.0.0.1'],
+  ['Orchestration', 'Your assistant runs each step, guided by the Themis skill', 'LangGraph runs the same workflow definition'],
+  ['Approvals', 'Asked through your client\'s own prompt when it supports MCP elicitation; otherwise handed back for you to run', 'Approvals page in the dashboard'],
+  ['Tool governance', 'Tools you register with Themis are governed; tools connected straight to your assistant are not', 'Every tool call is governed'],
+  ['History and audit', 'Local SQLite in ~/.themis', 'Local SQLite in ~/.themis'],
+  ['Install', '/plugin install themis@aegis-skills, or an MCP config', 'npx @aegis-skills/themis dashboard']
+]
 
-        // ── State Management ──
-        React.createElement('section', { className: 'doc-section', id: 'state' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '02'),
-            React.createElement('h2', null, 'State & Checkpointing')
-          ),
-          React.createElement('p', null,
-            'State is held in ThemisAnnotation (14 channels) using typed reducers:'
-          ),
-          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '20px' } },
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'append'),
-              ' — Accumulates sub-task results and guardrail outputs'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'sum'),
-              ' — Token counters (aggregate input/output tokens)'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'last-write-wins'),
-              ' — Final report and thread metadata'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'dedup-union'),
-              ' — Skill slug sets (avoid duplicates)'
-            ),
-            React.createElement('li', null,
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'first-write-wins'),
-              ' — Task and context (set once, never mutated)'
-            )
-          ),
-          React.createElement('p', null,
-            'Checkpointing uses MemorySaver — state is in-RAM only, scoped to a thread_id. No external database, no network calls for checkpointing.'
-          )
-        ),
+// Kinds confirmed against THEMIS_WORKFLOW in @aegis-skills/themis-core.
+const WORKFLOW = [
+  ['validate', 'deterministic'],
+  ['decompose', 'reasoning'],
+  ['schedule', 'deterministic'],
+  ['fan-out', 'reasoning'],
+  ['guardrail', 'reasoning'],
+  ['synthesise', 'reasoning'],
+  ['audit', 'deterministic']
+]
 
-        // ── Providers ──
-        React.createElement('section', { className: 'doc-section', id: 'providers' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '03'),
-            React.createElement('h2', null, 'LLM Providers')
-          ),
-          React.createElement('p', null,
-            'Themis supports multiple LLM providers with tiered model selection (fast/standard/power). Provider selection is determined at runtime based on available API keys:'
-          ),
-          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '16px', marginBottom: '20px' } },
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Anthropic'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'ANTHROPIC_API_KEY'),
-              ' (Claude models)'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'OpenAI'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'OPENAI_API_KEY'),
-              ' (GPT-4, GPT-5 models)'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Google'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'GOOGLE_API_KEY'),
-              ' (Gemini models)'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Mistral'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'MISTRAL_API_KEY'),
-              ' (Mistral models)'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'DeepSeek'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'DEEPSEEK_API_KEY'),
-              ' (DeepSeek models)'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Qwen'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'QWEN_API_KEY'),
-              ' (Qwen models)'
-            ),
-            React.createElement('li', null,
-              React.createElement('strong', null, 'NVIDIA'),
-              ' — Set ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'NVIDIA_API_KEY'),
-              ' (Nemotron models)'
-            )
-          ),
-          React.createElement('p', null,
-            'All LLM provider SDKs are restricted to lib/themis/provider.ts. No provider SDK may be imported elsewhere. This is enforced at the bundle level. For detailed model specifications, see the technical documentation.'
-          )
-        ),
+function Sec ({ id, num, title, children }) {
+  return h('section', { className: 'doc-section', id },
+    h('div', { className: 'doc-section-hd' },
+      h('span', { className: 'ds-num' }, num),
+      h('h2', null, title)),
+    children)
+}
 
-        // ── Security Model ──
-        React.createElement('section', { className: 'doc-section', id: 'security' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '04'),
-            React.createElement('h2', null, 'Security Model')
-          ),
-          React.createElement('p', null,
-            'Themis treats all inputs as untrusted and enforces five core security principles:'
-          ),
-          React.createElement('ol', { style: { marginLeft: '20px', marginTop: '16px', marginBottom: '20px' } },
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Every input is untrusted'),
-              ' — Task content, LLM outputs, skill phase content are all treated as potentially adversarial'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Sanitise before log'),
-              ' — Loggers receive only metadata (hashes, token counts, durations). No user input or LLM output reaches a log line'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Sanitise before client'),
-              ' — All errors pass through safeError() which returns one of three fixed strings. No stack traces, paths, or model names reach the client'
-            ),
-            React.createElement('li', { style: { marginBottom: '12px' } },
-              React.createElement('strong', null, 'Memory ephemeral'),
-              ' — No findings or task content is persisted to Redis, Supabase, or any external storage'
-            ),
-            React.createElement('li', null,
-              React.createElement('strong', null, 'Content integrity checks'),
-              ' — All skill phase content is validated against blocked-content patterns (script injection, eval, data URIs) before reaching agents'
-            )
-          )
-        ),
+function ThemisPage ({ paths, shots }) {
+  const platformsOf = id => paths.find(p => p.id === id).platforms
+  return h(
+    Layout,
+    { title: 'Themis', description: 'A governed security-operations agent that runs on your AI or as a local dashboard.' },
+    h('div', { className: 'container', style: { paddingBottom: '120px' } },
+      h('div', { className: 'page-head' },
+        h('h1', null, 'Themis'),
+        h('p', null, 'A security-operations agent built on Aegis. Give it a task, such as "validate exposure to CVE-2026-12345 on our VPN gateways". It plans the work, fans it out to specialist skills, checks every output, and writes a report stamped with the exact Themis and Aegis versions it used.'),
+        h('p', { style: { marginTop: '12px', fontSize: '13px', color: 'var(--faint)' } },
+          'Status: the plugin (1.1.0) and the standalone app (0.1.0) are built and tested in the repository. Their npm and marketplace installs open with the first release, and are marked below until then.')),
 
-        // ── API ──
-        React.createElement('section', { className: 'doc-section', id: 'api' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '05'),
-            React.createElement('h2', null, 'POST /api/themis')
-          ),
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '16px', marginBottom: '12px', color: 'var(--cream)' } }, 'Request'),
-          React.createElement('div', { className: 'code-block' },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '12px', fontFamily: 'var(--f-mono)', padding: '12px', color: 'var(--cream-dim)' } },
-              JSON.stringify({
-                task: 'Assess the attack surface for a hybrid cloud + OT environment',
-                context: {
-                  environments: ['enterprise', 'hybrid', 'ot'],
-                  attackSurfaceTags: ['network', 'lateral-movement']
-                },
-                threadId: 'optional-session-id'
-              }, null, 2)
-            )
-          ),
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Response'),
-          React.createElement('div', { className: 'code-block' },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '12px', fontFamily: 'var(--f-mono)', padding: '12px', color: 'var(--cream-dim)', maxHeight: '300px', overflowY: 'auto' } },
-              JSON.stringify({
-                report: '## Findings\n...',
-                subTaskResults: [],
-                guardrailSummary: { passed: 3, flagged: 0, blocked: 0 },
-                skillTrace: ['mitre-attack', 'deception-engineering'],
-                totalInputTokens: 12400,
-                totalOutputTokens: 3200,
-                durationMs: 8400,
-                threadId: 'abc-123'
-              }, null, 2)
-            )
-          ),
-          React.createElement('p', { style: { marginTop: '16px' } },
-            'Supports streaming: pass ',
-            React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'Accept: text/event-stream'),
-            ' to receive node-name events as the graph executes. Node content and findings are never included in SSE events.'
-          )
-        ),
+      h(Sec, { id: 'modes', num: '01', title: 'Two ways to run' },
+        h('div', { style: { border: '1px solid var(--border-dim)', overflowX: 'auto' } },
+          h('table', { className: 'platforms-table compare-table' },
+            h('thead', null, h('tr', null, ...['', 'Themis on your AI', 'Themis standalone'].map((c, i) => h('th', { key: i }, c)))),
+            h('tbody', null, ...COMPARE.map(row => h('tr', { key: row[0] },
+              ...row.map((c, i) => h('td', { key: i }, c)))))))),
 
-        // ── Audit ──
-        React.createElement('section', { className: 'doc-section', id: 'audit' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '06'),
-            React.createElement('h2', null, 'Debrief & Audit Trail')
-          ),
-          React.createElement('p', null,
-            'Each orchestration writes a metadata-only row to a local SQLite database:'
-          ),
-          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '16px', marginBottom: '20px' } },
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'thread_id'),
-              ' — Session correlation ID'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'task_hash'),
-              ' — SHA-256 of the task string (not the task itself)'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'skill_slugs'),
-              ' — JSON array of skills invoked'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'guardrail_summary'),
-              ' — { passed, flagged, blocked }'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'total_input_tokens'),
-              ' — Aggregated input token count'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'total_output_tokens'),
-              ' — Aggregated output token count'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'duration_ms'),
-              ' — Wall-clock duration'
-            ),
-            React.createElement('li', null,
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'created_at'),
-              ' — UTC timestamp'
-            )
-          ),
-          React.createElement('p', null,
-            'Findings text and task content are never written to SQLite. The audit trail captures only what is necessary for operational visibility and compliance.'
-          )
-        ),
+      h(Sec, { id: 'workflow', num: '02', title: 'The workflow' },
+        h('div', { className: 'lifecycle' },
+          ...WORKFLOW.map(([id, kind], i) => h('div', { key: id, className: 'lifecycle-step' },
+            h('span', { className: 'lifecycle-num' }, String(i + 1).padStart(2, '0')),
+            h('span', { className: 'lifecycle-name' }, id),
+            h('span', { className: 'lifecycle-tokens' }, kind)))),
+        h('p', { style: { marginTop: '16px' } },
+          'Deterministic steps are plain code in themis-core and behave the same in both modes. Reasoning steps are done by your assistant (plugin) or by the configured model (standalone).')),
 
-        // ── Installation & Deployment ──
-        React.createElement('section', { className: 'doc-section', id: 'installation' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '07'),
-            React.createElement('h2', null, 'Installation & Deployment')
-          ),
-          React.createElement('p', null,
-            'Themis is platform-agnostic and can be deployed as a self-hosted service, embedded in your application, or run locally. Choose the installation method that fits your architecture.'
-          ),
+      h(Sec, { id: 'governance', num: '03', title: 'Governance and approvals' },
+        h('ul', { style: { marginLeft: '20px', marginBottom: '16px', lineHeight: 1.8, color: 'var(--cream-dim)' } },
+          h('li', null, 'Every external tool is classified read, write or execute.'),
+          h('li', null, 'Reads run automatically within a per-run call budget and timeout; secrets are redacted and the output is wrapped as untrusted data.'),
+          h('li', null, 'Writes and executes become approval requests. Only a human can approve: the dashboard\'s Approvals page, or your client\'s own MCP prompt. No tool, graph node or model output can approve.'),
+          h('li', null, 'Every call, result and decision is written to the audit log.'),
+          h('li', null, 'An unreachable tool server degrades to "no tools"; it never crashes a run.')),
+        h('p', { style: { color: 'var(--muted)' } },
+          'Honest boundary: in plugin mode, tools you connect directly to your assistant bypass Themis and are not governed or audited. Register security tools with Themis to govern them. ',
+          h('a', { href: '/docs/themis/governance' }, 'Governance details →'))),
 
-          // ── NPM Package ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 1: Install as NPM Package'),
-          React.createElement('p', null,
-            'For JavaScript and Node.js projects:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-              'npm install @aegis-skills/themis'
-            )
-          ),
-          React.createElement('p', null,
-            'Import and use:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
-              `import { orchestrate } from '@aegis-skills/themis'
+      h(Sec, { id: 'screenshots', num: '04', title: 'Screenshots' },
+        h('div', { className: 'screenshot-grid' },
+          ...shots.map(s => h(Screenshot, { key: s.file, src: '/img/themis/' + s.file, alt: s.alt, caption: s.caption, exists: s.exists })))),
 
-const result = await orchestrate({
-  task: 'Assess attack surface for cloud environment',
-  context: {
-    environments: ['cloud', 'enterprise'],
-    attackSurfaceTags: ['network', 'api']
-  }
-})`
-            )
-          ),
+      h(Sec, { id: 'install', num: '05', title: 'Install' },
+        h('h3', { style: { margin: '8px 0 12px', color: 'var(--cream)' } }, 'Plugin mode (no API key)'),
+        h(InstallTabs, { tabs: platformsOf('themis-plugin') }),
+        h('h3', { style: { margin: '32px 0 12px', color: 'var(--cream)' } }, 'Standalone dashboard (your key or a local model)'),
+        h(InstallTabs, { tabs: platformsOf('themis-app') })),
 
-          // ── Docker ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 2: Docker Container'),
-          React.createElement('p', null,
-            'Deploy Themis as a containerized REST API:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)' } },
-              `docker run -e ANTHROPIC_API_KEY=sk-... -p 3000:3000 aegis-skills/themis`
-            )
-          ),
-          React.createElement('p', null,
-            'The Themis API will be available at ',
-            React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'http://localhost:3000/api/themis')
-          ),
-
-          // ── Vercel ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 3: Vercel Deployment'),
-          React.createElement('p', null,
-            'Deploy the full Aegis platform (Themis + skills) to Vercel:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
-              `# Clone repository
-git clone https://github.com/drupadsachania/aegis-skills.git
-cd aegis-skills
-
-# Deploy to Vercel
-vercel
-
-# Set environment variables
-vercel env add ANTHROPIC_API_KEY
-vercel env add OPENAI_API_KEY
-# ... add other provider keys as needed
-
-# Deploy with secrets
-vercel --prod`
-            )
-          ),
-
-          // ── Self-Hosted ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Option 4: Self-Hosted on Linux/macOS'),
-          React.createElement('p', null,
-            'Run Themis locally or on your own infrastructure:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
-              `# Prerequisites: Node.js 20+, npm 10+
-
-# Clone and setup
-git clone https://github.com/drupadsachania/aegis-skills.git
-cd aegis-skills
-npm install
-
-# Configure environment
-cp .env.local.example .env.local
-# Edit .env.local and add your LLM provider API keys
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-npm run start
-
-# Or run with PM2 for persistent service
-pm2 start npm --name themis -- start`
-            )
-          ),
-
-          // ── Environment Variables ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Environment Configuration'),
-          React.createElement('p', null,
-            'Themis requires at least one LLM provider API key. Set environment variables for your chosen provider:'
-          ),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
-              `# Supported providers (choose at least one):
-ANTHROPIC_API_KEY=sk-ant-...        # Claude models
-OPENAI_API_KEY=sk-...               # GPT models
-GOOGLE_API_KEY=AIz...               # Gemini models
-MISTRAL_API_KEY=...                 # Mistral models
-DEEPSEEK_API_KEY=...                # DeepSeek models
-QWEN_API_KEY=...                    # Qwen models
-NVIDIA_API_KEY=...                  # NVIDIA NIM models
-
-# Optional: Enable LangSmith tracing
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_API_KEY=lsv2_...
-LANGCHAIN_PROJECT=aegis-skills`
-            )
-          ),
-
-          // ── Quick Start ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Quick Start (Local)'),
-          React.createElement('div', { className: 'code-block', style: { marginTop: '8px', marginBottom: '12px' } },
-            React.createElement('div', { className: 'code-body', style: { fontSize: '11px', fontFamily: 'var(--f-mono)', padding: '8px', color: 'var(--cream-dim)', whiteSpace: 'pre-wrap' } },
-              `# 1. Clone repository
-git clone https://github.com/drupadsachania/aegis-skills.git
-cd aegis-skills
-
-# 2. Install dependencies
-npm install
-
-# 3. Configure LLM provider
-echo "ANTHROPIC_API_KEY=your-api-key-here" > .env.local
-
-# 4. Start local server (http://localhost:3000)
-npm run dev
-
-# 5. Test Themis API
-curl -X POST http://localhost:3000/api/themis \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "task": "Assess attack surface for hybrid cloud",
-    "context": {
-      "environments": ["cloud", "enterprise"],
-      "attackSurfaceTags": ["network", "lateral-movement"]
-    }
-  }'`
-            )
-          ),
-
-          // ── Deployment Best Practices ──
-          React.createElement('h3', { style: { fontSize: '16px', marginTop: '20px', marginBottom: '12px', color: 'var(--cream)' } }, 'Deployment Best Practices'),
-          React.createElement('ul', { style: { marginLeft: '20px', marginTop: '12px', marginBottom: '12px' } },
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'API keys in environment only'),
-              ' — Never commit .env files. Always use platform-specific secret management (Vercel Secrets, AWS Secrets Manager, etc.).'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'Set ulimit for file descriptors'),
-              ' — Themis uses LangGraph checkpointing. On Linux/macOS: ',
-              React.createElement('code', { style: { background: 'rgba(255,255,255,0.08)', padding: '2px 6px' } }, 'ulimit -n 4096')
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'Monitor memory usage'),
-              ' — Findings are held in-memory during orchestration. For large tasks, allocate 2GB+ RAM.'
-            ),
-            React.createElement('li', { style: { marginBottom: '8px' } },
-              React.createElement('strong', null, 'Enable request timeouts'),
-              ' — Set reverse proxy timeouts to 90s+ (Themis can take 30-60s per task).'
-            ),
-            React.createElement('li', null,
-              React.createElement('strong', null, 'Health check endpoint'),
-              ' — GET /api/health returns 200 if server is ready.'
-            )
-          )
-        ),
-
-        // ── More info ──
-        React.createElement('section', { className: 'doc-section' },
-          React.createElement('div', { className: 'doc-section-hd' },
-            React.createElement('span', { className: 'ds-num' }, '08'),
-            React.createElement('h2', null, 'Next Steps')
-          ),
-          React.createElement('p', null,
-            'See the ',
-            React.createElement('a', { href: '/docs', style: { color: 'var(--accent)', textDecoration: 'underline' } }, 'Documentation'),
-            ' page for getting started guides and API reference. For the complete technical specification, see ',
-            React.createElement('a', { href: 'https://github.com/drupadsachania/aegis-skills/blob/main/docs/TECHNICAL.md', target: '_blank', rel: 'noopener noreferrer', style: { color: 'var(--accent)', textDecoration: 'underline' } }, 'TECHNICAL.md'),
-            ' in the repository.'
-          )
-        )
-      )
-    )
+      h(Sec, { id: 'versions', num: '06', title: 'Versions' },
+        h('p', null,
+          'Themis reads skills from any installed Aegis with the same osk major version. Monthly skill updates and new skills are picked up automatically; an osk major bump needs a Themis release. The plugin uses your installed Aegis; the standalone app bundles its own. ',
+          h('a', { href: '/docs/themis/versions' }, 'Version compatibility →'))))
   )
 }
+
+async function getStaticProps () {
+  const fs = require('fs')
+  const path = require('path')
+  const { WEB_ROOT } = require('../lib/site-paths')
+  const { PATHS } = require('../lib/install-commands')
+  const shots = SHOTS.map(s => ({ ...s, exists: fs.existsSync(path.join(WEB_ROOT, 'public', 'img', 'themis', s.file)) }))
+  return { props: { paths: PATHS, shots } }
+}
+
+module.exports = { default: ThemisPage, getStaticProps }
+module.exports.default = ThemisPage
