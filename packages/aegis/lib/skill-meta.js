@@ -20,8 +20,10 @@ const PHASE_FILE = /^references\/[a-z0-9][a-z0-9._-]*\.md$/
 // Lock gray-matter to js-yaml; the eval-based javascript engine stays disabled.
 const ENGINES = { javascript: () => { throw new Error('javascript front-matter engine is disabled') } }
 
+// Line endings must not change the count: a Windows (CRLF) checkout and a Linux (LF) checkout of the same skill
+// have to agree, or lint fails on one of them. Count as if every line ended with a single LF.
 function estimateTokens (text) {
-  return Math.ceil(String(text).length / 4)
+  return Math.ceil(String(text).replace(/\r\n/g, '\n').length / 4)
 }
 
 function parseSkillMd (raw) {

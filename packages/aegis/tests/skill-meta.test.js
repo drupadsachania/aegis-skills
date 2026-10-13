@@ -26,6 +26,9 @@ describe('skill-meta', () => {
     expect(meta.estimateTokens('abcde')).toBe(2)
     expect(meta.estimateTokens('')).toBe(0)
   })
+  test('estimateTokens ignores CRLF vs LF line endings', () => {
+    expect(meta.estimateTokens('ab\r\ncd\r\nef\r\ngh\r\n')).toBe(meta.estimateTokens('ab\ncd\nef\ngh\n'))
+  })
 
   test('parseSkillMd returns data and body', () => {
     const r = meta.parseSkillMd('---\nname: t\n---\n\n# T\n')

@@ -50,17 +50,17 @@
     {
       "id": "ics-protocol-security",
       "file": "references/ics-protocol-security.md",
-      "tokens": 1409
+      "tokens": 1382
     },
     {
       "id": "safety-instrumented-systems",
       "file": "references/safety-instrumented-systems.md",
-      "tokens": 1371
+      "tokens": 1346
     },
     {
       "id": "live-threat-intel",
       "file": "references/live-threat-intel.md",
-      "tokens": 739,
+      "tokens": 738,
       "auto": true
     }
   ],

@@ -24,37 +24,37 @@
     {
       "id": "data-classification",
       "file": "references/data-classification.md",
-      "tokens": 1052
+      "tokens": 1031
     },
     {
       "id": "network-dlp",
       "file": "references/network-dlp.md",
-      "tokens": 1051
+      "tokens": 1028
     },
     {
       "id": "endpoint-dlp",
       "file": "references/endpoint-dlp.md",
-      "tokens": 937
+      "tokens": 920
     },
     {
       "id": "email-and-saas-dlp",
       "file": "references/email-and-saas-dlp.md",
-      "tokens": 1094
+      "tokens": 1072
     },
     {
       "id": "cloud-and-storage-dlp",
       "file": "references/cloud-and-storage-dlp.md",
-      "tokens": 1049
+      "tokens": 1029
     },
     {
       "id": "exfiltration-detection-and-response",
       "file": "references/exfiltration-detection-and-response.md",
-      "tokens": 1132
+      "tokens": 1110
     },
     {
       "id": "live-threat-intel",
       "file": "references/live-threat-intel.md",
-      "tokens": 718,
+      "tokens": 717,
       "auto": true
     }
   ],

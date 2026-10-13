@@ -24,7 +24,7 @@
     {
       "id": "intel-ingestion",
       "file": "references/intel-ingestion.md",
-      "tokens": 1098
+      "tokens": 1076
     },
     {
       "id": "attack-pattern-extraction",
@@ -39,22 +39,22 @@
     {
       "id": "attack-surface-coverage",
       "file": "references/attack-surface-coverage.md",
-      "tokens": 1486
+      "tokens": 1459
     },
     {
       "id": "intel-to-detection",
       "file": "references/intel-to-detection.md",
-      "tokens": 1334
+      "tokens": 1305
     },
     {
       "id": "continuous-learning-loop",
       "file": "references/continuous-learning-loop.md",
-      "tokens": 1506
+      "tokens": 1476
     },
     {
       "id": "live-threat-intel",
       "file": "references/live-threat-intel.md",
-      "tokens": 1137,
+      "tokens": 1136,
       "auto": true
     }
   ],
