@@ -344,7 +344,7 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 ## 15. Open items and decisions to confirm
 
 1. Foundation accent and logo are placeholders (neutral ink). Needs the owner. Aegis and Themis now have owner-supplied logos; Argus has none in this repository.
-2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. The legal copyright holder is also settled (owner decision 2026-10-12): Kairos Foundation.
+2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. The legal copyright holder is the individual maintainer, Drupad Sachania (owner decision 2026-10-13, superseding 2026-10-12).
 3. ~~Font hosting~~ Resolved: Adobe Fonts kit for teimer-web and legitima, Red Hat Mono self-hosted; no Adobe domain setup is needed (verified 2026-10-13, see FONTS.md).
 4. Tokens are not yet consumed by `apps/web` or `themis-app/ui`; adoption is a follow-up task.
 5. Screenshots for this research were taken at narrow pane width; desktop-only behaviours (e.g. hover states, sticky sections on Hermes/MAI) were read from CSS and are not verified visually.

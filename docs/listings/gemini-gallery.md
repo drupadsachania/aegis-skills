@@ -67,7 +67,7 @@ Also keep the repository root clean of a second copy of the manifest unless opti
 1. **Choose option A, B or C** (the earlier table): A (release archive) is recommended; B (copy at repo root) and C (separate repository) remain valid. Not decided by the owner yet.
 2. ~~Repository public~~ **Satisfied per the owner (2026-10-12); not verified here.** Still to do: add the `gemini-cli-extension` topic in the repository About section.
 3. **Phase 7 publish** of `aegis-skills@1.5.0`: the manifest runs `npx -y aegis-skills@1.5.0 mcp`, which fails until that version is on npm. Phase 7 also builds the archive and the Latest release.
-4. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.**
+4. ~~Copyright and licence holder~~ **Decided 2026-10-13: the individual maintainer, Drupad Sachania (an independent project, no organisation).**
 5. **Name check** for "aegis" in the gallery.
 6. No terms-of-service URL is requested by the pages read; if one is asked for, it is <https://aegis-skills.vercel.app/terms> once deployed (`docs/legal/terms.md`).
 7. No verified contact channel is requested by the Gemini pages read; the mailbox status in [README.md](README.md) does not block this listing.

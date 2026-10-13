@@ -22,28 +22,30 @@ const text = h => h.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g
 
 test('the page renders the terms with a version and an update date', () => {
   expect(html).toContain('Terms of <em>Service</em>')
-  expect(text(html)).toMatch(/Version 1\.1 · Last updated 2026-10-13/)
-  for (const h2 of ['What this service is', 'Open-source licences', 'Authorised, lawful, defensive use only', 'No warranty', 'Limitation of liability', 'Availability and fair use', 'Third-party services', 'Changes to these terms', 'Governing law', 'Contact']) {
+  expect(text(html)).toMatch(/Version 1\.4 · Last updated 2026-10-13/)
+  for (const h2 of ['What the projects provide', 'Open-source licensing and project identity', 'Responsible use of the Hosted Services', 'No warranty; experimental security guidance', 'Limitation of liability', 'Availability, limits and changes', 'Privacy and third-party processing', 'Changes to these Terms', 'Governing law', 'Contact and security reports']) {
     expect(text(html)).toContain(h2)
   }
 })
 
-test('the governing-law placeholder is a comment in the source and a visible sentence on the page, never a leaked comment', () => {
-  expect(source).toContain('<!-- USER: governing law and jurisdiction -->')
-  expect(text(html)).toContain("Governing law will be stated here once the Kairos Foundation's jurisdiction is confirmed.")
+test('the maintainer is named, the terms are final, and no draft marker or leaked comment reaches the page', () => {
+  expect(text(html)).toMatch(/Maintainer: Drupad Sachania/)
+  expect(source).not.toMatch(/INSERT|Draft for review|Publication checklist/i)
+  expect(text(html)).toContain('governed by the laws of India')
   expect(html).not.toMatch(/&lt;!--|<!--(?!-)|USER:/)
 })
 
 test('it states the facts the code backs: licence holder, rate limit, no model calls, no stored data', () => {
   const t = text(html)
-  expect(t).toContain('Kairos Foundation')
+  expect(t).toContain('Drupad Sachania')
   expect(t).toContain('Apache-2.0 OR MIT')
-  expect(t).toMatch(/120 requests a minute/)
-  expect(t).toMatch(/never send your data to an AI model/)
+  expect(t).toMatch(/120 requests per minute per IP address/)
+  expect(t).toMatch(/64 KB/)
+  expect(t).toMatch(/do not themselves call an AI model/)
   const rate = fs.readFileSync(path.join(WEB_ROOT, 'lib', 'rate-limit.ts'), 'utf8')
   expect(rate).toMatch(/120/)
   expect(t).toContain('Adobe Fonts')
-  expect(t).toContain('no cookies')
+  expect(t).toMatch(/not to set cookies or run analytics/)
 })
 
 test('it invents no legal entity details', () => {
@@ -53,7 +55,8 @@ test('it invents no legal entity details', () => {
   expect(new Set(emails)).toEqual(new Set(['support@kairos-foundation.org', 'privacy@kairos-foundation.org']))
   expect(html).toContain('href="mailto:support@kairos-foundation.org"')
   expect(html).toContain('href="mailto:privacy@kairos-foundation.org"')
-  expect(t).toMatch(/do not use email/)
+  expect(t).toMatch(/not a representation|does not stand for an incorporated foundation/)
+  expect(t).toMatch(/do not post exploit details in a public issue or ordinary support email/)
 })
 
 test('every internal link resolves to a real page', () => {

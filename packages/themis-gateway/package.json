@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE", "LICENSE-APACHE", "LICENSE-MIT"],
   "engines": { "node": ">=24" },
-  "author": "Kairos Foundation",
+  "author": "Drupad Sachania",
   "homepage": "https://github.com/drupadsachania/aegis-skills/tree/main/packages/themis-gateway#readme",
   "bugs": { "url": "https://github.com/drupadsachania/aegis-skills/issues" },
   "keywords": ["themis", "security", "cybersecurity", "mcp", "model-context-protocol", "agent", "governance", "approvals", "aegis"],

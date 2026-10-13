@@ -2,9 +2,9 @@
 
 Maintainer file. Every directory runbook in this folder takes its names, descriptions and keywords from here, so a change is made once. Nothing is published to npm or to any directory yet, so none of this copy describes a live listing.
 
-Publisher and organisation name used on listings: **Kairos Foundation** (<https://kairos-foundation.org/>). Project repository: <https://github.com/drupadsachania/aegis-skills>. Website: <https://aegis-skills.vercel.app>.
+Publisher name used on listings (an individual maintainer; no organisation): **Drupad Sachania** (<https://github.com/drupadsachania>). Project repository: <https://github.com/drupadsachania/aegis-skills>. Website: <https://aegis-skills.vercel.app>.
 
-> DECIDED (owner, 2026-10-12): the copyright and licence holder is **Kairos Foundation**. `LICENSE*`, `package.json` `author`, both `.claude-plugin/plugin.json` `author` fields and `.claude-plugin/marketplace.json` `owner` all say so. The repository URL `github.com/drupadsachania/aegis-skills` is only the repository location.
+> DECIDED (owner, 2026-10-13, superseding 2026-10-12): the copyright and licence holder is **Drupad Sachania**. `LICENSE*`, `package.json` `author`, both `.claude-plugin/plugin.json` `author` fields and `.claude-plugin/marketplace.json` `owner` all say so. The repository URL `github.com/drupadsachania/aegis-skills` is only the repository location.
 
 ## Names and category
 

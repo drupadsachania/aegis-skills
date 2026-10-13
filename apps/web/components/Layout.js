@@ -11,8 +11,7 @@ const h = React.createElement
 const SITE = 'Aegis + Themis'
 const DEFAULT_DESCRIPTION = 'Open cybersecurity skill pack and a governed SOC agent that runs on your own AI. Apache-2.0 OR MIT.'
 const REPO_URL = 'https://github.com/drupadsachania/aegis-skills'
-const KAIROS_URL = 'https://kairos-foundation.org/'
-const KAIROS_GITHUB_URL = 'https://github.com/kairos-dev-kairos-ecl'
+const MAINTAINER_URL = 'https://github.com/drupadsachania'
 // Absolute origin for og:image and the canonical link (crawlers need a full URL). Defined in lib/site-url.js; change it there when a custom domain goes live.
 const { SITE_URL } = require('../lib/site-url')
 const THEME_KEY = 'aegis-theme'
@@ -44,8 +43,7 @@ const FOOTER_COLUMNS = [
     { href: '/terms', label: 'Terms' },
     { href: '/license', label: 'License' },
     { href: 'mailto:support@kairos-foundation.org', label: 'Contact' },
-    { href: REPO_URL, label: 'GitHub', external: true },
-    { href: KAIROS_URL, label: 'Kairos Foundation', external: true }
+    { href: REPO_URL, label: 'GitHub', external: true }
   ] }
 ]
 
@@ -286,9 +284,7 @@ function Footer () {
           h('a', { href: '/', className: 'footer-brand' }, h(BrandIcons, { size: 30 }), h('span', null, 'Aegis ', h('em', null, '+ Themis'))),
           h('p', { className: 'footer-blurb' }, 'An open cybersecurity skill pack and a governed SOC agent, run on your own AI.'),
           h('p', { className: 'footer-parent' },
-            'A ', external(KAIROS_URL, 'Kairos Foundation'), ' project',
-            h('span', { className: 'sep', 'aria-hidden': 'true' }, '·'),
-            external(KAIROS_GITHUB_URL, 'Kairos on GitHub ↗'))),
+            'An independent open-source project maintained by ', external(MAINTAINER_URL, 'Drupad Sachania'))),
         ...FOOTER_COLUMNS.map(col => h('div', { key: col.title, className: 'footer-col' },
           h('h2', null, col.title),
           h('ul', null, ...col.links.map(l => h('li', { key: l.label },

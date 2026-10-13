@@ -114,12 +114,12 @@ describe('document and head wiring', () => {
 })
 
 describe('footer', () => {
-  it('credits Kairos Foundation with an external link, plus its GitHub organisation', () => {
+  it('credits the independent maintainer with an external link and names no organisation', () => {
     render(PAGES.layout())
-    const foundation = Array.from(document.querySelectorAll('footer a')).filter(a => a.getAttribute('href') === 'https://kairos-foundation.org/')
-    expect(foundation.length).toBeGreaterThan(0)
-    for (const a of foundation) expect(a.getAttribute('rel')).toMatch(/noopener/)
-    expect(document.querySelector('footer').textContent).toMatch(/A Kairos Foundation project/)
-    expect(document.querySelector('footer a[href="https://github.com/kairos-dev-kairos-ecl"]')).not.toBeNull()
+    const maintainer = Array.from(document.querySelectorAll('footer a')).filter(a => a.getAttribute('href') === 'https://github.com/drupadsachania')
+    expect(maintainer.length).toBeGreaterThan(0)
+    for (const a of maintainer) expect(a.getAttribute('rel')).toMatch(/noopener/)
+    expect(document.querySelector('footer').textContent).toMatch(/independent open-source project maintained by Drupad Sachania/)
+    expect(document.querySelector('footer').textContent).not.toMatch(/Kairos/)
   })
 })

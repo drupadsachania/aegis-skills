@@ -73,6 +73,6 @@ test('every listing has at least three example prompts', () => {
 })
 
 test('the copyright holder is recorded as decided', () => {
-  expect(text).toContain('Kairos Foundation')
+  expect(text).toContain('Drupad Sachania')
   expect(text).not.toMatch(/undecided|still open/i)
 })
