@@ -2,7 +2,7 @@
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
 
-Status as of 2026-10-12: not submitted, not listed. The ZIP build script is Phase 7 (`scripts/build-chatgpt-bundle.js`); it does not exist yet and this file does not generate a ZIP.
+Status as of 2026-10-13: not submitted, not listed. `node scripts/build-chatgpt-bundle.js --out <dir>` now builds the ZIP from `listings/chatgpt/` (the listing source: `plugin.json`, `plugin-readme.md`, `assets/logo.png`) and `packages/aegis/skills`, re-reads it and validates the verified limits below; every Aegis release attaches it as `aegis-chatgpt-plugin-<version>.zip` (see docs/RELEASE-RUNBOOK.md). Nothing is submitted.
 
 ## Owner decision (2026-10-12) and its consequence
 
@@ -60,7 +60,9 @@ Listing requirements (guidelines page):
 6. The note says to add a logo and "required listing metadata"; the exact required set for a skills-only plugin is not stated on the pages read (the portal's Metadata and Skills findings are the authority).
 7. The earlier version of this runbook said the manifest schema was not published; the build page does publish it (above), so that statement is replaced.
 
-## Planned Aegis ZIP layout (to be built by Phase 7; not generated here)
+## Aegis ZIP layout (built by `scripts/build-chatgpt-bundle.js`)
+
+As built: the logo is `assets/logo.png` (512x512 PNG resized from `design/brand/source/aegis-tile.webp`, 204 KB) rather than the SVG named below; `category`, `capabilities` and `brandColor` are left out because their allowed values are UNVERIFIED; `supportURL` is not set. The ZIP holds no `mcp.json`, hooks, apps or credentials. Contents of `listings/chatgpt/` other than `plugin.json`, `plugin-readme.md` (packed as `README.md`) and `assets/` never enter the ZIP. Size of the 1.1.0 build: 568 KB; OpenAI states no maximum ZIP size (UNVERIFIED).
 
 ```
 aegis-skills/              (ZIP root is the plugin root)

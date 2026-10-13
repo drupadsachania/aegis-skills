@@ -2,7 +2,7 @@
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
 
-Status as of 2026-10-12: not listed. The extension manifest exists at `packages/aegis/gemini-extension.json`, but it is not at the repository root and nothing is on npm. Only the Aegis extension is planned; Themis has no Gemini extension.
+Status as of 2026-10-13: not listed. The extension manifest exists at `packages/aegis/gemini-extension.json`, but it is not at the repository root and nothing is on npm. The release pipeline (`scripts/build-release-assets.js`) builds `darwin.aegis-skills.zip`, `linux.aegis-skills.zip` and `win32.aegis-skills.zip` (identical content, `gemini-extension.json` at the archive root, `GEMINI.md`, README, licences and `skills/`) and attaches them to every Aegis release, which is the only kind marked Latest. Only the Aegis extension is planned; Themis has no Gemini extension.
 
 ## Sources (fetched 2026-10-12, summarising fetch tool)
 
@@ -43,7 +43,7 @@ The unauthenticated `gh` CLI could not be used to query GitHub (not logged in), 
 
 The file has `name`, `version`, `description`, `contextFileName` and `mcpServers.aegis` (`npx -y aegis-skills@1.1.0 mcp`, env `AEGIS_NO_AUTO_REFRESH=1`). Every one of those is a verified field and the `npx` pin is exact. **Diff to apply: none.** Nothing was changed. Do not add `$schema`, `author`, `license` or `repository` (unverified).
 
-## Recommended release-archive layout (built by Phase 7's release-assets script)
+## Recommended release-archive layout (built by `scripts/build-release-assets.js`; file names as built are `{platform}.aegis-skills.zip` for darwin, linux and win32, per the documented `{platform}.{name}.{ext}` pattern, not the single generic asset described below)
 
 Option A from the earlier analysis, now recommended: attach one archive to the GitHub Release marked Latest, so the repository can stay a monorepo.
 

@@ -56,6 +56,10 @@ The site loads its fonts from the kit through `use.typekit.net` and `p.typekit.n
 - [x] `POST /api/mcp` with `tools/call` `list_skills` returns the 24 skills; the 121st request within a minute from one IP answers 429 (126 requests sent, 6 got 429).
 - [ ] Not run here (needs Vercel): the install step with the override above, and the Include source files toggle.
 
+## After the first npm release
+
+The Aegis install commands on the site carry an "after the first release" marker until one constant is flipped: see section 4 of [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md). Redeploy afterwards.
+
 ## Post-deploy smoke checklist
 
 Replace `$O` with the production origin.

@@ -23,6 +23,8 @@ const MUST_EXIST = [
   '.github/workflows/ci.yml', '.github/dependabot.yml', 'scripts/ci-detect.js', 'scripts/assert-no-native.js',
   'scripts/lib/release-manifests.js', 'scripts/check-versions.js', 'scripts/bump-version.js', 'scripts/assert-pack.js', 'scripts/pack-to.js',
   'scripts/__tests__/release-manifests.test.js', 'scripts/__tests__/bump-version.test.js', 'scripts/__tests__/assert-pack.test.js', 'scripts/__tests__/workflows.test.js', 'scripts/tests/release-guard.test.js',
+  // Phase 7 part B: release pipeline
+  'scripts/lib/zip.js', 'scripts/lib/zip-read.js', 'scripts/lib/release-validate.js', 'scripts/build-chatgpt-bundle.js', 'scripts/build-release-assets.js', 'scripts/__tests__/release-assets.test.js', 'listings/chatgpt/plugin.json', 'listings/chatgpt/plugin-readme.md', 'listings/chatgpt/assets/logo.png', 'scripts/wait-for-deps.js', 'scripts/intel-release-check.js', 'scripts/__tests__/intel-release-check.test.js', 'scripts/__tests__/wait-for-deps.test.js', '.github/workflows/release.yml', '.github/workflows/intel-release.yml', '.github/release-notes/aegis-skills@1.1.0.md', '.github/release-notes/@aegis-skills__themis-core@0.1.0.md', '.github/release-notes/@aegis-skills__themis-gateway@0.1.0.md', 'docs/RELEASE-RUNBOOK.md',
   'packages/aegis/LICENSE', 'packages/aegis/LICENSE-APACHE', 'packages/aegis/LICENSE-MIT',
   'packages/themis-core/README.md', 'packages/themis-core/LICENSE', 'packages/themis-core/LICENSE-APACHE', 'packages/themis-core/LICENSE-MIT',
   'packages/themis-gateway/README.md', 'packages/themis-gateway/LICENSE', 'packages/themis-gateway/LICENSE-APACHE', 'packages/themis-gateway/LICENSE-MIT',
@@ -122,7 +124,7 @@ const MUST_NOT_EXIST = [
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
   'README.md', 'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
-  'apps', 'packages', 'scripts', 'docs', 'design'
+  'apps', 'packages', 'scripts', 'docs', 'design', 'listings'
 ])
 const PACKAGES = [
   ['package.json', 'aegis-skills-monorepo'],
