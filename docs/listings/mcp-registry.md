@@ -2,7 +2,7 @@
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
 
-Status as of 2026-10-12: nothing published to the registry. The registry only hosts metadata, so both npm packages must be published first (Phase 7). The `server.json` files and `mcpName` fields are ready and checked by `npm run check:registry`.
+Status as of 2026-10-13: **Aegis is published** (`io.github.drupadsachania/aegis-skills` 1.5.0, status active, published 16:04 UTC; verified with the search URL in step 6). Themis is not: its npm package is unpublished. The registry only hosts metadata, so the npm package must exist first. The `server.json` files and `mcpName` fields are ready and checked by `npm run check:registry`.
 
 ## Sources (fetched 2026-10-12)
 

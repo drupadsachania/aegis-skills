@@ -2,7 +2,7 @@
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
 
-Status as of 2026-10-13: not listed. The extension manifest exists at `packages/aegis/gemini-extension.json`, but it is not at the repository root and nothing is on npm. The release pipeline (`scripts/build-release-assets.js`) builds `darwin.aegis-skills.zip`, `linux.aegis-skills.zip` and `win32.aegis-skills.zip` (identical content, `gemini-extension.json` at the archive root, `GEMINI.md`, README, licences and `skills/`) and attaches them to every Aegis release, which is the only kind marked Latest. Only the Aegis extension is planned; Themis has no Gemini extension.
+Status as of 2026-10-13: not listed yet. The Release archives exist and `gemini extensions install` from the repository succeeded on a clean machine; the only step left is the `gemini-cli-extension` repository topic, then the daily crawl. (Older status text follows.) The extension manifest exists at `packages/aegis/gemini-extension.json`, but it is not at the repository root and nothing is on npm. The release pipeline (`scripts/build-release-assets.js`) builds `darwin.aegis-skills.zip`, `linux.aegis-skills.zip` and `win32.aegis-skills.zip` (identical content, `gemini-extension.json` at the archive root, `GEMINI.md`, README, licences and `skills/`) and attaches them to every Aegis release, which is the only kind marked Latest. Only the Aegis extension is planned; Themis has no Gemini extension.
 
 ## Sources (fetched 2026-10-12, summarising fetch tool)
 
