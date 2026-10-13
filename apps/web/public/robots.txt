@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aegis-skills.vercel.app/sitemap.xml

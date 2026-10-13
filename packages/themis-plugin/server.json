@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.drupadsachania/themis",
+  "title": "Themis Security Operations",
+  "description": "Governed security workflows on your own AI: audited tools, human-approved writes, no API key.",
+  "version": "1.1.0",
+  "websiteUrl": "https://aegis-skills.vercel.app",
+  "repository": { "url": "https://github.com/drupadsachania/aegis-skills", "source": "github", "subfolder": "packages/themis-plugin" },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@aegis-skills/themis-plugin",
+      "version": "1.1.0",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}

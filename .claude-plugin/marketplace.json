@@ -1,0 +1,24 @@
+{
+  "name": "aegis-skills",
+  "description": "Aegis defensive cybersecurity skills.",
+  "owner": {
+    "name": "Kairos Foundation",
+    "url": "https://kairos-foundation.org/"
+  },
+  "plugins": [
+    {
+      "name": "aegis",
+      "source": "./packages/aegis",
+      "version": "1.5.0",
+      "description": "24 defensive cybersecurity Agent Skills and the hosted read-only Aegis MCP server.",
+      "category": "security",
+      "tags": [
+        "cybersecurity",
+        "security",
+        "mitre-attack",
+        "dfir",
+        "threat-hunting"
+      ]
+    }
+  ]
+}

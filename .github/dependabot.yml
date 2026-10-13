@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Bumps the full-SHA action pins in .github/workflows. Weekly on purpose: action pins are
+  # a security surface, unlike the monthly skill-content cadence.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,86 @@
+{
+  "osk": "1.1",
+  "name": "security-documentation",
+  "version": "1.1.0",
+  "description": "Security documentation authoring workflow for policies, runbooks, and incident response templates. Triggers for: new security policy creation, IR runbook authoring, compliance documentation, or any exercise requiring structured security writing that meets audit and operational standards.",
+  "family": "governance",
+  "frameworks": [
+    "iso-27001",
+    "nist-csf",
+    "sans-policies"
+  ],
+  "tags": [
+    "security",
+    "documentation",
+    "policy",
+    "runbook",
+    "incident-response",
+    "compliance"
+  ],
+  "phases": [
+    {
+      "id": "policy-writing",
+      "file": "references/policy-writing.md",
+      "tokens": 738
+    },
+    {
+      "id": "runbook-authoring",
+      "file": "references/runbook-authoring.md",
+      "tokens": 784
+    },
+    {
+      "id": "incident-templates",
+      "file": "references/incident-templates.md",
+      "tokens": 874
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 208,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "sans-policy-templates",
+      "nist-csf"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "monthly",
+    "sources": [
+      "sans-policy-templates",
+      "nist-csf-updates",
+      "iso-27001-updates"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 180,
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 2,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "manufacturing",
+      "technology"
+    ],
+    "attack-surface-tags": [
+      "governance",
+      "compliance",
+      "policy",
+      "documentation",
+      "audit"
+    ]
+  }
+}

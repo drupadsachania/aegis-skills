@@ -1,0 +1,100 @@
+{
+  "osk": "1.1",
+  "name": "attack-surface-mapping",
+  "version": "1.1.0",
+  "description": "Attack surface mapping and exposure analysis workflow. Triggers for: external attack surface assessment, internet-facing asset discovery, cloud misconfiguration audit, or any exercise requiring a comprehensive map of an organisation's exploitable exposure.",
+  "family": "intel",
+  "frameworks": [
+    "mitre-attack",
+    "owasp-asvs"
+  ],
+  "tags": [
+    "security",
+    "attack-surface",
+    "reconnaissance",
+    "exposure",
+    "cloud-security",
+    "external-assets"
+  ],
+  "phases": [
+    {
+      "id": "external-discovery",
+      "file": "references/external-discovery.md",
+      "tokens": 676
+    },
+    {
+      "id": "internal-enumeration",
+      "file": "references/internal-enumeration.md",
+      "tokens": 594
+    },
+    {
+      "id": "cloud-exposure",
+      "file": "references/cloud-exposure.md",
+      "tokens": 762
+    },
+    {
+      "id": "risk-prioritization",
+      "file": "references/risk-prioritization.md",
+      "tokens": 706
+    },
+    {
+      "id": "cve-exposure-management",
+      "file": "references/cve-exposure-management.md",
+      "tokens": 1242
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 807,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "shodan-feed",
+      "censys-feed",
+      "cisa-advisories"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nvd-cve-feed",
+      "shodan-monitored",
+      "cisa-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 30,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-59310, CVE-2026-62878, CVE-2026-62815, CVE-2026-58231, CVE-2007-3010, CVE-2016-6277 — verify whether this estate is exposed",
+      "Dominant themes: zero-day (x7) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 9,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "saas"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "retail",
+      "technology"
+    ],
+    "attack-surface-tags": [
+      "external-exposure",
+      "reconnaissance",
+      "cloud-misconfiguration",
+      "internet-facing",
+      "shadow-it"
+    ]
+  }
+}

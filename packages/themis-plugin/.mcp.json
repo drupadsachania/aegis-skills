@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "themis": { "command": "npx", "args": ["-y", "@aegis-skills/themis-plugin@1.1.0", "themis-mcp"] },
+    "aegis": { "command": "npx", "args": ["-y", "aegis-skills@1.5.0", "mcp"] }
+  }
+}

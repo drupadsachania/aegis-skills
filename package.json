@@ -1,87 +1,42 @@
 {
-  "name": "@aegis-skills/core",
-  "version": "1.0.0",
-  "description": "Universal security skill library (24 skills) for Claude, ChatGPT, Cursor, Gemini, and VS Code. Install once globally, use everywhere.",
-  "type": "commonjs",
-  "main": "src/compiler.js",
-  "bin": {
-    "aegis": "./bin/aegis.js"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
+  "name": "aegis-skills-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Aegis security skill pack, Themis security-operations agent and the aegis-skills website.",
+  "license": "(Apache-2.0 OR MIT)",
   "repository": {
     "type": "git",
     "url": "https://github.com/drupadsachania/aegis-skills"
   },
-  "homepage": "https://aegis-skills.vercel.app/",
-  "bugs": {
-    "url": "https://github.com/drupadsachania/aegis-skills/issues"
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24"
   },
   "scripts": {
-    "test": "node bin/aegis.js --version && node bin/aegis.js compile && node -e \"require('./lib/tools/detector').detectAllTools()\" && echo 'Basic tests passed'",
-    "test:watch": "jest --watch",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "author": "Kairo Foundation",
-  "keywords": [
-    "skills",
-    "claude",
-    "chatgpt",
-    "cursor",
-    "gemini",
-    "vscode",
-    "security",
-    "mitre",
-    "threat-analysis",
-    "threat-intelligence",
-    "dlp",
-    "ics-security",
-    "exposure-management",
-    "ctem",
-    "mcp",
-    "model-context-protocol"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "@anthropic-ai/sdk": "0.98.0",
-    "@google/generative-ai": "0.24.1",
-    "@langchain/anthropic": "^0.3.7",
-    "@langchain/core": "^0.3.1",
-    "@langchain/google-genai": "^0.1.4",
-    "@langchain/langgraph": "^0.2.19",
-    "@langchain/openai": "^0.3.14",
-    "@modelcontextprotocol/sdk": "1.31.0",
-    "@supabase/supabase-js": "^2.43.0",
-    "ajv": "^8.17.1",
-    "better-sqlite3": "^12.10.0",
-    "chalk": "^4.1.2",
-    "commander": "11.1.0",
-    "gray-matter": "^4.0.3",
-    "inquirer": "^8.2.6",
-    "langsmith": "^0.6.0",
-    "next": "^14.2.3",
-    "openai": "6.39.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "zod": "^3.23.8"
+    "dev": "npm run dev -w @aegis-skills/web",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start -w @aegis-skills/web",
+    "test": "jest",
+    "skill-health": "node scripts/skill-health.js",
+    "intel-sync": "node scripts/intel-sync.js",
+    "check:layout": "node scripts/check-layout.js",
+    "check:versions": "node scripts/check-versions.js",
+    "bump": "node scripts/bump-version.js",
+    "test:scripts": "node --test \"scripts/__tests__/*.test.js\"",
+    "lint:skills": "node scripts/lint-skills.js",
+    "skills:tokens": "node scripts/sync-skill-tokens.js",
+    "skills:migrate": "node scripts/migrate-skill-frontmatter.js",
+    "build:prompts": "node scripts/build-flat-prompts.js",
+    "atlas:check": "node scripts/check-atlas-ids.js",
+    "check:deps": "node scripts/check-deps.js && node scripts/check-deps-themis.js && node scripts/check-registry-meta.js && node scripts/check-plugin-bundle.js",
+    "check:registry": "node scripts/check-registry-meta.js && node scripts/check-plugin-bundle.js"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/better-sqlite3": "^7.6.8",
-    "@types/node": "25.9.1",
-    "@types/react": "19.2.15",
-    "@types/react-dom": "19.2.3",
-    "autoprefixer": "^10.5.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.4.1",
-    "node-mocks-http": "^1.14.1",
-    "postcss": "^8.5.15",
-    "tailwindcss": "^3.4.0",
-    "typescript": "6.0.3"
+    "@swc/core": "1.7.0",
+    "@swc/jest": "0.2.36",
+    "jest": "^29.7.0"
   }
 }

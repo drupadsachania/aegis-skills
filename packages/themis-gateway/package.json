@@ -1,0 +1,28 @@
+{
+  "name": "@aegis-skills/themis-gateway",
+  "version": "0.1.0",
+  "description": "Governed MCP client for Themis: allowlist, read/write/execute classification, budgets, redaction, untrusted-output wrapping and human-only approvals.",
+  "license": "(Apache-2.0 OR MIT)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE", "LICENSE-APACHE", "LICENSE-MIT"],
+  "engines": { "node": ">=24" },
+  "author": "Kairos Foundation",
+  "homepage": "https://github.com/drupadsachania/aegis-skills/tree/main/packages/themis-gateway#readme",
+  "bugs": { "url": "https://github.com/drupadsachania/aegis-skills/issues" },
+  "keywords": ["themis", "security", "cybersecurity", "mcp", "model-context-protocol", "agent", "governance", "approvals", "aegis"],
+  "publishConfig": { "access": "public", "provenance": true },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drupadsachania/aegis-skills.git",
+    "directory": "packages/themis-gateway"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aegis-skills/themis-core": "^0.1.0",
+    "@modelcontextprotocol/sdk": "1.31.0"
+  }
+}

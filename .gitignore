@@ -7,10 +7,25 @@ coverage/
 .env.local
 .env*.local
 .next/
+apps/web/public/downloads/
+apps/web/public/sitemap.xml
 test_output.txt
 
 # Themis local SQLite debrief database — contains run metadata, never commit
 data/
+# ...except repo data files that live in scripts/data (tracked JSON used by build scripts)
+!scripts/data/
 
 # intel-sync run state (regenerated each run)
 .intel-sync-state.json
+
+# graphify knowledge-graph output (local tooling, never committed)
+graphify-out/
+
+dist/
+apps/web/.generated/
+*.tgz
+apps/web/styles/tokens.generated.css
+
+# Phase 7 release staging (tarballs, assets, checksums)
+dist-release/

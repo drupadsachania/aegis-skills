@@ -1,55 +1,56 @@
 name: Skill Health Check
 
+# Internal maintainer tooling (Phase 7 amendment 1). The output (packages/aegis/health.json and the below-threshold PR)
+# is never published, shipped in a package or shown on the website. Runs monthly, on the 1st at 00:00 UTC.
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+# GITHUB_TOKEN gets nothing at the workflow level. Pushes and the PR use SKILL_HEALTH_PAT (needs bypass on main).
+permissions: {}
+
+concurrency:
+  group: skill-health
+  cancel-in-progress: false
 
 jobs:
   skill-health:
     name: Score skill health against ATT&CK + NVD
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.SKILL_HEALTH_PAT }}
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '24'
+          package-manager-cache: false
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Compile all skills
-        run: node bin/aegis.js compile
-
+      # No npm ci: skill-health.js uses Node built-ins only, so no third-party code runs next to the PAT.
       - name: Run skill-health script
         id: health
         run: |
           node scripts/skill-health.js
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
         continue-on-error: true
 
       - name: Check health.json was written
         run: |
-          if [ ! -f health.json ]; then
-            echo "ERROR: health.json was not written"
+          if [ ! -f packages/aegis/health.json ]; then
+            echo "ERROR: packages/aegis/health.json was not written"
             exit 1
           fi
-          cat health.json | node -e "
-            const d=require('fs').readFileSync('/dev/stdin','utf8');
-            const j=JSON.parse(d);
+          node -e "
+            const j=JSON.parse(require('fs').readFileSync('packages/aegis/health.json','utf8'));
             Object.entries(j.skills).forEach(([k,v]) => {
-              const badge = v['health-score']>=0.90?'🟢':v['health-score']>=0.75?'🟡':'🔴';
+              const badge = v['health-score']>=0.90?'GREEN ':v['health-score']>=0.75?'YELLOW':'RED   ';
               console.log(badge+' '+k+': '+v['health-score']);
             });
           "
@@ -57,21 +58,17 @@ jobs:
       - name: Commit updated health.json
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add health.json
-          # Always commit — the generated timestamp changes every run so there's always a diff
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/aegis/health.json
           git diff --staged --quiet || git commit -m "chore(health): update skill health scores [skip ci]"
-          # Pull latest main before pushing to avoid non-fast-forward rejection
           git pull --rebase origin main
-          git push origin main
+          git push origin HEAD:main
 
       - name: Check for skills persistently below threshold
         id: threshold
         run: |
-          # Only flag skills that have been below threshold for >= hysteresis-runs
-          # consecutive runs (below-streak). A single noisy dip does not open a PR.
           FAILING=$(node -e "
-            const h=require('./health.json');
+            const h=require('./packages/aegis/health.json');
             const t=h['health-threshold']||0.80;
             const hyst=h['hysteresis-runs']||2;
             const failing=Object.entries(h.skills)
@@ -80,10 +77,10 @@ jobs:
             console.log(failing.join(', '));
           ")
           if [ -n "$FAILING" ]; then
-            echo "failing=$FAILING" >> $GITHUB_OUTPUT
-            echo "needs_pr=true" >> $GITHUB_OUTPUT
+            echo "failing=$FAILING" >> "$GITHUB_OUTPUT"
+            echo "needs_pr=true" >> "$GITHUB_OUTPUT"
           else
-            echo "needs_pr=false" >> $GITHUB_OUTPUT
+            echo "needs_pr=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create PR for stale skills
@@ -91,24 +88,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.SKILL_HEALTH_PAT }}
           FAILING_SKILLS: ${{ steps.threshold.outputs.failing }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
-            echo "SKILL_HEALTH_PAT secret not set — skipping PR creation"
+            echo "SKILL_HEALTH_PAT secret not set - skipping PR creation"
             exit 0
           fi
-
-          BRANCH="skill-health-update/${{ github.run_number }}"
+          BRANCH="skill-health-update/$RUN_NUMBER"
           git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git push -u origin "$BRANCH" 2>/dev/null || true
-
-          printf "## Skill Health Alert\n\nThe following skills are below the **0.80 threshold**:\n\n**Failing skills:** %s\n\n### What to do\n\n1. Review \`health.json\` for the specific gaps\n2. Update skill phases with newer ATT&CK techniques or patched CVEs\n3. Re-run \`node scripts/skill-health.js\` locally to verify\n4. Merge this PR\n\n---\n*Generated by skill-health workflow*\n" "$FAILING_SKILLS" > /tmp/pr_body.md
-
+          printf "## Skill Health Alert\n\nThe following skills are below the **0.80 threshold**:\n\n**Failing skills:** %s\n\n### What to do\n\n1. Review \`packages/aegis/health.json\` for the specific gaps\n2. Update skill phases with newer ATT&CK techniques or patched CVEs\n3. Re-run \`node scripts/skill-health.js\` locally to verify\n4. Merge this PR\n\n---\n*Generated by skill-health workflow. Internal maintainer report: not published and not shown on the website.*\n" "$FAILING_SKILLS" > "$RUNNER_TEMP/pr_body.md"
           gh pr create \
             --title "Skill health update required - skills below 0.80" \
-            --body-file /tmp/pr_body.md \
+            --body-file "$RUNNER_TEMP/pr_body.md" \
             --base main \
             --head "$BRANCH" \
             --label "skill-health" \
             --label "automated" \
           && echo "PR created successfully" \
-          || echo "PR already exists or branch has no changes vs main — skipping"
+          || echo "PR already exists or branch has no changes vs main - skipping"

@@ -1,0 +1,20 @@
+# Always check out text files with LF, on every OS. The repo's tests, token counts and release assets assume LF;
+# a Windows checkout with core.autocrlf=true would otherwise turn them into CRLF and make results differ by platform.
+* text=auto eol=lf
+
+# Never touch binaries.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.tgz binary
+*.gz binary
+*.pdf binary
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf

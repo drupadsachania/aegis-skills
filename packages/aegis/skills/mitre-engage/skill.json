@@ -1,0 +1,50 @@
+{
+  "osk": "1.1",
+  "name": "mitre-engage",
+  "version": "1.1.1",
+  "description": "MITRE Engage adversary engagement and deception planning workflow. Triggers for: deception activity selection, adversary engagement planning, deny/disrupt/degrade/deceive/expose strategy, mapping ATT&CK techniques to deception countermeasures, honeypot type selection, or any exercise requiring formal mapping of defensive deception activities to adversary TTPs.",
+  "family": "framework",
+  "frameworks": [
+    "mitre-engage",
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "deception",
+    "adversary-engagement",
+    "mitre",
+    "engage-framework"
+  ],
+  "phases": [
+    {
+      "id": "engage-matrix-overview",
+      "file": "references/engage-matrix-overview.md",
+      "tokens": 497
+    },
+    {
+      "id": "activity-planning-guide",
+      "file": "references/activity-planning-guide.md",
+      "tokens": 360
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 209,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "mitre-engage"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 2,
+    "teardowns-routed": 0
+  }
+}

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Themis — Governed Security Operations</title>
+  <g fill="none" stroke="#0080FF" stroke-width="5">
+    <path d="M109 145A184 184 0 0 1 205 65"/>
+    <path d="M307 65A184 184 0 0 1 403 145"/>
+    <path d="M110 365A184 184 0 0 0 205 447"
+      stroke-dasharray="8 12"/>
+    <path d="M307 447A184 184 0 0 0 402 365"
+      stroke-dasharray="8 12"/>
+  </g>
+  <path d="M256 42 279 79 256 116 233 79Z" fill="#0080FF"/>
+  <g stroke="#5D524B" stroke-width="12" fill="none"
+     stroke-linejoin="round" stroke-linecap="square">
+    <path d="M128 150H384"/>
+    <path d="M256 122V406"/>
+    <path d="M128 150 75 264H181Z"/>
+    <path d="M384 150 331 264H437Z"/>
+    <path d="M75 264Q128 322 181 264"/>
+    <path d="M331 264Q384 322 437 264"/>
+    <path d="M216 406H296L318 427H194Z"/>
+    <path d="M194 438H318L339 459H173Z"/>
+  </g>
+  <path d="M256 122V406" stroke="#0080FF" stroke-width="8"/>
+  <circle cx="256" cy="122" r="24" fill="#FAF8F3"
+    stroke="#5D524B" stroke-width="8"/>
+  <circle cx="256" cy="122" r="9" fill="#0080FF"/>
+  <g fill="#0080FF" stroke="#FAF8F3" stroke-width="5">
+    <circle cx="128" cy="204" r="14"/>
+    <circle cx="384" cy="204" r="14"/>
+  </g>
+  <path d="M99 264H157 M355 264H413"
+    stroke="#FAF8F3" stroke-width="6"/>
+</svg>

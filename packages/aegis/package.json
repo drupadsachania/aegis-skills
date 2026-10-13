@@ -1,0 +1,49 @@
+{
+  "name": "aegis-skills",
+  "version": "1.5.0",
+  "description": "Aegis: 24 defensive cybersecurity Agent Skills with a native installer and a read-only MCP skill server.",
+  "license": "(Apache-2.0 OR MIT)",
+  "author": "Kairos Foundation",
+  "homepage": "https://aegis-skills.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drupadsachania/aegis-skills.git",
+    "directory": "packages/aegis"
+  },
+  "bugs": { "url": "https://github.com/drupadsachania/aegis-skills/issues" },
+  "mcpName": "io.github.drupadsachania/aegis-skills",
+  "type": "commonjs",
+  "bin": { "aegis": "cli/aegis.js" },
+  "exports": {
+    "./package.json": "./package.json",
+    "./mcp/server": "./mcp/server.js",
+    "./mcp/stdio": "./mcp/stdio.js",
+    "./mcp/skill-reader": "./mcp/skill-reader.js",
+    "./mcp/skill-families": "./mcp/skill-families.js",
+    "./lib/skill-meta": "./lib/skill-meta.js"
+  },
+  "files": [
+    "cli/",
+    "lib/",
+    "mcp/",
+    "skills/*/SKILL.md",
+    "skills/*/skill.json",
+    "skills/*/references/*.md",
+    ".claude-plugin/",
+    ".mcp.json",
+    "gemini-extension.json",
+    "GEMINI.md",
+    "server.json",
+    "LICENSE",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ],
+  "engines": { "node": ">=24" },
+  "keywords": ["security", "cybersecurity", "agent-skills", "skills", "mcp", "model-context-protocol", "mitre-attack", "threat-hunting", "dfir", "exposure-management"],
+  "publishConfig": { "access": "public" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.31.0",
+    "gray-matter": "^4.0.3",
+    "zod": "^3.25.76"
+  }
+}

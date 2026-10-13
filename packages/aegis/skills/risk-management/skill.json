@@ -1,0 +1,107 @@
+{
+  "osk": "1.1",
+  "name": "risk-management",
+  "version": "1.1.0",
+  "description": "End-to-end information security risk management programme covering risk identification, qualitative and quantitative assessment (FAIR model), treatment selection, risk register governance, and executive risk reporting. Triggers for: risk assessment, risk register design, risk appetite definition, threat modelling integration, FAIR quantification, or risk reporting.",
+  "family": "governance",
+  "frameworks": [
+    "nist-csf",
+    "iso-31000",
+    "fair-model"
+  ],
+  "tags": [
+    "security",
+    "risk",
+    "grc",
+    "risk-register",
+    "risk-appetite",
+    "threat-modelling",
+    "fair"
+  ],
+  "phases": [
+    {
+      "id": "risk-identification",
+      "file": "references/risk-identification.md",
+      "tokens": 1339
+    },
+    {
+      "id": "risk-assessment",
+      "file": "references/risk-assessment.md",
+      "tokens": 1314
+    },
+    {
+      "id": "risk-treatment",
+      "file": "references/risk-treatment.md",
+      "tokens": 1401
+    },
+    {
+      "id": "risk-register",
+      "file": "references/risk-register.md",
+      "tokens": 1204
+    },
+    {
+      "id": "risk-reporting",
+      "file": "references/risk-reporting.md",
+      "tokens": 1191
+    },
+    {
+      "id": "exposure-risk-model",
+      "file": "references/exposure-risk-model.md",
+      "tokens": 1393
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 769,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "nist-csf",
+      "nvd-cve-feed"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nist-sp-800-30",
+      "iso-31000",
+      "fair-model"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2025-15630 — verify whether this estate is exposed",
+      "Dominant themes: supply-chain (x15) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 15,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "ot"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "critical-infrastructure",
+      "energy"
+    ],
+    "attack-surface-tags": [
+      "risk",
+      "compliance",
+      "third-party",
+      "supply-chain",
+      "data-protection"
+    ]
+  }
+}

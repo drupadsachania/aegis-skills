@@ -1,0 +1,224 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege for every job. Nothing here uses secrets, so fork PRs run safely.
+# Never add pull_request_target or workflow_run triggers to this file.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  detect:
+    name: Detect layout
+    runs-on: ubuntu-latest
+    outputs:
+      lint_skills: ${{ steps.d.outputs.lint_skills }}
+      check_deps: ${{ steps.d.outputs.check_deps }}
+      check_layout: ${{ steps.d.outputs.check_layout }}
+      release_scripts: ${{ steps.d.outputs.release_scripts }}
+      aegis: ${{ steps.d.outputs.aegis }}
+      themis_app: ${{ steps.d.outputs.themis_app }}
+      web: ${{ steps.d.outputs.web }}
+      packs: ${{ steps.d.outputs.packs }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: d
+        run: node scripts/ci-detect.js
+
+  lint:
+    name: Lint & guards
+    needs: detect
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Layout guard
+        if: needs.detect.outputs.check_layout == 'true'
+        run: npm run check:layout
+      - name: Skill lint
+        if: needs.detect.outputs.lint_skills == 'true'
+        run: npm run lint:skills
+      - name: Dependency guards
+        if: needs.detect.outputs.check_deps == 'true'
+        run: npm run check:deps
+      - name: Version drift
+        if: needs.detect.outputs.release_scripts == 'true'
+        run: npm run check:versions
+
+  test:
+    name: Test (${{ matrix.os }}, Node ${{ matrix.node }})
+    needs: detect
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, node: '24' }
+          - { os: windows-latest, node: '24' }
+          - { os: macos-latest, node: '24' }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Build TypeScript packages (tests import dist/)
+        run: |
+          for d in themis-core themis-gateway themis-plugin themis-app; do
+            if [ -f "packages/$d/package.json" ]; then npm run build --workspace "packages/$d" --if-present; fi
+          done
+      - run: npm test
+      - name: Release script tests
+        if: needs.detect.outputs.release_scripts == 'true'
+        run: npm run test:scripts
+
+  web:
+    name: Web build
+    needs: detect
+    if: needs.detect.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspace apps/web
+      - name: Layout guard against the build trace
+        run: node scripts/check-layout.js --trace
+
+  pack:
+    name: Pack (${{ matrix.package }})
+    needs: detect
+    if: needs.detect.outputs.packs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.detect.outputs.packs) }}
+    env:
+      PKG_KEY: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Build TypeScript packages
+        run: |
+          for d in themis-core themis-gateway themis-plugin themis-app; do
+            if [ -f "packages/$d/package.json" ]; then npm run build --workspace "packages/$d" --if-present; fi
+          done
+      - name: Assert tarball contents
+        run: node scripts/assert-pack.js "$PKG_KEY"
+
+  install-aegis:
+    name: Install aegis-skills (${{ matrix.os }})
+    needs: detect
+    if: needs.detect.outputs.aegis == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install the packed tarball into a clean project and run the CLI
+        env:
+          npm_config_node_gyp: /nonexistent/node-gyp.js
+          AEGIS_NO_AUTO_REFRESH: '1'
+        run: |
+          T=$(node -p "process.env.RUNNER_TEMP.split(require('path').sep).join('/')")
+          TGZ=$(node scripts/pack-to.js aegis "$T/pkgs")
+          mkdir -p "$T/aegis-install" "$T/home"
+          cd "$T/aegis-install"
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund "$TGZ"
+          node "$GITHUB_WORKSPACE/scripts/assert-no-native.js" node_modules
+          V=$(node -p "require('aegis-skills/package.json').version")
+          OUT=$(npx --no -- aegis --version)
+          echo "aegis --version -> $OUT"
+          case "$OUT" in *"$V"*) ;; *) echo "::error::expected version $V"; exit 1 ;; esac
+          HOME="$T/home" USERPROFILE="$T/home" npx --no -- aegis install --platform claude --project
+          EXPECTED=$(node -p "require('fs').readdirSync('node_modules/aegis-skills/skills',{withFileTypes:true}).filter(e=>e.isDirectory()).length")
+          GOT=$(node -p "const fs=require('fs');fs.readdirSync('.claude/skills',{withFileTypes:true}).filter(e=>e.isDirectory()&&fs.existsSync('.claude/skills/'+e.name+'/SKILL.md')).length")
+          echo "skills installed: $GOT / $EXPECTED"
+          test "$GOT" = "$EXPECTED"
+
+  install-themis:
+    name: Install themis (${{ matrix.os }})
+    needs: detect
+    if: needs.detect.outputs.themis_app == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Build TypeScript packages
+        run: |
+          for d in themis-core themis-gateway themis-plugin themis-app; do
+            if [ -f "packages/$d/package.json" ]; then npm run build --workspace "packages/$d" --if-present; fi
+          done
+      - name: Install themis from tarballs with native builds disabled
+        env:
+          # A bogus node-gyp path makes any native compile fail, even on runners that have build tools.
+          npm_config_node_gyp: /nonexistent/node-gyp.js
+        run: |
+          T=$(node -p "process.env.RUNNER_TEMP.split(require('path').sep).join('/')")
+          : > "$T/tgz.txt"
+          for k in aegis themis-core themis-gateway themis; do node scripts/pack-to.js "$k" "$T/pkgs" >> "$T/tgz.txt"; done
+          mkdir -p "$T/themis-install" "$T/home"
+          cd "$T/themis-install"
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund $(cat "$T/tgz.txt")
+          node "$GITHUB_WORKSPACE/scripts/assert-no-native.js" node_modules
+          HOME="$T/home" USERPROFILE="$T/home" THEMIS_HOME="$T/home/.themis" npx --no -- themis --help | tee help.txt
+          grep -q dashboard help.txt

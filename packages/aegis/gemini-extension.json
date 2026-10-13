@@ -1,0 +1,13 @@
+{
+  "name": "aegis-skills",
+  "version": "1.5.0",
+  "description": "24 defensive cybersecurity Agent Skills and the read-only Aegis MCP skill server.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "aegis": {
+      "command": "npx",
+      "args": ["-y", "aegis-skills@1.5.0", "mcp"],
+      "env": { "AEGIS_NO_AUTO_REFRESH": "1" }
+    }
+  }
+}

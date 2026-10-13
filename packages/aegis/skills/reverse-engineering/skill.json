@@ -1,0 +1,94 @@
+{
+  "osk": "1.1",
+  "name": "reverse-engineering",
+  "version": "1.1.0",
+  "description": "End-to-end binary reverse engineering workflow for security analysts. Covers safe sample handling, static and dynamic analysis, code analysis, anti-analysis technique detection, MITRE ATT&CK TTP mapping, IOC extraction, and analyst reporting. Triggers for: malware triage, binary analysis, firmware analysis, packed executable analysis, or any reverse engineering task.",
+  "family": "response",
+  "frameworks": [
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "malware",
+    "reverse-engineering",
+    "binary-analysis",
+    "ghidra",
+    "ida-pro",
+    "static-analysis",
+    "dynamic-analysis"
+  ],
+  "phases": [
+    {
+      "id": "triage-and-safe-handling",
+      "file": "references/triage-and-safe-handling.md",
+      "tokens": 1075
+    },
+    {
+      "id": "static-analysis",
+      "file": "references/static-analysis.md",
+      "tokens": 1318
+    },
+    {
+      "id": "dynamic-analysis",
+      "file": "references/dynamic-analysis.md",
+      "tokens": 1242
+    },
+    {
+      "id": "code-analysis",
+      "file": "references/code-analysis.md",
+      "tokens": 1525
+    },
+    {
+      "id": "reporting",
+      "file": "references/reporting.md",
+      "tokens": 1180
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 188,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "vx-underground"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack",
+      "vx-underground",
+      "malapi-io"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 1,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "ot"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "government",
+      "defense",
+      "technology"
+    ],
+    "attack-surface-tags": [
+      "malware",
+      "binary",
+      "executable",
+      "firmware"
+    ]
+  }
+}

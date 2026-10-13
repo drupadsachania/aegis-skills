@@ -1,0 +1,94 @@
+{
+  "osk": "1.1",
+  "name": "governance",
+  "version": "1.1.0",
+  "description": "Security governance programme design and management. Covers policy framework development, programme maturity assessment (NIST CSF 2.0 tiers, CMMC), security metrics and board reporting, and third-party governance (TPRM). Triggers for: security policy development, maturity assessment, board reporting, KPI/KRI design, vendor risk programme, or security steering committee setup.",
+  "family": "governance",
+  "frameworks": [
+    "nist-csf",
+    "iso-27001",
+    "cis-controls"
+  ],
+  "tags": [
+    "security",
+    "governance",
+    "policy",
+    "risk",
+    "compliance",
+    "metrics",
+    "board-reporting",
+    "tprm"
+  ],
+  "phases": [
+    {
+      "id": "policy-framework",
+      "file": "references/policy-framework.md",
+      "tokens": 1020
+    },
+    {
+      "id": "program-maturity",
+      "file": "references/program-maturity.md",
+      "tokens": 1090
+    },
+    {
+      "id": "metrics-and-reporting",
+      "file": "references/metrics-and-reporting.md",
+      "tokens": 1186
+    },
+    {
+      "id": "third-party-governance",
+      "file": "references/third-party-governance.md",
+      "tokens": 1286
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 326,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "nist-csf",
+      "cis-controls"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nist-csf-2",
+      "iso-27001",
+      "cis-controls"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [
+      "Dominant themes: policy (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 3,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "hybrid",
+      "cloud"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "critical-infrastructure"
+    ],
+    "attack-surface-tags": [
+      "governance",
+      "policy",
+      "third-party",
+      "supply-chain",
+      "compliance"
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Development
+.env.local
+.env.local.example
+__tests__/
+tests/
+jest.config.js
+jest.setup.js
+tsconfig.json
+tsconfig.tsbuildinfo
+run-supply-chain-fix.js
+
+# Build artifacts
+.next/
+out/
+build/
+
+# Documentation (keep only INSTALLATION.md for users)
+docs/superpowers/
+docs/TECHNICAL.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Misc
+*.md
+!README.md
+!LICENSE
+# Skill content moved to packages/aegis (restructure Phase 0); this app package is private.
+.claude/
+
+# Include these files/folders
+!lib/
+!bin/
+!src/
+!pages/
+!components/
+!styles/
+!app/
+!public/
+
+# Release hygiene — never ship local verification artefacts or prior tarballs
+npmverify/
+*.tgz
+test_output.txt
+tsconfig.tsbuildinfo

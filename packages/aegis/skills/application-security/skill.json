@@ -1,0 +1,102 @@
+{
+  "osk": "1.1",
+  "name": "application-security",
+  "version": "1.1.0",
+  "description": "Application security assessment workflow covering threat modelling, static analysis, dependency auditing, API security, and security testing. Triggers for: pre-release security review, SAST/DAST gap analysis, API security hardening, or OWASP Top 10 remediation planning.",
+  "family": "domain",
+  "frameworks": [
+    "owasp-top10",
+    "mitre-attack",
+    "nist-ssdf"
+  ],
+  "tags": [
+    "security",
+    "appsec",
+    "sast",
+    "api",
+    "owasp",
+    "supply-chain",
+    "testing"
+  ],
+  "phases": [
+    {
+      "id": "threat-modeling-appsec",
+      "file": "references/threat-modeling-appsec.md",
+      "tokens": 670
+    },
+    {
+      "id": "sast-review",
+      "file": "references/sast-review.md",
+      "tokens": 601
+    },
+    {
+      "id": "dependency-audit",
+      "file": "references/dependency-audit.md",
+      "tokens": 656
+    },
+    {
+      "id": "api-security",
+      "file": "references/api-security.md",
+      "tokens": 861
+    },
+    {
+      "id": "security-testing",
+      "file": "references/security-testing.md",
+      "tokens": 712
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 890,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "nvd-cve-feed",
+      "osv-database",
+      "owasp-advisories"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nvd-cve-feed",
+      "osv-database",
+      "github-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-62878, CVE-2026-62815, CVE-2025-15630, CVE-2026-19478, CVE-2026-15748, CVE-2026-35273 — verify whether this estate is exposed",
+      "Dominant themes: supply-chain (x15), open-source (x11), rce (x7), mcp (x3), agent-security (x3) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: npm (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 34,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "mobile"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "e-commerce",
+      "saas-providers"
+    ],
+    "attack-surface-tags": [
+      "web-application",
+      "api",
+      "supply-chain",
+      "authentication",
+      "injection"
+    ]
+  }
+}
