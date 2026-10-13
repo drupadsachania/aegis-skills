@@ -22,7 +22,7 @@ const text = h => h.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g
 
 test('the page renders the terms with a version and an update date', () => {
   expect(html).toContain('Terms of <em>Service</em>')
-  expect(text(html)).toMatch(/Version 1\.0 · Last updated 2026-10-12/)
+  expect(text(html)).toMatch(/Version 1\.1 · Last updated 2026-10-13/)
   for (const h2 of ['What this service is', 'Open-source licences', 'Authorised, lawful, defensive use only', 'No warranty', 'Limitation of liability', 'Availability and fair use', 'Third-party services', 'Changes to these terms', 'Governing law', 'Contact']) {
     expect(text(html)).toContain(h2)
   }
@@ -49,7 +49,11 @@ test('it states the facts the code backs: licence holder, rate limit, no model c
 test('it invents no legal entity details', () => {
   const t = text(html)
   expect(t).not.toMatch(/registered (office|address|number)|company number|registration no|\bVAT\b|\bInc\.|\bLtd\b|\bGmbH\b/)
-  expect(t).not.toMatch(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i)
+  const emails = (t.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/gi) || []).map(e => e.toLowerCase())
+  expect(new Set(emails)).toEqual(new Set(['support@kairos-foundation.org', 'privacy@kairos-foundation.org']))
+  expect(html).toContain('href="mailto:support@kairos-foundation.org"')
+  expect(html).toContain('href="mailto:privacy@kairos-foundation.org"')
+  expect(t).toMatch(/do not use email/)
 })
 
 test('every internal link resolves to a real page', () => {

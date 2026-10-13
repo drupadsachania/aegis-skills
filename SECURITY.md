@@ -14,7 +14,10 @@ We take the security of Aegis and Themis seriously. If you discover a security v
 
 ### How to Report
 - **GitHub private vulnerability reporting (the only channel):** <https://github.com/drupadsachania/aegis-skills/security/advisories/new>
-- **Do NOT** open public GitHub issues for security vulnerabilities.
+- **Do NOT** open public GitHub issues for security vulnerabilities, and do not send vulnerability reports by email.
+
+### Other contact
+For general questions write to [support@kairos-foundation.org](mailto:support@kairos-foundation.org); for privacy questions write to [privacy@kairos-foundation.org](mailto:privacy@kairos-foundation.org). These addresses are not a vulnerability reporting channel.
 
 ### Response Timeline
 - **Acknowledgement:** Within 48 hours.

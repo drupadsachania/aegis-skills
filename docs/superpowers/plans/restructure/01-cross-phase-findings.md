@@ -327,3 +327,12 @@ Tasks 1-3 were done earlier (compliance set, ATLAS threat model, privacy policy 
 5. **Discrepancies, uploaded notes versus official pages.** Gemini note: `$schema` URL returns 404 and is not in the reference; skills and commands live at the extension root, not under `.gemini/`; the registry PR step is contradicted by the releasing page. ChatGPT note: matched on skills-only versus MCP requirements; its `"license": "MIT"` example does not fit this repository. Anthropic text: consistent with the pages already read.
 6. **No manifest change was needed** for `packages/aegis/gemini-extension.json` (all its fields are verified).
 7. **Remaining USER ACTIONS.** A role mailbox on `kairos-foundation.org` (no MX records on 2026-10-12; blocks portal submission, not development); Vercel deploy; Phase 7 npm publish, ZIP and archive; verified OpenAI publisher; Gemini layout choice and repository topic; name checks; paid Claude plan; MCP Registry login as `drupadsachania`. Full list: `docs/listings/README.md`.
+
+## Contact setup (2026-10-13)
+
+1. **Addresses.** `support@kairos-foundation.org` (general support, questions about the terms) and `privacy@kairos-foundation.org` (privacy questions). No personal address is written anywhere in the repo; `scripts/tests/no-personal-address.test.js` fails if one appears in a tracked file outside `docs/superpowers`.
+2. **Mapping.** Both are aliases that deliver to the owner's personal mailbox (owner statement). They appear in `docs/legal/terms.md`, `docs/themis/privacy-policy.md`, `SECURITY.md` ("Other contact"), the footer "Contact" mailto link (support@), `docs/listings/*` contact fields and `docs/DEPLOY.md`.
+3. **Delivery test pending.** Delivery from outside has not been tested. USER ACTION before any directory submission: send a test message to both addresses, confirm delivery and that replies work, and make sure a verification email at `support@` can be received (Anthropic verified-contact step; portals may email a link).
+4. **Security stays GitHub-only.** Vulnerability reports use GitHub private vulnerability reporting; email is for privacy and general support only.
+5. **MX evidence.** DNS check on 2026-10-13: MX for `kairos-foundation.org` is `smtp.secureserver.net` (preference 0) and `mailstore1.secureserver.net` (preference 10), i.e. GoDaddy mail. This replaces the 2026-10-12 "no MX records" finding.
+6. **Terms version.** `docs/legal/terms.md` is now Version 1.1, last updated 2026-10-13; the privacy policy "Last reviewed" date is 2026-10-13.

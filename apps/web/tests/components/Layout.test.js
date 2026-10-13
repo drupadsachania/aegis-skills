@@ -20,5 +20,6 @@ test('nav links, footer licence and children', () => {
   expect(screen.getByText('Apache-2.0 OR MIT')).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Security' })).toHaveAttribute('href', '/security')
   expect(screen.getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license')
+  expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', 'mailto:support@kairos-foundation.org')
   expect(screen.getByText('child')).toBeInTheDocument()
 })

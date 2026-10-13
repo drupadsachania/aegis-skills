@@ -90,10 +90,10 @@ Do not use: offensive, exploit, hacking, red team, bypass. The copy is about aut
 - Hosted Aegis MCP: `https://aegis-skills.vercel.app/api/mcp`, Streamable HTTP, stateless, no authentication, three tools, all read-only.
 - All three tools carry `title`, `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: false`.
 - Rate limit: best-effort, 120 requests a minute per client IP, per server instance; Anthropic's published outbound range is exempt. It is not a hard quota on serverless hosting.
-- Privacy policy: <https://aegis-skills.vercel.app/docs/themis/privacy-policy> (the policy names GitHub Issues and private vulnerability reporting as the interim contact; a Kairos Foundation role mailbox is a USER ACTION, see [README.md](README.md)).
+- Privacy policy: <https://aegis-skills.vercel.app/docs/themis/privacy-policy> (contact: privacy@kairos-foundation.org).
 - Reviewer test prompts: <https://aegis-skills.vercel.app/docs/themis/test-prompts>.
 - Dual-use review and compliance mapping: `docs/themis/dual-use-review.md`, `docs/themis/compliance/`.
-- Support and security contact: SECURITY.md in the repository (GitHub private vulnerability reporting, the only security channel). Directories want a verified support channel as well; see [README.md](README.md) for the role mailbox that is still missing.
+- Support contact: support@kairos-foundation.org. Privacy contact: privacy@kairos-foundation.org. Security reports: GitHub private vulnerability reporting (SECURITY.md), the only security channel, not email. USER ACTION: send and confirm a test message to both addresses before submitting; see [README.md](README.md).
 
 Check before using any link above: the site is not deployed from this branch yet, so these URLs only resolve after the Vercel step in the project's user actions.
 

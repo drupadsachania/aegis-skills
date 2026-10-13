@@ -1,6 +1,6 @@
 # Terms of Service
 
-Version 1.0. Last updated: 2026-10-12.
+Version 1.1. Last updated: 2026-10-13.
 
 These terms cover your use of the Aegis and Themis website at <https://aegis-skills.vercel.app/> and the hosted Aegis MCP server at <https://aegis-skills.vercel.app/api/mcp>. They are written in plain English on purpose. They are not a substitute for legal advice, and they should be read together with the [privacy policy](/docs/themis/privacy-policy), the [security policy](/security) and the [licence](/license). Aegis and Themis are published by the Kairos Foundation.
 
@@ -62,4 +62,4 @@ Governing law will be stated here once the Kairos Foundation's jurisdiction is c
 
 ## 10. Contact
 
-There is no support mailbox yet. For questions about these terms or the service, open an issue at <https://github.com/drupadsachania/aegis-skills/issues>. For anything sensitive, such as a vulnerability, use GitHub private vulnerability reporting at <https://github.com/drupadsachania/aegis-skills/security/advisories/new>. A Kairos Foundation role mailbox will be added here when it exists.
+For questions about these terms or the service, write to [support@kairos-foundation.org](mailto:support@kairos-foundation.org). For privacy questions, write to [privacy@kairos-foundation.org](mailto:privacy@kairos-foundation.org). For a security vulnerability, do not use email: use GitHub private vulnerability reporting at <https://github.com/drupadsachania/aegis-skills/security/advisories/new>.

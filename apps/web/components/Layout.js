@@ -43,6 +43,7 @@ const FOOTER_COLUMNS = [
     { href: '/docs/themis/privacy-policy', label: 'Privacy' },
     { href: '/terms', label: 'Terms' },
     { href: '/license', label: 'License' },
+    { href: 'mailto:support@kairos-foundation.org', label: 'Contact' },
     { href: REPO_URL, label: 'GitHub', external: true },
     { href: KAIROS_URL, label: 'Kairos Foundation', external: true }
   ] }

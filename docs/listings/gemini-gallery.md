@@ -70,7 +70,7 @@ Also keep the repository root clean of a second copy of the manifest unless opti
 4. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.**
 5. **Name check** for "aegis" in the gallery.
 6. No terms-of-service URL is requested by the pages read; if one is asked for, it is <https://aegis-skills.vercel.app/terms> once deployed (`docs/legal/terms.md`).
-7. No verified contact channel is requested by the Gemini pages read; the role mailbox blocker in [README.md](README.md) does not block this listing.
+7. No verified contact channel is requested by the Gemini pages read; the mailbox delivery test in [README.md](README.md) does not block this listing.
 
 ## Steps once the blockers are cleared
 
