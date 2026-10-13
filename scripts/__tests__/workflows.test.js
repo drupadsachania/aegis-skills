@@ -179,15 +179,16 @@ test('intel-release.yml: only the release job sees the PAT and no job can publis
   assert.deepEqual(jobNames(t), ['decide', 'verify', 'release'])
 })
 
-test('every releasable package has a release notes file named the way release.yml looks it up', () => {
-  const dirOf = n => lib.PACKAGES.find(p => p.name === n).dir
-  for (const name of lib.RELEASABLE) {
-    const version = lib.readJson(`${dirOf(name)}/package.json`).data.version
-    const file = `.github/release-notes/${`${name}@${version}`.replace(/\//g, '__')}.md`
+test('the first release of every releasable package has release notes named the way release.yml looks them up', () => {
+  // Fixed versions on purpose: later patch releases (validation patches, intel patches) use generated notes.
+  const FIRST = { 'aegis-skills': '1.1.0', '@aegis-skills/themis-core': '0.1.0', '@aegis-skills/themis-gateway': '0.1.0' }
+  assert.deepEqual(Object.keys(FIRST).sort(), [...lib.RELEASABLE].sort())
+  for (const [name, version] of Object.entries(FIRST)) {
+    const file = `.github/release-notes/${`${name}@${version}`.split('/').join('__')}.md`
     assert.ok(lib.exists(file), `${file} is missing`)
     const text = fs.readFileSync(lib.abs(file), 'utf8')
     assert.match(text, /first release/i, `${file} should say it is the first release`)
-    assert.equal(/\bproduction[- ]ready\b|battle-tested/i.test(text), false, `${file}: no overclaiming`)
+    assert.equal(/production[- ]ready|battle-tested/i.test(text), false, `${file}: no overclaiming`)
   }
   assert.ok(read('release.yml').includes('.github/release-notes/${RELEASE_TAG//\\//__}.md'))
 })
