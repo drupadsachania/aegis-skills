@@ -122,7 +122,7 @@ const MUST_NOT_EXIST = [
   'apps/web/public/brand/aegis-tile.webp', 'apps/web/public/brand/themis-tile.webp'
 ]
 const TRACKED_TOP = new Set([
-  '.claude', '.claude-plugin', '.github', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
+  '.claude', '.claude-plugin', '.github', '.gitattributes', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
   'README.md', 'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
   'apps', 'packages', 'scripts', 'docs', 'design', 'listings'
 ])
