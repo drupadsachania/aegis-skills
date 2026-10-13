@@ -14,7 +14,7 @@ Tool names are frozen because Themis depends on them.
 
 ## Run it locally (stdio)
 
-Add this to your MCP client's config. It works after the first release of the `aegis-skills` package:
+Add this to your MCP client's config. It uses the published `aegis-skills` package:
 
 ```json
 {

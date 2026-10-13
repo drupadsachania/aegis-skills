@@ -56,7 +56,7 @@ function McpPage ({ paths }) {
         h(InstallTabs, { tabs: paths.find(p => p.id === 'hosted-mcp').platforms })),
 
       h(Sec, { id: 'local', num: '04', title: 'Prefer local?' },
-        h('p', null, 'Run the same server on your machine over stdio (needs the npm package, so after the first release):'),
+        h('p', null, 'Run the same server on your machine over stdio (uses the npm package):'),
         h(CodeBlock, { label: 'MCP config', content: JSON.stringify({ mcpServers: { aegis: { command: 'npx', args: ['-y', 'aegis-skills', 'mcp'] } } }, null, 2) })),
 
       h(Sec, { id: 'check', num: '05', title: 'Check it works' },

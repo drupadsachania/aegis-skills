@@ -8,7 +8,8 @@ const h = React.createElement
 // second, shape-based cue. Colours come from tokens (CSS: .status-pill). Add a status here, not at call sites.
 const STATUSES = {
   'in-development': { label: 'In development', tone: 'themis' },
-  'first-release': { label: 'First release', tone: 'aegis' }
+  'first-release': { label: 'First release', tone: 'aegis' },
+  available: { label: 'Available', tone: 'aegis' }
 }
 
 function StatusPill ({ status = 'in-development', label, className = '' }) {

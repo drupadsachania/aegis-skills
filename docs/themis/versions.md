@@ -31,4 +31,4 @@ The tool names of the Aegis MCP server (`list_skills`, `get_skill`, `get_skill_p
 | `@aegis-skills/themis-plugin` | 1.1.0 |
 | `@aegis-skills/themis` | 0.1.0 |
 
-All packages require Node.js 24 or later. Nothing is published to npm yet.
+All packages require Node.js 24 or later. Published to npm: `aegis-skills` 1.5.0, `@aegis-skills/themis-core` 0.1.0 and `@aegis-skills/themis-gateway` 0.1.0. The Themis plugin and standalone app are not published yet.
