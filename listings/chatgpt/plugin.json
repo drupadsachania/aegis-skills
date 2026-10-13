@@ -1,0 +1,31 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "aegis-skills",
+  "version": "1.1.0",
+  "description": "24 defensive cybersecurity skills for AI assistants: MITRE ATT&CK, DFIR, threat hunting, exposure validation, compliance and more.",
+  "author": { "name": "Kairos Foundation", "url": "https://kairos-foundation.org/" },
+  "homepage": "https://aegis-skills.vercel.app",
+  "repository": "https://github.com/drupadsachania/aegis-skills",
+  "license": "Apache-2.0 OR MIT",
+  "keywords": ["cybersecurity", "defensive security", "mitre-attack", "dfir", "threat-hunting", "compliance", "agent-skills"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Aegis Security Skills",
+        "shortDescription": "Defensive security skills",
+        "longDescription": "Aegis is a library of 24 defensive cybersecurity skills for AI assistants. Each skill is a structured methodology for a security job: mapping adversary behaviour with MITRE ATT&CK, ATLAS and Engage, threat hunting, digital forensics and incident response, exposure validation, attack surface mapping, identity and access management, endpoint, network and infrastructure security, operational technology, compliance, governance and risk management, and more.\n\nEvery skill opens with a scope-and-authorization section: a defensive purpose, an assumption that you only use it on systems you own or are explicitly authorized to assess, and what it will not do. Aegis is guidance for defenders. It does not run scans, execute anything or reach other systems.\n\nThis plugin contains the skills only. It has no tools, no MCP server and no sign-in, and it makes no network requests of its own.",
+        "developerName": "Kairos Foundation",
+        "websiteURL": "https://aegis-skills.vercel.app",
+        "privacyPolicyURL": "https://aegis-skills.vercel.app/docs/themis/privacy-policy",
+        "termsOfServiceURL": "https://aegis-skills.vercel.app/terms",
+        "defaultPrompt": [
+          "What security skills are available?",
+          "Open the exposure-validation authorization phase.",
+          "Which skill covers MITRE ATT&CK?"
+        ],
+        "composerIcon": "./assets/logo.png",
+        "logo": "./assets/logo.png"
+      }
+    }
+  }
+}
