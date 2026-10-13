@@ -1,0 +1,134 @@
+name: Aegis intel patch release
+
+# DISABLED BY DEFAULT (Phase 7 amendment 2). This workflow can only be started by hand (workflow_dispatch).
+# The monthly schedule below is commented out on purpose.
+#
+# How it works (decisions D12 to D14): intel-sync is a local scheduled task on the maintainer's machine, not CI. It commits
+# refreshed live-threat-intel files to main. This workflow looks only at what is committed. If the only changes under
+# packages/aegis since the newest aegis-skills tag are intel files, and at least one of them ships in the package, it bumps the
+# patch version, commits, tags and pushes with a bot PAT (a GITHUB_TOKEN push would not start release.yml). It never runs
+# intel-sync and never reads .intel-sync-state.json.
+#
+# To enable it, in this order, once:
+#   1. The first manual release of aegis-skills, @aegis-skills/themis-core and @aegis-skills/themis-gateway is done and the
+#      trusted publishers work (docs/RELEASE-RUNBOOK.md, sections 2 and 3). The workflow refuses to run before an
+#      aegis-skills@* tag exists.
+#   2. Create the GitHub environment `release-bot` (deployment branches: main only) with the environment secret RELEASE_PAT:
+#      a fine-grained PAT, repository access to this repository only, permission Contents: Read and write, expiry 90 days at
+#      most. The PAT owner must be allowed to push to main and to create tags (ruleset bypass).
+#   3. Run it once by hand with dry_run left on (the default). Read the job summary: `release: false` with a reason is correct
+#      when no intel has been committed since the last tag.
+#   4. Uncomment the schedule block below (monthly, the day after skill-health) and commit that change.
+on:
+  # schedule:
+  #   - cron: '0 6 2 * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only decide and verify; do not bump, tag or push.'
+        required: false
+        default: true
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: aegis-intel-release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  decide:
+    name: Decide
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      release: ${{ steps.check.outputs.release }}
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - id: check
+        run: node scripts/intel-release-check.js
+
+  verify:
+    name: Verify (no secrets)
+    needs: decide
+    if: needs.decide.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.decide.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci
+      - run: |
+          npm run check:versions
+          npm run lint:skills
+          npm run check:deps
+          npm run test:scripts
+          for d in themis-core themis-gateway themis-plugin themis-app; do
+            if [ -f "packages/$d/package.json" ]; then npm run build --workspace "packages/$d" --if-present; fi
+          done
+          npm test
+          node scripts/assert-pack.js aegis
+
+  release:
+    name: Bump, tag and push
+    needs: [decide, verify]
+    if: inputs.dry_run == false
+    runs-on: ubuntu-latest
+    environment: release-bot
+    permissions:
+      contents: read   # the push uses RELEASE_PAT; a GITHUB_TOKEN push would not trigger release.yml
+    env:
+      EXPECTED_SHA: ${{ needs.decide.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT }}
+      - name: main must not have moved since verification
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$EXPECTED_SHA" ]; then
+            echo "::error::main moved since verification; re-run this workflow"
+            exit 1
+          fi
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # No npm ci here: bump-version.js and intel-release-check.js use Node built-ins only.
+      - name: Re-check, bump, commit and tag
+        id: bump
+        run: |
+          node scripts/intel-release-check.js --require-release
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node scripts/bump-version.js aegis patch --commit | tee "$RUNNER_TEMP/bump.log"
+          echo "tag=$(sed -n 's/^TAG=//p' "$RUNNER_TEMP/bump.log")" >> "$GITHUB_OUTPUT"
+      - name: Push commit and tag atomically
+        env:
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          test -n "$TAG"
+          git push --atomic origin HEAD:refs/heads/main "refs/tags/$TAG"
+          echo "Pushed $TAG; release.yml publishes it." >> "$GITHUB_STEP_SUMMARY"
