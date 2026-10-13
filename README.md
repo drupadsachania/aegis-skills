@@ -137,8 +137,8 @@ Read more: [Themis docs](https://aegis-skills.vercel.app/docs/themis) and [`docs
 ## How this is maintained
 
 - **CI on every change.** Tests run on Ubuntu, macOS and Windows with Node 24, plus lint, dependency and layout guards, a production site build, and install smoke tests of each package. Releases are published by a tag-driven workflow with provenance, not from a laptop.
-- **Skill content is refreshed monthly.** A scheduled workflow scores each skill against the current ATT&CK and NVD data and opens a pull request when one falls behind. Every flattened prompt is stamped with the date of its intel.
-- **Dependencies are pinned and watched.** GitHub Actions are pinned to full commit SHAs and bumped weekly by Dependabot.
+- **Skill content is refreshed monthly.** Every flattened prompt is stamped with the date of its intel.
+- **Dependencies are pinned and watched.** GitHub Actions are pinned to full commit SHAs and kept current by Dependabot.
 - **Defaults are conservative.** Aegis never calls a model. Themis denies tool access by default and only a human can approve a write or execute.
 
 Found a bug or a skill that is out of date? [Open an issue](https://github.com/drupadsachania/aegis-skills/issues). For a vulnerability, use [private reporting](https://github.com/drupadsachania/aegis-skills/security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md).
