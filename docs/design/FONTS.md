@@ -42,21 +42,19 @@ Chosen by comparing the kit faces on the real pages: teimer-web 300 gives the he
 
 ## Fallbacks, FOUT and FOIT
 
-The fallbacks are Georgia / Times New Roman for display and body and the system monospace stack for mono, so the site is fully usable if Adobe is unreachable, blocked, or the domain is not allow-listed.
+The fallbacks are Georgia / Times New Roman for display and body and the system monospace stack for mono, so the site is fully usable if Adobe is unreachable or blocked.
 
 The kit's own `@font-face` rules use `font-display: auto`, which most browsers treat as `block`: text set in `teimer-web` or `legitima` can be invisible for up to about three seconds on a slow connection (FOIT), then swaps. We cannot change the kit CSS, and overriding it with our own `@font-face` for the same family would duplicate the licensed files, so this is accepted. Mitigations in place: `<link rel="preconnect">` to `use.typekit.net` (with and without `crossorigin`, one for the stylesheet and one for the font files) and to `p.typekit.net`, and the stylesheet is a normal render-blocking `<link>` in `<head>`, so the fonts are requested as early as possible. Red Hat Mono uses `swap`.
 
-## Domain allow-list (USER ACTION)
+## Domains (no allow-list needed)
 
-The kit serves only to allow-listed domains. In the Adobe Fonts web project settings (Domains):
+Checked on 2026-10-13: the kit's CSS and font files are served to any origin. Requests with `Origin`/`Referer` set to `localhost`, `127.0.0.1`, `aegis-skills.vercel.app`, `kairos-foundation.org`, `example.com` and a made-up `*.vercel.app` preview host all returned HTTP 200 with the same font file, and the fonts loaded in a browser at `127.0.0.1` as well as `localhost`. The Adobe Fonts web project in use has no domain setting to configure.
 
-1. Add every production hostname, for example `aegis-skills.vercel.app` and any custom domain or Vercel preview domain you want fonts on. Until a domain is listed, the kit CSS loads but the font files are refused and the page shows the Georgia fallbacks.
-2. Keep `localhost` in the list for development.
-3. Adobe does not accept `127.0.0.1`: develop at `http://localhost:3000`, not `http://127.0.0.1:3000` (the faces will not load there; the fallbacks show).
+An earlier version of this document said the kit rejects `127.0.0.1` and must be allow-listed. That was wrong: the first screenshot had simply been taken before the fonts finished loading. Adobe's own help pages are inconsistent about domain lists (older pages say web projects work on any domain), so if Adobe later starts enforcing a list for your account, the symptom is Georgia fallbacks in production; the fix would then be to add the production hostname in the web project settings.
 
 ## Licence
 
-The Adobe Fonts web licence covers use of the kit on allow-listed domains. The fonts must **not** be copied into this repository or into any npm package or release artifact (no `.woff`, `.woff2`, `.otf` or `.ttf` for teimer-web, legitima, aquavit, nimbus-roman or times-new-roman). `apps/web/tests/guard/fonts-guard.test.js` fails if any font file other than Red Hat Mono exists under `apps/web/public` or `packages/*/dist/ui`.
+The Adobe Fonts web licence covers use of the kit on your own websites through the kit (not self-hosted copies). The fonts must **not** be copied into this repository or into any npm package or release artifact (no `.woff`, `.woff2`, `.otf` or `.ttf` for teimer-web, legitima, aquavit, nimbus-roman or times-new-roman). `apps/web/tests/guard/fonts-guard.test.js` fails if any font file other than Red Hat Mono exists under `apps/web/public` or `packages/*/dist/ui`.
 
 ## The Themis dashboard
 

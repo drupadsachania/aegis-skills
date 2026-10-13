@@ -44,11 +44,7 @@ None are needed. A guard test (`apps/web/tests/guard/no-model-deps.test.js`) fai
 
 ## Adobe Fonts kit (`pww4pkx`)
 
-The site loads its fonts from the kit through `use.typekit.net` and `p.typekit.net` (the Content-Security-Policy allows only those two). Adobe allows a kit only on the domains listed in the kit's settings.
-
-1. In Adobe Fonts, open the web project (kit `pww4pkx`), Domains.
-2. Add the production domain (`aegis-skills.vercel.app` or the custom domain), `localhost` (keep it; always browse the dev site as `localhost`, never `127.0.0.1`, which the kit rejects), and the preview domains you want fonts on. Preview deployments get URLs like `aegis-skills-<hash>-<team>.vercel.app`; add the wildcard form if Adobe accepts it for your plan, otherwise previews fall back to Georgia and the system monospace (the site stays readable).
-3. Publish the kit after editing the list. Details and fallbacks: [FONTS.md](design/FONTS.md).
+The site loads its fonts from the kit through `use.typekit.net` and `p.typekit.net` (the Content-Security-Policy allows only those two). No domain setup is needed: the kit was tested on 2026-10-13 and serves its CSS and fonts to any origin (localhost, 127.0.0.1, the production host and Vercel preview hosts all returned 200), and the Adobe Fonts web project has no domain setting. After the first deploy, just confirm the fonts load (step 8 below). If they fall back to Georgia in production, see the "Domains" section of [FONTS.md](design/FONTS.md). Keep the kit published whenever you change its families.
 
 ## Checks before the first deploy (all run on 2026-10-12)
 
@@ -76,6 +72,6 @@ Replace `$O` with the production origin.
 5. `curl -sI "$O/favicon.ico"`, `$O/favicon.svg` and `$O/og.png` are 200. Check the social preview with a link-preview tool once, since social crawlers cache.
 6. `$O/robots.txt` and `$O/sitemap.xml` are 200 and the sitemap's URLs use the production origin.
 7. Headers: `curl -sI "$O/"` shows `Content-Security-Policy` (with `use.typekit.net` and `p.typekit.net` only as third parties), `Strict-Transport-Security`, `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.
-8. Fonts: open the site, open the network panel, and confirm the kit CSS and font files load from `use.typekit.net` (no CSP errors in the console, no blocked requests). If the headings fall back to Georgia, the domain is missing from the Adobe kit.
+8. Fonts: open the site, open the network panel, and confirm the kit CSS and font files load from `use.typekit.net` (no CSP errors in the console, no blocked requests). If the headings fall back to Georgia, check that the kit is still published in Adobe Fonts and see the "Domains" section of [FONTS.md](design/FONTS.md).
 9. Rate limit: send over 120 `tools/list` requests inside a minute from one machine; later ones answer 429. (Serverless instances keep separate counters, so the limit is best effort, as the terms say.)
 10. Google Search Console / Bing Webmaster (optional, no tracking code is added to the site): submit `$O/sitemap.xml`.

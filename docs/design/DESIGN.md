@@ -164,7 +164,7 @@ Semantic tokens only in components (`var(--k-color-*)`); never hex in component 
 | Reading | **legitima** (Adobe Fonts kit, 500 and 500 italic only) | Georgia, Times New Roman, serif | body 16 px, line height 1.58; dashboard 14 px (fallback face) |
 | Machinery | **Red Hat Mono** (self-hosted, OFL, 400 and 500) | ui-monospace, SF Mono, Menlo, Consolas | labels, code, commands, IDs, timestamps |
 
-The two serifs come from the Adobe Fonts kit `pww4pkx` (served to allow-listed domains only; never copied into the repo); Red Hat Mono is open (SIL OFL) and self-hosted. Hosting, fallbacks, FOIT, the domain allow-list and the dashboard decision are in [FONTS.md](FONTS.md). The kit also holds aquavit, nimbus-roman and times-new-roman; they are deliberately unused.
+The two serifs come from the Adobe Fonts kit `pww4pkx` (served by Adobe; never copied into the repo); Red Hat Mono is open (SIL OFL) and self-hosted. Hosting, fallbacks, FOIT, the domain check and the dashboard decision are in [FONTS.md](FONTS.md). The kit also holds aquavit, nimbus-roman and times-new-roman; they are deliberately unused.
 
 | Style | Token (`--k-text-*`) | Size | Line height | Tracking | Weight |
 |---|---|---|---|---|---|
@@ -345,7 +345,7 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 
 1. Foundation accent and logo are placeholders (neutral ink). Needs the owner. Aegis and Themis now have owner-supplied logos; Argus has none in this repository.
 2. ~~Foundation name spelling and domain~~ Resolved: Kairos Foundation, kairos-foundation.org. The legal copyright holder is also settled (owner decision 2026-10-12): Kairos Foundation.
-3. ~~Font hosting~~ Resolved: Adobe Fonts kit for teimer-web and legitima, Red Hat Mono self-hosted; owner must allow-list production domains in Adobe (see FONTS.md).
+3. ~~Font hosting~~ Resolved: Adobe Fonts kit for teimer-web and legitima, Red Hat Mono self-hosted; no Adobe domain setup is needed (verified 2026-10-13, see FONTS.md).
 4. Tokens are not yet consumed by `apps/web` or `themis-app/ui`; adoption is a follow-up task.
 5. Screenshots for this research were taken at narrow pane width; desktop-only behaviours (e.g. hover states, sticky sections on Hermes/MAI) were read from CSS and are not verified visually.
 6. Syntax-highlight palette for `code-bg` is not yet defined; must meet 4.5:1.

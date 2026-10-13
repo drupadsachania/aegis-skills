@@ -1,7 +1,7 @@
 'use strict'
 
-// Adobe Fonts licence guard: the kit fonts (teimer-web, legitima, ...) are served by Adobe to allow-listed
-// domains and must never be copied into the repo or a package. Only the open Red Hat Mono files may be
+// Adobe Fonts licence guard: the kit fonts (teimer-web, legitima, ...) are served by Adobe through the kit
+// and must never be copied into the repo or a package. Only the open Red Hat Mono files may be
 // committed. See docs/design/FONTS.md.
 const fs = require('fs')
 const path = require('path')

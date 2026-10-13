@@ -41,7 +41,7 @@ Status: 2026-10-11. Records what `docs/design/DESIGN.md` and `motion.md` (sectio
 
 ## Fonts
 
-- Site: Adobe Fonts kit `pww4pkx` (teimer-web 300 headings, legitima 500 body) plus self-hosted Red Hat Mono (400 and 500, OFL) from `apps/web/public/fonts`. CSP allows `use.typekit.net` and `p.typekit.net` only. Details, fallbacks, the FOIT note and the Adobe domain allow-list (a user action) are in [FONTS.md](FONTS.md). Type scale tuned: display tracking -0.025em, display line height 1.1, body line height 1.58, lining numerals.
+- Site: Adobe Fonts kit `pww4pkx` (teimer-web 300 headings, legitima 500 body) plus self-hosted Red Hat Mono (400 and 500, OFL) from `apps/web/public/fonts`. CSP allows `use.typekit.net` and `p.typekit.net` only. Details, fallbacks, the FOIT note and the domain check (no setup needed) are in [FONTS.md](FONTS.md). Type scale tuned: display tracking -0.025em, display line height 1.1, body line height 1.58, lining numerals.
 - Dashboard: no font files are bundled (the Adobe licence does not cover bundling and the dashboard is offline under `font-src 'self'`). The token stacks name teimer-web, legitima and Red Hat Mono first and fall back to Georgia and the system monospace. Upgrade path for a fully local look: add Red Hat Mono woff2 (SIL OFL) under `ui/public/fonts/`, declare `@font-face` in `styles.css` pointing at `/fonts/...` (already allowed by `font-src 'self'` and served by `static.ts` as `font/woff2`).
 
 ## Deviations from DESIGN.md (with reasons)
