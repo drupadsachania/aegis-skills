@@ -21,7 +21,7 @@
     "build": "next build",
     "start": "next start"
   },
-  "author": "Kairos Foundation",
+  "author": "Drupad Sachania",
   "keywords": [
     "skills",
     "claude",

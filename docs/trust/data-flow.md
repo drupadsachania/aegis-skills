@@ -61,7 +61,7 @@ The website, the hosted MCP and the downloads never call a model. They hold no m
 - **Your browser** loads pages, scripts and styles from our own origin. The page policy sets `default-src 'self'`, `connect-src 'self'` and `img-src 'self' data:`, so the browser itself refuses other hosts, apart from Adobe Fonts below ([config](../../apps/web/next.config.js)).
 - **Web fonts:** the site loads web fonts from Adobe Fonts (use.typekit.net and p.typekit.net). Adobe can see your IP address, your browser's user agent and the address of our site as part of serving the fonts and counting kit usage; our referrer policy (`strict-origin-when-cross-origin`) means the full address of the page you are on is not sent. The monospace face (Red Hat Mono) is self-hosted from our own origin. Nothing else third-party is loaded by the site ([page policy](../../apps/web/next.config.js), [font notes](../design/FONTS.md)).
 - **Cookies:** none. The only thing stored in your browser is your light or dark choice, under `aegis-theme` in local storage.
-- **Links** to GitHub and the Kairos Foundation open only when you click them.
+- **Links** to GitHub and other sites open only when you click them.
 
 ## Telemetry
 

@@ -33,7 +33,7 @@ describe('organisation naming', () => {
     expect(files.filter(f => read(f).includes(OLD_DOMAIN))).toEqual([])
   })
 
-  it('the findings file records the resolved spelling and records the copyright holder as resolved (Kairos Foundation)', () => {
+  it('the findings file records the resolved spelling and the original copyright decision (superseded by the individual maintainer, 2026-10-13)', () => {
     const text = read('docs/superpowers/plans/restructure/01-cross-phase-findings.md')
     expect(text).toContain('Organisation spelling resolved by the owner')
     expect(text).toMatch(/copyright holder/i)
@@ -43,14 +43,14 @@ describe('organisation naming', () => {
 
   it('licences, authors and the footer use the corrected name', () => {
     for (const f of ['LICENSE', 'LICENSE-MIT', 'packages/aegis/LICENSE', 'packages/themis-app/LICENSE']) {
-      expect(read(f)).toMatch(/Copyright \(c\) 2024 Kairos Foundation/)
+      expect(read(f)).toMatch(/Copyright \(c\) 2024 Drupad Sachania/)
     }
     for (const f of ['apps/web/package.json', 'packages/aegis/package.json']) {
-      expect(JSON.parse(read(f)).author).toBe('Kairos Foundation')
+      expect(JSON.parse(read(f)).author).toBe('Drupad Sachania')
     }
     for (const f of ['packages/aegis/.claude-plugin/plugin.json', 'packages/themis-plugin/.claude-plugin/plugin.json']) {
-      expect(JSON.parse(read(f)).author.name).toBe('Kairos Foundation')
+      expect(JSON.parse(read(f)).author.name).toBe('Drupad Sachania')
     }
-    expect(read('apps/web/components/Layout.js')).toContain("KAIROS_URL = 'https://kairos-foundation.org/'")
+    expect(read('apps/web/components/Layout.js')).toContain("MAINTAINER_URL = 'https://github.com/drupadsachania'")
   })
 })

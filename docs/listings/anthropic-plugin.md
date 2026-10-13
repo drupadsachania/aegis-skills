@@ -17,7 +17,7 @@ The submit page did not cover version pinning; the checklist does (see "Pins" be
 
 ## Blockers (USER ACTION unless stated)
 
-1. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** `author.name` in both `plugin.json` files and `.claude-plugin/marketplace.json` `owner` agree. Nothing to do.
+1. ~~Copyright and licence holder~~ **Decided 2026-10-13: the individual maintainer, Drupad Sachania (an independent project, no organisation).** `author.name` in both `plugin.json` files and `.claude-plugin/marketplace.json` `owner` agree. Nothing to do.
 2. ~~Repository must be public~~ **Satisfied, per the owner's statement (2026-10-12).** This was not verified by the maintainer tooling.
 3. **Verified contact and support channel (DONE: inbound delivery verified 2026-10-13).** The Anthropic rules list "a privacy policy link" and "verified contact and support channels" as developer duties, and the portal's compliance step asks for a contact email. Contact fields: support = `support@kairos-foundation.org`, privacy = `privacy@kairos-foundation.org`. Vulnerability reports stay on GitHub private vulnerability reporting (`SECURITY.md`), not email. **USER ACTION before submitting:** send a test message to both `support@kairos-foundation.org` and `privacy@kairos-foundation.org` from an outside account, confirm delivery, and confirm that replies work from your mail client. The addresses are aliases that deliver to the owner's mailbox; MX records point at GoDaddy mail (checked 2026-10-13) but delivery has not been tested. The portal may email a verification link to the contact address. For the verified-contact step make sure you can receive a verification email at `support@kairos-foundation.org`.
 4. **Phase 7 publish** of `aegis-skills@1.5.0` and `@aegis-skills/themis-plugin@1.1.0`. Until they exist on npm, the Themis plugin's `.mcp.json` points at a package that cannot be fetched, and Themis must not be submitted.
@@ -38,7 +38,7 @@ Checked against the pre-submission checklist on 2026-10-12. "Check" means verify
 | `name` lowercase letters, digits, hyphens | `aegis`, `themis` |
 | `description`, `author`, `version` set | Present in both |
 | README of at least 40 words in the plugin folder | `packages/aegis/README.md` and `packages/themis-plugin/README.md`, each with a "What this plugin runs, sends and fetches" section (checked by `scripts/check-plugin-bundle.js`) |
-| LICENSE file in each plugin folder | `LICENSE`, `LICENSE-MIT`, `LICENSE-APACHE` in both (Themis copies added 2026-10-12; Kairos Foundation in all) |
+| LICENSE file in each plugin folder | `LICENSE`, `LICENSE-MIT`, `LICENSE-APACHE` in both (Themis copies added 2026-10-12; Drupad Sachania in all) |
 | Files: 512 or fewer, each non-image file under 256 KiB, text only | Aegis has 245 tracked files, none over 256 KiB (checked with `git ls-files`); Themis has 33 tracked files. Check the report for `health.json` and the skill `intel-state.json` files being listed |
 | Remote MCP server has `type` and an `https://` url | `packages/aegis/.mcp.json` uses `type: http` and the hosted URL |
 | Package launchers pinned to an exact version | `packages/themis-plugin/.mcp.json` pins `@aegis-skills/themis-plugin@1.1.0` and `aegis-skills@1.5.0` |

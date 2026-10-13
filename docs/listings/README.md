@@ -15,7 +15,7 @@ Maintainer folder, not product documentation and not on the public site. Status 
 
 ## Decisions recorded (owner, 2026-10-12)
 
-1. Copyright and licence holder: **Kairos Foundation** (<https://kairos-foundation.org/>). The GitHub repository URL is only the repository location.
+1. Copyright and licence holder: **Drupad Sachania** (<https://github.com/drupadsachania>). The GitHub repository URL is only the repository location.
 2. The GitHub repository is public (owner statement; not verified by the tooling that wrote these files).
 3. Contact (updated 2026-10-13): role addresses `support@kairos-foundation.org` (support) and `privacy@kairos-foundation.org` (privacy) exist as aliases that deliver to the owner's mailbox; no personal address is published anywhere. GitHub private vulnerability reporting (<https://github.com/drupadsachania/aegis-skills/security/advisories/new>) stays the single security channel; email is for privacy and general support only. MX records point at GoDaddy mail (checked 2026-10-13); delivery from outside is untested.
 4. No demo recording. ChatGPT gets Aegis as a skills-only plugin; Themis on ChatGPT is deferred. An MCP server cannot be added to a skills-only plugin later (see the decision section in [chatgpt-app.md](chatgpt-app.md)).

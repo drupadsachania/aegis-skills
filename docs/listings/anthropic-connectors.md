@@ -16,7 +16,7 @@ Status as of 2026-10-12: not submitted, not listed. The route exists in the repo
 ## Blockers (USER ACTION unless stated)
 
 1. **Deploy the site** (Vercel root directory `apps/web`, Node 24). `https://aegis-skills.vercel.app/api/mcp` must answer over HTTPS; the portal asks for the URL and syncs the tools from it.
-2. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** The Company step takes "Kairos Foundation" and <https://kairos-foundation.org/>. The repository is public per the owner (not verified here).
+2. ~~Copyright and licence holder~~ **Decided 2026-10-13: the individual maintainer, Drupad Sachania (an independent project, no organisation).** The Company step takes "Drupad Sachania" and <https://github.com/drupadsachania>. The repository is public per the owner (not verified here).
 3. **Verified support contact (DONE: inbound delivery verified 2026-10-13).** The Listing step needs a privacy policy URL, a documentation URL and a support contact, and the uploaded guidelines list "verified contact and support channels" as a developer duty. Contact fields: support = `support@kairos-foundation.org`, privacy = `privacy@kairos-foundation.org` (the privacy policy now names the privacy address). Security reports stay on GitHub private vulnerability reporting. **USER ACTION before submitting:** send a test message to both `support@kairos-foundation.org` and `privacy@kairos-foundation.org` from an outside account, confirm delivery, and confirm that replies work from your mail client. The addresses are aliases that deliver to the owner's mailbox; MX records point at GoDaddy mail (checked 2026-10-13) but delivery has not been tested. The portal may email a verification link to the contact address. For the "verified contact" step make sure you can receive a verification email at `support@kairos-foundation.org`.
 4. **Hosting retention** note in the same policy is a placeholder to confirm.
 5. **Name check** for "Aegis" in the connector directory.
@@ -54,7 +54,7 @@ The submission pages do not require a rate limit. The server has a best-effort i
 4. **Tools.** Confirm all three tools show as read-only with titles.
 5. **Listing.** Name, tagline (55 characters or fewer), description (2,000 or fewer) and categories (one to five) from the "Directory listing fields" table and long description in `listing-copy.md` (`scripts/tests/listing-copy.test.js` enforces the limits), at least three example prompts (`listing-copy.md`), documentation URL, privacy policy URL, support contact, icon (`apps/web/public/brand/aegis-icon.svg`, or the PNG/WebP marks beside it), and the URL slug. The slug is permanent once published.
 6. **Use cases.** Read-only lookup of defensive security methodology; no setup needed; reads data only.
-7. **Company.** Kairos Foundation, <https://kairos-foundation.org/>.
+7. **Company.** Drupad Sachania, <https://github.com/drupadsachania>.
 8. **Authentication.** No authentication.
 9. **Data handling.** First-party content, no personal health data, no sponsored content.
 10. **Test and launch.** Reviewer instructions: no account is needed; use the ten prompts in `test-prompts.md`; every tool is read-only. The guidelines also say a test account with sample data is a developer duty; here the state is "no account exists because nothing is gated".

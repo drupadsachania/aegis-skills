@@ -12,7 +12,7 @@ function LicensePage ({ licenseText }) {
       h('div', { className: 'page-head' },
         h('div', { className: 'eyebrow' }, 'Trust'),
         h('h1', null, 'License'),
-        h('p', null, 'Every package in this repository is licensed under Apache-2.0 OR MIT, at your option. SPDX: (Apache-2.0 OR MIT). The copyright holder is the Kairos Foundation. How you may use the website and the hosted MCP server is in the ', h('a', { href: '/terms' }, 'terms of service'), '.')),
+        h('p', null, 'Every package in this repository is licensed under Apache-2.0 OR MIT, at your option. SPDX: (Apache-2.0 OR MIT). The copyright holder is Drupad Sachania, the maintainer of the project. How you may use the website and the hosted MCP server is in the ', h('a', { href: '/terms' }, 'terms of service'), '.')),
       h('div', { className: 'prose' },
         h('ul', null,
           h('li', null, h('a', { href: BLOB + 'LICENSE-APACHE' }, 'Apache License 2.0 (LICENSE-APACHE)')),

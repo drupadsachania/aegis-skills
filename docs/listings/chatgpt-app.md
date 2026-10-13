@@ -83,11 +83,11 @@ Manifest fields to set, using only names the build page lists:
 | `name` | `aegis-skills` (64 characters or fewer; avoids the bare dictionary word) |
 | `version` | the package version, rewritten by the Phase 7 version script |
 | `description`, `license`, `repository`, `homepage`, `keywords` | from `listing-copy.md`, `Apache-2.0 OR MIT`, repository URL, site URL |
-| `author` | `{ "name": "Kairos Foundation", "url": "https://kairos-foundation.org/" }` |
+| `author` | `{ "name": "Drupad Sachania", "url": "https://github.com/drupadsachania" }` |
 | `extensions.com.openai.interface.displayName` | Aegis Security Skills (21 characters) |
 | `...shortDescription` | Defensive security skills (25) |
 | `...longDescription` | the long description in `listing-copy.md` (under 4000) |
-| `...developerName` | Kairos Foundation |
+| `...developerName` | Drupad Sachania |
 | `...websiteURL`, `privacyPolicyURL` | site and `/docs/themis/privacy-policy` (include them even though skills-only does not require them: the guidelines ask for a privacy policy on every public listing) |
 | `...defaultPrompt` | up to three of the Aegis prompts in `listing-copy.md`, each 128 characters or fewer; the shortest are "What security skills are available?" and "Show me the compliance skill." |
 | `...composerIcon`, `logo` | `./assets/logo.svg` |
@@ -97,7 +97,7 @@ Each skill needs `SKILL.md` with `name` and `description` front matter; `scripts
 
 ## Blockers (USER ACTION unless stated)
 
-1. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** The developer identity chosen at upload should be the verified Kairos Foundation entity or the individual who is verified; this is the owner's choice and is not decided here.
+1. ~~Copyright and licence holder~~ **Decided 2026-10-13: the individual maintainer, Drupad Sachania (an independent project, no organisation).** The developer identity chosen at upload should be the verified individual, Drupad Sachania.
 2. **Verified individual or organisation** in the OpenAI Platform dashboard (<https://platform.openai.com/settings/organization/general>).
 3. **Support contact (DONE: inbound delivery verified 2026-10-13).** The guidelines require accurate customer support contact details. `supportURL` / support contact = `support@kairos-foundation.org`; privacy contact = `privacy@kairos-foundation.org`. Security reports stay on GitHub private vulnerability reporting. **USER ACTION before submitting:** send a test message to both `support@kairos-foundation.org` and `privacy@kairos-foundation.org` from an outside account, confirm delivery, and confirm that replies work from your mail client. The addresses are aliases that deliver to the owner's mailbox; MX records point at GoDaddy mail (checked 2026-10-13) but delivery has not been tested. The portal may email a verification link to the contact address.
 4. **Privacy policy link.** `docs/themis/privacy-policy.md` is published at `/docs/themis/privacy-policy` once the site is deployed (Vercel deploy is a user action).

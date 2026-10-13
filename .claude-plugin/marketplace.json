@@ -2,8 +2,8 @@
   "name": "aegis-skills",
   "description": "Aegis defensive cybersecurity skills.",
   "owner": {
-    "name": "Kairos Foundation",
-    "url": "https://kairos-foundation.org/"
+    "name": "Drupad Sachania",
+    "url": "https://github.com/drupadsachania"
   },
   "plugins": [
     {
