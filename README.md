@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/readme/hero.png" alt="Aegis (gold Medusa shield) and Themis (blue scales) logos" width="720">
+  <img src="1_aegis-themis-identity-reveal.gif" alt="Aegis (gold Medusa shield) and Themis (blue scales) logos" width="720">
 </p>
 
-<h1 align="center">Aegis · Themis</h1>
+<h1 align="center">Aegis 🛡️ · ⚖️ Themis </h1>
 
 <p align="center"><b>Defensive cybersecurity skills for your AI, and a governed security-operations agent built on them.</b></p>
 
