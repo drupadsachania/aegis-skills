@@ -1,10 +1,19 @@
-# Aegis · Themis
+<p align="center">
+  <img src="docs/assets/readme/hero.png" alt="Aegis (gold Medusa shield) and Themis (blue scales) logos" width="720">
+</p>
 
-**Defensive cybersecurity skills for your AI, and a governed security-operations agent built on them.**
+<h1 align="center">Aegis · Themis</h1>
 
-[![License: Apache-2.0 OR MIT](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg)](#license)
+<p align="center"><b>Defensive cybersecurity skills for your AI, and a governed security-operations agent built on them.</b></p>
 
-Two products, one repository:
+<p align="center">
+  <a href="https://github.com/drupadsachania/aegis-skills/actions/workflows/ci.yml"><img src="https://github.com/drupadsachania/aegis-skills/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="#license"><img src="https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg" alt="License: Apache-2.0 OR MIT"></a>
+  <img src="https://img.shields.io/badge/node-%E2%89%A524-339933.svg" alt="Node 24 or later">
+  <a href="https://aegis-skills.vercel.app"><img src="https://img.shields.io/badge/website-live-c48a16.svg" alt="Website"></a>
+</p>
+
+An independent open-source project, maintained by [Drupad Sachania](https://github.com/drupadsachania). Two products, one repository:
 
 | | Aegis | Themis |
 |---|---|---|
@@ -12,13 +21,20 @@ Two products, one repository:
 | **Calls a model?** | Never. It is markdown and JSON | Uses your assistant (plugin) or your own key or a local model (standalone) |
 | **Package** | `aegis-skills` | `@aegis-skills/themis-plugin` and `@aegis-skills/themis` |
 
-Status: nothing is published to npm or the plugin marketplace yet. The commands below that use `npx` or `/plugin` work after the first release. The [website](https://aegis-skills.vercel.app) works today. Aegis publishes first; Themis is in development, local-first and not published yet (run it from a checkout, see [docs/themis](docs/themis/index.md)).
+Status: nothing is published to npm or the plugin marketplace yet. The commands below that use `npx` or `/plugin` work after the first release. The [website](https://aegis-skills.vercel.app) works today. Aegis publishes first; Themis is in development, local-first and not published yet (run it from a checkout, see [docs/themis](docs/themis/index.md)). The [status table](#where-things-stand) below says what is done and what is next.
 
 ---
 
 ## Aegis
 
+<img src="apps/web/public/brand/aegis-mark-320.webp" alt="Aegis mark" width="120" align="right">
+
 Defensive security skills in the open [Agent Skills](https://agentskills.io/specification) format. One source installs natively into coding assistants, is served over the Model Context Protocol, and flattens into a single-file prompt for any chat AI.
+
+<p align="center">
+  <img src="docs/assets/readme/aegis-install.gif" alt="Terminal recording: aegis install --platform claude --project installs 24 skills and registers the MCP server; aegis list shows the install" width="760">
+  <br><sub>Real output of <code>aegis install</code> and <code>aegis list</code> from this repository (only the temp path is shortened to <code>~/my-project</code>). Regenerate with <code>python scripts/make-readme-assets.py</code>.</sub>
+</p>
 
 ### Skill library: 24 skills across 5 families
 
@@ -81,6 +97,8 @@ Hosted, with nothing to install (Streamable HTTP, no authentication): `https://a
 
 ## Themis
 
+<img src="apps/web/public/brand/themis-mark-320.webp" alt="Themis mark" width="120" align="right">
+
 Give Themis a task such as "validate exposure to CVE-2026-12345 on our VPN gateways". It runs a fixed seven-step workflow: validate, decompose, schedule, fan out to Aegis skills, guardrail, synthesise and audit. Deterministic steps are plain code in `themis-core`; reasoning steps are done by a model.
 
 | | Themis on your AI | Themis standalone |
@@ -97,7 +115,33 @@ Governance is enforced in code, not by the model:
 - Secrets are redacted, tool output is size-capped and wrapped as untrusted, and every step, call and decision goes to a local audit log in `~/.themis`.
 - In plugin mode, tools you connect directly to your assistant bypass Themis and are not governed.
 
+<p align="center">
+  <img src="docs/assets/readme/themis-dashboard.jpg" alt="The Themis dashboard on 127.0.0.1: Run page with the task box, provider picker, and a notice that no model is configured yet" width="760">
+  <br><sub>The standalone dashboard as it starts on a fresh install, before a model is configured. It runs entirely on your machine.</sub>
+</p>
+
 Read more: [Themis docs](https://aegis-skills.vercel.app/docs/themis) and [`docs/themis`](docs/themis).
+
+---
+
+## Where things stand
+
+| | State | Next |
+|---|---|---|
+| Aegis skills, CLI, MCP | Built and tested on Linux, macOS and Windows (Node 24); 24 skills at version 1.5.0 | First npm release (`aegis-skills@1.5.0`) |
+| Website and hosted MCP | Live at [aegis-skills.vercel.app](https://aegis-skills.vercel.app) | Install commands switch on after the first release |
+| `themis-core`, `themis-gateway` | Built and tested; packaged and ready for npm | Released right after Aegis |
+| Themis plugin and standalone app | Working from a checkout; no real-model run recorded in CI yet | Public beta: a model-backed end-to-end run, a clearer approval confirmation, diagnostics and issue templates |
+| Marketplace listings | Aegis first, as a skills-only plugin | Themis follows once the beta settles |
+
+## How this is maintained
+
+- **CI on every change.** Tests run on Ubuntu, macOS and Windows with Node 24, plus lint, dependency and layout guards, a production site build, and install smoke tests of each package. Releases are published by a tag-driven workflow with provenance, not from a laptop.
+- **Skill content is refreshed monthly.** A scheduled workflow scores each skill against the current ATT&CK and NVD data and opens a pull request when one falls behind. Every flattened prompt is stamped with the date of its intel.
+- **Dependencies are pinned and watched.** GitHub Actions are pinned to full commit SHAs and bumped weekly by Dependabot.
+- **Defaults are conservative.** Aegis never calls a model. Themis denies tool access by default and only a human can approve a write or execute.
+
+Found a bug or a skill that is out of date? [Open an issue](https://github.com/drupadsachania/aegis-skills/issues). For a vulnerability, use [private reporting](https://github.com/drupadsachania/aegis-skills/security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md).
 
 ---
 
