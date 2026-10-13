@@ -30,7 +30,7 @@ const stdio = (pkgArgs) => ({ command: 'npx', args: ['-y', ...pkgArgs] })
 
 const PATHS = [
   {
-    id: 'zero-install', title: 'Zero install', audience: 'Anyone, in any chat AI',
+    id: 'zero-install', product: 'aegis', title: 'Zero install', audience: 'Anyone, in any chat AI',
     how: 'Copy a single-file prompt or download a skill zip.', docs: '/docs/aegis/single-file-prompts',
     platforms: [
       { id: 'claude-ai', label: 'Claude.ai', steps: [
@@ -44,7 +44,7 @@ const PATHS = [
     ]
   },
   {
-    id: 'hosted-mcp', title: 'Hosted MCP', audience: 'Claude.ai, ChatGPT and any MCP client',
+    id: 'hosted-mcp', product: 'aegis', title: 'Hosted MCP', audience: 'Claude.ai, ChatGPT and any MCP client',
     how: 'Connect to the hosted, read-only Aegis MCP server.', docs: '/docs/aegis/hosted-mcp',
     platforms: [
       { id: 'claude-ai', label: 'Claude.ai', steps: [
@@ -66,7 +66,7 @@ const PATHS = [
     ]
   },
   {
-    id: 'skill-pack', title: 'Skill pack', audience: 'Coding assistants',
+    id: 'skill-pack', product: 'aegis', title: 'Skill pack', audience: 'Coding assistants',
     how: "Install every skill into your assistant's native skills folder.", docs: '/docs/aegis/getting-started',
     platforms: [
       { id: 'claude', label: 'Claude Code', ...AEGIS_AVAILABILITY, steps: [
@@ -83,7 +83,7 @@ const PATHS = [
     ]
   },
   {
-    id: 'themis-plugin', title: 'Themis on your AI', status: IN_DEV, audience: 'Claude Code, Codex, Gemini CLI',
+    id: 'themis-plugin', product: 'themis', title: 'Themis on your AI', status: IN_DEV, audience: 'Claude Code, Codex, Gemini CLI',
     how: 'Install the Themis plugin. Your assistant is the model, so no API key is needed.', docs: '/docs/themis/mode-1-plugin',
     platforms: [
       { id: 'claude', label: 'Claude Code', availability: IN_DEV, steps: [
@@ -97,7 +97,7 @@ const PATHS = [
     ]
   },
   {
-    id: 'themis-app', title: 'Themis standalone', status: IN_DEV, audience: 'A local SOC dashboard',
+    id: 'themis-app', product: 'themis', title: 'Themis standalone', status: IN_DEV, audience: 'A local SOC dashboard',
     how: 'Run Themis with its own web UI on 127.0.0.1, using your own key or a local model.', docs: '/docs/themis/mode-2-app',
     platforms: [
       { id: 'npx', label: 'Run with npx', availability: IN_DEV, steps: [

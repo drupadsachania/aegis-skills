@@ -2,7 +2,7 @@
 
 const React = require('react')
 const Layout = require('../components/Layout')
-const PathMatrix = require('../components/PathMatrix')
+const PathsByProduct = require('../components/PathsByProduct')
 const InstallTabs = require('../components/InstallTabs')
 const StatusPill = require('../components/StatusPill')
 
@@ -16,9 +16,9 @@ function PathsPage ({ paths }) {
       h('div', { className: 'page-head' },
         h('div', { className: 'eyebrow' }, 'Install'),
         h('h1', null, 'Choose your ', h('em', null, 'path')),
-        h('p', null, 'Five ways in, all using the same skills. Pick the lightest one that does the job. The first three work with Aegis, which publishes first; the two Themis paths are marked in development.'),
+        h('p', null, 'Aegis and Themis install differently, so each has its own paths below, all using the same skills. Aegis is available now, in three ways. Themis is in development, with two paths that are marked as such.'),
         h('p', { className: 'status-note' }, 'Just want to read skills from your chat AI? The ', h('a', { href: '/mcp' }, 'hosted MCP'), ' needs no install. Also see the ', h('a', { href: '/security' }, 'security'), ' and ', h('a', { href: '/license' }, 'license'), ' pages.')),
-      h(PathMatrix, { paths }),
+      h(PathsByProduct, { paths }),
       ...paths.map(p => h('section', { key: p.id, id: p.id, className: 'path-section', 'data-reveal': '' },
         h('h2', null, p.title, p.status ? h(StatusPill, { status: p.status, className: 'h-status' }) : null),
         h('p', { className: 'path-for' }, `FOR · ${p.audience.toUpperCase()}`),

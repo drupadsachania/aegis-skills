@@ -2,7 +2,7 @@
 
 const React = require('react')
 const Layout = require('../components/Layout')
-const PathMatrix = require('../components/PathMatrix')
+const PathsByProduct = require('../components/PathsByProduct')
 const { Logo } = require('../components/Brand')
 const AegisThemisFlow = require('../components/AegisThemisFlow')
 const StatusPill = require('../components/StatusPill')
@@ -127,8 +127,8 @@ function HomePage ({ skillCount, familyCount, paths, stamp, stampLine }) {
     // 02 Choose your path
     h(Section, { id: 'paths' },
       h(SecHead, { num: '02', kicker: 'Choose your path' }),
-      h('h2', { className: 'sec-title', 'data-reveal': '' }, 'The same skills, ', h('em', null, 'your path'), '.'),
-      h(PathMatrix, { paths }),
+      h('h2', { className: 'sec-title', 'data-reveal': '' }, 'Pick a product, then ', h('em', null, 'your path'), '.'),
+      h(PathsByProduct, { paths }),
       h('p', { className: 'lede', style: { marginTop: '28px', marginBottom: 0 } },
         'Every path uses the same skills. Start with zero install and move up when you need more. ',
         h('a', { href: '/paths' }, 'All install commands →')),
