@@ -7,7 +7,7 @@ Maintainer folder, not product documentation and not on the public site. Status 
 | Runbook | Directory | Product | Plan | Status |
 |---|---|---|---|---|
 | [anthropic-plugin.md](anthropic-plugin.md) | Anthropic plugin directory | Aegis, Themis | Two plugin bundles (`packages/aegis`, `packages/themis-plugin`). `claude plugin validate` passes for both and `scripts/check-plugin-bundle.js` passes | Ready except the owner blockers below; Themis also needs the npm publish |
-| [anthropic-connectors.md](anthropic-connectors.md) | Anthropic connectors directory | Hosted Aegis MCP | One read-only connector | Needs the site deployed and the mailbox delivery test |
+| [anthropic-connectors.md](anthropic-connectors.md) | Anthropic connectors directory | Hosted Aegis MCP | One read-only connector | Needs the site deployed |
 | [chatgpt-app.md](chatgpt-app.md) | OpenAI Plugins Directory (ChatGPT and Codex) | Aegis | Skills-only plugin ZIP, no MCP, no demo video. Themis on ChatGPT deferred | Waits for the Phase 7 ZIP script, publisher verification and the mailbox delivery test |
 | [gemini-gallery.md](gemini-gallery.md) | Gemini CLI extensions gallery | Aegis | Release archive with the manifest at its root | Waits for the Phase 7 archive and publish |
 | [mcp-registry.md](mcp-registry.md) | MCP Registry | Aegis, Themis | `mcp-publisher` with GitHub login | Waits for the Phase 7 npm publish |
@@ -25,7 +25,7 @@ Maintainer folder, not product documentation and not on the public site. Status 
 
 | # | Blocker | Needed by | Notes |
 |---|---|---|---|
-| 1 | **USER ACTION: mailbox delivery test** | Anthropic plugin and connector portals; OpenAI support contact | The addresses are the contact fields everywhere (support@ for support, privacy@ for privacy). Before submitting anything, send a test message to both from an outside account, confirm delivery, and confirm replies work from your mail client. For Anthropic's verified-contact step make sure you can receive a verification email at `support@kairos-foundation.org`; the portals may email a verification link. Security stays on GitHub private reporting |
+| 1 | **Mailbox: inbound delivery verified 2026-10-13; still to do: reply test and portal verification email** | Anthropic plugin and connector portals; OpenAI support contact | The addresses are the contact fields everywhere (support@ for support, privacy@ for privacy). The owner sent a test message from an outside account (live.com) to both addresses on 2026-10-13 and both arrived in the Titan mailbox. Still to confirm before submitting: that replies work from the mail client (and show the role address if send-as is configured). For Anthropic's verified-contact step make sure you can receive a verification email at `support@kairos-foundation.org`; the portals may email a verification link. Security stays on GitHub private reporting |
 | 2 | Deploy the website (Vercel, root `apps/web`, Node 24) | Aegis plugin `.mcp.json`, connector, privacy policy URL | Not deployed from this branch |
 | 3 | Phase 7 npm publish of `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0` | Themis plugin, Gemini manifest, MCP Registry | Phase 7 |
 | 4 | Verified OpenAI publisher identity | ChatGPT listing | Platform dashboard, organisation settings |
