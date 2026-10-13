@@ -24,7 +24,14 @@ test('bins used by the commands exist', () => {
 test('marketplace name and plugin names match .claude-plugin/marketplace.json', () => {
   const m = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.claude-plugin', 'marketplace.json'), 'utf8'))
   expect(C.MARKETPLACE).toBe(m.name)
-  expect(m.plugins.map(p => p.name)).toEqual(expect.arrayContaining(['aegis', 'themis']))
+  // Themis is not listed until its plugin package is published (Phase 8); scripts/check-versions.js enforces the same rule.
+  expect(m.plugins.map(p => p.name)).toEqual(['aegis'])
+})
+
+test('no install command offers a marketplace install of a plugin the marketplace does not list', () => {
+  const m = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.claude-plugin', 'marketplace.json'), 'utf8'))
+  const listed = m.plugins.map(p => p.name)
+  for (const hit of allCode.matchAll(/\/plugin install ([a-z-]+)@/g)) expect(listed).toContain(hit[1])
 })
 
 test('every --platform id is a real installer target', () => {

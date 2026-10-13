@@ -88,7 +88,7 @@ Give Themis a task such as "validate exposure to CVE-2026-12345 on our VPN gatew
 | **Model** | Your assistant (Claude Code, Codex, Gemini CLI) | Your Anthropic, OpenAI or Gemini key, or a local model (Ollama, LM Studio) |
 | **Interface** | Your assistant's chat, through the `themis-mcp` MCP server | A local web dashboard on 127.0.0.1 |
 | **Approvals** | Your client's MCP elicitation prompt, otherwise handed back to you | The dashboard's Approvals page |
-| **Install** | `/plugin install themis@aegis-skills` or an MCP config | `npx @aegis-skills/themis dashboard` |
+| **Install** | An MCP config (a marketplace listing is planned) | `npx @aegis-skills/themis dashboard` |
 
 Governance is enforced in code, not by the model:
 

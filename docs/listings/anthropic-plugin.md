@@ -33,6 +33,7 @@ Checked against the pre-submission checklist on 2026-10-12. "Check" means verify
 | Checklist item | State |
 |---|---|
 | Plugin folder contains `.claude-plugin/plugin.json` | `packages/aegis/.claude-plugin/plugin.json` and `packages/themis-plugin/.claude-plugin/plugin.json` exist |
+| Marketplace listing | `.claude-plugin/marketplace.json` lists only `aegis` while `@aegis-skills/themis-plugin` is outside the releasable allow-list (`RELEASABLE` in `scripts/lib/release-manifests.js`; enforced by `npm run check:versions`). Add the `themis` entry back when Phase 8 publishes the plugin |
 | One plugin per submission | Submit `packages/aegis` and `packages/themis-plugin` separately; the portal does not accept the marketplace repo as one submission |
 | `name` lowercase letters, digits, hyphens | `aegis`, `themis` |
 | `description`, `author`, `version` set | Present in both |

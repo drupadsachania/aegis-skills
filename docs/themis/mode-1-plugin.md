@@ -31,12 +31,7 @@ For Codex or Gemini CLI use the same `node` command and path in place of `npx` a
 
 ## Install (planned, once published)
 
-Claude Code, inside the app:
-
-```
-/plugin marketplace add drupadsachania/aegis-skills
-/plugin install themis@aegis-skills
-```
+Claude Code: the plugin marketplace of this repository lists Aegis only. Themis is added to it once the plugin is published to npm, so there is no `/plugin install` command for Themis yet. Use an MCP config like the ones below.
 
 Codex, add to `~/.codex/config.toml`:
 

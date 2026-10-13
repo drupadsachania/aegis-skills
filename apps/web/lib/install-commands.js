@@ -82,7 +82,7 @@ const PATHS = [
     how: 'Install the Themis plugin. Your assistant is the model, so no API key is needed.', docs: '/docs/themis/mode-1-plugin',
     platforms: [
       { id: 'claude', label: 'Claude Code', availability: IN_DEV, steps: [
-        { label: 'Claude Code', code: `${marketplaceAdd}\n/plugin install themis@${MARKETPLACE}` }] },
+        { text: 'Not in the Claude Code marketplace yet: the marketplace lists Aegis only, until the Themis plugin is published to npm. Run it from the repository today.' }] },
       { id: 'codex', label: 'Codex', availability: IN_DEV, steps: [ // PHASE-3 BINDING
         { text: 'Add to ~/.codex/config.toml:' },
         { label: 'config.toml', code: '[mcp_servers.aegis]\ncommand = "npx"\nargs = ["-y", "aegis-skills", "mcp"]\n\n[mcp_servers.themis]\ncommand = "npx"\nargs = ["-y", "@aegis-skills/themis-plugin"]' }] },

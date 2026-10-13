@@ -39,7 +39,7 @@ const COMPARE = [
   ['Approvals', 'Asked through your client\'s own prompt when it supports MCP elicitation; otherwise handed back for you to run', 'Approvals page in the dashboard'],
   ['Tool governance', 'Tools you register with Themis are governed; tools connected straight to your assistant are not', 'Every tool call is governed'],
   ['History and audit', 'Local SQLite in ~/.themis', 'Local SQLite in ~/.themis'],
-  ['Install', '/plugin install themis@aegis-skills, or an MCP config', 'npx @aegis-skills/themis dashboard']
+  ['Install', 'An MCP config (a marketplace listing is planned)', 'npx @aegis-skills/themis dashboard']
 ]
 
 // Kinds confirmed against THEMIS_WORKFLOW in @aegis-skills/themis-core.

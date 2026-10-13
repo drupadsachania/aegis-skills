@@ -6,12 +6,7 @@ Status: in development. Version 1.1.0, built and tested in the repository and st
 
 ## Install
 
-Claude Code, inside the app:
-
-```
-/plugin marketplace add drupadsachania/aegis-skills
-/plugin install themis@aegis-skills
-```
+Claude Code: the plugin marketplace of this repository lists Aegis only for now. Themis joins it once this package is published to npm, so there is no `/plugin install` command for it yet. Use an MCP config:
 
 Any MCP client (the plugin works together with the `aegis` skill server):
 
