@@ -9,7 +9,7 @@
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
   "mcpName": "io.github.drupadsachania/themis",
-  "files": ["dist/", "skills/", "agents/", ".claude-plugin/", ".mcp.json", "server.json"],
+  "files": ["dist/", "skills/", "agents/", ".claude-plugin/", ".mcp.json", "server.json", "README.md", "LICENSE", "LICENSE-APACHE", "LICENSE-MIT"],
   "repository": { "type": "git", "url": "git+https://github.com/drupadsachania/aegis-skills.git", "directory": "packages/themis-plugin" },
   "scripts": { "build": "tsc -p tsconfig.build.json", "test": "jest" },
   "dependencies": {
