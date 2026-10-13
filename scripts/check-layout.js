@@ -22,7 +22,7 @@ const MUST_EXIST = [
   // Phase 7 part A: CI, release tooling, publish-ready packages
   '.github/workflows/ci.yml', '.github/dependabot.yml', 'scripts/ci-detect.js', 'scripts/assert-no-native.js',
   'scripts/lib/release-manifests.js', 'scripts/check-versions.js', 'scripts/bump-version.js', 'scripts/assert-pack.js', 'scripts/pack-to.js',
-  'scripts/__tests__/release-manifests.test.js', 'scripts/__tests__/bump-version.test.js', 'scripts/__tests__/assert-pack.test.js', 'scripts/tests/release-guard.test.js',
+  'scripts/__tests__/release-manifests.test.js', 'scripts/__tests__/bump-version.test.js', 'scripts/__tests__/assert-pack.test.js', 'scripts/__tests__/workflows.test.js', 'scripts/tests/release-guard.test.js',
   'packages/aegis/LICENSE', 'packages/aegis/LICENSE-APACHE', 'packages/aegis/LICENSE-MIT',
   'packages/themis-core/README.md', 'packages/themis-core/LICENSE', 'packages/themis-core/LICENSE-APACHE', 'packages/themis-core/LICENSE-MIT',
   'packages/themis-gateway/README.md', 'packages/themis-gateway/LICENSE', 'packages/themis-gateway/LICENSE-APACHE', 'packages/themis-gateway/LICENSE-MIT',
