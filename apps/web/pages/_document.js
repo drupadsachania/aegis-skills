@@ -19,9 +19,10 @@ function Document () {
   return h(Html, { lang: 'en' },
     h(Head, null,
       h('meta', { name: 'color-scheme', content: 'light' }),
-      // favicon: simplified Aegis shield (SVG for modern browsers, .ico fallback), cream plate for dark tabs
-      h('link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }),
+      // favicon: the dark Aegis mark on a navy tile, so it reads in light and dark tabs (.ico for 16/32/48, PNG for the rest)
       h('link', { rel: 'icon', href: '/favicon.ico', sizes: '48x48' }),
+      h('link', { rel: 'icon', href: '/favicon-32.png', type: 'image/png', sizes: '32x32' }),
+      h('link', { rel: 'icon', href: '/icon-192.png', type: 'image/png', sizes: '192x192' }),
       h('link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' }),
       h('link', { rel: 'preconnect', href: 'https://use.typekit.net' }), // the kit stylesheet (no-cors)
       h('link', { rel: 'preconnect', href: 'https://use.typekit.net', crossOrigin: 'anonymous' }), // the font files (cors)

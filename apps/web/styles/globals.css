@@ -172,12 +172,14 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 }
 .nav-brand:hover { color: var(--k-color-text); }
 
-/* Logos (docs/design/LOGOS.md). The artwork is drawn for light backgrounds: its brown ink is
-   invisible on navy, so in the dark theme every icon sits on a cream chip and every raster logo on a
-   cream plate (--k-color-plate). Padding is constant in both themes, so toggling never shifts layout. */
+/* Logos (docs/design/LOGOS.md). Every piece of artwork ships in a light and a dark variant; both are in the page
+   and the theme decides which one shows (.theme-light-only / .theme-dark-only below), so toggling never shifts layout. */
 .brand-icons { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .brand-icon { display: block; flex-shrink: 0; padding: 2px; border-radius: 8px; box-sizing: content-box; }
-:root[data-theme="dark"] .brand-icon { background: var(--k-color-plate); }
+/* Light and dark artwork are both in the page; the theme decides which one shows. */
+:root .theme-dark-only { display: none; } /* :root raises specificity above .logo-img { display: block } */
+:root[data-theme="dark"] .theme-dark-only { display: block; }
+:root[data-theme="dark"] .theme-light-only { display: none; }
 .brand-icons.subtle { opacity: 0.9; }
 .page-head .eyebrow.has-icon::before { display: none; }
 .eyebrow.has-icon { gap: 8px; }
@@ -185,7 +187,6 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .crumb-icon { margin-right: 2px; }
 
 .logo-plate { display: inline-block; line-height: 0; padding: 10px; border-radius: var(--k-radius-lg); max-width: 100%; }
-:root[data-theme="dark"] .logo-plate { background: var(--k-color-plate); }
 .logo-img { display: block; width: 100%; height: auto; }
 .brand-word .sep { color: var(--k-color-text-subtle); margin: 0 0.35em; }
 
@@ -382,7 +383,7 @@ main p a.btn-primary, main p a.btn-ghost, main p a.btn-themis { text-decoration:
 .footer-parent a { color: var(--k-color-text-muted); text-decoration: underline; text-underline-offset: 3px; }
 .footer-parent a:hover { color: var(--k-color-themis); }
 .footer-parent .sep { margin: 0 0.6em; }
-.footer-brand .brand-icon { width: 30px; height: 30px; }
+.footer-brand .brand-icon { width: 34px; height: 34px; }
 .footer-col h2 {
   font-family: var(--k-font-mono);
   font-weight: 500;

@@ -53,7 +53,7 @@ const FOCUSABLE = 'a[href], button:not([disabled])'
 // The text is hidden between 761 and 900 px, so the link carries its own accessible name.
 function Brand () {
   return h('a', { href: '/', className: 'nav-brand', 'aria-label': 'Aegis and Themis home' },
-    h(BrandIcons, { size: 26 }),
+    h(BrandIcons, { size: 30 }),
     h('span', { className: 'brand-word' }, 'Aegis', h('span', { className: 'sep' }, '·'), 'Themis'))
 }
 
@@ -281,7 +281,7 @@ function Footer () {
     h('div', { className: 'footer-inner' },
       h('div', { className: 'footer-top' },
         h('div', { className: 'footer-brand-col' },
-          h('a', { href: '/', className: 'footer-brand' }, h(BrandIcons, { size: 30 }), h('span', null, 'Aegis ', h('em', null, '+ Themis'))),
+          h('a', { href: '/', className: 'footer-brand' }, h(BrandIcons, { size: 34 }), h('span', null, 'Aegis ', h('em', null, '+ Themis'))),
           h('p', { className: 'footer-blurb' }, 'An open cybersecurity skill pack and a governed SOC agent, run on your own AI.'),
           h('p', { className: 'footer-parent' },
             'An independent open-source project maintained by ', external(MAINTAINER_URL, 'Drupad Sachania'))),

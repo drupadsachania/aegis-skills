@@ -59,7 +59,7 @@ describe.each(Object.entries(PAGES))('<img> on %s', (_name, make) => {
       // screenshots are optional placeholders, everything else must exist in public/
       if (!src.startsWith('/img/themis/')) expect(fs.existsSync(path.join(PUBLIC, src))).toBe(true)
       // content images carry a real description; only the small decorative icons may use alt=""
-      if (!/-icon\.svg$/.test(src)) expect(img.getAttribute('alt').length).toBeGreaterThan(3)
+      if (!/-icon(-dark)?-96\.webp$/.test(src)) expect(img.getAttribute('alt').length).toBeGreaterThan(3)
     }
   })
 })
@@ -67,16 +67,19 @@ describe.each(Object.entries(PAGES))('<img> on %s', (_name, make) => {
 describe('loading strategy', () => {
   it('the Themis hero lockup is eager with high fetch priority; pack-card marks are lazy', () => {
     render(PAGES.themis())
-    const lockup = document.querySelector('img.logo-lockup')
+    const lockup = document.querySelector('img.logo-lockup.theme-light-only')
     expect(lockup).toHaveAttribute('loading', 'eager')
     expect(lockup).toHaveAttribute('fetchpriority', 'high')
+    expect(document.querySelector('img.logo-lockup.theme-dark-only')).toHaveAttribute('loading', 'lazy')
   })
 
   it('home pack cards use the large marks, lazy, as webp', () => {
     render(PAGES.home())
-    const marks = Array.from(document.querySelectorAll('img.logo-mark'))
+    const marks = Array.from(document.querySelectorAll('img.logo-mark.theme-light-only'))
     expect(marks.map(m => m.getAttribute('src'))).toEqual(['/brand/aegis-mark-320.webp', '/brand/themis-mark-320.webp'])
-    for (const m of marks) expect(m).toHaveAttribute('loading', 'lazy')
+    const dark = Array.from(document.querySelectorAll('img.logo-mark.theme-dark-only'))
+    expect(dark.map(m => m.getAttribute('src'))).toEqual(['/brand/aegis-mark-dark-320.webp', '/brand/themis-mark-dark-320.webp'])
+    for (const m of [...marks, ...dark]) expect(m).toHaveAttribute('loading', 'lazy')
   })
 })
 
@@ -90,7 +93,7 @@ describe('shipped brand files', () => {
   })
 
   it('favicon, touch icon and social image exist', () => {
-    for (const f of ['favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'og.png']) expect(fs.existsSync(path.join(PUBLIC, f))).toBe(true)
+    for (const f of ['favicon.ico', 'favicon-32.png', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'og.png']) expect(fs.existsSync(path.join(PUBLIC, f))).toBe(true)
   })
 })
 
@@ -99,7 +102,8 @@ describe('document and head wiring', () => {
 
   it('_document links the favicon set', () => {
     const doc = read('pages/_document.js')
-    expect(doc).toContain("rel: 'icon', href: '/favicon.svg'")
+    expect(doc).toContain("rel: 'icon', href: '/favicon.ico'")
+    expect(doc).toContain("rel: 'icon', href: '/favicon-32.png'")
     expect(doc).toContain("rel: 'apple-touch-icon', href: '/apple-touch-icon.png'")
   })
 
