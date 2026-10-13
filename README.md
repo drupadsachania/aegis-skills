@@ -21,7 +21,7 @@ An independent open-source project, maintained by [Drupad Sachania](https://gith
 | **Calls a model?** | Never. It is markdown and JSON | Uses your assistant (plugin) or your own key or a local model (standalone) |
 | **Package** | `aegis-skills` | `@aegis-skills/themis-plugin` and `@aegis-skills/themis` |
 
-Status: nothing is published to npm or the plugin marketplace yet. The commands below that use `npx` or `/plugin` work after the first release. The [website](https://aegis-skills.vercel.app) works today. Aegis publishes first; Themis is in development, local-first and not published yet (run it from a checkout, see [docs/themis](docs/themis/index.md)). The [status table](#where-things-stand) below says what is done and what is next.
+Status: Aegis 1.5.0 is on npm as [`aegis-skills`](https://www.npmjs.com/package/aegis-skills), and the Claude Code plugin installs straight from this repository. The [website](https://aegis-skills.vercel.app) is live. Themis is in development, local-first and not published as an app yet (run it from a checkout, see [docs/themis](docs/themis/index.md)); its two libraries, `@aegis-skills/themis-core` and `@aegis-skills/themis-gateway`, are on npm. The [status table](#where-things-stand) below says what is done and what is next.
 
 ---
 
@@ -128,8 +128,8 @@ Read more: [Themis docs](https://aegis-skills.vercel.app/docs/themis) and [`docs
 
 | | State | Next |
 |---|---|---|
-| Aegis skills, CLI, MCP | Built and tested on Linux, macOS and Windows (Node 24); 24 skills at version 1.5.0 | First npm release (`aegis-skills@1.5.0`) |
-| Website and hosted MCP | Live at [aegis-skills.vercel.app](https://aegis-skills.vercel.app) | Install commands switch on after the first release |
+| Aegis skills, CLI, MCP | Built and tested on Linux, macOS and Windows (Node 24); 24 skills at version 1.5.0 | Released: `aegis-skills@1.5.0` is on npm. Next: marketplace and directory listings |
+| Website and hosted MCP | Live at [aegis-skills.vercel.app](https://aegis-skills.vercel.app) | Install commands are live |
 | `themis-core`, `themis-gateway` | Built and tested; packaged and ready for npm | Released right after Aegis |
 | Themis plugin and standalone app | Working from a checkout; no real-model run recorded in CI yet | Public beta: a model-backed end-to-end run, a clearer approval confirmation, diagnostics and issue templates |
 | Marketplace listings | Aegis first, as a skills-only plugin | Themis follows once the beta settles |

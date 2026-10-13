@@ -17,7 +17,7 @@ const LATER = 'after-first-release'
 // THE ONE-LINE FLIP: set this to true when aegis-skills is on npm, the GitHub Release exists and the marketplace works
 // (docs/RELEASE-RUNBOOK.md section 4). It removes the "after the first release" marker from every Aegis install row.
 // tests/lib/install-commands.test.js proves the flip by evaluating this file with the line changed.
-const AEGIS_PUBLISHED = false
+const AEGIS_PUBLISHED = true
 const AEGIS_AVAILABILITY = AEGIS_PUBLISHED ? {} : { availability: LATER }
 const IN_DEV = 'in-development'
 const GEMINI_EXTENSION_INSTALL = `gemini extensions install ${REPO_URL}` // PHASE-1 BINDING (null if not offered)

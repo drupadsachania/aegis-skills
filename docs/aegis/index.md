@@ -34,7 +34,7 @@ Browse them on the [skill catalogue](/skills).
 | Themis on your AI | Claude Code, Codex, Gemini CLI | Install the Themis plugin. Your assistant is the model, so no API key is needed. |
 | Themis standalone | A local SOC dashboard | Run Themis with its own web UI on 127.0.0.1, using your own key or a local model. |
 
-Step-by-step commands for each path are on [Choose your path](/paths). The npm and marketplace installs open with the first release; nothing is published yet.
+Step-by-step commands for each path are on [Choose your path](/paths). The npm install and the Claude Code marketplace install are available now.
 
 ## Safety
 

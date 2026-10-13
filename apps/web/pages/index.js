@@ -133,7 +133,7 @@ function HomePage ({ skillCount, familyCount, paths, stamp, stampLine }) {
         'Every path uses the same skills. Start with zero install and move up when you need more. ',
         h('a', { href: '/paths' }, 'All install commands →')),
       h('p', { className: 'path-note' },
-        'Aegis publishes first: its npm and plugin installs are marked "after the first release", and zero install and the hosted MCP work today. Themis is in development and local-first; it is not published to npm or AI directories yet, and its rows are marked.')),
+        'Aegis 1.5.0 is on npm, and the plugin, the zero-install prompts and the hosted MCP all work today. Themis is in development and local-first; it is not published to npm or AI directories yet, and its rows are marked.')),
 
     // 03 Provenance and approval
     h(ProvenanceSection, { stamp, stampLine }),

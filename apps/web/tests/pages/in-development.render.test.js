@@ -52,7 +52,7 @@ test('/themis: hero pill, a "Where to get it" block (plans, no dates), and an in
   expect(t).toContain('Where to get it')
   expect(t).toContain('once its tool contract is stable and a supported remote endpoint exists')
   expect(t).toContain('These are plans, not promises, and they carry no dates.')
-  expect(t).toMatch(/Aegis First release The first release: the npm package, with the plugin directories coming right after launch/)
+  expect(t).toMatch(/Aegis Available On npm as aegis-skills 1.5.0, and as a Claude Code plugin from the GitHub repository/)
   expect(t).toMatch(/Themis In development Local-first today/)
   expect(t).not.toMatch(/\bQ[1-4]\s?20\d\d\b/)
   expect(h).not.toMatch(/>\s*LIVE\s*</)

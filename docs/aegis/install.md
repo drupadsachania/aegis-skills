@@ -1,6 +1,6 @@
 # Install Aegis
 
-Nothing is published to npm or the plugin marketplace yet. Every command on this page that uses `npx aegis-skills` or `/plugin` works after the first release. Until then you can use the [single-file prompts](./single-file-prompts.md) or the [hosted MCP server](./hosted-mcp.md), which need no install.
+`aegis-skills` 1.5.0 is on npm, and the Claude Code plugin marketplace is this repository, so every command on this page works. If you would rather not install anything, use the [single-file prompts](./single-file-prompts.md) or the [hosted MCP server](./hosted-mcp.md).
 
 ## Requirements
 
