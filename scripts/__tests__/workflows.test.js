@@ -181,7 +181,7 @@ test('intel-release.yml: only the release job sees the PAT and no job can publis
 
 test('the first release of every releasable package has release notes named the way release.yml looks them up', () => {
   // Fixed versions on purpose: later patch releases (validation patches, intel patches) use generated notes.
-  const FIRST = { 'aegis-skills': '1.1.0', '@aegis-skills/themis-core': '0.1.0', '@aegis-skills/themis-gateway': '0.1.0' }
+  const FIRST = { 'aegis-skills': '1.5.0', '@aegis-skills/themis-core': '0.1.0', '@aegis-skills/themis-gateway': '0.1.0' }
   assert.deepEqual(Object.keys(FIRST).sort(), [...lib.RELEASABLE].sort())
   for (const [name, version] of Object.entries(FIRST)) {
     const file = `.github/release-notes/${`${name}@${version}`.split('/').join('__')}.md`

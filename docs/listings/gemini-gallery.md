@@ -41,7 +41,7 @@ The unauthenticated `gh` CLI could not be used to query GitHub (not logged in), 
 
 ## Diff against `packages/aegis/gemini-extension.json`
 
-The file has `name`, `version`, `description`, `contextFileName` and `mcpServers.aegis` (`npx -y aegis-skills@1.1.0 mcp`, env `AEGIS_NO_AUTO_REFRESH=1`). Every one of those is a verified field and the `npx` pin is exact. **Diff to apply: none.** Nothing was changed. Do not add `$schema`, `author`, `license` or `repository` (unverified).
+The file has `name`, `version`, `description`, `contextFileName` and `mcpServers.aegis` (`npx -y aegis-skills@1.5.0 mcp`, env `AEGIS_NO_AUTO_REFRESH=1`). Every one of those is a verified field and the `npx` pin is exact. **Diff to apply: none.** Nothing was changed. Do not add `$schema`, `author`, `license` or `repository` (unverified).
 
 ## Recommended release-archive layout (built by `scripts/build-release-assets.js`; file names as built are `{platform}.aegis-skills.zip` for darwin, linux and win32, per the documented `{platform}.{name}.{ext}` pattern, not the single generic asset described below)
 
@@ -58,7 +58,7 @@ aegis-skills.zip            (a single generic asset; the page does not name the 
 
 Not needed: `commands/` (Aegis defines no slash commands), `agents/` (preview), `.gemini/` (not read for extensions), `hooks/`, `policies/`. Manifest to use: the current file, with `version` equal to the release tag. If the owner prefers a platform-specific name instead, `linux.x64.aegis-skills.zip` style assets follow the documented pattern, but a platform-independent extension should use the single generic asset.
 
-One thing to decide: the docs require a "fully self-contained" archive, yet the manifest runs `npx -y aegis-skills@1.1.0 mcp`, which downloads the pinned package from npm on first use (disclosed in the README). That is acceptable for the skills, which are in the archive; if the owner wants the MCP server to work offline, bundle `mcp/` and its three dependencies and point `command` at `node ${extensionPath}/mcp/...`. Not required for listing, and not recommended now.
+One thing to decide: the docs require a "fully self-contained" archive, yet the manifest runs `npx -y aegis-skills@1.5.0 mcp`, which downloads the pinned package from npm on first use (disclosed in the README). That is acceptable for the skills, which are in the archive; if the owner wants the MCP server to work offline, bundle `mcp/` and its three dependencies and point `command` at `node ${extensionPath}/mcp/...`. Not required for listing, and not recommended now.
 
 Also keep the repository root clean of a second copy of the manifest unless option B or C is chosen: `scripts/check-layout.js` would then have to guard the copy.
 
@@ -66,7 +66,7 @@ Also keep the repository root clean of a second copy of the manifest unless opti
 
 1. **Choose option A, B or C** (the earlier table): A (release archive) is recommended; B (copy at repo root) and C (separate repository) remain valid. Not decided by the owner yet.
 2. ~~Repository public~~ **Satisfied per the owner (2026-10-12); not verified here.** Still to do: add the `gemini-cli-extension` topic in the repository About section.
-3. **Phase 7 publish** of `aegis-skills@1.1.0`: the manifest runs `npx -y aegis-skills@1.1.0 mcp`, which fails until that version is on npm. Phase 7 also builds the archive and the Latest release.
+3. **Phase 7 publish** of `aegis-skills@1.5.0`: the manifest runs `npx -y aegis-skills@1.5.0 mcp`, which fails until that version is on npm. Phase 7 also builds the archive and the Latest release.
 4. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.**
 5. **Name check** for "aegis" in the gallery.
 6. No terms-of-service URL is requested by the pages read; if one is asked for, it is <https://aegis-skills.vercel.app/terms> once deployed (`docs/legal/terms.md`).

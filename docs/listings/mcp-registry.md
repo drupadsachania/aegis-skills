@@ -15,7 +15,7 @@ The registry is described as in preview: "Breaking changes or data resets may oc
 
 ## Blockers (USER ACTION unless stated)
 
-1. **Phase 7 publish** of `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0`. The registry checks that the published package matches its metadata; a missing package fails validation.
+1. **Phase 7 publish** of `aegis-skills@1.5.0` and `@aegis-skills/themis-plugin@1.1.0`. The registry checks that the published package matches its metadata; a missing package fails validation.
 2. **The GitHub account that authenticates must be `drupadsachania`.** With GitHub authentication the server name must start with `io.github.<username>/`. Both names use `io.github.drupadsachania/`, so log in as that account or the publish is refused ("You do not have permission to publish this server").
 3. **Deploy the site** before publishing Aegis, because its `server.json` lists the remote `https://aegis-skills.vercel.app/api/mcp`, and the page says a remote server must be publicly accessible at its URL.
 4. ~~Copyright and licence holder~~ **Decided 2026-10-12: Kairos Foundation.** The registry name still uses the GitHub user namespace `io.github.drupadsachania/` (that is how GitHub authentication works), while the entry's repository and website describe Kairos Foundation. The repository is public per the owner (not verified here). The registry pages read do not ask for a support mailbox; the mailbox delivery test in [README.md](README.md) does not block this listing.
@@ -26,7 +26,7 @@ The registry is described as in preview: "Breaking changes or data resets may oc
 
 | File | Name | Version | Description length |
 |---|---|---|---|
-| `packages/aegis/server.json` | `io.github.drupadsachania/aegis-skills` | 1.1.0 | 91 |
+| `packages/aegis/server.json` | `io.github.drupadsachania/aegis-skills` | 1.5.0 | 91 |
 | `packages/themis-plugin/server.json` | `io.github.drupadsachania/themis` | 1.1.0 | 93 |
 
 Both packages declare a matching `mcpName` in `package.json`; `scripts/check-registry-meta.js` asserts descriptions of 100 characters or fewer, `mcpName` equal to `server.json` `name`, the `io.github.drupadsachania/` prefix, and version and package identifier parity. The Aegis file declares both the npm package (`stdio`, argument `mcp`) and the remote; the Themis file declares only the npm package.

@@ -1,4 +1,4 @@
-## aegis-skills 1.1.0 - first release of the `aegis-skills` package
+## aegis-skills 1.5.0 - first release of the `aegis-skills` package
 
 Aegis is a library of 24 defensive cybersecurity skills in the open Agent Skills format (MITRE ATT&CK, ATLAS and Engage, threat hunting, DFIR, exposure validation, identity, endpoint, network and OT security, compliance, risk and more). Every skill states its defensive purpose, an authorization assumption and what it will not do. The package adds a native installer for six AI tools and a read-only MCP server with three tools (`list_skills`, `get_skill`, `get_skill_phase`).
 
@@ -29,10 +29,10 @@ Migrate:
 
 ### Assets on this release
 
-- one zip per skill (`aegis-skill-<name>-1.1.0.zip`, Agent Skills format), identical to the downloads on the website;
-- `aegis-prompts-1.1.0.zip`: one flattened single-file prompt per skill, with an "intel as of" date;
+- one zip per skill (`aegis-skill-<name>-1.5.0.zip`, Agent Skills format), identical to the downloads on the website;
+- `aegis-prompts-1.5.0.zip`: one flattened single-file prompt per skill, with an "intel as of" date;
 - `darwin.aegis-skills.zip`, `linux.aegis-skills.zip`, `win32.aegis-skills.zip`: the Gemini CLI extension (the manifest is at the archive root; its MCP server runs the pinned npm package, so it needs network access on first use);
-- `aegis-chatgpt-plugin-1.1.0.zip`: the skills-only plugin package prepared for the ChatGPT plugin directory. It has not been submitted and is not listed anywhere yet;
+- `aegis-chatgpt-plugin-1.5.0.zip`: the skills-only plugin package prepared for the ChatGPT plugin directory. It has not been submitted and is not listed anywhere yet;
 - the npm tarball and `SHA256SUMS`.
 
 Licence: Apache-2.0 OR MIT.

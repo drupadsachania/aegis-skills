@@ -4,7 +4,7 @@ Maintainer document, not product documentation. Written 2026-10-13 for the Phase
 
 | Order | Package | Version | Tag |
 |---|---|---|---|
-| 1 | `aegis-skills` | 1.1.0 | `aegis-skills@1.1.0` |
+| 1 | `aegis-skills` | 1.5.0 | `aegis-skills@1.5.0` |
 | 2 | `@aegis-skills/themis-core` | 0.1.0 | `@aegis-skills/themis-core@0.1.0` |
 | 3 | `@aegis-skills/themis-gateway` | 0.1.0 | `@aegis-skills/themis-gateway@0.1.0` |
 
@@ -124,52 +124,52 @@ Never paste the token into chat, a file or a commit.
 
 ```bash
 git switch main && git pull --ff-only
-node scripts/check-versions.js --tag aegis-skills@1.1.0                 # prints latest=true
+node scripts/check-versions.js --tag aegis-skills@1.5.0                 # prints latest=true
 node scripts/check-versions.js --tag @aegis-skills/themis-core@0.1.0
 node scripts/check-versions.js --tag @aegis-skills/themis-gateway@0.1.0
 
-git tag -a "aegis-skills@1.1.0" -m "aegis-skills@1.1.0"
+git tag -a "aegis-skills@1.5.0" -m "aegis-skills@1.5.0"
 git tag -a "@aegis-skills/themis-core@0.1.0" -m "@aegis-skills/themis-core@0.1.0"
 git tag -a "@aegis-skills/themis-gateway@0.1.0" -m "@aegis-skills/themis-gateway@0.1.0"
 
-for t in "aegis-skills@1.1.0" "@aegis-skills/themis-core@0.1.0" "@aegis-skills/themis-gateway@0.1.0"; do
+for t in "aegis-skills@1.5.0" "@aegis-skills/themis-core@0.1.0" "@aegis-skills/themis-gateway@0.1.0"; do
   echo "$t -> $(git cat-file -t "refs/tags/$t")"
 done                                                                     # each must say: tag (annotated), not commit
 ```
 
-### 2.4 Push `aegis-skills@1.1.0` and watch
+### 2.4 Push `aegis-skills@1.5.0` and watch
 
 ```bash
-git push origin "refs/tags/aegis-skills@1.1.0"
+git push origin "refs/tags/aegis-skills@1.5.0"
 sleep 10
 RUN=$(gh run list --workflow release.yml --limit 1 --json databaseId -q '.[0].databaseId'); echo "$RUN"
 gh run watch "$RUN" --exit-status
 ```
 
-Expected jobs, all green: `Resolve tag`, `Verify aegis-skills@1.1.0`, `Publish to npm`, `GitHub Release`, three `Smoke test from npm`.
+Expected jobs, all green: `Resolve tag`, `Verify aegis-skills@1.5.0`, `Publish to npm`, `GitHub Release`, three `Smoke test from npm`.
 
 Verify from the registry and GitHub:
 
 ```bash
-npm view aegis-skills@1.1.0 version dist.tarball dist.attestations.provenance.predicateType
-#   version = '1.1.0', predicateType = 'https://slsa.dev/provenance/v1'
-npm view aegis-skills dist-tags --json                                  # { "latest": "1.1.0" }
+npm view aegis-skills@1.5.0 version dist.tarball dist.attestations.provenance.predicateType
+#   version = '1.5.0', predicateType = 'https://slsa.dev/provenance/v1'
+npm view aegis-skills dist-tags --json                                  # { "latest": "1.5.0" }
 
-T=$(mktemp -d) && cd "$T" && npm init -y >/dev/null && npm install --no-audit --no-fund aegis-skills@1.1.0
-npx --no -- aegis --version                                              # contains 1.1.0
+T=$(mktemp -d) && cd "$T" && npm init -y >/dev/null && npm install --no-audit --no-fund aegis-skills@1.5.0
+npx --no -- aegis --version                                              # contains 1.5.0
 npm audit signatures                                                     # "... verified attestation"
 cd - >/dev/null
 
-gh release view "aegis-skills@1.1.0" --json assets -q '.assets[].name' | sort
-#   31 files: 24 aegis-skill-<name>-1.1.0.zip, aegis-prompts-1.1.0.zip, aegis-chatgpt-plugin-1.1.0.zip,
-#   darwin.aegis-skills.zip, linux.aegis-skills.zip, win32.aegis-skills.zip, aegis-skills-1.1.0.tgz, SHA256SUMS
-gh release list --limit 5                                                # aegis-skills@1.1.0 carries the "Latest" label
+gh release view "aegis-skills@1.5.0" --json assets -q '.assets[].name' | sort
+#   31 files: 24 aegis-skill-<name>-1.5.0.zip, aegis-prompts-1.5.0.zip, aegis-chatgpt-plugin-1.5.0.zip,
+#   darwin.aegis-skills.zip, linux.aegis-skills.zip, win32.aegis-skills.zip, aegis-skills-1.5.0.tgz, SHA256SUMS
+gh release list --limit 5                                                # aegis-skills@1.5.0 carries the "Latest" label
 ```
 
 Check the checksums of what GitHub serves:
 
 ```bash
-D=$(mktemp -d) && gh release download "aegis-skills@1.1.0" --dir "$D" && (cd "$D" && sha256sum -c SHA256SUMS | grep -vc ': OK$')   # prints 0
+D=$(mktemp -d) && gh release download "aegis-skills@1.5.0" --dir "$D" && (cd "$D" && sha256sum -c SHA256SUMS | grep -vc ': OK$')   # prints 0
 ```
 
 ### 2.5 Push `@aegis-skills/themis-core@0.1.0`, then `@aegis-skills/themis-gateway@0.1.0`
@@ -186,7 +186,7 @@ sleep 10; RUN=$(gh run list --workflow release.yml --limit 1 --json databaseId -
 npm view @aegis-skills/themis-gateway@0.1.0 version dependencies dist.attestations.provenance.predicateType
 ```
 
-Both releases are created with `--latest=false`; `gh release list --limit 5` must still show `aegis-skills@1.1.0` as Latest (Gemini CLI reads the Latest release).
+Both releases are created with `--latest=false`; `gh release list --limit 5` must still show `aegis-skills@1.5.0` as Latest (Gemini CLI reads the Latest release).
 
 ### 2.6 If something fails
 
@@ -230,10 +230,10 @@ One branch with three bump commits. `bump-version` rewrites every file that embe
 ```bash
 git switch main && git pull --ff-only && git switch -c release/trusted-publishing-validation
 
-npm run bump -- aegis patch                  # aegis-skills 1.1.0 -> 1.1.1, prints TAG=aegis-skills@1.1.1
+npm run bump -- aegis patch                  # aegis-skills 1.5.0 -> 1.5.1, prints TAG=aegis-skills@1.5.1
 git status --short                           # review the 14 files it changed
 git add -A packages .claude-plugin listings docs apps/web/package.json package-lock.json
-git commit -m "chore(release): aegis-skills@1.1.1"
+git commit -m "chore(release): aegis-skills@1.5.1"
 
 npm run bump -- themis-core patch            # 0.1.0 -> 0.1.1
 git add -A packages docs package-lock.json
@@ -245,7 +245,7 @@ git commit -m "chore(release): @aegis-skills/themis-gateway@0.1.1"
 
 npm run check:versions
 git push -u origin release/trusted-publishing-validation
-gh pr create --base main --title "chore(release): trusted publishing validation patches" --body "aegis-skills 1.1.1, themis-core 0.1.1, themis-gateway 0.1.1. Proves OIDC publishing."
+gh pr create --base main --title "chore(release): trusted publishing validation patches" --body "aegis-skills 1.5.1, themis-core 0.1.1, themis-gateway 0.1.1. Proves OIDC publishing."
 gh pr checks --watch
 ```
 
@@ -253,16 +253,16 @@ Merge the PR (any merge method), then tag the merge commit and push one tag at a
 
 ```bash
 git switch main && git pull --ff-only
-git tag -a "aegis-skills@1.1.1" -m "aegis-skills@1.1.1"
+git tag -a "aegis-skills@1.5.1" -m "aegis-skills@1.5.1"
 git tag -a "@aegis-skills/themis-core@0.1.1" -m "@aegis-skills/themis-core@0.1.1"
 git tag -a "@aegis-skills/themis-gateway@0.1.1" -m "@aegis-skills/themis-gateway@0.1.1"
 
-git push origin "refs/tags/aegis-skills@1.1.1"
+git push origin "refs/tags/aegis-skills@1.5.1"
 sleep 10; RUN=$(gh run list --workflow release.yml --limit 1 --json databaseId -q '.[0].databaseId'); gh run watch "$RUN" --exit-status
 gh run view "$RUN" --json jobs -q '.jobs[] | select(.name=="Publish to npm") | .steps[] | select(.name | test("Publish with provenance")) | "\(.conclusion)  \(.name)"'
 #   success  Publish with provenance (trusted publishing, OIDC)
 #   skipped  Publish with provenance (one-time bootstrap token, first version of a new package)
-npm view aegis-skills@1.1.1 version dist.attestations.provenance.predicateType
+npm view aegis-skills@1.5.1 version dist.attestations.provenance.predicateType
 ```
 
 Repeat the push, watch, step check and `npm view` for `@aegis-skills/themis-core@0.1.1` and then `@aegis-skills/themis-gateway@0.1.1`.
@@ -283,7 +283,7 @@ From now on every release is the "manual release procedure" at the end of this f
 
 The site marks every Aegis install that needs npm, the GitHub marketplace or the GitHub release as "Available after the first release". One constant controls all of them.
 
-Flip only after you checked: `npm view aegis-skills version` prints a version; `gh release list --limit 1` shows `aegis-skills@1.1.0` or later as Latest; in Claude Code `/plugin marketplace add drupadsachania/aegis-skills` then `/plugin install aegis@aegis-skills` works; `npx aegis-skills@1.1.0 install --platform claude --project` works in an empty folder.
+Flip only after you checked: `npm view aegis-skills version` prints a version; `gh release list --limit 1` shows `aegis-skills@1.5.0` or later as Latest; in Claude Code `/plugin marketplace add drupadsachania/aegis-skills` then `/plugin install aegis@aegis-skills` works; `npx aegis-skills@1.5.0 install --platform claude --project` works in an empty folder.
 
 **The one-line change** in `apps/web/lib/install-commands.js`:
 
@@ -310,7 +310,7 @@ grep -rn "first release\|Nothing is published\|nothing is published" README.md d
 Known places: `README.md` (status line), `docs/aegis/install.md`, `docs/aegis/index.md`, `docs/aegis/mcp.md`, `docs/themis/versions.md` ("Nothing is published to npm yet"; update only for the three released packages, Themis plugin and app are still unreleased), `apps/web/pages/index.js`, `apps/web/pages/mcp.js`, `apps/web/pages/themis.js`. Keep every statement about Themis as it is: Themis plugin and app are in development and not published.
 
 ```bash
-git add -A && git commit -m "feat(web): Aegis installs are available (aegis-skills 1.1.0 is on npm)"
+git add -A && git commit -m "feat(web): Aegis installs are available (aegis-skills 1.5.0 is on npm)"
 git push -u origin site/aegis-published && gh pr create --base main --title "feat(web): Aegis installs are available" --body "Flips AEGIS_PUBLISHED and updates the status wording."
 ```
 
@@ -318,11 +318,11 @@ Merge. Redeploy: if the Vercel project is connected to this repository, a merge 
 
 ## 5. Deprecate `@aegis-skills/core`
 
-Do this after section 2 and once the site and migration notes (the `aegis-skills@1.1.0` release page) are live. Local, needs your 2FA code. There is no final notice release of core (it would mean publishing the old monolith again with a token).
+Do this after section 2 and once the site and migration notes (the `aegis-skills@1.5.0` release page) are live. Local, needs your 2FA code. There is no final notice release of core (it would mean publishing the old monolith again with a token).
 
 ```bash
 npm whoami
-npm deprecate "@aegis-skills/core@*" "Replaced by aegis-skills (skill pack and installer: npx aegis-skills install). Themis is in development and not released yet. Migration notes: https://github.com/drupadsachania/aegis-skills/releases/tag/aegis-skills%401.1.0" --otp=<your 6-digit code>
+npm deprecate "@aegis-skills/core@*" "Replaced by aegis-skills (skill pack and installer: npx aegis-skills install). Themis is in development and not released yet. Migration notes: https://github.com/drupadsachania/aegis-skills/releases/tag/aegis-skills%401.5.0" --otp=<your 6-digit code>
 npm view @aegis-skills/core@1.0.0 deprecated        # prints the message above
 ```
 
@@ -332,12 +332,12 @@ Undo with an empty message: `npm deprecate "@aegis-skills/core@*" ""`.
 
 1. **A version on npm is bad.** Do not unpublish (npm allows it only briefly and it breaks anyone who installed it; it is for leaked secrets and needs npm support after 72 hours). Deprecate and move `latest` back, from your machine with `npm login` and 2FA:
    ```bash
-   npm deprecate "aegis-skills@1.1.1" "Broken release, use aegis-skills@1.1.0 or later. See https://github.com/drupadsachania/aegis-skills/releases" --otp=<code>
-   npm dist-tag add aegis-skills@1.1.0 latest --otp=<code>
+   npm deprecate "aegis-skills@1.5.1" "Broken release, use aegis-skills@1.5.0 or later. See https://github.com/drupadsachania/aegis-skills/releases" --otp=<code>
+   npm dist-tag add aegis-skills@1.5.0 latest --otp=<code>
    npm view aegis-skills dist-tags --json
    ```
    Use the matching package names and versions for the two libraries.
-2. **GitHub release.** Mark the bad release as a pre-release so it is not offered: `gh release edit "aegis-skills@1.1.1" --prerelease --latest=false`. For Aegis, re-point Latest so Gemini users get a good archive: `gh release edit "aegis-skills@1.1.0" --latest`. Delete only if you must: `gh release delete "<tag>" --yes` (the tag stays, never delete or move a published tag).
+2. **GitHub release.** Mark the bad release as a pre-release so it is not offered: `gh release edit "aegis-skills@1.5.1" --prerelease --latest=false`. For Aegis, re-point Latest so Gemini users get a good archive: `gh release edit "aegis-skills@1.5.0" --latest`. Delete only if you must: `gh release delete "<tag>" --yes` (the tag stays, never delete or move a published tag).
 3. **Fix forward.** Fix on a branch, bump a patch (`npm run bump -- <aegis|themis-core|themis-gateway> patch`), merge, tag, push (the manual procedure below).
 4. **Leaked token or secret.** Revoke it on npmjs.com immediately, then follow npm's guidance on unpublishing a version that contains a secret.
 5. **Website.** Set `AEGIS_PUBLISHED` back to `false` (section 4) if installs must be hidden again.
@@ -362,7 +362,7 @@ Nothing here writes to npm or GitHub. It needs only Node 24 and the repository. 
 ```bash
 npm ci
 npm run check:versions                                        # check-versions: OK (5 package(s): ...)
-node scripts/check-versions.js --tag aegis-skills@1.1.0       # name/dir/key/version/latest=true/prev_tag=
+node scripts/check-versions.js --tag aegis-skills@1.5.0       # name/dir/key/version/latest=true/prev_tag=
 node scripts/check-versions.js --tag @aegis-skills/themis-plugin@1.1.0   # exits 1: "not releasable yet. Releasable packages: ..."
 for d in themis-core themis-gateway themis-plugin themis-app; do npm run build --workspace "packages/$d" --if-present; done
 node scripts/assert-pack.js all                               # five "assert-pack: OK ..." lines; the three releasable say "publish-ready"
@@ -377,7 +377,7 @@ npm run test:scripts && npx jest
 rm -rf dist-release
 ```
 
-What the assets are (sizes of the 2026-10-13 build): 24 skill zips (7 to 30 KB each, byte-identical to the website downloads), `aegis-prompts-1.1.0.zip` (278 KB), `darwin|linux|win32.aegis-skills.zip` (364 KB each, identical content: `gemini-extension.json`, `GEMINI.md`, README, licences, `skills/`), `aegis-chatgpt-plugin-1.1.0.zip` (568 KB, skills-only, no `mcp.json`), `aegis-skills-1.1.0.tgz` (289 KB) and `SHA256SUMS`.
+What the assets are (sizes of the 2026-10-13 build): 24 skill zips (7 to 30 KB each, byte-identical to the website downloads), `aegis-prompts-1.5.0.zip` (278 KB), `darwin|linux|win32.aegis-skills.zip` (364 KB each, identical content: `gemini-extension.json`, `GEMINI.md`, README, licences, `skills/`), `aegis-chatgpt-plugin-1.5.0.zip` (568 KB, skills-only, no `mcp.json`), `aegis-skills-1.5.0.tgz` (289 KB) and `SHA256SUMS`.
 
 ## What only the first real run can prove
 

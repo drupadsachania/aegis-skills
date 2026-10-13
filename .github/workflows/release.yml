@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing annotated tag to (re)release, e.g. aegis-skills@1.1.0. A version already on npm is not republished.'
+        description: 'Existing annotated tag to (re)release, e.g. aegis-skills@1.5.0. A version already on npm is not republished.'
         required: true
         type: string
 

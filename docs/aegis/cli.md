@@ -1,6 +1,6 @@
 # aegis CLI
 
-The `aegis` command ships in the `aegis-skills` package. Run `aegis --help` to print the usage text below. `aegis --version` prints the package version (1.1.0).
+The `aegis` command ships in the `aegis-skills` package. Run `aegis --help` to print the usage text below. `aegis --version` prints the package version (1.5.0).
 
 ## Commands
 

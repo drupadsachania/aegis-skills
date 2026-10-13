@@ -2,7 +2,7 @@
 
 ## What Aegis is
 
-Aegis is an open cybersecurity skill pack in the open [Agent Skills](https://agentskills.io/specification) format. It is content only: markdown and JSON, no model calls. The npm package is `aegis-skills` (version 1.1.0). It is licensed Apache-2.0 OR MIT.
+Aegis is an open cybersecurity skill pack in the open [Agent Skills](https://agentskills.io/specification) format. It is content only: markdown and JSON, no model calls. The npm package is `aegis-skills` (version 1.5.0). It is licensed Apache-2.0 OR MIT.
 
 The package also contains a small installer and a read-only MCP server, so the same skills can be installed into a coding assistant, served over MCP, or used as a single-file prompt in any chat AI.
 

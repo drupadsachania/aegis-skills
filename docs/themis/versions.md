@@ -18,14 +18,14 @@ The tool names of the Aegis MCP server (`list_skills`, `get_skill`, `get_skill_p
 
 ## Plugin vs app
 
-- The plugin does not bundle skills. Its `.mcp.json` pins exact versions of both servers: `aegis-skills@1.1.0` and `@aegis-skills/themis-plugin@1.1.0`. The pins are exact because plugin directories do not accept version ranges; they are updated at each release. The Aegis skills it uses are the ones served by the `aegis` MCP server you have registered.
+- The plugin does not bundle skills. Its `.mcp.json` pins exact versions of both servers: `aegis-skills@1.5.0` and `@aegis-skills/themis-plugin@1.1.0`. The pins are exact because plugin directories do not accept version ranges; they are updated at each release. The Aegis skills it uses are the ones served by the `aegis` MCP server you have registered.
 - The standalone app depends on `aegis-skills` (`^1.1.0`) and installs it with the app, so it always has a matching copy of the skills. Its Skills page shows the version and how fresh each skill's intel is.
 
 ## Package versions
 
 | Package | Version |
 |---|---|
-| `aegis-skills` | 1.1.0 (osk 1.1) |
+| `aegis-skills` | 1.5.0 (osk 1.1) |
 | `@aegis-skills/themis-core` | 0.1.0 |
 | `@aegis-skills/themis-gateway` | 0.1.0 |
 | `@aegis-skills/themis-plugin` | 1.1.0 |
