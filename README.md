@@ -13,7 +13,7 @@
   <a href="https://aegis-skills.vercel.app"><img src="https://img.shields.io/badge/website-live-c48a16.svg" alt="Website"></a>
 </p>
 
-Published by the [Kairos Foundation](https://kairos-foundation.org/). Two products, one repository:
+An independent open-source project, maintained by [Drupad Sachania](https://github.com/drupadsachania). Two products, one repository:
 
 | | Aegis | Themis |
 |---|---|---|
