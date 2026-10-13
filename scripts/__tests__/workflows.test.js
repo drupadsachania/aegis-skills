@@ -178,3 +178,16 @@ test('intel-release.yml: only the release job sees the PAT and no job can publis
   assert.match(jobBlock(t, 'release'), /environment: release-bot/)
   assert.deepEqual(jobNames(t), ['decide', 'verify', 'release'])
 })
+
+test('every releasable package has a release notes file named the way release.yml looks it up', () => {
+  const dirOf = n => lib.PACKAGES.find(p => p.name === n).dir
+  for (const name of lib.RELEASABLE) {
+    const version = lib.readJson(`${dirOf(name)}/package.json`).data.version
+    const file = `.github/release-notes/${`${name}@${version}`.replace(/\//g, '__')}.md`
+    assert.ok(lib.exists(file), `${file} is missing`)
+    const text = fs.readFileSync(lib.abs(file), 'utf8')
+    assert.match(text, /first release/i, `${file} should say it is the first release`)
+    assert.equal(/\bproduction[- ]ready\b|battle-tested/i.test(text), false, `${file}: no overclaiming`)
+  }
+  assert.ok(read('release.yml').includes('.github/release-notes/${RELEASE_TAG//\\//__}.md'))
+})

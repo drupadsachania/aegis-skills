@@ -26,3 +26,6 @@ dist/
 apps/web/.generated/
 *.tgz
 apps/web/styles/tokens.generated.css
+
+# Phase 7 release staging (tarballs, assets, checksums)
+dist-release/

@@ -14,6 +14,11 @@ const AEGIS_PLATFORM_IDS = ['claude', 'codex', 'gemini', 'cursor', 'vscode', 'an
 // Owner decision 2026-10-12: Aegis publishes first; Themis is still being matured locally and is deferred
 // on npm and the directories, so every Themis install is flagged `availability: IN_DEV` instead.
 const LATER = 'after-first-release'
+// THE ONE-LINE FLIP: set this to true when aegis-skills is on npm, the GitHub Release exists and the marketplace works
+// (docs/RELEASE-RUNBOOK.md section 4). It removes the "after the first release" marker from every Aegis install row.
+// tests/lib/install-commands.test.js proves the flip by evaluating this file with the line changed.
+const AEGIS_PUBLISHED = false
+const AEGIS_AVAILABILITY = AEGIS_PUBLISHED ? {} : { availability: LATER }
 const IN_DEV = 'in-development'
 const GEMINI_EXTENSION_INSTALL = `gemini extensions install ${REPO_URL}` // PHASE-1 BINDING (null if not offered)
 
@@ -64,17 +69,17 @@ const PATHS = [
     id: 'skill-pack', title: 'Skill pack', audience: 'Coding assistants',
     how: "Install every skill into your assistant's native skills folder.", docs: '/docs/aegis/install',
     platforms: [
-      { id: 'claude', label: 'Claude Code', availability: LATER, steps: [
+      { id: 'claude', label: 'Claude Code', ...AEGIS_AVAILABILITY, steps: [
         { text: 'Inside Claude Code:' },
         { label: 'Claude Code', code: `${marketplaceAdd}\n/plugin install aegis@${MARKETPLACE}` },
         { text: 'Or from a terminal:' }, sh(aegisInstall('claude'))] },
-      { id: 'codex', label: 'Codex', availability: LATER, steps: [sh(aegisInstall('codex'))] },
-      { id: 'gemini', label: 'Gemini CLI', availability: LATER, steps: [
+      { id: 'codex', label: 'Codex', ...AEGIS_AVAILABILITY, steps: [sh(aegisInstall('codex'))] },
+      { id: 'gemini', label: 'Gemini CLI', ...AEGIS_AVAILABILITY, steps: [
         ...(GEMINI_EXTENSION_INSTALL ? [sh(GEMINI_EXTENSION_INSTALL), { text: 'Or:' }] : []),
         sh(aegisInstall('gemini'))] },
-      { id: 'cursor', label: 'Cursor', availability: LATER, steps: [sh(aegisInstall('cursor'))] },
-      { id: 'vscode', label: 'VS Code Copilot', availability: LATER, steps: [sh(aegisInstall('vscode'))] },
-      { id: 'antigravity', label: 'Antigravity', availability: LATER, steps: [sh(aegisInstall('antigravity'))] }
+      { id: 'cursor', label: 'Cursor', ...AEGIS_AVAILABILITY, steps: [sh(aegisInstall('cursor'))] },
+      { id: 'vscode', label: 'VS Code Copilot', ...AEGIS_AVAILABILITY, steps: [sh(aegisInstall('vscode'))] },
+      { id: 'antigravity', label: 'Antigravity', ...AEGIS_AVAILABILITY, steps: [sh(aegisInstall('antigravity'))] }
     ]
   },
   {
@@ -103,4 +108,4 @@ const PATHS = [
   }
 ]
 
-module.exports = { LATER, IN_DEV, SITE_URL, REPO, REPO_URL, MCP_URL, MARKETPLACE, PACKAGES, AEGIS_PLATFORM_IDS, GEMINI_EXTENSION_INSTALL, PATHS }
+module.exports = { AEGIS_PUBLISHED, LATER, IN_DEV, SITE_URL, REPO, REPO_URL, MCP_URL, MARKETPLACE, PACKAGES, AEGIS_PLATFORM_IDS, GEMINI_EXTENSION_INSTALL, PATHS }

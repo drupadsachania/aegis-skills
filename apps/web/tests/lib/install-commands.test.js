@@ -60,7 +60,7 @@ test('no removed product appears in any command or note', () => {
 
 const THEMIS_PATHS = ['themis-plugin', 'themis-app']
 
-test('availability: Aegis items are after-first-release or available; every Themis item is in-development', () => {
+test('availability: Aegis items follow AEGIS_PUBLISHED; every Themis item is in-development', () => {
   expect(C.LATER).toBe('after-first-release')
   expect(C.IN_DEV).toBe('in-development')
   for (const p of C.PATHS) {
@@ -70,7 +70,7 @@ test('availability: Aegis items are after-first-release or available; every Them
         // owner decision 2026-10-12: Themis is deferred on npm and the directories
         expect(`${label}: ${pl.availability}`).toBe(`${label}: ${C.IN_DEV}`)
       } else {
-        expect([undefined, C.LATER]).toContain(pl.availability)
+        expect(pl.availability).toBe(C.AEGIS_PUBLISHED || ['zero-install', 'hosted-mcp'].includes(p.id) ? undefined : C.LATER)
       }
     }
   }
@@ -79,8 +79,9 @@ test('availability: Aegis items are after-first-release or available; every Them
 })
 
 test('npm, marketplace and release based Aegis platforms are flagged as not yet available', () => {
+  expect(C.AEGIS_PUBLISHED).toBe(false) // set it to true (one line) at the first release and delete this test with it
   const flagged = C.PATHS.flatMap(p => p.platforms.filter(pl => pl.availability === C.LATER).map(pl => pl.id))
-  expect(flagged.length).toBeGreaterThan(0)
+  expect(flagged.length).toBeGreaterThan(0) // C.AEGIS_PUBLISHED is false until the first release (docs/RELEASE-RUNBOOK.md section 4)
   const aegisNeedsRelease = C.PATHS.filter(p => !p.id.startsWith('themis')).flatMap(p => p.platforms)
     .filter(pl => /npx |npm install|\/plugin |gemini extensions/.test(pl.steps.map(s => s.code || '').join(' ')))
   expect(aegisNeedsRelease.length).toBeGreaterThan(0)
@@ -89,4 +90,38 @@ test('npm, marketplace and release based Aegis platforms are flagged as not yet 
   for (const id of ['zero-install', 'hosted-mcp']) {
     expect(C.PATHS.find(p => p.id === id).platforms.every(pl => !pl.availability)).toBe(true)
   }
+})
+
+// ---- the first-release flip is exactly one line (docs/RELEASE-RUNBOOK.md section 4) ----
+const SRC = path.join(__dirname, '..', '..', 'lib', 'install-commands.js')
+const load = source => {
+  const Module = require('module')
+  const m = new Module(SRC, null)
+  m.filename = SRC
+  m.paths = Module._nodeModulePaths(path.dirname(SRC))
+  m._compile(source, SRC)
+  return m.exports
+}
+
+test('AEGIS_PUBLISHED is the only switch: one declaration, no direct LATER flags on any row', () => {
+  const src = fs.readFileSync(SRC, 'utf8')
+  expect(src.match(/^const AEGIS_PUBLISHED = (true|false)/gm)).toHaveLength(1)
+  expect(src.match(/{ availability: LATER }/g)).toHaveLength(1) // only inside AEGIS_AVAILABILITY
+})
+
+test('changing that one line to true removes every after-first-release marker and nothing else', () => {
+  const src = fs.readFileSync(SRC, 'utf8')
+  const flipped = load(src.replace(/^const AEGIS_PUBLISHED = false/m, 'const AEGIS_PUBLISHED = true'))
+  expect(flipped.AEGIS_PUBLISHED).toBe(true)
+  const flags = paths => paths.flatMap(p => p.platforms.map(pl => `${p.id}/${pl.id}:${pl.availability}`))
+  const before = flags(C.PATHS)
+  const after = flags(flipped.PATHS)
+  expect(after).toHaveLength(before.length)
+  expect(before.filter(x => x.endsWith(':after-first-release')).length).toBeGreaterThan(0)
+  expect(after.some(x => x.endsWith(':after-first-release'))).toBe(false)
+  // Themis rows stay in-development, and no row carries an explicit undefined key (Next cannot serialise it)
+  expect(after.filter(x => x.endsWith(':in-development'))).toEqual(before.filter(x => x.endsWith(':in-development')))
+  for (const p of flipped.PATHS) for (const pl of p.platforms) expect(Object.keys(pl).includes('availability') && pl.availability === undefined).toBe(false)
+  // the commands themselves do not change
+  expect(JSON.stringify(flipped.PATHS.map(p => p.platforms.map(pl => pl.steps)))).toBe(JSON.stringify(C.PATHS.map(p => p.platforms.map(pl => pl.steps))))
 })
