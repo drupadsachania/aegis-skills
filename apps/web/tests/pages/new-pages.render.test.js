@@ -83,6 +83,18 @@ describe('quick start', () => {
     expect(t).not.toMatch(/\bweekly\b|\bhealth(?!care)/i)
   })
 
+  test('offers the npx skill-pack install with a guide, using commands the installer accepts', () => {
+    const h = html['/quickstart']
+    const t = text(h)
+    expect(h).toContain('id="npx"')
+    expect(t).toContain('Install the skill pack with npx')
+    expect(t).toContain('npx aegis-skills install --platform claude')
+    expect(t).toContain('npx aegis-skills list')
+    expect(h).toContain('href="/docs/aegis/getting-started"')
+    expect(t).toMatch(/24 skills in ~\/my-project\/\.claude\/skills/)
+    expect(t).not.toMatch(/after the first release/i)
+  })
+
   test('the scope lines shown come from the skill file itself', () => {
     const skill = fs.readFileSync(path.join(SKILLS_DIR, 'exposure-validation', 'SKILL.md'), 'utf8')
     const t = text(html['/quickstart'])

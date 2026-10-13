@@ -5,7 +5,7 @@ const path = require('path')
 
 const SECTIONS = [
   { key: 'aegis', title: 'Aegis', blurb: 'The skill pack: install, prompts, MCP (local and hosted), CLI, format and intel.',
-    pages: ['index', 'install', 'single-file-prompts', 'mcp', 'hosted-mcp', 'cli', 'skill-format', 'intel'] },
+    pages: ['index', 'getting-started', 'install', 'single-file-prompts', 'mcp', 'hosted-mcp', 'cli', 'skill-format', 'intel'] },
   { key: 'themis', title: 'Themis', blurb: 'The SOC agent, in development: plugin mode, standalone app and governance. Local-first today; not published yet.',
     pages: ['index', 'mode-1-plugin', 'mode-2-app', 'governance', 'workflow', 'configuration', 'versions', 'compliance-mapping', 'threat-model-atlas', 'privacy-policy', 'test-prompts', 'dual-use-review'] }
 ]

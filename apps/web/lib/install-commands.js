@@ -67,7 +67,7 @@ const PATHS = [
   },
   {
     id: 'skill-pack', title: 'Skill pack', audience: 'Coding assistants',
-    how: "Install every skill into your assistant's native skills folder.", docs: '/docs/aegis/install',
+    how: "Install every skill into your assistant's native skills folder.", docs: '/docs/aegis/getting-started',
     platforms: [
       { id: 'claude', label: 'Claude Code', ...AEGIS_AVAILABILITY, steps: [
         { text: 'Inside Claude Code:' },
