@@ -32,7 +32,7 @@ const MUST_EXIST = [
   'scripts/intel-sync.js', 'scripts/intel-routing.js', 'scripts/skill-health.js',
   'scripts/lint-skills.js', 'scripts/migrate-skill-frontmatter.js', 'scripts/build-flat-prompts.js', 'scripts/sync-skill-tokens.js',
   'packages/aegis/package.json', 'packages/aegis/health.json', 'packages/aegis/skills',
-  'apps/web/package.json', 'apps/web/next.config.js', 'apps/web/jest.config.js', 'apps/web/jest.setup.js', 'apps/web/jest.global-setup.js',
+  'apps/web/package.json', 'apps/web/next.config.js', 'apps/web/vercel.json', 'apps/web/jest.config.js', 'apps/web/jest.setup.js', 'apps/web/jest.global-setup.js',
   'apps/web/tsconfig.json', 'apps/web/next-env.d.ts', 'apps/web/postcss.config.js', 'apps/web/tailwind.config.js',
   'apps/web/lib/aegis.js', 'apps/web/lib/site-paths.js', 'apps/web/lib/zip.js', 'apps/web/lib/downloads.js', 'apps/web/lib/flat-prompt.js',
   'apps/web/lib/install-commands.js', 'apps/web/lib/markdown.js', 'apps/web/lib/docs.js', 'apps/web/lib/skill-page.js',

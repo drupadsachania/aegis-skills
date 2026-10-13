@@ -4,6 +4,8 @@ Maintainer document. It is not part of the website and is not listed in the docs
 
 ## Vercel project settings
 
+> The one setting that cannot live in the repository is **Root Directory = `apps/web`**. Without it Vercel builds at the repository root and fails with `The file "/vercel/path0/.next/routes-manifest.json" couldn't be found` (seen on the first PR preview, 2026-10-13). `apps/web/vercel.json` carries the install command, so once the Root Directory is set and the project is redeployed, the table below is already satisfied except for the Root Directory itself, the "Include source files outside of the Root Directory" toggle and the Node version.
+
 | Setting (Project Settings, Build and Deployment) | Value | Why |
 |---|---|---|
 | Framework Preset | Next.js | Auto-detected from `apps/web/package.json` |
