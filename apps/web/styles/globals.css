@@ -1645,3 +1645,26 @@ main .link-row a { color: var(--k-color-text); text-decoration: none; }
   .footer-col a { display: inline-flex; align-items: center; min-height: 44px; }
   .mobile-menu .mm-more a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; }
 }
+
+/* Install paths, split per product (components/PathsByProduct.js). Two columns on wide screens, stacked below 900px. */
+.pp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 32px); align-items: start; }
+.pp-col { border: 1px solid var(--k-color-line); border-radius: var(--k-radius-xl); padding: clamp(20px, 2.8vw, 36px); background: var(--k-color-bg); min-width: 0; }
+.pp-col.aegis { border-top: 3px solid var(--k-color-aegis); }
+.pp-col.themis { border-top: 3px solid var(--k-color-themis); }
+.pp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.pp-head h3 { font-family: var(--k-font-display); font-weight: 300; font-size: clamp(30px, 3.4vw, 42px); letter-spacing: -0.02em; margin: 0; color: var(--k-color-text); }
+.pp-marker { width: 10px; height: 10px; flex-shrink: 0; }
+.pp-col.aegis .pp-marker { background: var(--k-color-aegis); border-radius: 2px; transform: rotate(45deg); }
+.pp-col.themis .pp-marker { background: var(--k-color-themis); border-radius: 50%; }
+.pp-role { font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--k-color-text-subtle); }
+.pp-blurb { margin: 14px 0 0; font-size: 16px; line-height: 1.65; color: var(--k-color-text-muted); max-width: 52ch; }
+.pp-start { margin-top: 20px; }
+.pp-start-label, .pp-paths-label { font-family: var(--k-font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--k-color-text-subtle); margin: 0 0 8px; }
+.pp-paths-label { margin-top: 28px; }
+.pp-hint { margin: 8px 0 0; font-size: 14px; color: var(--k-color-text-subtle); }
+.pp-guide { margin: 18px 0 0; font-size: 15px; }
+/* The path rows are three columns in the full-width list; inside a half-width card they stack. */
+.pp-col .path-row { grid-template-columns: minmax(0, 1fr) auto; padding: 18px 8px; gap: 6px 16px; }
+.pp-col .pr-how { grid-column: 1 / -1; grid-row: 2; }
+@media (max-width: 900px) { .pp-grid { grid-template-columns: 1fr; } }
+.pp-col .pr-title { font-size: clamp(24px, 2.3vw, 30px); }

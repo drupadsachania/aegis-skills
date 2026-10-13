@@ -22,7 +22,7 @@ const text = h => h.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g
 
 test('home: the Themis pack card and both Themis path rows carry the pill; Aegis does not', () => {
   const h = html['/']
-  expect(count(h, /data-status="in-development"/g)).toBe(3)
+  expect(count(h, /data-status="in-development"/g)).toBe(4) // pack card + the Themis install column header + 2 Themis path rows
   const themisCard = h.slice(h.indexOf('twin-card themis'), h.indexOf('class="flow'))
   expect(themisCard).toContain('data-status="in-development"')
   const aegisCard = h.slice(h.indexOf('twin-card aegis'), h.indexOf('twin-card themis'))
@@ -32,7 +32,7 @@ test('home: the Themis pack card and both Themis path rows carry the pill; Aegis
 
 test('/paths: rows and sections for the two Themis paths carry the pill and the note, the other paths do not', () => {
   const h = html['/paths']
-  expect(count(h, /data-status="in-development"/g)).toBe(6) // 2 matrix rows + 2 section headings + 2 install notes (first tab of each)
+  expect(count(h, /data-status="in-development"/g)).toBe(7) // the Themis column header + 2 matrix rows + 2 section headings + 2 install notes (first tab of each)
   for (const id of ['zero-install', 'hosted-mcp', 'skill-pack']) {
     const sec = h.slice(h.indexOf(`id="${id}"`), h.indexOf('</section>', h.indexOf(`id="${id}"`)))
     expect(sec).not.toContain('status-pill')
@@ -78,4 +78,19 @@ test('the docs hub blurb for Themis says in development; the mode docs describe 
   expect(m2).toContain('## Run from the repository')
   expect(m2).toContain('node packages/themis-app/bin/themis.js dashboard')
   for (const d of [m1, m2]) expect(d).toMatch(/Status: in development/)
+})
+
+test('home and /paths split the install paths per product: Aegis (3 ways, npx start) and Themis (2 ways, in development)', () => {
+  for (const route of ['/', '/paths']) {
+    const h = html[route]
+    const aegis = h.slice(h.indexOf('pp-col aegis'), h.indexOf('pp-col themis'))
+    const themis = h.slice(h.indexOf('pp-col themis'), h.indexOf('</section>', h.indexOf('pp-col themis')))
+    expect(text(aegis)).toContain('3 ways to use Aegis')
+    expect(text(aegis)).toContain('npx aegis-skills install --platform claude')
+    expect(aegis).toContain('data-status="available"')
+    expect(text(aegis)).not.toMatch(/in development/i)
+    expect(text(themis)).toContain('2 ways to use Themis')
+    expect(themis).toContain('data-status="in-development"')
+    expect(text(themis)).not.toContain('npx aegis-skills install')
+  }
 })

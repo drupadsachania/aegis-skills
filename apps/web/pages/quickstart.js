@@ -23,13 +23,21 @@ function Panel ({ id, num, title, lede, children }) {
     children)
 }
 
-function QuickStartPage ({ skillCount, mcp, scope, promptKb, hostedMcpTabs }) {
-  return h(Layout, { title: 'Quick start', description: 'Try Aegis in two minutes with nothing to install: paste one prompt into any chat AI, or connect the hosted read-only MCP.' },
+const INSTALL_OUTPUT = `$ npx aegis-skills install --platform claude --project
+  MCP: registered "aegis" in ~/my-project/.mcp.json
+✓ Claude Code (project): 24 skills in ~/my-project/.claude/skills
+
+$ npx aegis-skills list
+aegis-skills 1.5.0: 24 skills bundled
+  claude       project  v1.5.0  24 skills  ~/my-project/.claude/skills`
+
+function QuickStartPage ({ skillCount, mcp, scope, promptKb, hostedMcpTabs, skillPackTabs }) {
+  return h(Layout, { title: 'Quick start', description: 'Try Aegis in two minutes: paste one prompt into any chat AI, connect the hosted read-only MCP, or install the whole skill pack into your coding assistant with one npx command.' },
     h('div', { className: 'container', style: { paddingBottom: '120px' } },
       h('div', { className: 'page-head' },
         h('div', { className: 'eyebrow' }, 'Quick start'),
         h('h1', null, 'Try it in ', h('em', null, '2 minutes')),
-        h('p', null, `Two ways that work today, with no install and no account. Pick one, run it, and compare what you see with what is shown below. Both use the same ${skillCount} skills.`),
+        h('p', null, `Three ways that work today. The first two need no install and no account; the third installs the whole pack into your coding assistant with one npx command. Pick one, run it, and compare what you see with what is shown below. All three use the same ${skillCount} skills.`),
         h('p', { className: 'status-note' }, 'Nothing here calls a model on our side. See ', h('a', { href: '/trust' }, 'Trust and data flow'), '.')),
 
       h(Panel, { id: 'prompt', num: 'A', title: 'Paste one file into any chat AI',
@@ -53,6 +61,18 @@ function QuickStartPage ({ skillCount, mcp, scope, promptKb, hostedMcpTabs }) {
         h('p', null, 'Ask for one of them and it calls ', h('code', null, mcp.get.call.name), ' with ', h('code', null, JSON.stringify(mcp.get.call.arguments)), '. Trimmed here: the ', h('code', null, mcp.get.omitted.join(', ')), ' fields are left out for length.'),
         h(CodeBlock, { label: mcp.get.call.name, content: mcp.get.text }),
         h('p', null, 'A third tool, ', h('code', null, 'get_skill_phase'), ', returns the methodology text of one phase.')),
+
+      h(Panel, { id: 'npx', num: 'C', title: 'Install the skill pack with npx',
+        lede: 'For coding assistants: Claude Code, Codex, Gemini CLI, Cursor, VS Code Copilot and Antigravity. One command copies all 24 skills into the skills folder your assistant reads and registers the read-only MCP server.' },
+        h('ol', { className: 'qs-steps' },
+          h(Step, { n: '1' }, 'Check Node.js: ', h('code', null, 'node --version'), ' must print v24 or higher. Nothing else is needed.'),
+          h(Step, { n: '2' }, 'Pick your assistant and run its command. Add ', h('code', null, '--project'), ' to install into the current folder only.', h(InstallTabs, { tabs: skillPackTabs })),
+          h(Step, { n: '3' }, 'Check it worked:', h(CodeBlock, { label: 'shell', content: 'npx aegis-skills list' })),
+          h(Step, { n: '4' }, 'Restart your assistant, then ask it:', h(CodeBlock, { label: 'your message', content: 'Which Aegis skills cover MITRE ATT&CK, and what does each one do?' }))),
+        h('h3', { className: 'qs-sub' }, 'What you will see'),
+        h('p', null, h('strong', null, 'Real output. '), 'From the 1.5.0 installer on a clean project; only the folder path is shortened to ', h('code', null, '~/my-project'), '.'),
+        h(CodeBlock, { label: 'terminal', content: INSTALL_OUTPUT }),
+        h('p', null, 'Full step-by-step guide: ', h('a', { href: '/docs/aegis/getting-started' }, 'Getting started with npx'), '. Every flag: ', h('a', { href: '/docs/aegis/cli' }, 'CLI reference'), '. Where files go and how to remove them: ', h('a', { href: '/docs/aegis/install' }, 'Install reference'), '.')),
 
       h('section', { className: 'doc-section' },
         h('div', { className: 'doc-section-hd', 'data-reveal': '' }, h('span', { className: 'ds-num' }, '→'), h('h2', null, 'Next')),
@@ -78,7 +98,7 @@ async function getStaticProps () {
   const scope = section.split('\n').map(l => l.trim()).filter(l => /^[-*]\s+/.test(l)).map(l => l.replace(/^[-*]\s+/, ''))
   const prompt = path.join(DOWNLOADS_DIR, 'prompts', `${EXAMPLE_SKILL}.md`)
   const promptKb = fs.existsSync(prompt) ? Math.max(1, Math.round(fs.statSync(prompt).size / 1024)) : 0
-  return { props: { skillCount: mcp.skillCount, mcp, scope, promptKb, hostedMcpTabs: PATHS.find(p => p.id === 'hosted-mcp').platforms } }
+  return { props: { skillCount: mcp.skillCount, mcp, scope, promptKb, hostedMcpTabs: PATHS.find(p => p.id === 'hosted-mcp').platforms, skillPackTabs: PATHS.find(p => p.id === 'skill-pack').platforms } }
 }
 
 module.exports = { default: QuickStartPage, getStaticProps }
