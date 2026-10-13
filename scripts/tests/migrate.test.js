@@ -65,7 +65,7 @@ test('migrates frontmatter, skill.json and body', () => {
     tags: ['test'],
     research: { feeds: ['mitre-attack'], 'red-team': false }
   })
-  expect(sj.phases).toEqual([{ id: 'phase-zero', file: 'references/phase-0.md', tokens: Math.ceil(phaseText.length / 4) }])
+  expect(sj.phases).toEqual([{ id: 'phase-zero', file: 'references/phase-0.md', tokens: Math.ceil(phaseText.replace(/\r\n/g, '\n').length / 4) }])
   expect(sj.endpoints).toBeUndefined()
 })
 

@@ -4,6 +4,7 @@ const nextJest = require('next/jest')
 const createJestConfig = nextJest({ dir: __dirname })
 
 module.exports = createJestConfig({
+  globalSetup: '<rootDir>/jest.global-setup.js',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
