@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <title>Aegis</title>
-  <rect width="64" height="64" rx="14" fill="#FAF8F3"/>
-  <polygon points="32,4 55,14 51,38 32,58 13,38 9,14" fill="none" stroke="#5D524B" stroke-width="5" stroke-linejoin="round"/>
-  <polygon points="32,12 47,19 44,36 32,50 20,36 17,19" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round"/>
-  <polygon points="32,22 39,32 32,44 25,32" fill="#5D524B" stroke="#D4AF37" stroke-width="2" stroke-linejoin="round"/>
-</svg>

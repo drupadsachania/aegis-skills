@@ -76,7 +76,7 @@ const MUST_EXIST = [
   'docs/design/research/hermes-agent.md', 'docs/design/research/nousresearch.md', 'docs/design/research/microsoft-ai.md', 'docs/design/research/humanistreview.md',
   // Brand: logos, favicon set, social image, masters, docs
   'apps/web/components/Brand.js', 'apps/web/tests/pages/brand-images.test.js', 'scripts/tests/naming.test.js',
-  'apps/web/public/favicon.svg', 'apps/web/public/favicon.ico', 'apps/web/public/apple-touch-icon.png', 'apps/web/public/og.png',
+  'apps/web/public/favicon.ico', 'apps/web/public/favicon-32.png', 'apps/web/public/icon-192.png', 'apps/web/public/icon-512.png', 'scripts/make-brand-dark.py', 'apps/web/public/apple-touch-icon.png', 'apps/web/public/og.png',
   'apps/web/public/brand/aegis-icon.svg', 'apps/web/public/brand/themis-icon.svg',
   'apps/web/public/brand/aegis-mark-640.webp', 'apps/web/public/brand/aegis-mark-320.webp', 'apps/web/public/brand/aegis-lockup-640.webp',
   'apps/web/public/brand/themis-mark-640.webp', 'apps/web/public/brand/themis-mark-320.webp', 'apps/web/public/brand/themis-lockup-640.webp',

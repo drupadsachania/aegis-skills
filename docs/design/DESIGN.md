@@ -39,14 +39,14 @@ Kairos Foundation  (https://kairos-foundation.org/ ; GitHub org kairos-dev-kairo
 
 | Place | Asset | Size | Notes |
 |---|---|---|---|
-| Header, mobile menu | `aegis-icon.svg` + `themis-icon.svg`, with the "Aegis · Themis" text | 26 px | Decorative `alt=""`; the link has `aria-label`. |
+| Header, mobile menu | `aegis-icon-96.webp` + `themis-icon-96.webp` (dark variants in the dark theme), with the "Aegis · Themis" text | 30 px | Decorative `alt=""`; the link has `aria-label`. |
 | Footer, "A Kairos Foundation project" | the same two icons | 30 px | |
 | Home pack cards | `aegis-mark-320.webp` / `themis-mark-320.webp` (srcset to 640) | 168 px (132 px on phones) | Lazy. Alt "Aegis mark" / "Themis mark". |
 | `/themis` hero | `themis-lockup-640.webp` | 200-280 px (120 px on phones) | Eager, `fetchpriority="high"`. |
 | `/skills`, skill pages, docs hub | small icon(s) in the eyebrow or breadcrumb | 20-22 px | A brand cue, not decoration to fill space. |
 | Dashboard sidebar and top bar | Themis icon | 28 px | Imported as a hashed asset. |
 | Dashboard Skills page | Aegis icon | 20 px | Cue that these are Aegis skills. |
-| Browser tab | `favicon.svg` (Aegis shield on cream plate), `favicon.ico` fallback; dashboard: Themis icon on a cream plate | 16-48 px | |
+| Browser tab | `favicon.ico` and PNGs (dark Aegis mark on a navy tile); dashboard: Themis icon on a cream plate | 16-48 px | |
 | Link previews | `og.png` 1200x630 (both lockups, cream) | | |
 | Print, large format | none yet | | Needs a designer's vectorisation first (LOGOS.md). |
 
