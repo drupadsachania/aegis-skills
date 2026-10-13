@@ -1,16 +1,16 @@
 # Directory listings: index, status and owner blockers
 
-Maintainer folder, not product documentation and not on the public site. Status as of 2026-10-13. Nothing is submitted and nothing is listed anywhere.
+Maintainer folder, not product documentation and not on the public site. Status as of 2026-10-13 (evening). `aegis-skills@1.5.0` is on npm, the site is live, the GitHub Release exists, and the Claude Code marketplace works straight from this repository. **Listed: the MCP Registry (Aegis).** Everything else below is still to submit.
 
 ## Status
 
 | Runbook | Directory | Product | Plan | Status |
 |---|---|---|---|---|
-| [anthropic-plugin.md](anthropic-plugin.md) | Anthropic plugin directory | Aegis, Themis | Two plugin bundles (`packages/aegis`, `packages/themis-plugin`). `claude plugin validate` passes for both and `scripts/check-plugin-bundle.js` passes | Ready except the owner blockers below; Themis also needs the npm publish |
-| [anthropic-connectors.md](anthropic-connectors.md) | Anthropic connectors directory | Hosted Aegis MCP | One read-only connector | Needs the site deployed |
-| [chatgpt-app.md](chatgpt-app.md) | OpenAI Plugins Directory (ChatGPT and Codex) | Aegis | Skills-only plugin ZIP, no MCP, no demo video. Themis on ChatGPT deferred | Waits for the Phase 7 ZIP script, publisher verification and the mailbox delivery test |
-| [gemini-gallery.md](gemini-gallery.md) | Gemini CLI extensions gallery | Aegis | Release archive with the manifest at its root | Waits for the Phase 7 archive and publish |
-| [mcp-registry.md](mcp-registry.md) | MCP Registry | Aegis, Themis | `mcp-publisher` with GitHub login | Waits for the Phase 7 npm publish |
+| [anthropic-plugin.md](anthropic-plugin.md) | Anthropic plugin directory | Aegis, Themis | Two plugin bundles (`packages/aegis`, `packages/themis-plugin`). `claude plugin validate` passes for both and `scripts/check-plugin-bundle.js` passes | Aegis is ready except the owner blockers below. Themis is not published and is not part of this submission |
+| [anthropic-connectors.md](anthropic-connectors.md) | Anthropic connectors directory | Hosted Aegis MCP | One read-only connector | Site is deployed; ready to submit |
+| [chatgpt-app.md](chatgpt-app.md) | OpenAI Plugins Directory (ChatGPT and Codex) | Aegis | Skills-only plugin ZIP, no MCP, no demo video. Themis on ChatGPT deferred | ZIP built (`aegis-chatgpt-plugin-1.5.0.zip`, attached to the Release). Waits for publisher verification |
+| [gemini-gallery.md](gemini-gallery.md) | Gemini CLI extensions gallery | Aegis | Release archive with the manifest at its root | Archive built and the extension install tested on a clean machine (2026-10-13). Waits for the `gemini-cli-extension` repository topic and the daily crawl |
+| [mcp-registry.md](mcp-registry.md) | MCP Registry | Aegis, Themis | `mcp-publisher` with GitHub login | **Aegis listed 2026-10-13** as `io.github.drupadsachania/aegis-skills` 1.5.0. Themis waits for its npm publish |
 | [listing-copy.md](listing-copy.md) | (source of all copy) | both | Names, taglines, descriptions, example prompts, limits tested by `scripts/tests/listing-copy.test.js` | Done |
 
 ## Decisions recorded (owner, 2026-10-12)
@@ -26,10 +26,10 @@ Maintainer folder, not product documentation and not on the public site. Status 
 | # | Blocker | Needed by | Notes |
 |---|---|---|---|
 | 1 | **Mailbox: inbound delivery verified 2026-10-13; still to do: reply test and portal verification email** | Anthropic plugin and connector portals; OpenAI support contact | The addresses are the contact fields everywhere (support@ for support, privacy@ for privacy). The owner sent a test message from an outside account (live.com) to both addresses on 2026-10-13 and both arrived in the Titan mailbox. Still to confirm before submitting: that replies work from the mail client (and show the role address if send-as is configured). For Anthropic's verified-contact step make sure you can receive a verification email at `support@kairos-foundation.org`; the portals may email a verification link. Security stays on GitHub private reporting |
-| 2 | Deploy the website (Vercel, root `apps/web`, Node 24) | Aegis plugin `.mcp.json`, connector, privacy policy URL | Not deployed from this branch |
-| 3 | Phase 7 npm publish of `aegis-skills@1.5.0` and `@aegis-skills/themis-plugin@1.1.0` | Themis plugin, Gemini manifest, MCP Registry | Phase 7 |
+| 2 | ~~Deploy the website~~ | | Done: <https://aegis-skills.vercel.app> |
+| 3 | ~~npm publish of `aegis-skills@1.5.0`~~ | | Done 2026-10-13. `@aegis-skills/themis-plugin` is still unpublished (Phase 8) |
 | 4 | Verified OpenAI publisher identity | ChatGPT listing | Platform dashboard, organisation settings |
-| 5 | Choose the Gemini layout (recommended: release archive) | Gemini listing | See [gemini-gallery.md](gemini-gallery.md) |
+| 5 | ~~Choose the Gemini layout~~ | | Release archive, built and tested |
 | 6 | Add the `gemini-cli-extension` topic to the repository | Gemini listing | |
 | 7 | Name checks for "Aegis" and "Themis" in each directory | All | Both are common names |
 | 8 | Paid Claude plan with submit rights and the GitHub account connected on claude.ai | Anthropic portals | |
