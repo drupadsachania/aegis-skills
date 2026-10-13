@@ -38,7 +38,10 @@ test('/paths: rows and sections for the two Themis paths carry the pill and the 
     expect(sec).not.toContain('status-pill')
   }
   expect(text(h)).toContain('Themis is being matured locally and is not published yet. It will be announced here and is not available through AI directories yet. You can run it today from the repository — see the Themis docs')
-  expect(text(h)).toContain('Available after the first release') // Aegis skill pack keeps its own note
+  // The Aegis skill pack keeps its own note until AEGIS_PUBLISHED is flipped (docs/RELEASE-RUNBOOK.md section 4).
+  const note = expect(text(h))
+  if (require('../../lib/install-commands').AEGIS_PUBLISHED) note.not.toContain('Available after the first release')
+  else note.toContain('Available after the first release')
 })
 
 test('/themis: hero pill, a "Where to get it" block (plans, no dates), and an install section that says what works today', () => {

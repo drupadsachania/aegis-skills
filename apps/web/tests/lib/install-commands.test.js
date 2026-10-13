@@ -78,14 +78,16 @@ test('availability: Aegis items follow AEGIS_PUBLISHED; every Themis item is in-
   expect(C.PATHS.filter(p => !THEMIS_PATHS.includes(p.id)).every(p => !p.status)).toBe(true)
 })
 
-test('npm, marketplace and release based Aegis platforms are flagged as not yet available', () => {
-  expect(C.AEGIS_PUBLISHED).toBe(false) // set it to true (one line) at the first release and delete this test with it
+test('npm, marketplace and release based Aegis platforms are flagged until AEGIS_PUBLISHED is true', () => {
   const flagged = C.PATHS.flatMap(p => p.platforms.filter(pl => pl.availability === C.LATER).map(pl => pl.id))
-  expect(flagged.length).toBeGreaterThan(0) // C.AEGIS_PUBLISHED is false until the first release (docs/RELEASE-RUNBOOK.md section 4)
   const aegisNeedsRelease = C.PATHS.filter(p => !p.id.startsWith('themis')).flatMap(p => p.platforms)
     .filter(pl => /npx |npm install|\/plugin |gemini extensions/.test(pl.steps.map(s => s.code || '').join(' ')))
   expect(aegisNeedsRelease.length).toBeGreaterThan(0)
-  for (const pl of aegisNeedsRelease) expect(pl.availability).toBe(C.LATER)
+  if (C.AEGIS_PUBLISHED) expect(flagged).toEqual([])
+  else {
+    expect(flagged.length).toBeGreaterThan(0)
+    for (const pl of aegisNeedsRelease) expect(pl.availability).toBe(C.LATER)
+  }
   // zero-install and the hosted MCP work from the website alone
   for (const id of ['zero-install', 'hosted-mcp']) {
     expect(C.PATHS.find(p => p.id === id).platforms.every(pl => !pl.availability)).toBe(true)
@@ -111,17 +113,20 @@ test('AEGIS_PUBLISHED is the only switch: one declaration, no direct LATER flags
 
 test('changing that one line to true removes every after-first-release marker and nothing else', () => {
   const src = fs.readFileSync(SRC, 'utf8')
-  const flipped = load(src.replace(/^const AEGIS_PUBLISHED = false/m, 'const AEGIS_PUBLISHED = true'))
+  const withFlag = v => load(src.replace(/^const AEGIS_PUBLISHED = (true|false)/m, `const AEGIS_PUBLISHED = ${v}`))
+  const before = withFlag(false)
+  const flipped = withFlag(true)
+  expect(before.AEGIS_PUBLISHED).toBe(false)
   expect(flipped.AEGIS_PUBLISHED).toBe(true)
   const flags = paths => paths.flatMap(p => p.platforms.map(pl => `${p.id}/${pl.id}:${pl.availability}`))
-  const before = flags(C.PATHS)
+  const beforeFlags = flags(before.PATHS)
   const after = flags(flipped.PATHS)
-  expect(after).toHaveLength(before.length)
-  expect(before.filter(x => x.endsWith(':after-first-release')).length).toBeGreaterThan(0)
+  expect(after).toHaveLength(beforeFlags.length)
+  expect(beforeFlags.filter(x => x.endsWith(':after-first-release')).length).toBeGreaterThan(0)
   expect(after.some(x => x.endsWith(':after-first-release'))).toBe(false)
   // Themis rows stay in-development, and no row carries an explicit undefined key (Next cannot serialise it)
-  expect(after.filter(x => x.endsWith(':in-development'))).toEqual(before.filter(x => x.endsWith(':in-development')))
+  expect(after.filter(x => x.endsWith(':in-development'))).toEqual(beforeFlags.filter(x => x.endsWith(':in-development')))
   for (const p of flipped.PATHS) for (const pl of p.platforms) expect(Object.keys(pl).includes('availability') && pl.availability === undefined).toBe(false)
   // the commands themselves do not change
-  expect(JSON.stringify(flipped.PATHS.map(p => p.platforms.map(pl => pl.steps)))).toBe(JSON.stringify(C.PATHS.map(p => p.platforms.map(pl => pl.steps))))
+  expect(JSON.stringify(flipped.PATHS.map(p => p.platforms.map(pl => pl.steps)))).toBe(JSON.stringify(before.PATHS.map(p => p.platforms.map(pl => pl.steps))))
 })
