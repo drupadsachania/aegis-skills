@@ -30,7 +30,7 @@
     {
       "id": "cloud-exposure",
       "file": "references/cloud-exposure.md",
-      "tokens": 762
+      "tokens": 763
     },
     {
       "id": "risk-prioritization",
@@ -40,7 +40,7 @@
     {
       "id": "cve-exposure-management",
       "file": "references/cve-exposure-management.md",
-      "tokens": 1250
+      "tokens": 1277
     },
     {
       "id": "live-threat-intel",
