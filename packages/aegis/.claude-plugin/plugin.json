@@ -1,10 +1,11 @@
 {
-  "name": "aegis",
+  "name": "aegis-skills",
   "displayName": "Aegis Security Skills",
   "version": "1.5.0",
   "description": "24 defensive cybersecurity skills (MITRE ATT&CK, ATLAS and Engage, DFIR, threat hunting, exposure validation, IAM, OT, compliance) plus the hosted read-only Aegis MCP server.",
   "author": { "name": "Drupad Sachania", "url": "https://github.com/drupadsachania/aegis-skills" },
   "homepage": "https://aegis-skills.vercel.app",
+  "privacyPolicyUrl": "https://aegis-skills.vercel.app/docs/themis/privacy-policy",
   "repository": "https://github.com/drupadsachania/aegis-skills",
   "license": "Apache-2.0 OR MIT",
   "keywords": ["security", "cybersecurity", "mitre-attack", "dfir", "threat-hunting", "agent-skills"]

@@ -148,6 +148,10 @@ def main():
     tile(180, 0.0).convert('RGB').save(os.path.join(PUBLIC, 'apple-touch-icon.png'), optimize=True)
     tile(256).save(os.path.join(PUBLIC, 'favicon.ico'), sizes=[(16, 16), (32, 32), (48, 48)])
     print('wrote favicon set')
+    # Claude plugin directory icon: square PNG, 512 to 2048 px, under 2 MB (512 keeps it under the 256 KiB bundle check)
+    out = os.path.join(ROOT, 'design', 'brand', 'plugin-icon-aegis.png')
+    tile(512, 0.0).convert('RGB').save(out, optimize=True)
+    print('wrote', os.path.relpath(out, ROOT), os.path.getsize(out) // 1024, 'KB')
 
 
 if __name__ == '__main__':

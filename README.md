@@ -59,7 +59,7 @@ npx aegis-skills install --platform claude --project   # this project only
 npx aegis-skills mcp
 ```
 
-Claude Code plugin: `/plugin marketplace add drupadsachania/aegis-skills`, then `/plugin install aegis@aegis-skills`.
+Claude Code plugin: `/plugin marketplace add drupadsachania/aegis-skills`, then `/plugin install aegis-skills@aegis-skills`.
 
 Needs Node.js 24 or later.
 

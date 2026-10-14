@@ -7,7 +7,7 @@ const { collectProblems } = require('../check-versions')
 test('the marketplace lists only plugins whose npm packages are releasable', () => {
   expect(lib.marketplaceProblems()).toEqual([])
   const m = lib.readJson('.claude-plugin/marketplace.json').data
-  expect(m.plugins.map(p => p.name)).toEqual(['aegis'])
+  expect(m.plugins.map(p => p.name)).toEqual(['aegis-skills'])
 })
 
 test('the releasable allow-list is aegis-skills, themis-core and themis-gateway', () => {

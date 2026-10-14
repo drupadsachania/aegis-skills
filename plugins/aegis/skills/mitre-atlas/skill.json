@@ -1,0 +1,69 @@
+{
+  "osk": "1.1",
+  "name": "mitre-atlas",
+  "version": "1.1.1",
+  "description": "MITRE ATLAS adversarial ML/AI attack surface assessment and countermeasure planning workflow. Triggers for: AI system threat modelling, adversarial ML attack analysis, training data poisoning defence, model inversion detection, ML credential protection, AI supply chain security, designing deception for ML pipelines, or any exercise involving security of AI/ML systems.",
+  "family": "framework",
+  "frameworks": [
+    "mitre-atlas",
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "ai-security",
+    "adversarial-ml",
+    "mitre",
+    "atlas",
+    "ml-ops"
+  ],
+  "phases": [
+    {
+      "id": "atlas-tactics-overview",
+      "file": "references/atlas-tactics-overview.md",
+      "tokens": 538
+    },
+    {
+      "id": "ml-attack-surface-guide",
+      "file": "references/ml-attack-surface-guide.md",
+      "tokens": 543
+    },
+    {
+      "id": "ml-threat-model",
+      "file": "references/ml-threat-model.md",
+      "tokens": 1585
+    },
+    {
+      "id": "ml-defense-controls",
+      "file": "references/ml-defense-controls.md",
+      "tokens": 1627
+    },
+    {
+      "id": "ml-incident-response",
+      "file": "references/ml-incident-response.md",
+      "tokens": 1705
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 835,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-atlas"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-25536, CVE-2026-33032, CVE-2025-32711, CVE-2026-50548, CVE-2026-50549, CVE-2026-21520 — verify whether this estate is exposed",
+      "Dominant themes: paper (x8), prompt-injection (x8), model (x5), sandbox-escape (x5), agent-security (x4), open-weight (x4) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: OpenAI (x5), Anthropic (x5), Irregular (x3), kontext-security (x2) — review exposure to these in the estate"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 41,
+    "teardowns-routed": 0
+  }
+}

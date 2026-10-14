@@ -10,7 +10,7 @@ require('@testing-library/jest-dom')
 const InstallTabs = require('../../components/InstallTabs')
 
 const TABS = [
-  { id: 'claude', label: 'Claude Code', steps: [{ text: 'Inside Claude Code:' }, { label: 'shell', code: '/plugin install aegis@aegis-skills' }] },
+  { id: 'claude', label: 'Claude Code', steps: [{ text: 'Inside Claude Code:' }, { label: 'shell', code: '/plugin install aegis-skills@aegis-skills' }] },
   { id: 'codex', label: 'Codex', steps: [{ label: 'shell', code: 'npx aegis-skills install --platform codex' }] }
 ]
 
@@ -18,7 +18,7 @@ test('shows the first tab by default with its note and code', () => {
   render(React.createElement(InstallTabs, { tabs: TABS }))
   expect(screen.getByRole('tab', { name: 'Claude Code' })).toHaveAttribute('aria-selected', 'true')
   expect(screen.getByText('Inside Claude Code:')).toBeInTheDocument()
-  expect(screen.getByText('/plugin install aegis@aegis-skills')).toBeInTheDocument()
+  expect(screen.getByText('/plugin install aegis-skills@aegis-skills')).toBeInTheDocument()
 })
 
 test('switches tabs', async () => {

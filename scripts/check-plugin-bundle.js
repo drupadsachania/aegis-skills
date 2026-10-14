@@ -20,7 +20,7 @@ const { execFileSync } = require('child_process')
 const matter = require('gray-matter')
 
 const ROOT = path.join(__dirname, '..')
-const PLUGINS = ['packages/aegis', 'packages/themis-plugin']
+const PLUGINS = ['plugins/aegis', 'packages/themis-plugin']
 const MIN_README_WORDS = 40
 const MAX_FILES = 512
 const MAX_BYTES = 256 * 1024

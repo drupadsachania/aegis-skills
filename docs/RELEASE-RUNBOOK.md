@@ -232,7 +232,8 @@ git switch main && git pull --ff-only && git switch -c release/trusted-publishin
 
 npm run bump -- aegis patch                  # aegis-skills 1.5.0 -> 1.5.1, prints TAG=aegis-skills@1.5.1
 git status --short                           # review the 14 files it changed
-git add -A packages .claude-plugin listings docs apps/web/package.json package-lock.json
+npm run build:plugin   # regenerates plugins/aegis (CI fails if it is stale)
+git add -A packages plugins .claude-plugin listings docs apps/web/package.json package-lock.json
 git commit -m "chore(release): aegis-skills@1.5.1"
 
 npm run bump -- themis-core patch            # 0.1.0 -> 0.1.1
@@ -389,7 +390,8 @@ These are checked by tests as far as a laptop can, but only GitHub and npm can p
 git switch main && git pull --ff-only && git switch -c release/<name>-<version>
 npm run bump -- <aegis|themis-core|themis-gateway> <patch|minor|major>      # note the TAG= line
 git status --short && npm run check:versions
-git add -A packages .claude-plugin listings docs apps/web/package.json package-lock.json
+npm run build:plugin   # regenerates plugins/aegis (CI fails if it is stale)
+git add -A packages plugins .claude-plugin listings docs apps/web/package.json package-lock.json
 git commit -m "chore(release): <tag>"
 git push -u origin HEAD && gh pr create --base main --fill && gh pr checks --watch
 # merge the PR, then:

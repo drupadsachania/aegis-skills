@@ -1,0 +1,97 @@
+{
+  "osk": "1.1",
+  "name": "endpoint-security",
+  "version": "1.1.0",
+  "description": "Endpoint security workflow covering EDR deployment, baseline hardening, malware analysis, and endpoint incident response. Triggers for: EDR gap assessment, workstation hardening review, malware triage, or endpoint-related incident investigation.",
+  "family": "domain",
+  "frameworks": [
+    "mitre-attack",
+    "cis-benchmarks"
+  ],
+  "tags": [
+    "security",
+    "endpoint",
+    "edr",
+    "hardening",
+    "malware",
+    "incident-response"
+  ],
+  "phases": [
+    {
+      "id": "edr-deployment",
+      "file": "references/edr-deployment.md",
+      "tokens": 685
+    },
+    {
+      "id": "baseline-hardening",
+      "file": "references/baseline-hardening.md",
+      "tokens": 739
+    },
+    {
+      "id": "malware-analysis",
+      "file": "references/malware-analysis.md",
+      "tokens": 692
+    },
+    {
+      "id": "incident-response",
+      "file": "references/incident-response.md",
+      "tokens": 697
+    },
+    {
+      "id": "control-effectiveness-validation",
+      "file": "references/control-effectiveness-validation.md",
+      "tokens": 1419
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 446,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-kev"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-65400, CVE-2026-65775 — verify whether this estate is exposed",
+      "Dominant themes: macos (x3) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 4,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "remote-workforce",
+      "cloud-workstations"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "professional-services"
+    ],
+    "attack-surface-tags": [
+      "endpoint",
+      "workstation",
+      "malware",
+      "credential-theft",
+      "execution"
+    ]
+  }
+}

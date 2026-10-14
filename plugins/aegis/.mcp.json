@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "aegis": {
+      "type": "http",
+      "url": "https://aegis-skills.vercel.app/api/mcp"
+    }
+  }
+}

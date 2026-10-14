@@ -76,7 +76,7 @@ const MUST_EXIST = [
   'docs/design/research/hermes-agent.md', 'docs/design/research/nousresearch.md', 'docs/design/research/microsoft-ai.md', 'docs/design/research/humanistreview.md',
   // Brand: logos, favicon set, social image, masters, docs
   'apps/web/components/Brand.js', 'apps/web/tests/pages/brand-images.test.js', 'scripts/tests/naming.test.js',
-  'apps/web/public/favicon.ico', 'apps/web/public/favicon-32.png', 'apps/web/public/icon-192.png', 'apps/web/public/icon-512.png', 'scripts/make-brand-dark.py', 'apps/web/public/apple-touch-icon.png', 'apps/web/public/og.png',
+  'plugins/aegis/.claude-plugin/plugin.json', 'plugins/aegis/.claude-plugin/icon.png', 'plugins/aegis/.mcp.json', 'scripts/build-plugin-bundle.js', 'listings/claude/aegis-plugin-readme.md', 'design/brand/plugin-icon-aegis.png', 'apps/web/public/favicon.ico', 'apps/web/public/favicon-32.png', 'apps/web/public/icon-192.png', 'apps/web/public/icon-512.png', 'scripts/make-brand-dark.py', 'apps/web/public/apple-touch-icon.png', 'apps/web/public/og.png',
   'apps/web/public/brand/aegis-icon.svg', 'apps/web/public/brand/themis-icon.svg',
   'apps/web/public/brand/aegis-mark-640.webp', 'apps/web/public/brand/aegis-mark-320.webp', 'apps/web/public/brand/aegis-lockup-640.webp',
   'apps/web/public/brand/themis-mark-640.webp', 'apps/web/public/brand/themis-mark-320.webp', 'apps/web/public/brand/themis-lockup-640.webp',
@@ -124,7 +124,7 @@ const MUST_NOT_EXIST = [
 const TRACKED_TOP = new Set([
   '.claude', '.claude-plugin', '.github', '.gitattributes', '.gitignore', '.npmrc', 'LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT', 'SECURITY.md',
   'README.md', 'package.json', 'package-lock.json', 'jest.config.js', 'tsconfig.base.json',
-  'apps', 'packages', 'scripts', 'docs', 'design', 'listings'
+  'apps', 'packages', 'plugins', 'scripts', 'docs', 'design', 'listings'
 ])
 const PACKAGES = [
   ['package.json', 'aegis-skills-monorepo'],

@@ -13,7 +13,7 @@ Inside Claude Code:
 
 ```
 /plugin marketplace add drupadsachania/aegis-skills
-/plugin install aegis@aegis-skills
+/plugin install aegis-skills@aegis-skills
 ```
 
 Or from a terminal:

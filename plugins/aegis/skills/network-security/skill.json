@@ -1,0 +1,95 @@
+{
+  "osk": "1.1",
+  "name": "network-security",
+  "version": "1.1.0",
+  "description": "Network security assessment and hardening workflow. Triggers for: network segmentation review, traffic analysis, firewall rule audits, network inventory, perimeter hardening, lateral movement prevention, or any exercise requiring network threat surface reduction.",
+  "family": "domain",
+  "frameworks": [
+    "mitre-attack",
+    "nist-csf"
+  ],
+  "tags": [
+    "security",
+    "network",
+    "segmentation",
+    "hardening",
+    "perimeter"
+  ],
+  "phases": [
+    {
+      "id": "network-inventory",
+      "file": "references/network-inventory.md",
+      "tokens": 597
+    },
+    {
+      "id": "segmentation-review",
+      "file": "references/segmentation-review.md",
+      "tokens": 685
+    },
+    {
+      "id": "traffic-analysis",
+      "file": "references/traffic-analysis.md",
+      "tokens": 632
+    },
+    {
+      "id": "hardening-checklist",
+      "file": "references/hardening-checklist.md",
+      "tokens": 859
+    },
+    {
+      "id": "cve-patch-management",
+      "file": "references/cve-patch-management.md",
+      "tokens": 2093
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 664,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-advisories"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 90,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-62878, CVE-2026-62815, CVE-2026-0293, CVE-2026-0294, CVE-2025-15630, CVE-2007-3010 — verify whether this estate is exposed"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 7,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "ot",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "critical-infrastructure",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "network",
+      "perimeter",
+      "lateral-movement",
+      "east-west-traffic"
+    ]
+  }
+}

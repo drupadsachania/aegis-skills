@@ -1,0 +1,101 @@
+{
+  "osk": "1.1",
+  "name": "digital-forensics",
+  "version": "1.1.0",
+  "description": "End-to-end digital forensics and incident response (DFIR) workflow. Covers evidence acquisition with chain of custody, disk and memory forensics, network forensics, cloud and mobile evidence, and timeline reconstruction. Triggers for: incident investigation, evidence collection, memory forensics, disk imaging, DFIR engagements, or legal/regulatory evidence requirements.",
+  "family": "response",
+  "frameworks": [
+    "mitre-attack"
+  ],
+  "tags": [
+    "security",
+    "forensics",
+    "incident-response",
+    "dfir",
+    "volatility",
+    "memory-forensics",
+    "disk-forensics",
+    "chain-of-custody"
+  ],
+  "phases": [
+    {
+      "id": "evidence-acquisition",
+      "file": "references/evidence-acquisition.md",
+      "tokens": 1157
+    },
+    {
+      "id": "disk-forensics",
+      "file": "references/disk-forensics.md",
+      "tokens": 1389
+    },
+    {
+      "id": "memory-forensics",
+      "file": "references/memory-forensics.md",
+      "tokens": 1519
+    },
+    {
+      "id": "network-forensics",
+      "file": "references/network-forensics.md",
+      "tokens": 1479
+    },
+    {
+      "id": "cloud-and-mobile",
+      "file": "references/cloud-and-mobile.md",
+      "tokens": 1645
+    },
+    {
+      "id": "timeline-reconstruction",
+      "file": "references/timeline-reconstruction.md",
+      "tokens": 1585
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 214,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "sans-advisories"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack",
+      "volatility-foundation",
+      "sans-for508",
+      "magnet-forensics"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 2,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "legal",
+      "government"
+    ],
+    "attack-surface-tags": [
+      "endpoint",
+      "memory",
+      "network",
+      "cloud",
+      "mobile"
+    ]
+  }
+}
