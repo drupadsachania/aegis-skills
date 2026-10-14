@@ -355,6 +355,6 @@ Add an accent family to `tokens.json` (5 tokens x light/dark + contrast pairs), 
 - `design/tokens.json`, `design/tokens.css` (generated), `design/build-tokens.js`, `design/tokens.test.js`, `design/jest.config.js`
 - `docs/design/DESIGN.md` (this), `docs/design/motion.md`, `docs/design/LOGOS.md` (logo asset inventory)
 - `design/brand/source/` (full-resolution logo masters, not served)
-- `docs/design/research/{hermes-agent,nousresearch,microsoft-ai,humanistreview}.md`
+- The site research notes (hermes-agent, nousresearch, microsoft-ai, humanistreview) are kept by the maintainer outside the repository.
 
 Regenerate tokens: `node design/build-tokens.js`; verify: `npx jest design`.
