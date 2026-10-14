@@ -29,3 +29,9 @@ apps/web/styles/tokens.generated.css
 
 # Phase 7 release staging (tarballs, assets, checksums)
 dist-release/
+
+# OS and editor junk, build caches (never commit)
+Thumbs.db
+desktop.ini
+*.swp
+*.tsbuildinfo
