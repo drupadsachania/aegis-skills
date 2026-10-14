@@ -1,4 +1,4 @@
-// Shared Themis contracts — docs/superpowers/plans/restructure/00-contracts.md §6.
+// Shared Themis contracts (section 6 of the maintainer's restructure contracts; the plan documents are kept outside the repository).
 // Fields marked "Phase 2" are additions Phases 3 and 4 must adopt. Types only.
 import type { OrchestrateRequest, SubTask, SubTaskResult } from './types'
 import type { Finding } from './audit/types'

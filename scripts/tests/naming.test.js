@@ -33,14 +33,6 @@ describe('organisation naming', () => {
     expect(files.filter(f => read(f).includes(OLD_DOMAIN))).toEqual([])
   })
 
-  it('the findings file records the resolved spelling and the original copyright decision (superseded by the individual maintainer, 2026-10-13)', () => {
-    const text = read('docs/superpowers/plans/restructure/01-cross-phase-findings.md')
-    expect(text).toContain('Organisation spelling resolved by the owner')
-    expect(text).toMatch(/copyright holder/i)
-    expect(text).toMatch(/0\.6 is now resolved too/)
-    expect(text).toMatch(/copyright holder is Kairos Foundation/)
-  })
-
   it('licences, authors and the footer use the corrected name', () => {
     for (const f of ['LICENSE', 'LICENSE-MIT', 'packages/aegis/LICENSE', 'packages/themis-app/LICENSE']) {
       expect(read(f)).toMatch(/Copyright \(c\) 2024 Drupad Sachania/)

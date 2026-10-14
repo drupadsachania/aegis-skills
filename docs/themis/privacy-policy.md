@@ -1,6 +1,6 @@
 # Privacy policy
 
-Last reviewed: 2026-10-13. This page describes what the Aegis and Themis website, the hosted Aegis MCP server, and the Themis software do with data. It is written from the code in this repository. It is not legal advice. The terms for using the website and the hosted MCP server are at [Terms of Service](/terms).
+Last reviewed: 2026-10-14. This page describes what the Aegis and Themis website, the hosted Aegis MCP server, and the Themis software do with data. It is written from the code in this repository. It is not legal advice. The terms for using the website and the hosted MCP server are at [Terms of Service](/terms).
 
 Contact for privacy questions: [privacy@kairos-foundation.org](mailto:privacy@kairos-foundation.org). For anything security-sensitive, such as a vulnerability, use GitHub private vulnerability reporting at <https://github.com/drupadsachania/aegis-skills/security/advisories/new> instead of email.
 
@@ -35,14 +35,14 @@ What it receives: the MCP request itself (the tool name and the arguments you or
 
 ## Themis in plugin mode (Mode 1)
 
-The plugin runs on your machine, inside your own AI client. It stores run state, the audit log and approval records locally in `~/.themis/themis.db` (or the folder named by `THEMIS_HOME`). It sends no telemetry. The model that does the reasoning is the one your AI client uses, and your client's provider terms apply to what it sees. If you connect external MCP servers through Themis, calls to those servers go where you configured them.
+The plugin runs on your machine, inside your own AI client. It stores run state, the audit log and approval records locally in `~/.themis/themis.db` (or the folder named by `THEMIS_HOME`). It sends no telemetry. The model that does the reasoning is the one your AI client uses, and your client's provider terms apply to what it sees. If you connect external MCP servers through Themis, calls to those servers go where you configured them, and each one waits for your approval.
 
 ## Themis standalone app (Mode 2)
 
 The app keeps its data in `~/.themis/` on your machine: the database with runs, audit events, approvals and reports; a settings file; and, if you choose to save one, a key file. The dashboard listens on 127.0.0.1 only and sets one session cookie, scoped to that local address, to identify your browser to the local server; it carries no personal data and is not sent anywhere else. The app sends data off your machine in two cases only:
 
-- **Your chosen model provider.** Task text and sub-task context are sent to the provider you configure so that it can produce the analysis. Secrets and email addresses are redacted from tool arguments, results, approvals, audit data, findings and reports, but redaction is pattern based, so avoid putting secrets in task text. The provider's own terms govern what it does with the data.
-- **MCP servers you configure.** Calls to those servers go to the addresses you set. Their output is redacted, shortened and treated as untrusted before use.
+- **Your chosen model provider.** Task text and sub-task context are sent to the provider you configure so that it can produce the analysis. They are redacted before they are sent, and secrets and email addresses are also redacted from tool arguments, results, approvals, audit data, findings and reports. Redaction is pattern based (credentials, keys, tokens and email addresses, not every kind of sensitive data), so avoid putting secrets or personal data in task text, or use a local model so nothing leaves your machine. The provider's own terms govern what it does with the data.
+- **MCP servers you configure.** Calls to those servers go to the addresses you set, and only after you approve each call (reads included). Their output is redacted, shortened and treated as untrusted before use.
 
 ## Retention and deletion
 

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/readme/1_aegis-themis-identity-reveal.gif" alt="Aegis (gold Medusa shield) and Themis (blue scales) logos" width="720">
+  <img src="docs/assets/readme/aegis-themis-identity.jpg" alt="Aegis (gold Medusa shield) and Themis (blue scales) logos" width="720">
 </p>
 
 <h1 align="center">Aegis 🛡️ · ⚖️ Themis </h1>

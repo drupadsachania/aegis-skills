@@ -29,3 +29,21 @@ apps/web/styles/tokens.generated.css
 
 # Phase 7 release staging (tarballs, assets, checksums)
 dist-release/
+
+# OS and editor junk, build caches (never commit)
+Thumbs.db
+desktop.ini
+*.swp
+*.tsbuildinfo
+
+# Maintainer-only working notes and local tooling (kept on disk, never committed)
+docs/superpowers/
+docs/design/research/
+.superpowers/
+.claude/
+.graphify_*
+
+# Test and tool output
+test_output*.txt
+*.out
+junit*.xml
