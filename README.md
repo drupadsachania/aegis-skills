@@ -27,7 +27,7 @@ Status: Aegis 1.5.0 is on npm as [`aegis-skills`](https://www.npmjs.com/package/
 
 ## Aegis
 
-<img src="apps/web/public/brand/aegis-mark-320.webp" alt="Aegis mark" width="120" align="right">
+<img src="design/brand/source/aegis-lockup-dark.webp" alt="Aegis mark" width="120" align="right">
 
 Defensive security skills in the open [Agent Skills](https://agentskills.io/specification) format. One source installs natively into coding assistants, is served over the Model Context Protocol, and flattens into a single-file prompt for any chat AI.
 
@@ -97,7 +97,7 @@ Hosted, with nothing to install (Streamable HTTP, no authentication): `https://a
 
 ## Themis
 
-<img src="apps/web/public/brand/themis-mark-320.webp" alt="Themis mark" width="120" align="right">
+<img src="design/brand/source/themis-lockup-dark.webp" alt="Themis mark" width="120" align="right">
 
 Give Themis a task such as "validate exposure to CVE-2026-12345 on our VPN gateways". It runs a fixed seven-step workflow: validate, decompose, schedule, fan out to Aegis skills, guardrail, synthesise and audit. Deterministic steps are plain code in `themis-core`; reasoning steps are done by a model.
 
