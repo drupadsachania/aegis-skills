@@ -28,10 +28,10 @@ it('falls back to THEMIS_MCP_SERVERS config when servers are not passed', async 
   const gw = createGateway({ skill: 'attack-surface-mapping', runId: 'r', store: createMemoryStore(), connector })
   expect((await gw.listTools()).map((t) => t.name)).toEqual(['themis__osint__lookup_host'])   // allowWrite defaults false
 })
-it('classifies tools and namespaces them', async () => {
+it('classifies tools and namespaces them; every class needs approval', async () => {
   const { gw } = setup({ tools: [READ, WRITE, EXEC] })
   expect((await gw.listTools()).map((t) => [t.name, t.toolClass, t.disposition])).toEqual([
-    ['themis__osint__lookup_host', 'read', 'auto'],
+    ['themis__osint__lookup_host', 'read', 'approval'],
     ['themis__osint__create_ticket', 'write', 'approval'],
     ['themis__osint__run_command', 'execute', 'approval'],
   ])
@@ -40,9 +40,24 @@ it('omits write/execute tools when the server did not opt in to write', async ()
   const { gw } = setup({ server: { allowWrite: false }, tools: [READ, WRITE, EXEC] })
   expect((await gw.listTools()).map((t) => t.name)).toEqual(['themis__osint__lookup_host'])
 })
-it('runs read tools and wraps output as untrusted', async () => {
-  const { gw, callServerTool } = setup()
-  const r = await gw.call('themis__osint__lookup_host', { host: 'example.com' })
+// The test plays the human channel (store.decideApproval); the gateway itself never decides.
+async function approveAndRun(gw: ReturnType<typeof setup>['gw'], store: ThemisStore, name: string, args: object) {
+  const r = await gw.call(name, args)
+  if (r.kind !== 'approval_required') return r
+  store.decideApproval(r.approvalId, 'approved')
+  return gw.executeApproved(r.approvalId)
+}
+it('never runs a read on the model\'s say-so: it becomes a pending approval', async () => {
+  const { gw, store, callServerTool } = setup()
+  const r = await gw.call('themis__osint__lookup_host', { host: 'example.com' }, { reason: 'resolve host' })
+  expect(r.kind).toBe('approval_required')
+  expect(callServerTool).not.toHaveBeenCalled()
+  const [a] = store.listApprovals({ runId: 'run-1' })
+  expect(a).toMatchObject({ tool: 'lookup_host', toolClass: 'read', status: 'pending', reason: 'resolve host' })
+})
+it('runs an approved read and wraps output as untrusted', async () => {
+  const { gw, store, callServerTool } = setup()
+  const r = await approveAndRun(gw, store, 'themis__osint__lookup_host', { host: 'example.com' })
   expect(r.kind).toBe('result')
   const text = (r as { text: string }).text
   expect(text).toMatch(/^<external_tool_output server="osint" tool="lookup_host" ok="true">\n/)
@@ -51,16 +66,16 @@ it('runs read tools and wraps output as untrusted', async () => {
   expect(gw.callCount()).toBe(1)
 })
 it('redacts and truncates read output', async () => {
-  const { gw } = setup({ text: 'AKIAIOSFODNN7EXAMPLE ' + 'x'.repeat(5000) })
-  const { text } = (await gw.call('themis__osint__lookup_host', {})) as { text: string }
+  const { gw, store } = setup({ text: 'AKIAIOSFODNN7EXAMPLE ' + 'x'.repeat(5000) })
+  const { text } = (await approveAndRun(gw, store, 'themis__osint__lookup_host', {})) as { text: string }
   expect(text).not.toContain('AKIAIOSFODNN7EXAMPLE')
   expect(text).toContain('[REDACTED]')
   expect(text).toContain('[truncated]')
 })
-it('enforces the per-server call budget', async () => {
-  const { gw, callServerTool } = setup()
-  await gw.call('themis__osint__lookup_host', {})
-  await gw.call('themis__osint__lookup_host', {})
+it('enforces the per-server read budget, even for approved reads', async () => {
+  const { gw, store, callServerTool } = setup()
+  await approveAndRun(gw, store, 'themis__osint__lookup_host', {})
+  await approveAndRun(gw, store, 'themis__osint__lookup_host', {})
   expect(await gw.call('themis__osint__lookup_host', {})).toEqual({ kind: 'budget_exhausted' })
   expect(callServerTool).toHaveBeenCalledTimes(2)
 })
@@ -81,16 +96,16 @@ it('soft-fails: unreachable servers mean no tools; a throwing call is an error r
   const { gw, listServerTools } = setup()
   listServerTools.mockRejectedValueOnce(new Error('down'))
   expect(await gw.listTools()).toEqual([])
-  const { gw: gw2, callServerTool: call2 } = setup()
+  const { gw: gw2, store: store2, callServerTool: call2 } = setup()
   call2.mockRejectedValueOnce(new Error('boom'))
-  expect((await gw2.call('themis__osint__lookup_host', {})).kind).toBe('error')
+  expect((await approveAndRun(gw2, store2, 'themis__osint__lookup_host', {})).kind).toBe('error')
 })
 it('audits every call and result with redacted data', async () => {
   const { gw, store } = setup()
-  await gw.call('themis__osint__lookup_host', { q: 'AKIAIOSFODNN7EXAMPLE' })
+  await approveAndRun(gw, store, 'themis__osint__lookup_host', { q: 'AKIAIOSFODNN7EXAMPLE' })
   await gw.call('themis__osint__create_ticket', {}, { reason: 'r' })
   const events = store.listAudit('run-1')
-  expect(events.map((e) => e.kind)).toEqual(['tool_call', 'tool_result', 'tool_call', 'approval_requested'])
+  expect(events.map((e) => e.kind)).toEqual(['tool_call', 'approval_requested', 'approval_decided', 'tool_call', 'tool_result', 'tool_call', 'approval_requested'])
   expect(JSON.stringify(events)).not.toContain('AKIAIOSFODNN7EXAMPLE')
 })
 it('fails closed when the audit log cannot be written', async () => {

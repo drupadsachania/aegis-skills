@@ -9,7 +9,7 @@ import { redactSecrets } from './secrets'
 export const MAX_APPROVAL_REASON_CHARS = 1000
 
 export function newApprovalRequest(
-  input: { runId: string; serverId: string; tool: string; toolClass: 'write' | 'execute'; args: unknown; reason: string },
+  input: { runId: string; serverId: string; tool: string; toolClass: 'read' | 'write' | 'execute'; args: unknown; reason: string },
   now: string = new Date().toISOString(),
 ): ApprovalRequest {
   return {

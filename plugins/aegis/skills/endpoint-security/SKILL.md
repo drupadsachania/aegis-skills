@@ -19,6 +19,7 @@ metadata:
 - Purpose: Harden, monitor and respond on endpoints you manage, and validate that EDR controls actually work.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: disabling or evading security tooling on systems you do not administer, and building malware.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Secure endpoints against malware, credential theft, and execution-based attacks.

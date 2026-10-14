@@ -21,6 +21,7 @@ metadata:
 - Purpose: Design and review identity governance, authentication, privileged access and non-human identity controls.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: password cracking, credential harvesting or account takeover, and accessing accounts you are not authorised to administer.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Comprehensive IAM framework covering human identities, privileged access,

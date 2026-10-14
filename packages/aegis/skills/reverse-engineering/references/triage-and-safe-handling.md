@@ -71,9 +71,9 @@ pe = pefile.PE('<sample>')
 print(pe.get_imphash())   # imphash
 ```
 
-Cross-reference hashes:
-- **VirusTotal**: `https://www.virustotal.com/api/v3/files/<sha256>`
-- **MalwareBazaar**: `https://bazaar.abuse.ch/api/` (API search by hash)
+Cross-reference hashes (analyst-run, hash only, in the organisation's approved platform such as an
+enterprise VirusTotal or MalwareBazaar account). Never upload the sample to a public service, and the
+assistant does not perform the lookup.
 
 ---
 

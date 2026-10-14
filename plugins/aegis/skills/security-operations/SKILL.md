@@ -20,6 +20,7 @@ metadata:
 - Purpose: Run SOC operations from alert triage through incident response, metrics and compliance reporting.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: offensive actions, response actions on systems outside your authority, and disabling logging or covering tracks.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Guide a complete SOC operating cycle from daily alert triage to compliance reporting.

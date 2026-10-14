@@ -21,6 +21,7 @@ metadata:
 - Purpose: Analyse binaries and firmware to understand their behaviour, extract IOCs and support detection.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: cracking licences or DRM, building exploits, and modifying malware for reuse.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 A structured methodology for binary reverse engineering. Follow phases in order:

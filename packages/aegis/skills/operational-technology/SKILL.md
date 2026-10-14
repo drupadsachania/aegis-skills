@@ -20,6 +20,7 @@ metadata:
 - Purpose: Secure OT and ICS environments through asset discovery, risk assessment, segmentation and response planning.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: active scanning of, or changes to, live control systems without operator and safety approval, and any action that could affect physical safety or process availability.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 OT/ICS security is fundamentally different from IT security. Safety takes

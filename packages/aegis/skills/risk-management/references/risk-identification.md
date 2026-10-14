@@ -80,8 +80,7 @@ Stage 7: Risk analysis (risk scoring, treatment priority)
 
 ### CISA KEV Integration
 ```
-# Monitor CISA KEV catalogue
-curl https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+# Monitor the CISA KEV catalogue through the vulnerability platform's feed (operator-run)
 
 # For each KEV entry affecting your asset inventory:
 # 1. Immediate escalation if asset is in CDE or critical tier

@@ -97,7 +97,7 @@ function ThemisPage ({ paths, shots, stamp, stampLine }) {
       h(Sec, { id: 'governance', num: '03', title: 'Governance and approvals' },
         h('ul', { className: 'bullets' },
           h('li', null, 'Every external tool is classified read, write or execute.'),
-          h('li', null, 'Reads run automatically within a per-run call budget and timeout; secrets are redacted and the output is wrapped as untrusted data.'),
+          h('li', null, 'Every call, read included, waits for a person to approve it. An approved read runs within a per-run call budget and timeout; secrets are redacted and the output is wrapped as untrusted data.'),
           h('li', null, 'Writes and executes become approval requests. Only a human can approve: the dashboard\'s Approvals page, or your client\'s own MCP prompt. No tool, graph node or model output can approve.'),
           h('li', null, 'Every call, result and decision is written to the audit log.'),
           h('li', null, 'An unreachable tool server degrades to "no tools"; it never crashes a run.')),
@@ -110,7 +110,7 @@ function ThemisPage ({ paths, shots, stamp, stampLine }) {
         h('pre', { className: 'prov-code', tabIndex: 0, 'aria-label': 'Example version stamp' }, JSON.stringify(stamp, null, 2)),
         h('p', { className: 'prov-line' }, stampLine),
         h('p', null, 'Standalone reports end with that line and carry the stamp in their JSON export. In plugin mode the stamp is returned with each run payload and with the report. The stamp names the Aegis package installed next to Themis, so check it if you registered a different Aegis server separately.'),
-        h('p', null, 'The approval boundary sits at execution: the gateway runs a write or execute action only if its approval is approved and decided by a human, and only once. ',
+        h('p', null, 'The approval boundary sits at execution: the gateway runs an external call only if its approval is approved and decided by a human, and only once. ',
           h('a', { href: '/trust' }, 'Trust and data flow'), ' lists what runs where and how to verify it.')),
 
       h(Sec, { id: 'screenshots', num: '05', title: 'Screenshots' },

@@ -49,7 +49,9 @@ async function withTools(i: SkillAgentInput, deps: SkillAgentDeps): Promise<Skil
     tools: [fetchSkillPhaseTool, makeReadFindingsTool(i.priorResults), ...external],
     prompt: new SystemMessage(skillAgentSystemPrompt()),
   })
-  const out = await agent.invoke({ messages: [new HumanMessage(skillAgentUserMessage(i.subTask))] })
+  // Outbound sanitisation: the sub-task text goes to the model provider, so redact it first (gateway results are
+  // redacted by the gateway, and the local tools only return skill text and already-redacted findings).
+  const out = await agent.invoke({ messages: [new HumanMessage(redactSecrets(skillAgentUserMessage(i.subTask)))] })
   const messages: BaseMessage[] = out.messages ?? []
   let inputTokens = 0
   let outputTokens = 0

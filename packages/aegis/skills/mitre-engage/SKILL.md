@@ -21,6 +21,7 @@ metadata:
 - Purpose: Plan adversary engagement and deception activities with MITRE Engage inside environments you defend.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: engagement operations on infrastructure you do not control, and hack-back or other offensive action against adversary systems.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 ## Purpose
 

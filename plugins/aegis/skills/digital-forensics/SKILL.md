@@ -20,6 +20,7 @@ metadata:
 - Purpose: Acquire, preserve and analyse evidence to investigate incidents with a defensible chain of custody.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: accessing devices, accounts or data without legal authority, and anti-forensics or evidence tampering.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 Structured DFIR methodology following forensic soundness principles.
 Chain of custody must be established at evidence acquisition and maintained

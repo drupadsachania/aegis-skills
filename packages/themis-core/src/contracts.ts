@@ -42,7 +42,7 @@ export interface ApprovalRequest {
   runId: string
   serverId: string
   tool: string
-  toolClass: 'write' | 'execute'
+  toolClass: 'read' | 'write' | 'execute'
   args: unknown                  // already redacted
   reason: string
   status: 'pending' | 'approved' | 'rejected' | 'expired'

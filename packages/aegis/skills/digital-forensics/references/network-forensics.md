@@ -92,10 +92,9 @@ Known malicious JA3 hashes:
 | a0e9f5d64349fb13191bc781f81f42e1 | Go default TLS client |
 | 771,4866-4865-4867:23-65281-10-11-35-16 | Python requests library |
 
-```bash
-# ja3er lookup (community database)
-curl "https://ja3er.com/search/<ja3_hash>"
-```
+Match JA3 hashes against a fingerprint list your team keeps offline or in its approved threat-intel
+platform. Do not submit fingerprints from a live case to public lookup sites; the hash can reveal what you
+are investigating.
 
 ---
 

@@ -20,7 +20,7 @@ export function registerGatewayTools(server: McpServer, deps: PluginDeps) {
     })
 
   server.tool('themis_external_call',
-    'Call a governed external tool. Reads run immediately; writes/executes require human approval.',
+    'Propose a call to a governed external tool. Every call (read, write or execute) waits for a human approval before it runs.',
     { runId: z.string(), skill: z.string(), tool: z.string(), args: z.record(z.any()), reason: z.string().max(500).optional() },
     async ({ runId, skill, tool, args, reason }) => {
       try {

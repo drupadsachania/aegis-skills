@@ -5,9 +5,9 @@ Use during Phase 3 to identify cloud misconfigurations and publicly accessible c
 ## AWS Exposure Checks
 
 ```bash
-# List all public S3 buckets
-aws s3api list-buckets --query "Buckets[*].Name" --output text | \
-  xargs -I {} aws s3api get-bucket-acl --bucket {} 2>/dev/null
+# List all S3 buckets, then check the ACL of each one in turn
+aws s3api list-buckets --query "Buckets[*].Name" --output text
+aws s3api get-bucket-acl --bucket <bucket-name>
 
 # Find EC2 instances with public IPs
 aws ec2 describe-instances \
@@ -21,7 +21,7 @@ aws ec2 describe-security-groups \
 
 # Check for public RDS instances
 aws rds describe-db-instances \
-  --query "DBInstances[?PubliclyAccessible==\`true\`].{ID:DBInstanceIdentifier,Engine:Engine}" \
+  --query "DBInstances[?PubliclyAccessible].{ID:DBInstanceIdentifier,Engine:Engine}" \
   --output table
 ```
 

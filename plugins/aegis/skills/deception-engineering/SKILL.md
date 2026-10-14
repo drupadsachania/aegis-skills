@@ -20,6 +20,7 @@ metadata:
 - Purpose: Design, deploy and validate honeypots, honeytokens and deception signals inside environments you defend.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: deploying deception on networks you do not control, and luring, entrapping or hacking back against adversaries.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 ## Core Principle: Semantic Decision Model
 

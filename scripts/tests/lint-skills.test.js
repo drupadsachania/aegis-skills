@@ -3,7 +3,7 @@
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const { lintSkill, lintAll, checkScopeBlock, BUDGETS } = require('../lint-skills')
+const { lintSkill, lintAll, checkScopeBlock, checkNoNetwork, BUDGETS, NETWORK_LINE } = require('../lint-skills')
 const { migrateSkill } = require('../migrate-skill-frontmatter')
 const meta = require('aegis-skills/lib/skill-meta')
 
@@ -24,6 +24,7 @@ metadata:
 - Purpose: Test the linter.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: nothing real.
+${NETWORK_LINE}
 
 ## Phases
 
@@ -144,6 +145,7 @@ describe('checkScopeBlock', () => {
     '- Purpose: defensive mapping',
     '- Use only on systems you own or are explicitly authorized to assess.',
     '- Out of scope: unauthorized targets',
+    NETWORK_LINE,
     ''
   ].join('\n')
 
@@ -164,5 +166,40 @@ describe('checkScopeBlock', () => {
   })
   test('works with CRLF line endings', () => {
     expect(checkScopeBlock(GOOD.replace(/\n/g, '\r\n'))).toEqual([])
+  })
+})
+
+describe('no network or API calls', () => {
+  test('the scope section must carry the no-network line', () => {
+    const dir = makeSkill()
+    edit(dir, 'SKILL.md', s => s.replace(NETWORK_LINE + '\n', ''))
+    expect(errorsOf(dir)).toMatch(/no-network line/)
+  })
+
+  test('HTTP clients, API endpoints, API keys and uploads to outside services are rejected in references', () => {
+    const dir = makeSkill()
+    const bad = [
+      'curl https://feeds.example.org/list.json',
+      'requests.get(url)',
+      'See https://vendor.example.net/api/v3/files/abc',
+      'Header x-apikey: secret',
+      'Upload the sample to VirusTotal for a verdict.'
+    ]
+    fs.writeFileSync(path.join(dir, 'references', 'one.md'), '# One\n' + bad.join('\n') + '\n')
+    meta.syncTokens(dir)
+    const errors = errorsOf(dir)
+    for (const what of ['HTTP client command', 'HTTP client call in code', 'API endpoint URL', 'API key or token placeholder', 'upload data to an outside service']) {
+      expect(errors).toMatch(new RegExp(what))
+    }
+  })
+
+  test('operator commands for your own systems and plain mentions of services are allowed', () => {
+    const ok = [
+      'aws ec2 describe-instances --output table',
+      'nmap -sV 10.0.0.0/24',
+      'Look the hash up in the approved threat-intel platform (for example VirusTotal Enterprise).',
+      '| rex field=cs_uri_query "(?<token_id>[a-z0-9]{20})"'
+    ].join('\n')
+    expect(checkNoNetwork(ok, 'x.md')).toEqual([])
   })
 })

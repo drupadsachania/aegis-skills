@@ -20,6 +20,7 @@ metadata:
 - Purpose: Map adversary behaviour to MITRE ATT&CK to drive threat models, detections and control gap analysis.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: operational attack planning against real targets and step-by-step intrusion guidance.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 ## Purpose

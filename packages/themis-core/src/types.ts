@@ -53,7 +53,7 @@ export interface OrchestrateRequest {
 export interface McpApprovalRequest {
   serverId: string
   tool: string
-  toolClass: 'write' | 'execute'
+  toolClass: 'read' | 'write' | 'execute'
   reason: string
 }
 

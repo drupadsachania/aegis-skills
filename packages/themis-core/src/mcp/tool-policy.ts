@@ -1,9 +1,9 @@
 // Tool classification and call policy — deterministic, no LLM.
 //
-// Every external MCP tool is classified read | write | execute. Autonomous
-// sub-agents may only auto-invoke `read` tools, and only when the owning server
-// is configured to allow it. `write`/`execute` are never auto-invoked — they are
-// surfaced as approval requests for a human. Classification is conservative:
+// Every external MCP tool is classified read | write | execute. No class is ever
+// auto-invoked: every call is surfaced as an approval request for a human
+// (reads included, owner decision 2026-10-14). `write`/`execute` tools are only
+// offered when the server allows writes. Classification is conservative:
 // anything not clearly read-only is treated as write.
 
 import type { McpServerConfig } from './config'
@@ -55,18 +55,20 @@ export function classifyTool(tool: McpToolDescriptor): ToolClass {
 export type ToolDisposition = 'auto' | 'approval'
 
 /**
- * Decide how a classified tool may be used by an autonomous sub-agent:
- *  - 'auto'     : safe to invoke directly (read-only, server permits)
- *  - 'approval' : must be recorded as an approval request, never auto-invoked
+ * Decide how a classified tool may be used by an autonomous sub-agent. Owner decision 2026-10-14: nothing reaches
+ * an external API without a person saying yes, so every class (read included) is 'approval'. 'auto' stays in the
+ * type for compatibility with stored data and older callers, but is never returned.
  */
-export function dispositionFor(cls: ToolClass, server: McpServerConfig): ToolDisposition {
-  if (cls === 'read') return 'auto'
-  // write/execute: only ever reach a human-approval queue, and only if the
-  // server was explicitly configured to allow write at all.
+export function dispositionFor(_cls: ToolClass, _server: McpServerConfig): ToolDisposition {
   return 'approval'
 }
 
-/** Whether a server is even allowed to surface write/execute tools for approval. */
+/** Whether a server is even allowed to surface write/execute tools for approval. Read tools need no extra permission. */
 export function serverPermitsApproval(server: McpServerConfig): boolean {
   return server.allowWrite === true
+}
+
+/** Whether a tool of this class from this server may be offered at all (reads always; writes/executes only with allowWrite). */
+export function serverOffers(cls: ToolClass, server: McpServerConfig): boolean {
+  return cls === 'read' || serverPermitsApproval(server)
 }

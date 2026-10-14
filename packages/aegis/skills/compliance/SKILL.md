@@ -21,6 +21,7 @@ metadata:
 - Purpose: Prepare for audits by mapping, assessing and evidencing security controls against recognised standards.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: legal advice, certification decisions, and fabricating or altering audit evidence.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Multi-standard compliance workflow. Begin with scope definition to determine

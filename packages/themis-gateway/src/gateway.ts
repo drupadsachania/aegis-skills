@@ -1,12 +1,13 @@
 // createGateway — the governed path for every external MCP call, in both modes.
-//   read            → runs now: per-server budget, redaction, size cap, wrapped as untrusted
-//   write / execute → NEVER runs on the model's say-so: recorded as a pending approval;
-//                     executeApproved() runs it only after a human decision (contracts §6)
+//   every call (read, write, execute) → NEVER runs on the model's say-so: recorded as a pending
+//                     approval; executeApproved() runs it only after a human decision (contracts §6).
+//                     Owner decision 2026-10-14: reads too, so nothing reaches an external API unapproved.
+//   read results    → per-server budget, redaction, size cap, wrapped as untrusted
 // Every call, result and approval is written to the run's audit log; if the log
 // cannot be written the call fails closed. Unreachable servers degrade to no tools.
 import {
   auditEvent, canExecuteApproval, classifyTool, dispositionFor, loadMcpServers, newApprovalRequest,
-  redactSecrets, serverPermitsApproval, serversForSkill,
+  redactSecrets, serverOffers, serversForSkill,
   type AuditEvent, type McpServerConfig, type McpToolDescriptor, type ThemisStore,
 } from '@aegis-skills/themis-core'
 import { defaultConnector, type McpConnector } from './client'
@@ -95,7 +96,7 @@ export function createGateway(opts: GatewayOptions): Gateway {
       for (const d of descriptors) {
         const toolClass = classifyTool(d)
         const disposition = dispositionFor(toolClass, server)
-        if (disposition === 'approval' && !serverPermitsApproval(server)) continue   // omitted entirely
+        if (!serverOffers(toolClass, server)) continue   // write/execute without allowWrite: omitted entirely
         const name = governedName(server.id, d.name)
         if (map.has(name)) continue
         map.set(name, { server, tool: { name, serverId: server.id, tool: d.name, toolClass, disposition, description: d.description ?? d.name, inputSchema: d.inputSchema } })
@@ -120,22 +121,14 @@ export function createGateway(opts: GatewayOptions): Gateway {
         const callArgs = isRecord(args) ? args : {}
         audit('tool_call', { tool: name, toolClass: tool.toolClass, disposition: tool.disposition, args: callArgs })
 
-        if (tool.disposition === 'auto') {
-          const n = used.get(server.id) ?? 0
-          if (n >= server.maxCalls) {
-            audit('error', { tool: name, budgetExhausted: true, maxCalls: server.maxCalls })
-            return { kind: 'budget_exhausted' }
-          }
-          used.set(server.id, n + 1)
-          const outcome = await connector.callServerTool(server, tool.tool, callArgs)
-          const text = wrapUntrusted(server.id, tool.tool, outcome.ok, outcome.text)
-          audit('tool_result', { tool: name, ok: outcome.ok, chars: text.length })
-          return { kind: 'result', text }
+        if (tool.toolClass === 'read' && (used.get(server.id) ?? 0) >= server.maxCalls) {
+          audit('error', { tool: name, budgetExhausted: true, maxCalls: server.maxCalls })
+          return { kind: 'budget_exhausted' }
         }
 
         const approval = newApprovalRequest({
           runId, serverId: server.id, tool: tool.tool,
-          toolClass: tool.toolClass === 'execute' ? 'execute' : 'write',
+          toolClass: tool.toolClass,
           args: callArgs, reason: callOpts.reason ?? '',
         })
         store.putApproval(approval)
@@ -159,7 +152,15 @@ export function createGateway(opts: GatewayOptions): Gateway {
         const done = store.listAudit(runId).some((e) => e.kind === 'tool_result' && isRecord(e.data) && e.data.approvalId === approvalId)
         if (done) return deny('Approval was already executed.', { approvalId })
         const server = servers.find((s) => s.id === a.serverId)
-        if (!server || !serverPermitsApproval(server)) return deny('Server does not permit write actions for this skill.', { approvalId })
+        if (!server || !serverOffers(a.toolClass, server)) return deny('Server does not permit write actions for this skill.', { approvalId })
+        if (a.toolClass === 'read') {
+          const n = used.get(server.id) ?? 0
+          if (n >= server.maxCalls) {
+            audit('error', { approvalId, budgetExhausted: true, maxCalls: server.maxCalls })
+            return { kind: 'budget_exhausted' }
+          }
+          used.set(server.id, n + 1)
+        }
         const stored = isRecord(a.args) ? a.args : {}
         const args = rawArgs.get(approvalId) ?? (JSON.stringify(stored).includes('[REDACTED]') ? null : stored)
         if (!args) return deny('Original arguments are unavailable in this process; re-propose the action.', { approvalId })

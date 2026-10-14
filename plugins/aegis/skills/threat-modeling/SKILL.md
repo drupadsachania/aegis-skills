@@ -19,6 +19,7 @@ metadata:
 - Purpose: Systematically identify and mitigate design-level threats with STRIDE and PASTA.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: testing or exploiting the system being modelled; this skill produces analysis, not attacks.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 Produce a structured threat model for any system using STRIDE enumeration against a data flow diagram.
 
