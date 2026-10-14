@@ -42,9 +42,11 @@ Scan → Triage (CVSS + KEV + Asset Tier) → Assign (P0–P4) → Patch → Ver
 
 ## CISA KEV Integration
 
+Save the latest CISA KEV catalogue from
+`https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json`
+as `kev.json`, then list the entries that have a due date:
+
 ```bash
-# Download latest KEV catalogue
-curl -sS -o kev.json https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
 jq '.vulnerabilities[] | select(.dueDate != null) | {cveID, vendorProject, product, dueDate}' kev.json
 ```
 
