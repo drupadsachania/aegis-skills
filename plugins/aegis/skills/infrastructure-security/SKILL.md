@@ -19,6 +19,7 @@ metadata:
 - Purpose: Assess and harden configuration, patching and benchmark compliance for infrastructure you operate.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: scanning or changing infrastructure outside your authorised scope, and exploiting the weaknesses you find.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Systematically assess and harden infrastructure — servers, cloud workloads, containers,

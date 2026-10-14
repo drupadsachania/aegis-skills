@@ -43,5 +43,29 @@ export const MIGRATIONS: ReadonlyArray<{ version: number; sql: string }> = [
       CREATE INDEX approvals_run ON approvals (run_id, status);
     `,
   },
+  {
+    // Owner decision 2026-10-14: every external tool call, reads included, waits for a human approval,
+    // so an approval may now be for a 'read'. SQLite cannot alter a CHECK, so the table is rebuilt.
+    version: 2,
+    sql: `
+      CREATE TABLE approvals_v2 (
+        id          TEXT PRIMARY KEY,
+        run_id      TEXT NOT NULL,
+        server_id   TEXT NOT NULL,
+        tool        TEXT NOT NULL,
+        tool_class  TEXT NOT NULL CHECK (tool_class IN ('read', 'write', 'execute')),
+        args        TEXT NOT NULL CHECK (json_valid(args)),
+        reason      TEXT NOT NULL,
+        status      TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'expired')),
+        decided_by  TEXT CHECK (decided_by IS NULL OR decided_by = 'human'),
+        created_at  TEXT NOT NULL,
+        decided_at  TEXT
+      );
+      INSERT INTO approvals_v2 SELECT id, run_id, server_id, tool, tool_class, args, reason, status, decided_by, created_at, decided_at FROM approvals;
+      DROP TABLE approvals;
+      ALTER TABLE approvals_v2 RENAME TO approvals;
+      CREATE INDEX approvals_run ON approvals (run_id, status);
+    `,
+  },
 ]
-export const LATEST_SCHEMA_VERSION = 1
+export const LATEST_SCHEMA_VERSION = 2

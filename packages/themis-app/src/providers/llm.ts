@@ -53,9 +53,13 @@ export async function llm(req: LLMRequest): Promise<LLMResponse> {
   const provider = currentProvider() ?? resolveProvider()
   const modelName = modelFor(provider, req.tier, loadConfig())
   const model = chatModel(provider, req.tier, { maxTokens: req.maxTokens, temperature: req.temperature })
+  // Sanitise what leaves the machine, not only what comes back: the task text and any context in it are redacted
+  // before they reach a cloud (or local) model provider.
+  const systemPrompt = redactSecrets(req.systemPrompt)
+  const userMessage = redactSecrets(req.userMessage)
   const messages: BaseMessage[] = supportsSystemRole(modelName)
-    ? [new SystemMessage(req.systemPrompt), new HumanMessage(req.userMessage)]
-    : [new HumanMessage(`${req.systemPrompt}\n\n${req.userMessage}`)]
+    ? [new SystemMessage(systemPrompt), new HumanMessage(userMessage)]
+    : [new HumanMessage(`${systemPrompt}\n\n${userMessage}`)]
   const start = Date.now()
   let res
   try {

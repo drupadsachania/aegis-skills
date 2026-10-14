@@ -35,12 +35,12 @@
     {
       "id": "risk-prioritization",
       "file": "references/risk-prioritization.md",
-      "tokens": 706
+      "tokens": 714
     },
     {
       "id": "cve-exposure-management",
       "file": "references/cve-exposure-management.md",
-      "tokens": 1277
+      "tokens": 1315
     },
     {
       "id": "live-threat-intel",

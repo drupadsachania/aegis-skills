@@ -19,7 +19,9 @@ metadata:
 
 - Purpose: Run defensive security workflows under human-approved, audited tool use.
 - Use only on systems you own or are explicitly authorized to assess.
-- Out of scope: Acting on third-party systems without authorization; approving your own write or execute actions.
+- Out of scope: Acting on third-party systems without authorization; approving your own tool calls.
+- No network or API calls of your own: never use web fetch, a browser, shell network commands or any other API directly. The only external calls are proposals through `themis_external_call`, and every one waits for a human approval.
+- Redact secrets, credentials, personal data and samples from anything you put in a step output or a tool argument.
 
 ## The loop you MUST follow
 
@@ -47,7 +49,8 @@ reason about `decompose`, `fanout`, `guardrail` and `synthesise`.
 - Call `themis_external_list { runId, skill }`, then
   `themis_external_call { runId, skill, tool, args, reason }`.
 - Never call those servers directly. Only calls through `themis_external_call` are
-  budgeted, redacted and audited, and writes are human-approved.
+  budgeted, redacted and audited, and every call (read, write or execute) waits for a
+  human approval before anything runs.
 
 ## Honest boundary
 
@@ -56,6 +59,6 @@ reason about `decompose`, `fanout`, `guardrail` and `synthesise`.
 
 ## Never self-approve
 
-- A write or execute tool is approved by the human in your client's own prompt, or
+- Every external tool call is approved by the human in your client's own prompt, or
   handed back (`status: "human_handoff"`) for the human to run. Never attempt to
   approve it yourself, infer approval, or retry it to force it through.

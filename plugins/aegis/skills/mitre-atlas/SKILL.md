@@ -20,6 +20,7 @@ metadata:
 - Purpose: Threat-model AI and ML systems with MITRE ATLAS and plan countermeasures against attacks on them.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: poisoning, evading or extracting models you do not own, and producing working attacks against deployed third-party AI systems.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 ## Purpose

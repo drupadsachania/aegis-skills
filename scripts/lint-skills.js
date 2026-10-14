@@ -18,6 +18,19 @@ const ALLOWED_ENTRIES = new Set(['SKILL.md', 'skill.json', 'intel-state.json', '
 const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const SEMVER = /^\d+\.\d+\.\d+$/
 const AUTH_LINE = '- Use only on systems you own or are explicitly authorized to assess.'
+// Every skill states, in the same words, that the assistant itself never calls a network or API (owner decision 2026-10-14).
+const NETWORK_LINE = '- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.'
+// Text that would make, or invite the assistant to make, a network or API call, or to send data out. Checked in SKILL.md
+// and every reference file. Commands for the operator's own systems (aws, az, nmap...) are allowed; HTTP clients, API
+// endpoints, API-key headers and uploads to outside services are not.
+const NETWORK_PATTERNS = [
+  [/\b(curl|wget|Invoke-WebRequest|Invoke-RestMethod|DownloadString|DownloadFile)\b/i, 'an HTTP client command'],
+  [/\b(requests\.(get|post|put|delete)|urllib\.request|http\.client|axios\.|fetch\()/, 'an HTTP client call in code'],
+  [/https?:\/\/[^\s)`'"<>]*\/(api|rest)\//i, 'an API endpoint URL'],
+  [/(x-apikey|api[_-]?key\s*[:=]|Authorization:\s*Bearer)/i, 'an API key or token placeholder'],
+  [/<[A-Z_]*(API_KEY|TOKEN)[A-Z_]*>/, 'an API key or token placeholder'],
+  [/\b(upload|submit)\b[^.\n]{0,40}\b(to|on)\b[^.\n]{0,20}\b(VirusTotal|MalwareBazaar|Hybrid Analysis|ANY\.RUN|urlscan|Joe Sandbox|public sandbox)/i, 'an instruction to upload data to an outside service']
+]
 
 /**
  * The one implementation of the scope rule: returns the problems found in the
@@ -34,6 +47,16 @@ function checkScopeBlock (body) {
   if (!sec.some(l => /^- Purpose: \S/.test(l))) problems.push('scope section needs "- Purpose: ..."')
   if (!sec.includes(AUTH_LINE)) problems.push(`scope section needs "${AUTH_LINE}"`)
   if (!sec.some(l => /^- Out of scope: \S/.test(l))) problems.push('scope section needs "- Out of scope: ..."')
+  if (!sec.includes(NETWORK_LINE)) problems.push('scope section needs the no-network line (NETWORK_LINE in scripts/lint-skills.js)')
+  return problems
+}
+
+/** Problems for any line of `text` that matches a NETWORK_PATTERNS rule. `file` labels the message. */
+function checkNoNetwork (text, file) {
+  const problems = []
+  text.split('\n').forEach((line, i) => {
+    for (const [re, what] of NETWORK_PATTERNS) if (re.test(line)) problems.push(`${file}:${i + 1}: ${what} (skills must not make or invite network/API calls)`)
+  })
   return problems
 }
 
@@ -107,6 +130,13 @@ function lintSkill (dir) {
   }
 
   for (const p of checkScopeBlock(body)) err(p)
+  for (const p of checkNoNetwork(body, 'SKILL.md')) err(p)
+  const refDir = path.join(dir, 'references')
+  if (fs.existsSync(refDir)) {
+    for (const f of fs.readdirSync(refDir).filter(f => f.endsWith('.md'))) {
+      for (const p of checkNoNetwork(fs.readFileSync(path.join(refDir, f), 'utf8'), `references/${f}`)) err(p)
+    }
+  }
   return [...new Set(errors)]
 }
 
@@ -131,4 +161,4 @@ function main () {
 
 if (require.main === module) main()
 
-module.exports = { lintSkill, lintAll, checkScopeBlock, BUDGETS }
+module.exports = { lintSkill, lintAll, checkScopeBlock, checkNoNetwork, BUDGETS, AUTH_LINE, NETWORK_LINE }

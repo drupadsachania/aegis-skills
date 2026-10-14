@@ -8,7 +8,7 @@ Source and version: ATLAS data version 2026.09 (modified 2026-09-15), read from 
 
 | Asset | Why it matters |
 |---|---|
-| Approval decisions | They are the only gate between a model's proposal and a write or execute action |
+| Approval decisions | They are the only gate between a model's proposal and any external tool call (read, write or execute) |
 | The audit log and run state in `~/.themis/themis.db` | Evidence of what the agent did |
 | Credentials and tokens for external MCP servers, and secrets in task text | Disclosure would give an attacker access elsewhere |
 | Reports and findings | Users act on them |

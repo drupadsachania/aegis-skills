@@ -49,7 +49,7 @@ CONTAIN (within 15 minutes):
 1. Revoke compromised API key immediately across all ML platforms:
    - Vertex AI: gcloud iam service-accounts keys delete <KEY_ID>
    - SageMaker: aws iam delete-access-key --access-key-id <KEY_ID>
-   - Hugging Face: curl -X DELETE https://huggingface.co/api/orgs/ORG/tokens/TOKEN_NAME
+   - Hugging Face: Organization settings → Access Tokens → revoke the token
    - OpenAI: Platform → API Keys → Revoke
 
 2. Rotate ALL sibling credentials (same service account family)

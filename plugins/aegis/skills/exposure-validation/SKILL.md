@@ -24,6 +24,7 @@ metadata:
 - Purpose: Prove which exposures are real, exploitable and closed, using the least invasive test under recorded approval.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: any test without written authorization, explicit scope and named-human approval, and persistence, credential theft or lateral movement beyond what the test requires.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 A scanner finding is a hypothesis. This skill turns hypotheses into evidence: whether
 the vulnerability actually applies, whether it is reachable, whether it can be

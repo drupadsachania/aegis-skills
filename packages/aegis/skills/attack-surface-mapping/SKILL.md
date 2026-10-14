@@ -19,6 +19,7 @@ metadata:
 - Purpose: Inventory and prioritise your organisation's own internet-facing, internal and cloud exposure so it can be reduced.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: scanning or enumerating assets you do not own or have written permission to assess, and any credential attack or exploitation.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Enumerate and prioritise an organisation's exploitable attack surface.

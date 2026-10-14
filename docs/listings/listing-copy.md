@@ -54,7 +54,7 @@ The hosted Aegis MCP server has three read-only tools (`list_skills`, `get_skill
 
 ### Themis
 
-Themis runs security workflows on your own AI assistant, with the controls a security team expects. It plans a task into steps, calls the security tools you connect, and writes an audit trail of every step. Reads run automatically. Anything that writes or executes becomes a proposal that only a human can approve, and a model cannot approve its own actions.
+Themis runs security workflows on your own AI assistant, with the controls a security team expects. It plans a task into steps, proposes calls to the security tools you connect, and writes an audit trail of every step. Every tool call, read included, is a proposal that only a human can approve, and a model cannot approve its own actions.
 
 Tool output is redacted and marked as untrusted before the model sees it, each tool server has a call budget, and each skill gets a default-deny tool allowlist. The Themis plugin uses the AI assistant you already have, so it needs no API key. A separate local app offers a dashboard for approvals, the audit log and reports, and keeps its data on your machine.
 

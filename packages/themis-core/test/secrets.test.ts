@@ -86,6 +86,48 @@ describe('redactSecrets', () => {
     expect(redactSecrets(text)).toBe(text)
   })
 
+  // Fixtures are assembled at run time so this file never holds a credential-shaped literal.
+  test.each([
+    ['JWT', ['eyJhbGciOiJIUzI1NiJ9', 'eyJzdWIiOiIxMjM0NTY3ODkwIn0', 'SflKxwRJSMeKKF2QT4fwpMeJf36P'].join('.')],
+    ['OpenAI-style key', 'sk-' + 'A1b2C3d4'.repeat(4)],
+    ['Anthropic-style key', 'sk-ant-' + 'api03_' + 'x9Y8z7W6'.repeat(4)],
+    ['Google API key', 'AIza' + 'S'.repeat(35)],
+    ['Stripe key', ['sk', 'live', 'Q'.repeat(24)].join('_')],
+    ['Slack token', 'xox' + 'b-' + '1234567890-abcdefghij'],
+    ['GitHub fine-grained PAT', 'github_pat_' + 'Z'.repeat(30)],
+  ])('redacts a %s', (_label, secret) => {
+    const result = redactSecrets(`value: ${secret} end`)
+    expect(result).not.toContain(secret)
+    expect(result).toContain('[REDACTED]')
+  })
+
+  test('redacts a Bearer token and keeps the scheme word', () => {
+    const tok = 'Q'.repeat(12) + '.' + 'r'.repeat(12)
+    const result = redactSecrets(`Authorization: Bearer ${tok}`)
+    expect(result).not.toContain(tok)
+    expect(result).toContain('Bearer [REDACTED]')
+  })
+
+  test('redacts credentials embedded in a URL but keeps the host', () => {
+    const result = redactSecrets('postgres://svc_user:' + 'Hunter2Hunter2' + '@db.internal:5432/app')
+    expect(result).not.toContain('Hunter2Hunter2')
+    expect(result).toContain('postgres://[REDACTED]@db.internal:5432/app')
+  })
+
+  test('redacts Azure account keys and SAS signatures', () => {
+    const key = 'K'.repeat(40) + '=='
+    const r1 = redactSecrets(`DefaultEndpointsProtocol=https;AccountName=acct;AccountKey=${key};EndpointSuffix=core.windows.net`)
+    expect(r1).not.toContain(key)
+    expect(r1).toContain('AccountKey=[REDACTED]')
+    const sig = 'abc' + 'D'.repeat(30) + '%3D'
+    expect(redactSecrets(`https://acct.blob.core.windows.net/c/f?sv=2024&sig=${sig}`)).not.toContain(sig)
+  })
+
+  test('leaves hashes, IPs, hostnames and CVE ids alone (they are analysis data, not secrets)', () => {
+    const text = 'SHA256 ' + 'a'.repeat(64) + ' seen on 10.0.0.5 (web-01.corp) exploiting CVE-2024-3400'
+    expect(redactSecrets(text)).toBe(text)
+  })
+
   test('redacts multiple secrets in same string', () => {
     const awsKey = 'AKIAIOSFODNN7EXAMPLE'
     const email = 'user@example.com'

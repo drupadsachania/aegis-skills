@@ -27,7 +27,7 @@ export type ProviderId = 'anthropic' | 'openai' | 'google' | 'local'
 export type RunStatus = 'running' | 'awaiting_approval' | 'completed' | 'failed'
 export interface RunSummary { runId: string; task: string; status: RunStatus; step: string; createdAt: string; updatedAt: string; pendingApprovals: number; error: string | null }
 export interface ApprovalView {
-  id: string; runId: string; serverId: string; tool: string; toolClass: 'write' | 'execute'; args: unknown; reason: string
+  id: string; runId: string; serverId: string; tool: string; toolClass: 'read' | 'write' | 'execute'; args: unknown; reason: string
   status: 'pending' | 'approved' | 'rejected' | 'expired'; decidedBy: 'human' | null; createdAt: string; decidedAt: string | null
   execution: 'not_run' | 'executed' | 'failed' | 'needs_reproposal' | 'not_executed'
   argsInMemory: boolean; argsRedacted: boolean; willNeedReproposal: boolean

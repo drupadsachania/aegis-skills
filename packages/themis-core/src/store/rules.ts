@@ -1,6 +1,6 @@
 import type { ApprovalRequest, RunState } from '../contracts'
 
-const TOOL_CLASSES = new Set(['write', 'execute'])
+const TOOL_CLASSES = new Set(['read', 'write', 'execute'])
 
 export function assertRun(run: RunState): void {
   if (!run || typeof run.runId !== 'string' || run.runId.length === 0) throw new Error('RunState.runId is required')
@@ -11,7 +11,7 @@ export function assertNewApproval(a: ApprovalRequest): void {
   if (a.status !== 'pending' || a.decidedBy !== null || a.decidedAt !== null) {
     throw new Error('putApproval only records new pending requests; decisions go through decideApproval')
   }
-  if (!TOOL_CLASSES.has(a.toolClass)) throw new Error('ApprovalRequest.toolClass must be write or execute')
+  if (!TOOL_CLASSES.has(a.toolClass)) throw new Error('ApprovalRequest.toolClass must be read, write or execute')
 }
 
 export function assertDecision(d: string): void {

@@ -34,7 +34,7 @@ const INTEL_STEPS = [
 
 const TRUST = [
   { n: '01', label: 'No hosted inference', desc: 'The website never calls a model. Prompts and zips are static files; the hosted MCP only serves skill text. Each path\'s data flow is written out and checkable.', href: '/trust', hrefLabel: 'Trust and data flow' },
-  { n: '02', label: 'Human-approved actions', desc: 'Themis classifies every external tool as read, write or execute. Writes and executes wait for a person, never the model.' },
+  { n: '02', label: 'Human-approved actions', desc: 'Themis classifies every external tool as read, write or execute. Every call waits for a person to approve it, never the model.' },
   { n: '03', label: 'Scoped by design', desc: 'Every skill states its defensive purpose and is for systems you own or are authorized to assess.' },
   { n: '04', label: 'Open and portable', desc: 'Apache-2.0 OR MIT. Markdown and JSON you can read, fork and run anywhere.' }
 ]

@@ -379,3 +379,11 @@ Tasks B0-B5 done on `restructure` (nothing pushed, no tags, no publish, no PR; B
 ## 2026-10-13: attribution moved to the individual maintainer
 
 Owner decision (supersedes 2026-10-12 "copyright holder is Kairos Foundation"): Aegis and Themis are an independent project. The copyright holder, package `author` fields, plugin and marketplace owner, listing publisher and website footer now name the maintainer, Drupad Sachania. Terms of Service replaced with v1.4 (individual-maintainer draft, governing law India). The `support@` and `privacy@kairos-foundation.org` addresses stay as the contact aliases; "Kairos" also remains the internal name of the shared design tokens. The Terms say the domain is a project label, not an incorporated entity.
+
+## 2026-10-14: no network or API calls from skills or the model; Themis sanitisation
+
+Owner direction: skills may handle highly sensitive data, so neither the skills nor the AI that runs them may call an API, in Aegis or Themis, local or not.
+
+- Aegis: every SKILL.md scope section now carries the no-network line (`NETWORK_LINE` in `scripts/lint-skills.js`), and the linter fails on HTTP clients, API endpoint URLs, API-key placeholders and instructions to upload data to outside services, in SKILL.md and every reference. Third-party lookups (VirusTotal, MalwareBazaar, HIBP, ja3er, NVD/KEV, Shodan, Hugging Face) became operator-run, hash-only steps in the organisation's approved platform, with "never upload samples" warnings. Commands for the operator's own systems (aws, az, nmap...) stay as human-run reference (owner choice).
+- Themis: prompts are now redacted before they reach the model provider (`llm()` and the tool-using skill agent), the redactor covers JWTs, Bearer tokens, URL credentials, OpenAI/Anthropic/Google/Stripe/Slack/GitHub keys and Azure keys/SAS, and every external tool call, reads included, waits for a human approval (owner choice). Store schema v2 lets an approval be a `read`; v1 databases migrate in place.
+- Not changed: Themis still sends the (redacted) task to the configured model provider, which is how it works; use a local model to keep everything on the machine.

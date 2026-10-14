@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { createMemoryStore, openStore, themisHome } from '../src/store'
+import { MIGRATIONS } from '../src/store/schema'
 import { newApprovalRequest } from '../src/approvals'
 import { auditEvent } from '../src/audit-log'
 import { startRun } from '../src/workflow'
@@ -108,6 +109,27 @@ describe('openStore on disk', () => {
       expect(() => raw.exec("UPDATE audit_events SET kind = 'error'")).toThrow(/append-only/)
       expect(() => raw.exec('DELETE FROM audit_events')).toThrow(/append-only/)
     } finally { raw.close() }
+  })
+  it('migrates a v1 database (approvals limited to write/execute) to v2, keeping rows and accepting read approvals', () => {
+    const file = path.join(dir, 'themis.db')
+    // Build a genuine v1 database: only the first migration, plus one existing approval.
+    const raw = new (sqlite().DatabaseSync)(file)
+    raw.exec('CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)')
+    raw.exec(MIGRATIONS[0].sql)
+    raw.exec("INSERT INTO schema_migrations (version, applied_at) VALUES (1, 'x')")
+    raw.exec(`INSERT INTO approvals (id, run_id, server_id, tool, tool_class, args, reason, status, created_at)
+              VALUES ('old-1', 'run-1', 'osint', 'create_ticket', 'write', '{}', 'r', 'pending', '2026-10-01T00:00:00Z')`)
+    expect(() => raw.exec(`INSERT INTO approvals (id, run_id, server_id, tool, tool_class, args, reason, status, created_at)
+              VALUES ('x', 'run-1', 'osint', 'lookup', 'read', '{}', 'r', 'pending', 'x')`)).toThrow()
+    raw.close()
+
+    const s = openStore(file)
+    try {
+      expect(s.getApproval('old-1')).toMatchObject({ toolClass: 'write', status: 'pending' })
+      const read = newApprovalRequest({ runId: 'run-1', serverId: 'osint', tool: 'lookup_host', toolClass: 'read', args: {}, reason: 'resolve' })
+      s.putApproval(read)
+      expect(s.getApproval(read.id)).toMatchObject({ toolClass: 'read', status: 'pending' })
+    } finally { s.close() }
   })
   it('refuses a database written by a newer schema', () => {
     const file = path.join(dir, 'themis.db')

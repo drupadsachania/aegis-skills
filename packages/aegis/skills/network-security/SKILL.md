@@ -19,6 +19,7 @@ metadata:
 - Purpose: Review segmentation, traffic, firewall rules and hardening to shrink your network attack surface.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: scanning, intercepting or disrupting networks you are not authorised to assess, and denial-of-service testing.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Assess and harden the network attack surface. Use this skill to enumerate network assets,

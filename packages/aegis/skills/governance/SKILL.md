@@ -21,6 +21,7 @@ metadata:
 - Purpose: Design and run a security governance programme: policies, maturity, metrics and third-party oversight.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: legal or regulatory advice, and testing a vendor's systems directly without their agreement.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Security governance programme design covering the full lifecycle from policy

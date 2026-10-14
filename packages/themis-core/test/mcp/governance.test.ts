@@ -11,6 +11,7 @@ import {
   classifyTool,
   dispositionFor,
   serverPermitsApproval,
+  serverOffers,
   type McpToolDescriptor,
 } from '../../src/mcp/tool-policy'
 
@@ -102,13 +103,19 @@ describe('classifyTool (conservative classification)', () => {
 })
 
 describe('dispositionFor / serverPermitsApproval', () => {
-  it('read tools are auto, write/execute require approval', () => {
-    expect(dispositionFor('read', server())).toBe('auto')
-    expect(dispositionFor('write', server())).toBe('approval')
-    expect(dispositionFor('execute', server())).toBe('approval')
+  it('every tool class requires a human approval, reads included (nothing is auto-invoked)', () => {
+    for (const cls of ['read', 'write', 'execute'] as const) {
+      expect(dispositionFor(cls, server())).toBe('approval')
+      expect(dispositionFor(cls, server({ allowWrite: true }))).toBe('approval')
+    }
   })
   it('a server only permits write/execute surfacing when it opted in', () => {
     expect(serverPermitsApproval(server({ allowWrite: false }))).toBe(false)
     expect(serverPermitsApproval(server({ allowWrite: true }))).toBe(true)
+  })
+  it('read tools are always offered (for approval); write/execute only with allowWrite', () => {
+    expect(serverOffers('read', server({ allowWrite: false }))).toBe(true)
+    expect(serverOffers('write', server({ allowWrite: false }))).toBe(false)
+    expect(serverOffers('execute', server({ allowWrite: true }))).toBe(true)
   })
 })

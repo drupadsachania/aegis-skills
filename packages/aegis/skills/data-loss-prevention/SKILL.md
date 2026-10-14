@@ -23,6 +23,7 @@ metadata:
 - Purpose: Design controls that detect and stop sensitive data leaving your estate across every layer.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: covert monitoring of individuals beyond lawful, disclosed policy, and techniques for exfiltrating data or evading DLP.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Stop sensitive data leaving the organisation across **every** channel — not just email

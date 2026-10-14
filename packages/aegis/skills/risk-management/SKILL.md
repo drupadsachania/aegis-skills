@@ -21,6 +21,7 @@ metadata:
 - Purpose: Identify, assess, treat and report information-security risk, including FAIR quantification.
 - Use only on systems you own or are explicitly authorized to assess.
 - Out of scope: financial, legal or insurance advice; risk acceptance decisions stay with accountable owners.
+- No network or API calls by the assistant: it never makes network requests, calls APIs or contacts outside services. Commands here are for a human operator to review and run. Redact secrets, credentials, personal data and samples before sharing anything.
 
 
 Threat-informed risk management methodology. Begin with risk identification

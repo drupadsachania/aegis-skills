@@ -110,7 +110,7 @@ Give Themis a task such as "validate exposure to CVE-2026-12345 on our VPN gatew
 
 Governance is enforced in code, not by the model:
 
-- External tools are classified read, write or execute. Reads run within a call budget; writes and executes become approval requests that only a human can approve.
+- External tools are classified read, write or execute. Every call, read included, becomes an approval request that only a human can approve; approved reads also run within a call budget.
 - Access is default-deny: a server is reachable only by the skills in its `allowedSkills`.
 - Secrets are redacted, tool output is size-capped and wrapped as untrusted, and every step, call and decision goes to a local audit log in `~/.themis`.
 - In plugin mode, tools you connect directly to your assistant bypass Themis and are not governed.
@@ -139,7 +139,7 @@ Read more: [Themis docs](https://aegis-skills.vercel.app/docs/themis) and [`docs
 - **CI on every change.** Tests run on Ubuntu, macOS and Windows with Node 24, plus lint, dependency and layout guards, a production site build, and install smoke tests of each package. Releases are published by a tag-driven workflow with provenance, not from a laptop.
 - **Skill content is refreshed monthly.** Every flattened prompt is stamped with the date of its intel.
 - **Dependencies are pinned and watched.** GitHub Actions are pinned to full commit SHAs and kept current by Dependabot.
-- **Defaults are conservative.** Aegis never calls a model. Themis denies tool access by default and only a human can approve a write or execute.
+- **Defaults are conservative.** Aegis never calls a model. Themis denies tool access by default, a human approves every external call, and prompts are redacted before they reach a model provider. Skills never make network or API calls themselves.
 
 Found a bug or a skill that is out of date? [Open an issue](https://github.com/drupadsachania/aegis-skills/issues). For a vulnerability, use [private reporting](https://github.com/drupadsachania/aegis-skills/security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md).
 

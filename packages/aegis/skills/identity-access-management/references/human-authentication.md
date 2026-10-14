@@ -119,12 +119,13 @@ NIST SP 800-63B recommendations:
   Complexity rules:    REMOVE mandatory complexity rules (they don't improve security)
   Expiry:              NO mandatory rotation unless evidence of compromise
   History:             Prohibit last 5 passwords
-  Breach check:        Check against HaveIBeenPwned (HIBP) API on creation
+  Breach check:        Check against a breached-password list at creation
 
-  HIBP API check:
-  k1 = SHA1(password)[:5]  # k-anonymity model — send only first 5 chars
-  curl https://api.pwnedpasswords.com/range/<k1>
-  # Response: list of suffixes; check if full SHA1 appears → reject if so
+  Breach-list check (built into the identity platform, never run by the assistant):
+  Prefer an offline copy of the Pwned Passwords hash list held by the identity
+  team. If the platform uses the online k-anonymity range lookup instead, only the
+  first 5 characters of SHA-1(password) leave the system and the full hash is
+  compared locally; reject the password if it appears.
 ```
 
 ---

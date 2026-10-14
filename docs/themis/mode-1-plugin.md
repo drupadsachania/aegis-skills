@@ -85,12 +85,12 @@ In Claude Code the plugin also installs the `themis-orchestrator` skill, which t
 
 Register external MCP servers with Themis (see [Configuration](./configuration.md)) and they appear as `themis__<server>__<tool>`.
 
-- Reads run immediately, within a per-server call budget and timeout. The output is redacted and wrapped as untrusted data, and the call is audited.
-- Writes and executes return an approval request instead of running.
+- Every call, read included, returns an approval request instead of running. Nothing reaches an external API until you approve that call.
+- An approved read runs within a per-server call budget and timeout. The output is redacted and wrapped as untrusted data, and the call is audited.
 
 ## Approvals
 
-When a write or execute call needs approval, Themis asks you through MCP elicitation, which is your client's own prompt, if the client supports it. Your answer is the only thing that can approve the action.
+When a call needs approval, Themis asks you through MCP elicitation, which is your client's own prompt, if the client supports it. Your answer is the only thing that can approve the action.
 
 If your client does not support elicitation, Themis never runs the action. It returns `human_handoff` with the proposed action, and you run it yourself with your assistant's own permission-gated tools. The approval stays pending. See [Governance](./governance.md).
 

@@ -8,8 +8,10 @@ Every external tool is classified as `read`, `write` or `execute` before anyone 
 
 | Class | Disposition |
 |---|---|
-| `read` | Runs automatically, within the limits below. |
-| `write`, `execute` | Never run on a model's say-so. Each call becomes an approval request. |
+| `read` | Never runs on a model's say-so. Each call becomes an approval request; once approved it runs within the limits below. |
+| `write`, `execute` | Never run on a model's say-so. Each call becomes an approval request, and these tools are offered only when the server opted in with `allowWrite`. |
+
+No class runs automatically (owner decision, 2026-10-14): nothing reaches an external API until a person approves the specific call.
 
 ## Approval lifecycle
 

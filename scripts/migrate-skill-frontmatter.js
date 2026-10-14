@@ -18,7 +18,7 @@ const meta = require('aegis-skills/lib/skill-meta')
 const { familyOf } = require('aegis-skills/mcp/skill-families')
 
 const ROOT = path.join(__dirname, '..')
-const AUTH_LINE = '- Use only on systems you own or are explicitly authorized to assess.'
+const { AUTH_LINE, NETWORK_LINE } = require('./lint-skills')
 
 function parseArgs (argv) {
   const a = {
@@ -69,7 +69,7 @@ function renderFrontmatter ({ name, description, version, family }) {
 
 function insertScope (body, entry) {
   if (/^## Scope and authorization\s*$/m.test(body)) return body
-  const section = ['## Scope and authorization', '', `- Purpose: ${entry.purpose}`, AUTH_LINE, `- Out of scope: ${entry.outOfScope}`, ''].join('\n')
+  const section = ['## Scope and authorization', '', `- Purpose: ${entry.purpose}`, AUTH_LINE, `- Out of scope: ${entry.outOfScope}`, NETWORK_LINE, ''].join('\n')
   const lines = body.split('\n')
   const h1 = lines.findIndex(l => /^# /.test(l))
   if (h1 === -1) return section + '\n' + body

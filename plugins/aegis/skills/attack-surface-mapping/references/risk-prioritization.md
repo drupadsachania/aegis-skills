@@ -49,4 +49,4 @@ After initial remediation, establish ongoing exposure monitoring:
 | Cloud misconfiguration | Prowler / AWS SecurityHub | Daily |
 | New CVE matching exposed software versions | Tenable / Qualys + CISA KEV | Daily |
 | Certificate expiry monitoring | cert-manager / monitoring platform | Weekly |
-| Dark web / credential exposure | HaveIBeenPwned API, threat intel | Weekly |
+| Dark web / credential exposure | HaveIBeenPwned domain monitoring (operator account), threat intel | Weekly |
