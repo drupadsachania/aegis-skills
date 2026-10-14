@@ -1,0 +1,129 @@
+{
+  "osk": "1.1",
+  "name": "security-operations",
+  "version": "1.1.0",
+  "description": "Full security operations workflow covering the complete SOC operating model — from alert triage through threat intelligence, vulnerability management, incident detection, incident response, post-incident review, metrics, and compliance reporting. Designed for SOC analysts, security engineers, and security managers running operational security programmes.",
+  "family": "response",
+  "frameworks": [
+    "mitre-attack",
+    "nist-csf",
+    "sans-incident-response",
+    "iso-27035"
+  ],
+  "tags": [
+    "security",
+    "soc",
+    "operations",
+    "incident-response",
+    "threat-intelligence",
+    "vulnerability-management",
+    "metrics",
+    "compliance"
+  ],
+  "phases": [
+    {
+      "id": "alert-triage",
+      "file": "references/alert-triage.md",
+      "tokens": 568
+    },
+    {
+      "id": "threat-intelligence",
+      "file": "references/threat-intelligence.md",
+      "tokens": 589
+    },
+    {
+      "id": "vulnerability-management",
+      "file": "references/vulnerability-management.md",
+      "tokens": 921
+    },
+    {
+      "id": "incident-detection",
+      "file": "references/incident-detection.md",
+      "tokens": 759
+    },
+    {
+      "id": "incident-response",
+      "file": "references/incident-response.md",
+      "tokens": 750
+    },
+    {
+      "id": "post-incident-review",
+      "file": "references/post-incident-review.md",
+      "tokens": 748
+    },
+    {
+      "id": "security-metrics",
+      "file": "references/security-metrics.md",
+      "tokens": 793
+    },
+    {
+      "id": "compliance-reporting",
+      "file": "references/compliance-reporting.md",
+      "tokens": 846
+    },
+    {
+      "id": "detection-validation",
+      "file": "references/detection-validation.md",
+      "tokens": 1303
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 782,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed",
+      "cisa-advisories",
+      "isac-feeds"
+    ],
+    "red-team": true
+  },
+  "self-learning": {
+    "update-frequency": "daily",
+    "sources": [
+      "mitre-attack-stix",
+      "nvd-cve-feed",
+      "cisa-kev",
+      "cisa-advisories",
+      "isac-feeds"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 30,
+    "coverage-gaps": [
+      "Dominant themes: ransomware (x30), leak-site (x9), extortion (x6) — confirm controls address the recurring mechanism, not just individual incidents"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 32,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "hybrid",
+      "ot",
+      "remote-workforce"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "critical-infrastructure",
+      "technology",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "soc",
+      "detection",
+      "incident-response",
+      "threat-intelligence",
+      "vulnerability-management",
+      "compliance"
+    ]
+  }
+}

@@ -7,8 +7,8 @@
   },
   "plugins": [
     {
-      "name": "aegis",
-      "source": "./packages/aegis",
+      "name": "aegis-skills",
+      "source": "./plugins/aegis",
       "version": "1.5.0",
       "description": "24 defensive cybersecurity Agent Skills and the hosted read-only Aegis MCP server.",
       "category": "security",

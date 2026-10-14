@@ -163,8 +163,8 @@ az keyvault secret set --vault-name MyVault --name db-password --value <value>
 # Managed Identity access (no credentials needed in app)
 from azure.identity import ManagedIdentityCredential
 from azure.keyvault.secrets import SecretClient
-client = SecretClient(vault_url="https://MyVault.vault.azure.net/",
-                      credential=ManagedIdentityCredential())
+# VAULT_URL is your vault's URI from the portal
+client = SecretClient(vault_url=VAULT_URL, credential=ManagedIdentityCredential())
 secret = client.get_secret("db-password")
 ```
 

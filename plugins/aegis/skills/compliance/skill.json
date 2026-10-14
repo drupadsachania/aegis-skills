@@ -1,0 +1,102 @@
+{
+  "osk": "1.1",
+  "name": "compliance",
+  "version": "1.1.0",
+  "description": "End-to-end security compliance workflow covering scope definition, regulatory mapping, control assessment, evidence collection, and remediation roadmap. Supports SOC 2, ISO 27001:2022, PCI-DSS v4.0, HIPAA, GDPR, NIST CSF 2.0, and CIS Controls v8. Triggers for: compliance audit preparation, control gap assessment, evidence collection, regulatory mapping, or remediation planning.",
+  "family": "governance",
+  "frameworks": [
+    "nist-csf",
+    "cis-controls",
+    "iso-27001",
+    "pci-dss"
+  ],
+  "tags": [
+    "security",
+    "compliance",
+    "audit",
+    "soc2",
+    "iso27001",
+    "pci-dss",
+    "hipaa",
+    "gdpr",
+    "nist-csf"
+  ],
+  "phases": [
+    {
+      "id": "scope-definition",
+      "file": "references/scope-definition.md",
+      "tokens": 1234
+    },
+    {
+      "id": "standard-mapping",
+      "file": "references/standard-mapping.md",
+      "tokens": 1654
+    },
+    {
+      "id": "control-assessment",
+      "file": "references/control-assessment.md",
+      "tokens": 1494
+    },
+    {
+      "id": "evidence-collection",
+      "file": "references/evidence-collection.md",
+      "tokens": 1319
+    },
+    {
+      "id": "remediation-roadmap",
+      "file": "references/remediation-roadmap.md",
+      "tokens": 1239
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 184,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "nist-csf",
+      "cis-controls"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "aicpa-tsc",
+      "iso-27001-2022",
+      "pci-ssc",
+      "nist-csf-2"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [],
+    "last-intel-sync": "2026-08-18",
+    "intel-window-days": 7,
+    "items-routed": 1,
+    "teardowns-routed": 0
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "e-commerce",
+      "saas-providers",
+      "government"
+    ],
+    "attack-surface-tags": [
+      "compliance",
+      "audit",
+      "data-protection",
+      "access-control",
+      "encryption"
+    ]
+  }
+}

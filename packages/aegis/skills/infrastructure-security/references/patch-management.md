@@ -44,8 +44,8 @@ Scan → Triage (CVSS + KEV + Asset Tier) → Assign (P0–P4) → Patch → Ver
 
 ```bash
 # Download latest KEV catalogue
-curl -s https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json \
-  | jq '.vulnerabilities[] | select(.dueDate != null) | {cveID, vendorProject, product, dueDate}'
+curl -sS -o kev.json https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+jq '.vulnerabilities[] | select(.dueDate != null) | {cveID, vendorProject, product, dueDate}' kev.json
 ```
 
 Cross-reference KEV CVEs against your vulnerability scanner output daily. P0 override any existing priority rating.

@@ -1,0 +1,112 @@
+{
+  "osk": "1.1",
+  "name": "identity-access-management",
+  "version": "1.1.0",
+  "description": "Comprehensive IAM programme covering identity governance (Joiners/Movers/Leavers), human authentication (FIDO2, SSO, passwordless), privileged access management (PAM), non-human identities (service accounts, API keys, secrets), AI/agent identity, and access review and audit. Triggers for: MFA deployment, PAM design, secrets management, identity governance, agent identity, or access review programme.",
+  "family": "domain",
+  "frameworks": [
+    "nist-csf",
+    "owasp-asvs",
+    "cis-controls"
+  ],
+  "tags": [
+    "security",
+    "iam",
+    "identity",
+    "mfa",
+    "pam",
+    "sso",
+    "rbac",
+    "abac",
+    "fido2",
+    "secrets-management",
+    "agent-identity"
+  ],
+  "phases": [
+    {
+      "id": "identity-governance",
+      "file": "references/identity-governance.md",
+      "tokens": 1295
+    },
+    {
+      "id": "human-authentication",
+      "file": "references/human-authentication.md",
+      "tokens": 1318
+    },
+    {
+      "id": "privileged-access-management",
+      "file": "references/privileged-access-management.md",
+      "tokens": 1439
+    },
+    {
+      "id": "non-human-identities",
+      "file": "references/non-human-identities.md",
+      "tokens": 1488
+    },
+    {
+      "id": "agent-and-ai-identities",
+      "file": "references/agent-and-ai-identities.md",
+      "tokens": 1684
+    },
+    {
+      "id": "access-review-and-audit",
+      "file": "references/access-review-and-audit.md",
+      "tokens": 1219
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 729,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "nist-sp-800-63b",
+      "cis-iam-controls",
+      "owasp-asvs"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 60,
+    "coverage-gaps": [
+      "CVEs referenced this period: CVE-2026-59309 — verify whether this estate is exposed",
+      "Techniques observed: T1649 (x1) — verify a validated detection exists for each",
+      "Vendors/products named repeatedly: Microsoft 365 (x2) — review exposure to these in the estate",
+      "Teardown \"Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)\" (2026-08-18) — techniques T1649, T1550, T1556, T1207; check telemetry availability before assuming coverage"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 7,
+    "teardowns-routed": 1
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "hybrid"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "government",
+      "technology",
+      "critical-infrastructure"
+    ],
+    "attack-surface-tags": [
+      "authentication",
+      "authorisation",
+      "credential-theft",
+      "privilege-escalation",
+      "lateral-movement"
+    ]
+  }
+}

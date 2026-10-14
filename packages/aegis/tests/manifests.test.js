@@ -25,17 +25,18 @@ test('no bin/ folder at the plugin root (claude.ai and Cowork refuse such plugin
 
 test('Claude plugin manifest and hosted MCP', () => {
   const plugin = read(ROOT, '.claude-plugin/plugin.json')
-  expect(plugin.name).toBe('aegis')
+  expect(plugin.name).toBe('aegis-skills')
+  expect(plugin.privacyPolicyUrl).toMatch(/^https:\/\/aegis-skills\.vercel\.app\//)
   expect(plugin.version).toBe(PKG.version)
   expect(read(ROOT, '.mcp.json')).toEqual({ mcpServers: { aegis: { type: 'http', url: HOSTED } } })
 })
 
-test('root marketplace lists the aegis plugin by relative path', () => {
+test('root marketplace lists the aegis plugin bundle by relative path', () => {
   const m = read(REPO, '.claude-plugin/marketplace.json')
   expect(m.name).toBe('aegis-skills')
   expect(m.owner.name).toBeTruthy()
-  const entry = m.plugins.find(p => p.name === 'aegis')
-  expect(entry.source).toBe('./packages/aegis')
+  const entry = m.plugins.find(p => p.name === 'aegis-skills')
+  expect(entry.source).toBe('./plugins/aegis')
   expect(entry.version).toBe(PKG.version)
   expect(fs.existsSync(path.join(REPO, entry.source, '.claude-plugin', 'plugin.json'))).toBe(true)
 })

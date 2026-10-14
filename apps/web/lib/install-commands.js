@@ -71,7 +71,7 @@ const PATHS = [
     platforms: [
       { id: 'claude', label: 'Claude Code', ...AEGIS_AVAILABILITY, steps: [
         { text: 'Inside Claude Code:' },
-        { label: 'Claude Code', code: `${marketplaceAdd}\n/plugin install aegis@${MARKETPLACE}` },
+        { label: 'Claude Code', code: `${marketplaceAdd}\n/plugin install aegis-skills@${MARKETPLACE}` },
         { text: 'Or from a terminal:' }, sh(aegisInstall('claude'))] },
       { id: 'codex', label: 'Codex', ...AEGIS_AVAILABILITY, steps: [sh(aegisInstall('codex'))] },
       { id: 'gemini', label: 'Gemini CLI', ...AEGIS_AVAILABILITY, steps: [

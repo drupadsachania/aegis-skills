@@ -9,7 +9,7 @@
 
 Skills go into each tool's own skills folder and the `aegis` MCP server is registered in its config (the file is backed up first). After an upgrade, installed skills refresh automatically; files you edited are kept as `.bak`. Opt out with `AEGIS_NO_AUTO_REFRESH=1`.
 
-Claude Code plugin: `/plugin marketplace add drupadsachania/aegis-skills`, then `/plugin install aegis@aegis-skills`.
+Claude Code plugin: `/plugin marketplace add drupadsachania/aegis-skills`, then `/plugin install aegis-skills@aegis-skills`.
 
 ## Commands
 

@@ -1,0 +1,117 @@
+{
+  "osk": "1.1",
+  "name": "threat-intel-synthesis",
+  "version": "1.1.1",
+  "description": "Turn raw threat intelligence — news feeds, knowledge graphs, vendor advisories, and incident teardowns — into structured attack patterns, reconstructed incident narratives, and attack-surface coverage maps that drive detection and control decisions. Triggers for: threat intel analysis, attack pattern extraction, incident reconstruction, \"what actually happened\" analysis, ATT&CK mapping from reporting, threat landscape review, coverage gap analysis, intel-driven detection engineering, or weekly threat recap.",
+  "family": "intel",
+  "frameworks": [
+    "mitre-attack",
+    "mitre-atlas",
+    "diamond-model",
+    "kill-chain"
+  ],
+  "tags": [
+    "security",
+    "threat-intelligence",
+    "attack-patterns",
+    "incident-reconstruction",
+    "coverage-mapping",
+    "detection-engineering",
+    "cti",
+    "ttp"
+  ],
+  "phases": [
+    {
+      "id": "intel-ingestion",
+      "file": "references/intel-ingestion.md",
+      "tokens": 1076
+    },
+    {
+      "id": "attack-pattern-extraction",
+      "file": "references/attack-pattern-extraction.md",
+      "tokens": 1366
+    },
+    {
+      "id": "incident-reconstruction",
+      "file": "references/incident-reconstruction.md",
+      "tokens": 1363
+    },
+    {
+      "id": "attack-surface-coverage",
+      "file": "references/attack-surface-coverage.md",
+      "tokens": 1459
+    },
+    {
+      "id": "intel-to-detection",
+      "file": "references/intel-to-detection.md",
+      "tokens": 1305
+    },
+    {
+      "id": "continuous-learning-loop",
+      "file": "references/continuous-learning-loop.md",
+      "tokens": 1476
+    },
+    {
+      "id": "live-threat-intel",
+      "file": "references/live-threat-intel.md",
+      "tokens": 1136,
+      "auto": true
+    }
+  ],
+  "research": {
+    "feeds": [
+      "mitre-attack",
+      "nvd-cve-feed",
+      "cisa-advisories",
+      "cybersec-news-digest"
+    ],
+    "red-team": false
+  },
+  "self-learning": {
+    "update-frequency": "weekly",
+    "sources": [
+      "mitre-attack-stix",
+      "cisa-kev",
+      "cybersec-news-digest",
+      "attack-breakdowns"
+    ],
+    "health-score": 1,
+    "stale-threshold-days": 30,
+    "coverage-gaps": [
+      "Recurring CVE exposure: CVE-2026-65400 (x2) — confirm patch status and detection coverage",
+      "Techniques observed: T1649 (x1) — verify a validated detection exists for each",
+      "Dominant themes: supply-chain (x8), zero-day (x7), ransomware (x7), nation-state (x6), rce (x6), privilege-escalation (x6) — confirm controls address the recurring mechanism, not just individual incidents",
+      "Vendors/products named repeatedly: Apple (x4), Broadcom (x2), VMware (x2), npm (x2), Microsoft 365 (x2), Kaspersky (x2) — review exposure to these in the estate",
+      "Teardown \"Attack Breakdown — Certificate-Based Persistence via AD CS (MITRE ATT&CK T1649)\" (2026-08-18) — techniques T1649, T1550, T1556, T1207; check telemetry availability before assuming coverage"
+    ],
+    "last-intel-sync": "2026-08-22",
+    "intel-window-days": 7,
+    "items-routed": 75,
+    "teardowns-routed": 1
+  },
+  "context": {
+    "environments": [
+      "enterprise",
+      "cloud",
+      "saas",
+      "hybrid",
+      "ot",
+      "endpoint"
+    ],
+    "industry-verticals": [
+      "financial-services",
+      "healthcare",
+      "technology",
+      "government",
+      "critical-infrastructure",
+      "manufacturing"
+    ],
+    "attack-surface-tags": [
+      "threat-intel",
+      "attack-patterns",
+      "coverage-mapping",
+      "detection-engineering",
+      "emerging-threats"
+    ]
+  }
+}

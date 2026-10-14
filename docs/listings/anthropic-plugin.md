@@ -4,6 +4,18 @@ Maintainer file, not product documentation. Copy and names come from [listing-co
 
 Status as of 2026-10-13: nothing is submitted and nothing is listed. The Aegis plugin can be submitted once the site is deployed (blocker 3: inbound mail delivery verified 2026-10-13; the portal's verification email is still to come). The Themis plugin also waits for the Phase 7 npm publish, because its `.mcp.json` runs a published package.
 
+## Validator findings, 2026-10-14, and what changed
+
+The portal validator reported four things; all are addressed in the repository.
+
+| Finding | Cause | Change |
+|---|---|---|
+| Credential read plus a network call (`lib/targets.js`, `plugin.json`) | The plugin folder was the whole npm package, including the installer that edits other tools' config files (for example `~/.claude.json`) | The marketplace now points at `plugins/aegis`, a generated bundle with only the 24 skills, `.mcp.json`, the manifest, README, icon and licences (no code at all). Build it with `npm run build:plugin`; `npm run check:deps` fails if it is stale |
+| Credential-named variables beside example URLs in three skill references | `userAToken`, `MyVault.vault.azure.net` and `app.example.com` examples | Examples rewritten (`sessionA`, `VAULT_URL`, `https://<target>`) |
+| Download-and-execute pattern in three skill references | `curl ... \| jq` pipelines and an `IEX ... DownloadString` test string | Pipelines now download to a file first; the cradle test is described in words |
+| Name `aegis` held for review; no icon; no privacy policy URL | Existing directory publisher "Aegis"; missing fields | Plugin renamed to `aegis-skills` (install: `/plugin install aegis-skills@aegis-skills`); `.claude-plugin/icon.png` (512 px) added; `privacyPolicyUrl` set |
+
+
 ## Sources (fetched 2026-10-12)
 
 | Topic | URL |
@@ -34,7 +46,7 @@ Checked against the pre-submission checklist on 2026-10-12. "Check" means verify
 |---|---|
 | Plugin folder contains `.claude-plugin/plugin.json` | `packages/aegis/.claude-plugin/plugin.json` and `packages/themis-plugin/.claude-plugin/plugin.json` exist |
 | Marketplace listing | `.claude-plugin/marketplace.json` lists only `aegis` while `@aegis-skills/themis-plugin` is outside the releasable allow-list (`RELEASABLE` in `scripts/lib/release-manifests.js`; enforced by `npm run check:versions`). Add the `themis` entry back when Phase 8 publishes the plugin |
-| One plugin per submission | Submit `packages/aegis` and `packages/themis-plugin` separately; the portal does not accept the marketplace repo as one submission |
+| One plugin per submission | Submit `plugins/aegis` (the generated bundle) and `packages/themis-plugin` separately; the portal does not accept the marketplace repo as one submission |
 | `name` lowercase letters, digits, hyphens | `aegis`, `themis` |
 | `description`, `author`, `version` set | Present in both |
 | README of at least 40 words in the plugin folder | `packages/aegis/README.md` and `packages/themis-plugin/README.md`, each with a "What this plugin runs, sends and fetches" section (checked by `scripts/check-plugin-bundle.js`) |
@@ -53,7 +65,7 @@ Checked against the pre-submission checklist on 2026-10-12. "Check" means verify
 
 | Command | Output |
 |---|---|
-| `claude plugin validate ./packages/aegis` | Validation passed |
+| `claude plugin validate ./plugins/aegis` | Validation passed |
 | `claude plugin validate ./packages/themis-plugin` | Validation passed |
 | `claude plugin validate .` (the marketplace file) | Validation passed |
 
@@ -83,9 +95,9 @@ The checklist says every package a launcher runs must be pinned to an exact vers
 
 ## Steps
 
-1. Run the local check from the folder that contains the plugin folder: `claude plugin validate ./packages/aegis`, then `./packages/themis-plugin`. It only checks syntax and schema.
+1. Run the local check from the folder that contains the plugin folder: `claude plugin validate ./plugins/aegis`, then `./packages/themis-plugin`. It only checks syntax and schema.
 2. Open <https://claude.ai/directory/manage>, select **Submit new**, then **Plugin bundle**.
-3. **Source.** Repository `drupadsachania/aegis-skills`, plugin path `packages/aegis` (second submission: `packages/themis-plugin`). Leave the branch empty to follow the default branch, or enter a release tag. Select **Validate**. A result applies to one commit, so push fixes and re-validate.
+3. **Source.** Repository `drupadsachania/aegis-skills`, plugin path `plugins/aegis` (second submission: `packages/themis-plugin`). Leave the branch empty to follow the default branch, or enter a release tag. Select **Validate**. A result applies to one commit, so push fixes and re-validate.
 4. **Listing details.** The name and description come from `plugin.json` and the README. Change them in the repository, not in the portal.
 5. **Data handling.** Answer from `docs/themis/privacy-policy.md`: the Aegis plugin reads no personal data and stores nothing; the hosted MCP server keeps only an in-memory request counter. Themis stores run state, approvals and an audit log locally under `~/.themis/` and sends nothing elsewhere except to MCP servers the user connects. Neither plugin targets people under 18.
 6. **Compliance.** Enter `support@kairos-foundation.org` as the contact email (the portal may send a verification link there) and tick the four acknowledgements.

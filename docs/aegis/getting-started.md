@@ -38,7 +38,7 @@ Claude Code can also install Aegis as a plugin, without `npx`:
 
 ```
 /plugin marketplace add drupadsachania/aegis-skills
-/plugin install aegis@aegis-skills
+/plugin install aegis-skills@aegis-skills
 ```
 
 On a clean project the installer prints this (the folder path is shortened here):

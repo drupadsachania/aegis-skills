@@ -25,10 +25,10 @@ Use during Phase 5 to design and execute a security testing strategy across the 
 |------|------|----------|------------|
 | OWASP ZAP | Open source | Web apps, authenticated scans | CI/CD via `zap-cli` or GitHub Action |
 | Burp Suite Pro | Commercial | Manual + automated pentest | Manual; Burp Enterprise for CI |
-| Nuclei | Open source | Template-based scanning (CVEs, misconfigs) | `nuclei -u https://app.example.com -t cves/` |
+| Nuclei | Open source | Template-based scanning (CVEs, misconfigs) | `nuclei -u https://<target> -t cves/` |
 | Nikto | Open source | Web server misconfiguration | Quick recon scan |
-| SQLMap | Open source | SQL injection testing | `sqlmap -u "https://app.example.com/search?q=test"` |
-| ffuf | Open source | API endpoint fuzzing | `ffuf -u https://api.example.com/FUZZ -w wordlist.txt` |
+| SQLMap | Open source | SQL injection testing | `sqlmap -u "https://<target>/search?q=test"` |
+| ffuf | Open source | API endpoint fuzzing | `ffuf -u https://<target>/FUZZ -w wordlist.txt` |
 
 ## Sample Jest Security Test Snippets
 
@@ -54,10 +54,10 @@ describe('Search API security', () => {
   });
 
   test('rejects IDOR - accessing another user resource', async () => {
-    const userAToken = await loginAs('userA');
+    const sessionA = await loginAs('userA');
     const res = await request(app)
       .get('/api/users/userB/profile')
-      .set('Authorization', `Bearer ${userAToken}`);
+      .set('Authorization', `Bearer ${sessionA}`);
     expect(res.status).toBe(403);
   });
 });
