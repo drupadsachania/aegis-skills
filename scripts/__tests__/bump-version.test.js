@@ -22,10 +22,10 @@ function fixture ({ withThemisPlugin = false } = {}) {
   const w = (rel, obj) => put(rel, JSON.stringify(obj, null, 2) + '\n')
   const appDeps = { 'aegis-skills': '^1.1.0', '@aegis-skills/themis-core': '^0.1.0' }
   w('packages/aegis/package.json', PKG('packages/aegis', 'aegis-skills', '1.1.0'))
-  w('packages/aegis/.claude-plugin/plugin.json', { name: 'aegis', version: '1.1.0' })
+  w('packages/aegis/.claude-plugin/plugin.json', { name: 'aegis-skills', version: '1.1.0' })
   put('packages/aegis/gemini-extension.json', '{\r\n  "name": "aegis-skills",\r\n  "version": "1.1.0",\r\n  "mcpServers": { "aegis": { "command": "npx", "args": ["-y", "aegis-skills@1.1.0", "mcp"] } }\r\n}\r\n')
   w('packages/aegis/server.json', { name: 'io.github.drupadsachania/aegis-skills', version: '1.1.0', packages: [{ registryType: 'npm', identifier: 'aegis-skills', version: '1.1.0', transport: { type: 'stdio' } }] })
-  const plugins = [{ name: 'aegis', source: './packages/aegis', version: '1.1.0' }]
+  const plugins = [{ name: 'aegis-skills', source: './plugins/aegis', version: '1.1.0' }]
   if (withThemisPlugin) {
     plugins.push({ name: 'themis', source: './packages/themis-plugin', version: '0.1.0' })
     w('packages/themis-plugin/package.json', PKG('packages/themis-plugin', '@aegis-skills/themis-plugin', '0.1.0'))
@@ -154,7 +154,7 @@ test('marketplace guard: a listed plugin whose npm package is not releasable fai
   // Unlisted: the same plugin folder is fine (only the marketplace listing is guarded).
   const unlisted = fixture({ withThemisPlugin: true })
   const m = JSON.parse(text(unlisted, '.claude-plugin/marketplace.json'))
-  m.plugins = m.plugins.filter(p => p.name === 'aegis')
+  m.plugins = m.plugins.filter(p => p.name === 'aegis-skills')
   fs.writeFileSync(path.join(unlisted, '.claude-plugin/marketplace.json'), JSON.stringify(m, null, 2) + '\n')
   const r2 = run(unlisted, 'check-versions.js')
   assert.equal(r2.status, 0, r2.stderr)
