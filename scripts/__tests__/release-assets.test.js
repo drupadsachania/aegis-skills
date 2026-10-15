@@ -77,15 +77,21 @@ test('Gemini archives: manifest at the root, version equals the package, self-co
   }
 })
 
-test('ChatGPT bundle: skills-only Agent Plugins layout within the verified limits', () => {
+test('ChatGPT bundle: MCP Agent Plugins layout within the verified limits', () => {
   const entries = zipAt(`aegis-chatgpt-plugin-${version}.zip`)
   assert.deepEqual(V.chatgptProblems(entries, version), [])
   const names = entries.map(e => e.name)
-  assert.ok(!names.includes('mcp.json') && !names.some(n => /hooks|\.app\.json/.test(n)))
+  assert.ok(names.includes('mcp.json') && !names.some(n => /hooks|\.app\.json/.test(n)))
+  const mcp = JSON.parse(entries.find(e => e.name === 'mcp.json').data.toString('utf8'))
+  assert.equal(mcp.mcpServers.aegis.type, 'streamable-http')
+  assert.match(mcp.mcpServers.aegis.url, /^https:\/\//)
   const plugin = JSON.parse(entries.find(e => e.name === 'plugin.json').data.toString('utf8'))
   assert.equal(plugin.version, version)
-  const iface = plugin.extensions['com.openai'].interface
-  assert.equal(iface.defaultPrompt.length, 3)
+  const ox = plugin.extensions['com.openai']
+  assert.equal(ox.interface.defaultPrompt.length, 3)
+  assert.ok(ox.interface.category && ox.interface.supportURL && ox.interface.termsOfServiceURL)
+  assert.equal(ox.review.test_cases.positive.length, 5)
+  assert.equal(ox.review.test_cases.negative.length, 3)
   const icon = entries.find(e => e.name === 'assets/logo.png')
   const info = V.imageInfo(icon.name, icon.data)
   assert.ok(info.width === info.height && info.width >= 48 && icon.data.length < 5 * 1024 * 1024)
@@ -102,8 +108,11 @@ test('the packages other than aegis get the tarball only, and non-releasable pac
 
 // ---- the validators themselves ----
 const goodPlugin = () => JSON.parse(fs.readFileSync(lib.abs('listings/chatgpt/plugin.json'), 'utf8'))
-const bundle = (plugin, extra = []) => [
-  { name: 'plugin.json', data: JSON.stringify(plugin) }, { name: 'README.md', data: 'r' },
+const goodMcp = () => JSON.parse(fs.readFileSync(lib.abs('listings/chatgpt/mcp.json'), 'utf8'))
+const bundle = (plugin, extra = [], mcp = goodMcp()) => [
+  { name: 'plugin.json', data: JSON.stringify(plugin) },
+  ...(mcp ? [{ name: 'mcp.json', data: JSON.stringify(mcp) }] : []),
+  { name: 'README.md', data: 'r' },
   { name: 'LICENSE', data: 'l' }, { name: 'LICENSE-APACHE', data: 'l' }, { name: 'LICENSE-MIT', data: 'l' },
   { name: 'assets/logo.png', data: fs.readFileSync(lib.abs('listings/chatgpt/assets/logo.png')) },
   { name: 'skills/demo/SKILL.md', data: '---\nname: demo\ndescription: d\n---\nbody\n' }, ...extra
@@ -115,15 +124,27 @@ test('validator accepts a minimal good bundle and rejects each broken rule', () 
     const p = goodPlugin(); mut(p)
     assert.match(V.chatgptProblems(bundle(p, extra), version).join('\n'), re)
   }
+  const ox = p => p.extensions['com.openai']
   bad(p => { p.version = '0.0.1' }, /version/)
-  bad(p => { p.extensions['com.openai'].interface.displayName = 'x'.repeat(31) }, /displayName is 31/)
-  bad(p => { p.extensions['com.openai'].interface.shortDescription = 'x'.repeat(31) }, /shortDescription is 31/)
-  bad(p => { p.extensions['com.openai'].interface.longDescription = 'x'.repeat(4001) }, /longDescription is 4001/)
-  bad(p => { p.extensions['com.openai'].interface.defaultPrompt = ['a', 'b', 'c', 'd'] }, /1 to 3 prompts/)
-  bad(p => { p.extensions['com.openai'].interface.logo = './assets/missing.png' }, /not in the archive/)
+  bad(p => { ox(p).interface.displayName = 'x'.repeat(31) }, /displayName is 31/)
+  bad(p => { ox(p).interface.shortDescription = 'x'.repeat(31) }, /shortDescription is 31/)
+  bad(p => { ox(p).interface.longDescription = 'x'.repeat(4001) }, /longDescription is 4001/)
+  bad(p => { ox(p).interface.defaultPrompt = ['a', 'b', 'c', 'd'] }, /1 to 3 prompts/)
+  bad(p => { ox(p).interface.logo = './assets/missing.png' }, /not in the archive/)
   bad(p => { p.hooks = {} }, /hooks/)
   bad(p => { p.$schema = 'https://example.invalid/x' }, /\$schema/)
-  bad(() => {}, /mcp\.json must not be/, [{ name: 'mcp.json', data: '{}' }])
+  // MCP-app rules
+  bad(p => { delete ox(p).interface.category }, /category is required/)
+  bad(p => { ox(p).interface.supportURL = 'http://x.test' }, /supportURL must be an https URL/)
+  bad(p => { delete ox(p).interface.termsOfServiceURL }, /termsOfServiceURL must be an https URL/)
+  bad(p => { ox(p).review.test_cases.positive.pop() }, /positive must hold exactly 5/)
+  bad(p => { ox(p).review.test_cases.negative.pop() }, /negative must hold exactly 3/)
+  bad(p => { delete ox(p).review.test_cases.positive[0].tools_triggered }, /positive\[0\]\.tools_triggered is required/)
+  bad(p => { delete ox(p).review }, /review is required/)
+  // mcp.json rules: missing, wrong type, non-https url, auth other than none
+  assert.match(V.chatgptProblems(bundle(goodPlugin(), [], null), version).join('\n'), /mcp\.json is missing/)
+  assert.match(V.chatgptProblems(bundle(goodPlugin(), [], { $schema: 'x', mcpServers: { aegis: { type: 'stdio', url: 'https://a.test' } } }), version).join('\n'), /\$schema|streamable-http/)
+  assert.match(V.chatgptProblems(bundle(goodPlugin(), [], { $schema: 'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json', mcpServers: { aegis: { type: 'streamable-http', url: 'http://a.test' } } }), version).join('\n'), /url must be an https URL/)
   bad(() => {}, /secret|private key/, [{ name: 'skills/demo/references/x.md', data: '-----BEGIN RSA PRIVATE KEY-----\nabc' }])
   bad(() => {}, /forbidden file/, [{ name: '.env', data: 'A=1' }])
   bad(() => {}, /ASCII/, [{ name: 'skills/demo/references/café.md', data: 'x' }])

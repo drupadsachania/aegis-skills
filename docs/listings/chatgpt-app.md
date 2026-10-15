@@ -1,6 +1,24 @@
-# Runbook: ChatGPT and Codex Plugins Directory (Aegis as a skills-only plugin)
+# Runbook: ChatGPT and Codex Plugins Directory (Aegis as an MCP app)
 
 Maintainer file, not product documentation. Copy and names come from [listing-copy.md](listing-copy.md).
+
+## Decision change (2026-10-15): MCP app, not skills-only
+
+OpenAI stopped accepting skills-only submissions ("We are not accepting more skills-only submissions at
+this time"). So Aegis is now submitted as an **MCP app**: the ZIP carries `listings/chatgpt/mcp.json`, which
+points at the hosted read-only server `https://aegis-skills.vercel.app/api/mcp` with `auth.type` `none`. This
+adds three requirements over the old skills-only plan, all on the submission form or as user actions:
+
+1. **Domain verification.** Paste the token OpenAI issues into `apps/web/config/openai-apps-challenge.txt` and
+   redeploy; it is served at `https://aegis-skills.vercel.app/.well-known/openai-apps-challenge`. The MCP host
+   and the site share the one domain, so the token covers both.
+2. **Demo recording.** Record a short video exercising the five positive test cases, host it, and set
+   `extensions.com.openai.review.demo_recording_url` in `listings/chatgpt/plugin.json` (currently empty).
+3. **Test cases.** Five positive and three negative cases are written into `plugin.json` already; run each
+   positive case once with the test account before submitting.
+
+The four listing URLs (`websiteURL`, `supportURL`, `privacyPolicyURL`, `termsOfServiceURL`) are now required and
+are set. The rest of this file is the older skills-only reference; where it conflicts, this section wins.
 
 Status as of 2026-10-13: not submitted, not listed. `node scripts/build-chatgpt-bundle.js --out <dir>` now builds the ZIP from `listings/chatgpt/` (the listing source: `plugin.json`, `plugin-readme.md`, `assets/logo.png`) and `packages/aegis/skills`, re-reads it and validates the verified limits below; every Aegis release attaches it as `aegis-chatgpt-plugin-<version>.zip` (see docs/RELEASE-RUNBOOK.md). Nothing is submitted.
 
