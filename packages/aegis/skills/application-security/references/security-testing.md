@@ -21,14 +21,17 @@ Use during Phase 5 to design and execute a security testing strategy across the 
 
 ## DAST Tools Table
 
-| Tool | Type | Best For | Integration |
+Run these against an application you own or are authorized to test, in a staging environment and through
+your own CI pipeline. This skill does not run them; the operator does, with authorization.
+
+| Tool | Type | Best For | How it fits |
 |------|------|----------|------------|
-| OWASP ZAP | Open source | Web apps, authenticated scans | CI/CD via `zap-cli` or GitHub Action |
-| Burp Suite Pro | Commercial | Manual + automated pentest | Manual; Burp Enterprise for CI |
-| Nuclei | Open source | Template-based scanning (CVEs, misconfigs) | `nuclei -u https://<target> -t cves/` |
-| Nikto | Open source | Web server misconfiguration | Quick recon scan |
-| SQLMap | Open source | SQL injection testing | `sqlmap -u "https://<target>/search?q=test"` |
-| ffuf | Open source | API endpoint fuzzing | `ffuf -u https://<target>/FUZZ -w wordlist.txt` |
+| OWASP ZAP | Open source | Web apps, authenticated scans | Baseline scan step in CI against staging |
+| Burp Suite Pro | Commercial | Manual review and automated testing | Analyst-driven; Burp Enterprise for CI |
+| Nuclei | Open source | Template-based checks (CVEs, misconfigs) | Scheduled CI check against your own hosts |
+| Nikto | Open source | Web server misconfiguration | Quick configuration review |
+| SQLMap | Open source | Confirming SQL injection is fixed on your own app | Validation step after a fix, on staging only |
+| ffuf | Open source | Endpoint and content discovery on your own app | Coverage check in staging |
 
 ## Sample Jest Security Test Snippets
 
