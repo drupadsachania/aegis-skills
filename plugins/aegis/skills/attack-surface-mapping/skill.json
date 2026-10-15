@@ -20,12 +20,12 @@
     {
       "id": "external-discovery",
       "file": "references/external-discovery.md",
-      "tokens": 676
+      "tokens": 703
     },
     {
       "id": "internal-enumeration",
       "file": "references/internal-enumeration.md",
-      "tokens": 594
+      "tokens": 976
     },
     {
       "id": "cloud-exposure",

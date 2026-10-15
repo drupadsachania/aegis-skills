@@ -11,7 +11,7 @@ Use during Phase 1 to enumerate the organisation's internet-facing attack surfac
 | crt.sh | SSL/TLS certificate transparency logs → subdomains | `https://crt.sh/?q=%.example.com` |
 | SecurityTrails | DNS history, subdomains | `https://securitytrails.com/` |
 | WHOIS / RDAP | IP range ownership, ASN | `whois example.com` |
-| GitHub / GitLab | Exposed credentials, internal hostnames in code | `site:github.com "example.com" password` |
+| GitHub / GitLab | Your org's own leaked secrets and internal hostnames in public code | Use secret-scanning (GitHub secret scanning, Gitleaks, TruffleHog) across repos you own; monitor public mentions of your domains |
 | Google Dork | Indexed sensitive files, login pages | `site:example.com filetype:pdf "confidential"` |
 | LinkedIn | Employee names, technologies used | Enumerate for social engineering risk |
 
