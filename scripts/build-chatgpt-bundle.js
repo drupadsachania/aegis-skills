@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 'use strict'
-// Builds the Aegis ChatGPT plugin ZIP (Agent Plugins format, skills only) for directory submission.
-// Layout: plugin.json, README.md and assets/** from listings/chatgpt/ (plugin-readme.md becomes README.md),
-// LICENSE, LICENSE-APACHE and LICENSE-MIT from packages/aegis, and skills/<name>/SKILL.md plus
+// Builds the Aegis ChatGPT plugin ZIP (Agent Plugins format, with a remote read-only MCP server) for directory
+// submission. Layout: plugin.json, mcp.json, README.md and assets/** from listings/chatgpt/ (plugin-readme.md
+// becomes README.md), LICENSE, LICENSE-APACHE and LICENSE-MIT from packages/aegis, and skills/<name>/SKILL.md plus
 // skills/<name>/references/*.md from packages/aegis/skills (the same files that ship on npm).
-// There is NO mcp.json, no hooks and no apps: this is a skills-only plugin (docs/listings/chatgpt-app.md).
+// mcp.json points at the hosted read-only server; there are no hooks and no apps (docs/listings/chatgpt-app.md).
 // Nothing else from listings/chatgpt/ is packed, so review notes or credentials kept there never enter the ZIP.
 // The finished ZIP is read back and validated (scripts/lib/release-validate.js) before the path is returned.
 // Usage: node scripts/build-chatgpt-bundle.js --out <dir>
@@ -37,6 +37,7 @@ function chatgptEntries () {
   const read = rel => fs.readFileSync(lib.abs(rel))
   const entries = [
     { name: 'plugin.json', data: read(`${SRC}/plugin.json`) },
+    { name: 'mcp.json', data: read(`${SRC}/mcp.json`) },
     { name: 'README.md', data: read(`${SRC}/plugin-readme.md`) }
   ]
   for (const f of ['LICENSE', 'LICENSE-APACHE', 'LICENSE-MIT']) entries.push({ name: f, data: read(`${AEGIS}/${f}`) })
@@ -72,6 +73,13 @@ if (require.main === module) {
   try {
     const file = buildChatgptBundle(out)
     console.log(file ? `build-chatgpt-bundle: ${file.split(path.sep).join('/')}` : 'build-chatgpt-bundle: skipped (listings/chatgpt/plugin.json not present)')
+    if (file) {
+      const review = lib.readJson(`${SRC}/plugin.json`).data.extensions['com.openai'].review
+      if (!review.demo_recording_url) console.log('build-chatgpt-bundle: NOTE demo_recording_url is empty — host the demo video and set it before submitting')
+      if (!lib.readJson(`${AEGIS}/package.json`).data.version) {} // noop keeps lib import obvious
+      const token = lib.exists('apps/web/config/openai-apps-challenge.txt') ? fs.readFileSync(lib.abs('apps/web/config/openai-apps-challenge.txt'), 'utf8').trim() : ''
+      if (!token) console.log('build-chatgpt-bundle: NOTE domain-verification token is empty — paste the token OpenAI issues into apps/web/config/openai-apps-challenge.txt and redeploy')
+    }
   } catch (e) { console.error(`build-chatgpt-bundle: ${e.message}`); process.exit(1) }
 }
 

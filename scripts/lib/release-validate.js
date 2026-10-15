@@ -5,7 +5,8 @@
 // the allowed `category`/`capabilities` values and the full manifest schema are NOT verified and are not enforced.
 
 const SCHEMA = 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'
-const LIMITS = { displayName: 30, shortDescription: 30, longDescription: 4000, prompts: 3, promptLength: 128, iconBytes: 5 * 1024 * 1024, iconMinPx: 48, iconMaxPx: 4096 }
+const MCP_SCHEMA = 'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json'
+const LIMITS = { displayName: 30, shortDescription: 30, longDescription: 4000, developerName: 80, prompts: 3, promptLength: 128, url: 1024, iconBytes: 5 * 1024 * 1024, iconMinPx: 48, iconMaxPx: 4096, positiveCases: 5, negativeCases: 3 }
 
 // Names that must never be inside a release archive.
 const FORBIDDEN_NAME = [
@@ -63,26 +64,66 @@ function imageInfo (name, data) {
   return null
 }
 
+// Validate the MCP app ZIP (Agent Plugins format with a remote, read-only MCP server). Hooks and apps still
+// block submission; the server lives in mcp.json, so mcpServers must not appear in plugin.json.
 function chatgptProblems (entries, version) {
   const p = commonProblems(entries)
   const names = new Set(entries.map(e => e.name))
-  for (const bad of ['mcp.json', '.mcp.json', '.app.json', 'hooks', 'hooks.json']) {
-    if (entries.some(e => e.name === bad || e.name.startsWith(`${bad}/`))) p.push(`${bad} must not be in a skills-only plugin ZIP`)
+  for (const bad of ['.mcp.json', '.app.json', 'hooks', 'hooks.json']) {
+    if (entries.some(e => e.name === bad || e.name.startsWith(`${bad}/`))) p.push(`${bad} must not be in the plugin ZIP`)
   }
   if (entries.some(e => /(^|\/)hooks\//.test(e.name))) p.push('lifecycle hooks are rejected for submission')
+
+  // mcp.json: one remote, read-only, no-auth server over HTTPS. The secret-content scan in commonProblems already
+  // rejects credentials anywhere, so a server header holding a literal token would fail there too.
+  const mcp = parseJson(entries, 'mcp.json', p)
+  if (mcp) {
+    if (mcp.$schema !== MCP_SCHEMA) p.push(`mcp.json "$schema" must be ${MCP_SCHEMA}`)
+    const servers = mcp.mcpServers && typeof mcp.mcpServers === 'object' ? mcp.mcpServers : null
+    if (!servers || !Object.keys(servers).length) p.push('mcp.json has no mcpServers')
+    else for (const [id, s] of Object.entries(servers)) {
+      if (s.type !== 'streamable-http') p.push(`mcpServers.${id}.type must be "streamable-http"`)
+      if (typeof s.url !== 'string' || !/^https:\/\//.test(s.url)) p.push(`mcpServers.${id}.url must be an https URL`)
+      if (s.headers && Object.keys(s.headers).length) p.push(`mcpServers.${id}.headers must be empty for a public submission`)
+      const auth = s.extensions && s.extensions['com.openai'] && s.extensions['com.openai'].auth
+      if (auth && auth.type && auth.type !== 'none') p.push(`mcpServers.${id} auth.type is "${auth.type}"; a public no-auth server uses "none"`)
+    }
+  }
+
   const plugin = parseJson(entries, 'plugin.json', p)
   if (plugin) {
     if (plugin.$schema !== SCHEMA) p.push(`plugin.json "$schema" must be ${SCHEMA}`)
     if (typeof plugin.name !== 'string' || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(plugin.name) || plugin.name.length > 64) p.push('plugin.json "name": lowercase letters, digits and single hyphens, at most 64 characters')
     if (plugin.version !== version) p.push(`plugin.json "version" is ${plugin.version}, expected ${version}`)
-    for (const k of ['hooks', 'apps', 'mcpServers']) if (k in plugin) p.push(`plugin.json must not declare "${k}"`)
-    const iface = plugin.extensions && plugin.extensions['com.openai'] && plugin.extensions['com.openai'].interface
+    for (const k of ['hooks', 'apps', 'mcpServers']) if (k in plugin) p.push(`plugin.json must not declare "${k}" (the server lives in mcp.json)`)
     const ox = plugin.extensions && plugin.extensions['com.openai']
+    const iface = ox && ox.interface
     if (ox) for (const k of ['hooks', 'apps']) if (k in ox) p.push(`extensions.com.openai must not declare "${k}"`)
     if (!iface) p.push('plugin.json has no extensions.com.openai.interface')
     else {
       const len = (k, max) => { if (typeof iface[k] !== 'string' || !iface[k]) p.push(`interface.${k} is missing`); else if (iface[k].length > max) p.push(`interface.${k} is ${iface[k].length} characters (limit ${max})`) }
-      len('displayName', LIMITS.displayName); len('shortDescription', LIMITS.shortDescription); len('longDescription', LIMITS.longDescription)
+      len('displayName', LIMITS.displayName); len('shortDescription', LIMITS.shortDescription); len('longDescription', LIMITS.longDescription); len('developerName', LIMITS.developerName)
+      if (typeof iface.category !== 'string' || !iface.category) p.push('interface.category is required for an MCP app')
+      // The four listing URLs are required for an MCP app under review: https, at most 1024 chars, no credentials.
+      for (const k of ['websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL']) {
+        const u = iface[k]
+        if (typeof u !== 'string' || !/^https:\/\//.test(u)) p.push(`interface.${k} must be an https URL`)
+        else if (u.length > LIMITS.url) p.push(`interface.${k} is longer than ${LIMITS.url} characters`)
+        else if (/:\/\/[^/@]*@/.test(u)) p.push(`interface.${k} must not contain embedded credentials`)
+      }
+      // MCP review needs exactly five positive and three negative test cases, plus a demo recording before submit.
+      const review = ox && ox.review
+      if (!review || typeof review !== 'object') p.push('extensions.com.openai.review is required for an MCP app')
+      else {
+        const tc = review.test_cases || {}
+        const pos = Array.isArray(tc.positive) ? tc.positive : []
+        const neg = Array.isArray(tc.negative) ? tc.negative : []
+        if (pos.length !== LIMITS.positiveCases) p.push(`review.test_cases.positive must hold exactly ${LIMITS.positiveCases} cases (has ${pos.length})`)
+        if (neg.length !== LIMITS.negativeCases) p.push(`review.test_cases.negative must hold exactly ${LIMITS.negativeCases} cases (has ${neg.length})`)
+        pos.forEach((c, i) => { for (const k of ['description', 'prompt', 'tools_triggered', 'expected_behavior']) if (typeof c[k] !== 'string' || !c[k]) p.push(`review.test_cases.positive[${i}].${k} is required`) })
+        neg.forEach((c, i) => { for (const k of ['description', 'prompt']) if (typeof c[k] !== 'string' || !c[k]) p.push(`review.test_cases.negative[${i}].${k} is required`) })
+        if (!('demo_recording_url' in review) || typeof review.demo_recording_url !== 'string') p.push('review.demo_recording_url must be a string (empty until you host the demo video)')
+      }
       const prompts = iface.defaultPrompt
       if (!Array.isArray(prompts) || prompts.length < 1 || prompts.length > LIMITS.prompts) p.push(`interface.defaultPrompt must hold 1 to ${LIMITS.prompts} prompts`)
       else prompts.forEach((x, i) => { if (typeof x !== 'string' || !x || x.length > LIMITS.promptLength) p.push(`interface.defaultPrompt[${i}] must be 1-${LIMITS.promptLength} characters`) })
@@ -104,7 +145,7 @@ function chatgptProblems (entries, version) {
   }
   const skills = new Set()
   for (const n of names) {
-    if (/^(plugin\.json|README\.md|LICENSE(-APACHE|-MIT)?)$/.test(n) || /^assets\/[\w.-]+$/.test(n)) continue
+    if (/^(plugin\.json|mcp\.json|README\.md|LICENSE(-APACHE|-MIT)?)$/.test(n) || /^assets\/[\w.-]+$/.test(n)) continue
     const m = /^skills\/([a-z0-9-]+)\/(SKILL\.md|references\/[A-Za-z0-9._-]+\.md)$/.exec(n)
     if (!m) { p.push(`unexpected file in plugin ZIP: ${n}`); continue }
     skills.add(m[1])
