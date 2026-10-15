@@ -15,7 +15,7 @@
         "shortDescription": "Defensive security skills",
         "longDescription": "Aegis is a library of 24 defensive cybersecurity skills for AI assistants. Each skill is a structured methodology for a security job: mapping adversary behaviour with MITRE ATT&CK, ATLAS and Engage, threat hunting, digital forensics and incident response, exposure validation, attack surface mapping, identity and access management, endpoint, network and infrastructure security, operational technology, compliance, governance and risk management, and more.\n\nEvery skill opens with a scope-and-authorization section: a defensive purpose, an assumption that you only use it on systems you own or are explicitly authorized to assess, and what it will not do. Aegis is guidance for defenders; the skills do not run scans, execute anything or reach other systems on their own.\n\nThe bundled MCP server is read-only. It exposes three tools, list_skills, get_skill and get_skill_phase, which return the public skill content. It needs no account and no sign-in, holds no user data, and never calls a model.",
         "developerName": "Drupad Sachania",
-        "category": "Developer Tools",
+        "category": "Security",
         "capabilities": ["Read"],
         "websiteURL": "https://aegis-skills.vercel.app",
         "supportURL": "https://github.com/drupadsachania/aegis-skills/issues",
