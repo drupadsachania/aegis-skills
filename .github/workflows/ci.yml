@@ -34,6 +34,10 @@ jobs:
       web: ${{ steps.d.outputs.web }}
       packs: ${{ steps.d.outputs.packs }}
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -45,6 +49,10 @@ jobs:
     needs: detect
     runs-on: ubuntu-latest
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -78,6 +86,10 @@ jobs:
           - { os: windows-latest, node: '24' }
           - { os: macos-latest, node: '24' }
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -104,6 +116,10 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -128,6 +144,10 @@ jobs:
     env:
       PKG_KEY: ${{ matrix.package }}
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -155,6 +175,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -194,6 +218,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
+      # Line endings: the repo has no .gitattributes (the Anthropic plugin scanner rejects line-ending rules),
+      # so LF on every OS comes from turning off Git for Windows' autocrlf before checkout.
+      - name: Keep LF line endings on checkout
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
