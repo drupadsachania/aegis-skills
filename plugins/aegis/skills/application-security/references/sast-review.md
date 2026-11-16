@@ -19,7 +19,7 @@ Use during Phase 2 to run and triage static analysis findings against the applic
 ## Integration into CI/CD Pipeline
 
 ```yaml
-# GitHub Actions — Semgrep SAST
+# GitHub Actions — Semgrep SAST (open-source rulesets, results stay in your CI; no app token, nothing uploaded)
 - name: Semgrep SAST
   uses: returntocorp/semgrep-action@v1
   with:
@@ -27,8 +27,6 @@ Use during Phase 2 to run and triage static analysis findings against the applic
       p/owasp-top-ten
       p/secrets
       p/command-injection
-  env:
-    SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 ```
 
 ## High-Priority Finding Categories

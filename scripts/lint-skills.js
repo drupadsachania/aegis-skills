@@ -29,6 +29,8 @@ const NETWORK_PATTERNS = [
   [/https?:\/\/[^\s)`'"<>]*\/(api|rest)\//i, 'an API endpoint URL'],
   [/(x-apikey|api[_-]?key\s*[:=]|Authorization:\s*Bearer)/i, 'an API key or token placeholder'],
   [/<[A-Z_]*(API_KEY|TOKEN)[A-Z_]*>/, 'an API key or token placeholder'],
+  // The Anthropic directory holds a plugin whose text reads a credential from the environment (MCP_FORWARDS_CREDENTIAL_ENV)
+  [/\$\{\{\s*secrets\.|\$\{?[A-Z][A-Z0-9_]*(TOKEN|API_KEY|SECRET|PASSWORD)\b/, 'a credential read from an environment variable or CI secret'],
   [/\b(upload|submit)\b[^.\n]{0,40}\b(to|on)\b[^.\n]{0,20}\b(VirusTotal|MalwareBazaar|Hybrid Analysis|ANY\.RUN|urlscan|Joe Sandbox|public sandbox)/i, 'an instruction to upload data to an outside service']
 ]
 
